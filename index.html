@@ -4788,7 +4788,7 @@ window.updatePcSettingsUI();
         reply='[DEVモード] AIは動作していません。Worker URLを設定すると実際に動作します。\n\n取得したコンテキスト:\n'+getContext();
       } else {
         const workerUrl=WORKER_URL;
-        const system='あなたはLifeHubのAIアシスタントです。ユーザーの生活データを把握しており、日本語でアドバイスします。ツールを使ってデータの追加・変更が可能です。ユーザーが何かを追加・変更したそうな場合は積極的にツールを活用してください。\n\n【XP付与ルール】\n過去の予定でaiXpが付いていないものがあれば、会話の流れで自然に「どうだった？」と聞き出し、award_event_xp でXPを付与する。\n目安: 国試・医師国家試験=5000〜10000、CBT・OSCE等の一発勝負系大型試験=1000〜3000、定期試験=40〜100、難しい実習・発表=30〜80、普通の授業=5〜15、日常的な予定=5〜20。\n年に一度・一発勝負・人生を左右するレベルの予定は桁違いのXPを与えてよい。\nユーザーが「大変だった」と言っても、その予定の内容から明らかに軽い場合は低く設定する。ユーザーの申告より予定の実態を優先して判断すること。\n\n【回答フォーマットのルール】\n・適切な場所で改行を入れ、読みやすくする\n・複数の内容がある場合は箇条書き（・）を使う\n・句読点（。、）を正しく使い、文章を短く区切る\n・何を言いたいか一目でわかるよう、結論や要点を最初に書く\n・長くなりすぎず、必要な情報に絞って答える\n\n'+getContext();
+        const system='あなたはLifeHubのAIアシスタントです。ユーザーの生活データを把握しており、日本語でアドバイスします。ツールを使ってデータの追加・変更が可能です。ユーザーが何かを追加・変更したそうな場合は積極的にツールを活用してください。\n\n【XP付与ルール】\n過去の予定でaiXpが付いていないものがあれば、会話の流れで自然に「どうだった？」と聞き出し、award_event_xp でXPを付与する。\n目安: 国試・医師国家試験=5000〜10000、CBT・OSCE等の一発勝負系大型試験=1000〜3000、定期試験=40〜100、難しい実習・発表=30〜80、普通の授業=5〜15、日常的な予定=5〜20、遊び・趣味・楽しい予定=1〜5。\nXPは「努力・苦労・達成」に対する報酬。楽しいだけの予定（友達と遊ぶ・趣味・娯楽など）は基本1〜5の低めに設定する。年に一度・一発勝負・人生を左右するレベルの予定は桁違いのXPを与えてよい。\nユーザーの申告より予定の実態を優先して判断すること。\n\n【回答フォーマットのルール】\n・適切な場所で改行を入れ、読みやすくする\n・複数の内容がある場合は箇条書き（・）を使う\n・句読点（。、）を正しく使い、文章を短く区切る\n・何を言いたいか一目でわかるよう、結論や要点を最初に書く\n・長くなりすぎず、必要な情報に絞って答える\n\n'+getContext();
         const apiMessages=aiHistory.slice(0,-2).filter(m=>m.role==='user'||m.role==='assistant').map(m=>({role:m.role,content:m.content}));
         apiMessages.push({role:'user',content:text});
         while(true){
@@ -5093,16 +5093,16 @@ function calcGameStats(){
   let streak=0;try{streak=JSON.parse(localStorage.getItem('lh_mission_streak')||'{}').count||0;}catch{}
   // 過去の予定XP（AI付与 or キーワード自動判定）
   const today=todayStr();
-  const evKw={exam:['試験','テスト','OSCE','CBT','国試','検定','入試'],hard:['実習','発表','プレゼン','面接','手術','レポート提出'],lecture:['授業','講義','ゼミ','セミナー']};
+  const evKw={exam:['試験','テスト','OSCE','CBT','国試','検定','入試'],hard:['実習','発表','プレゼン','面接','手術','レポート提出'],lecture:['授業','講義','ゼミ','セミナー'],fun:['遊','飲み','旅行','ライブ','映画','ゲーム','カラオケ','パーティ','デート','趣味']};
   let eventXp=0;
   for(const ev of db.events||[]){
-    if(!ev.date||ev.date>today)continue;// 過去のイベントのみ
-    if(ev.aiXp){eventXp+=ev.aiXp;continue;}// AI付与優先
-    // キーワード自動判定
+    if(!ev.date||ev.date>today)continue;
+    if(ev.aiXp){eventXp+=ev.aiXp;continue;}
     const t=ev.title+' '+(ev.memo||'');
     if(evKw.exam.some(k=>t.includes(k)))eventXp+=50;
     else if(evKw.hard.some(k=>t.includes(k)))eventXp+=30;
     else if(evKw.lecture.some(k=>t.includes(k)))eventXp+=5;
+    else if(evKw.fun.some(k=>t.includes(k)))eventXp+=2;
     else eventXp+=10;
   }
   // XP合算
