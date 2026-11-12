@@ -1642,17 +1642,23 @@ const ACTIVE_STORE='lh_active';
   if(!aid||!profs.find(p=>p.id===aid)){aid=profs[0].id;localStorage.setItem(ACTIVE_STORE,aid);}
   window._LH_PID=aid;
 })();
-// iOS standalone: env(safe-area-inset-top)を実測して余白を加算
+// iOS standalone: タッチオフセットバグの修正
 (function(){
   if(!window.navigator.standalone&&!window.matchMedia('(display-mode:standalone)').matches)return;
+  // ① スクロールオフセットのリセット（pageYOffsetがステータスバー高さになるiOSバグ対策）
+  window.scrollTo(0,0);
+  document.addEventListener('scroll',function(){window.scrollTo(0,0);},{passive:true});
+  // ② safe-area-inset-topの測定はrAF後に行う（同期実行だとenv()未解決で0になる問題を回避）
   const app=document.getElementById('app');if(!app)return;
-  const p=document.createElement('div');
-  p.setAttribute('style','position:fixed;top:env(safe-area-inset-top,0px);left:0;width:0;height:0;pointer-events:none;');
-  document.documentElement.appendChild(p);
-  const measured=p.getBoundingClientRect().top;
-  p.remove();
-  // 実測値+10pxの余白、最低54px
-  app.style.setProperty('--safe-top',Math.max(measured+10,54)+'px');
+  function applyMeasured(){
+    const p=document.createElement('div');
+    p.setAttribute('style','position:fixed;top:env(safe-area-inset-top,0px);left:0;width:0;height:0;pointer-events:none;');
+    document.documentElement.appendChild(p);
+    const measured=p.getBoundingClientRect().top;
+    p.remove();
+    if(measured>0)app.style.setProperty('--safe-top',Math.max(measured,44)+'px');
+  }
+  requestAnimationFrame(()=>{applyMeasured();setTimeout(applyMeasured,150);});
 })();
 const KEY='lifehub2_'+window._LH_PID;
 function load(){try{const r=localStorage.getItem(KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
