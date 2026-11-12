@@ -5065,20 +5065,25 @@ document.getElementById('hist-modal').onclick=e=>{if(e.target===e.currentTarget)
 
 // ===== ゲームステータス =====
 function calcGameStats(){
-  // タスク完了数
+  // 頻度別XP倍率: 低頻度ほど高報酬
+  const freqXp={monthly:30,weekly:12,daily:3,'':15};// repeat値→XP/回
   let totalTasks=0;
   let studyTasks=0;
+  let taskXp=0;
   const studyKw=['勉強','学習','授業','試験','テスト','実習','CBT','OSCE','国試','解剖','生理','病理','薬理','レポート','課題','読'];
   for(const t of db.tasks||[]){
-    if(t.done){totalTasks++;if(studyKw.some(k=>t.title.includes(k)))studyTasks++;}
-    for(const d of t.completedDates||[]){totalTasks++;if(studyKw.some(k=>t.title.includes(k)))studyTasks++;}
+    const xpPerDone=freqXp[t.repeat||'']??15;
+    const isStudy=studyKw.some(k=>t.title.includes(k));
+    const studyBonus=isStudy?8:0;
+    if(t.done){totalTasks++;studyTasks+=isStudy?1:0;taskXp+=xpPerDone+studyBonus;}
+    for(const d of t.completedDates||[]){totalTasks++;studyTasks+=isStudy?1:0;taskXp+=xpPerDone+studyBonus;}
   }
   // 筋トレ日数
   const totalWorkouts=Object.keys(db.workouts||{}).length;
   // ストリーク
   let streak=0;try{streak=JSON.parse(localStorage.getItem('lh_mission_streak')||'{}').count||0;}catch{}
   // XP
-  const xp=totalTasks*10+totalWorkouts*15+studyTasks*5+streak*8;
+  const xp=taskXp+totalWorkouts*15+streak*8;
   // レベル計算（累積XP方式）
   let level=1,xpForNext=100,remaining=xp;
   while(remaining>=xpForNext){remaining-=xpForNext;level++;xpForNext=Math.floor(level*100*1.2);}
