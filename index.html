@@ -4321,7 +4321,7 @@ window.updatePcSettingsUI();
         const system='あなたはLifeHubのAIアシスタントです。ユーザーの生活データを把握しており、日本語で簡潔にアドバイスします。\n\n'+getContext();
         const messages=aiHistory.slice(0,-1).map(m=>({role:m.role==='user'?'user':'assistant',content:m.content}));
         messages.push({role:'user',content:text});
-        const res=await fetch(workerUrl,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model:'claude-sonnet-5-5',max_tokens:1024,system,messages})});
+        const res=await fetch(workerUrl,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-sonnet-5-5',max_tokens:1024,system,messages})});
         if(!res.ok)throw new Error('HTTP '+res.status);
         const data=await res.json();
         reply=data.content?.[0]?.text||'応答を取得できませんでした';
