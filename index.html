@@ -136,6 +136,25 @@ input[type=number]{-moz-appearance:textfield;}
 .ai-brief-card .ai-brief-text{font-size:13px;color:var(--fg);line-height:1.65;}
 .ai-brief-card .ai-brief-refresh{position:absolute;top:10px;right:10px;background:none;border:none;font-size:14px;color:var(--fg3);cursor:pointer;padding:2px 5px;border-radius:4px;}
 .ai-brief-card.loading .ai-brief-text{color:var(--fg3);}
+.gs-level-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.gs-level-badge{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#7c3aed);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;}
+.gs-level-badge .gs-lv-label{font-size:9px;font-weight:700;color:rgba(255,255,255,.8);letter-spacing:.05em;}
+.gs-level-badge .gs-lv-num{font-size:20px;font-weight:900;color:#fff;line-height:1;}
+.gs-level-info{flex:1;}
+.gs-level-title{font-size:13px;font-weight:700;color:var(--fg);margin-bottom:3px;}
+.gs-xp-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.gs-xp-fill{height:100%;background:linear-gradient(90deg,var(--accent),#7c3aed);border-radius:3px;transition:width .6s ease;}
+.gs-xp-label{font-size:10px;color:var(--fg3);margin-top:3px;}
+.gs-stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+.gs-stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px;text-align:center;}
+.gs-stat-name{font-size:10px;font-weight:700;color:var(--fg3);letter-spacing:.08em;margin-bottom:4px;}
+.gs-stat-val{font-size:18px;font-weight:900;color:var(--accent);}
+.gs-stat-bar{height:3px;background:var(--border);border-radius:2px;margin-top:4px;overflow:hidden;}
+.gs-stat-fill{height:100%;border-radius:2px;}
+.gs-badges{display:flex;flex-wrap:wrap;gap:6px;}
+.gs-badge{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:11px;color:var(--fg2);display:flex;align-items:center;gap:4px;}
+.gs-badge.earned{border-color:var(--accent);color:var(--fg);}
+.gs-badge.locked{opacity:.4;}
 .daily-mission-card{margin:8px 12px 0;background:var(--surface);border-radius:12px;overflow:hidden;}
 .dm-header{display:flex;align-items:center;gap:8px;padding:10px 14px 8px;}
 .dm-title{font-size:12px;font-weight:700;color:var(--fg);flex:1;}
@@ -1220,6 +1239,10 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
       </div>
     </div>
     <div class="m-field" style="margin-top:16px;">
+      <label>🎮 ゲームステータス</label>
+      <div id="game-stats-panel" style="margin-top:10px;"></div>
+    </div>
+    <div class="m-field" style="margin-top:16px;">
       <div id="hist-toggle" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;padding:4px 0;">
         <label style="cursor:pointer;font-weight:600;">📋 アップデート履歴</label>
         <span id="hist-arrow" style="font-size:12px;color:var(--fg3);">▾</span>
@@ -1230,7 +1253,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
     <div class="m-actions" style="margin-top:16px;">
       <button class="btn-ok" id="settings-close" style="width:100%;">閉じる</button>
     </div>
-    <p style="text-align:center;font-size:11px;color:var(--fg3);margin-top:12px;">LifeHub v1.2.0</p>
+    <p style="text-align:center;font-size:11px;color:var(--fg3);margin-top:12px;">LifeHub v1.3.0</p>
   </div>
 </div>
 
@@ -2870,6 +2893,7 @@ document.getElementById('hdr-settings').onclick=()=>{
   document.querySelectorAll('.pos-opt[data-cal]').forEach(b=>b.classList.toggle('on',b.dataset.cal===(s.calLayout||'general')));
   document.querySelectorAll('.pos-opt[data-theme-opt]').forEach(b=>b.classList.toggle('on',b.dataset.themeOpt===(s.theme||'system')));
   document.getElementById('mo-settings').hidden=false;
+  renderGameStats();
 };
 document.querySelectorAll('.pos-opt[data-pos]').forEach(btn=>{
   btn.onclick=()=>{
@@ -2895,6 +2919,7 @@ document.getElementById('mo-settings').onclick=e=>{if(e.target===e.currentTarget
 // ===== お知らせ =====
 // 新しいお知らせを追加するときは先頭に追加する（idは一意な文字列）
 const ANNOUNCEMENTS=[
+  {id:'ann_007',date:'2026-11-13',title:'アップデート v1.3.0',body:'設定にゲームステータスを追加しました。タスク完了・筋トレ記録でXPが貯まり、STR/INT/VITのステータスが上がります。実績バッジも集めよう。設定⚙️から確認できます。'},
   {id:'ann_006',date:'2026-11-13',title:'アップデート v1.2.0',body:'AIが今日のデータを読んで毎日3つのミッションを自動生成するようになりました。タスク完了・筋トレ記録・AIと話すと自動的に達成判定されます。連続達成でストリークを伸ばそう🔥'},
   {id:'ann_005',date:'2026-11-12',title:'アップデート v1.1.0',body:'AIがあなたの今日のスケジュール・タスク・筋トレ状況を把握して、毎朝ひとこと届けるようになりました。ホーム画面上部をご確認ください。'},
   {id:'ann_004',date:'2026-11-12',title:'アップデート v1.0.3',body:'AIチャット入力時にキーボードが入力欄に重なる不具合を修正しました。'},
@@ -3039,6 +3064,7 @@ if(window._DEV_MODE){
 }
 const WORKER_URL='https://lifehub-ai.y-atsuhisa7234.workers.dev';
 const CHANGELOG=[
+  {v:'v1.3.0',d:'ゲームステータス（XP・レベル・STR/INT/VIT・実績）を追加'},
   {v:'v1.2.0',d:'AIデーリーミッション・ストリーク機能を追加'},
   {v:'v1.1.0',d:'AIが毎朝ひとことを自動生成（データ連携強化）'},
   {v:'v1.0.3',d:'キーボード・入力欄重なりバグ修正'},
@@ -5036,6 +5062,69 @@ function openExerciseHistory(name){
 }
 document.getElementById('hist-modal-close').onclick=()=>document.getElementById('hist-modal').hidden=true;
 document.getElementById('hist-modal').onclick=e=>{if(e.target===e.currentTarget)e.currentTarget.hidden=true;};
+
+// ===== ゲームステータス =====
+function calcGameStats(){
+  // タスク完了数
+  let totalTasks=0;
+  let studyTasks=0;
+  const studyKw=['勉強','学習','授業','試験','テスト','実習','CBT','OSCE','国試','解剖','生理','病理','薬理','レポート','課題','読'];
+  for(const t of db.tasks||[]){
+    if(t.done){totalTasks++;if(studyKw.some(k=>t.title.includes(k)))studyTasks++;}
+    for(const d of t.completedDates||[]){totalTasks++;if(studyKw.some(k=>t.title.includes(k)))studyTasks++;}
+  }
+  // 筋トレ日数
+  const totalWorkouts=Object.keys(db.workouts||{}).length;
+  // ストリーク
+  let streak=0;try{streak=JSON.parse(localStorage.getItem('lh_mission_streak')||'{}').count||0;}catch{}
+  // XP
+  const xp=totalTasks*10+totalWorkouts*15+studyTasks*5+streak*8;
+  // レベル計算（累積XP方式）
+  let level=1,xpForNext=100,remaining=xp;
+  while(remaining>=xpForNext){remaining-=xpForNext;level++;xpForNext=Math.floor(level*100*1.2);}
+  // ステータス（max99）
+  const str=Math.min(99,Math.floor(totalWorkouts*2.5));
+  const int=Math.min(99,Math.floor((studyTasks*4+totalTasks*1)));
+  const vit=Math.min(99,Math.floor(streak*5+totalWorkouts*0.5+totalTasks*0.3));
+  // 称号
+  const titles=['見習い','学習者','努力家','習慣人','挑戦者','達人','伝説','覇者'];
+  const title=titles[Math.min(level-1,titles.length-1)];
+  // 実績
+  const badges=[
+    {id:'b1',icon:'🏋️',label:'初筋トレ',earned:totalWorkouts>=1},
+    {id:'b2',icon:'💪',label:'筋トレ10回',earned:totalWorkouts>=10},
+    {id:'b3',icon:'🔥',label:'3日連続',earned:streak>=3},
+    {id:'b4',icon:'🔥',label:'7日連続',earned:streak>=7},
+    {id:'b5',icon:'✅',label:'タスク10個',earned:totalTasks>=10},
+    {id:'b6',icon:'📚',label:'タスク50個',earned:totalTasks>=50},
+    {id:'b7',icon:'🧠',label:'勉強家',earned:studyTasks>=10},
+    {id:'b8',icon:'⚡',label:'Lv.5到達',earned:level>=5},
+  ];
+  return{level,xp,remaining,xpForNext,str,int,vit,title,badges,totalTasks,totalWorkouts,streak};
+}
+function renderGameStats(){
+  const panel=document.getElementById('game-stats-panel');
+  if(!panel)return;
+  const g=calcGameStats();
+  const pct=Math.round(g.remaining/g.xpForNext*100);
+  const statBar=(val,color)=>`<div class="gs-stat-bar"><div class="gs-stat-fill" style="width:${val}%;background:${color};"></div></div>`;
+  panel.innerHTML=`
+    <div class="gs-level-row">
+      <div class="gs-level-badge"><div class="gs-lv-label">LV</div><div class="gs-lv-num">${g.level}</div></div>
+      <div class="gs-level-info">
+        <div class="gs-level-title">${g.title}</div>
+        <div class="gs-xp-bar"><div class="gs-xp-fill" style="width:${pct}%"></div></div>
+        <div class="gs-xp-label">${g.remaining} / ${g.xpForNext} XP (累計 ${g.xp} XP)</div>
+      </div>
+    </div>
+    <div class="gs-stats-row">
+      <div class="gs-stat"><div class="gs-stat-name">STR</div><div class="gs-stat-val">${g.str}</div>${statBar(g.str,'#ef4444')}</div>
+      <div class="gs-stat"><div class="gs-stat-name">INT</div><div class="gs-stat-val">${g.int}</div>${statBar(g.int,'#3b82f6')}</div>
+      <div class="gs-stat"><div class="gs-stat-name">VIT</div><div class="gs-stat-val">${g.vit}</div>${statBar(g.vit,'#10b981')}</div>
+    </div>
+    <div class="gs-badges">${g.badges.map(b=>`<div class="gs-badge ${b.earned?'earned':'locked'}">${b.icon} ${b.label}</div>`).join('')}</div>
+  `;
+}
 </script>
 </body>
 </html>
