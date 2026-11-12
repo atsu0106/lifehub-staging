@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -1208,7 +1208,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
     <div class="m-actions" style="margin-top:16px;">
       <button class="btn-ok" id="settings-close" style="width:100%;">閉じる</button>
     </div>
-    <p style="text-align:center;font-size:11px;color:var(--fg3);margin-top:12px;">LifeHub v1.0.2</p>
+    <p style="text-align:center;font-size:11px;color:var(--fg3);margin-top:12px;">LifeHub v1.0.3</p>
   </div>
 </div>
 
@@ -2873,6 +2873,8 @@ document.getElementById('mo-settings').onclick=e=>{if(e.target===e.currentTarget
 // ===== お知らせ =====
 // 新しいお知らせを追加するときは先頭に追加する（idは一意な文字列）
 const ANNOUNCEMENTS=[
+  {id:'ann_004',date:'2026-11-12',title:'アップデート v1.0.3',body:'AIチャット入力時にキーボードが入力欄に重なる不具合を修正しました。'},
+  {id:'ann_003',date:'2026-11-12',title:'アップデート v1.0.2',body:'① AIアシスタントが画面下から開くシートに変わりました。② シートの大きさを切り替えて、カレンダーを見ながら会話できます。③ AI返答を音声で読み上げる🔊ボタンを追加。④ タスク・筋トレ種目の過去履歴を📋ボタンで確認できます。⑤ タップ位置のズレを修正。'},
   {id:'ann_002',date:'2026-11-11',title:'アップデート v2.25.0',body:'① カレンダーに「Clarify」レイアウトを追加。日付・目標・予定・タスクだけをシンプルに表示できます。② iOS表示の崩れ・タップ位置のズレを修正。③ 全ボタンを押しやすいサイズに拡大。'},
   {id:'ann_001',date:'2026-11-10',title:'LifeHub 公開しました！',body:'いつでもどこでも使えるように、GitHubでの公開を開始しました。今後もアップデートを続けていきます。設定の「アップデート履歴」でいつでも変更内容を確認できます。'},
 ];
@@ -3011,8 +3013,9 @@ if(window._DEV_MODE){
     document.getElementById('dev-date-label').textContent='今日に戻した';
   };
 }
-const WORKER_URL='https://lifehub-staging-ai.y-atsuhisa7234.workers.dev';
+const WORKER_URL='https://lifehub-ai.y-atsuhisa7234.workers.dev';
 const CHANGELOG=[
+  {v:'v1.0.3',d:'キーボード・入力欄重なりバグ修正'},
   {v:'v1.0.2',d:'音声読み上げ・サイズ切替・履歴機能を追加'},
   {v:'v1.0.1',d:'AIチャットをボトムシート表示に変更'},
   {v:'v1.0',d:'初期リリース'},
@@ -4734,8 +4737,18 @@ window.updatePcSettingsUI();
   }
 
   // ── イベント ──
+  function _aiKbAdjust(){
+    const m=document.getElementById('ai-modal');
+    if(!m||!m.classList.contains('open'))return;
+    const kbH=Math.max(0,window.innerHeight-(window.visualViewport?.height??window.innerHeight));
+    m.style.bottom=kbH>50?kbH+'px':'';
+  }
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize',_aiKbAdjust);
+    window.visualViewport.addEventListener('scroll',_aiKbAdjust);
+  }
   function openAiModal(){const m=document.getElementById('ai-modal'),o=document.getElementById('ai-overlay');m.hidden=false;requestAnimationFrame(()=>{m.classList.add('open');o.classList.add('open');});document.getElementById('ai-input').focus();}
-  function closeAiModal(){const m=document.getElementById('ai-modal'),o=document.getElementById('ai-overlay');m.classList.remove('open');o.classList.remove('open');setTimeout(()=>{m.hidden=true;},300);}
+  function closeAiModal(){const m=document.getElementById('ai-modal'),o=document.getElementById('ai-overlay');m.classList.remove('open');o.classList.remove('open');m.style.bottom='';setTimeout(()=>{m.hidden=true;},300);}
   document.getElementById('ai-fab').onclick=openAiModal;
   document.getElementById('ai-close').onclick=closeAiModal;
   document.getElementById('ai-overlay').onclick=closeAiModal;
