@@ -131,6 +131,11 @@ input[type=number]{-moz-appearance:textfield;}
 .ai-modal.sm{height:35dvh;}
 .ai-tts-btn{background:none;border:none;font-size:14px;color:var(--fg3);cursor:pointer;padding:3px 5px;line-height:1;border-radius:4px;margin-top:5px;display:block;}
 .ai-tts-btn.speaking{color:var(--accent);}
+.ai-brief-card{margin:10px 12px 0;padding:12px 14px;background:var(--surface);border-radius:12px;border-left:3px solid var(--accent);position:relative;}
+.ai-brief-card .ai-brief-label{font-size:10px;font-weight:700;color:var(--accent);letter-spacing:.05em;margin-bottom:5px;}
+.ai-brief-card .ai-brief-text{font-size:13px;color:var(--fg);line-height:1.65;}
+.ai-brief-card .ai-brief-refresh{position:absolute;top:10px;right:10px;background:none;border:none;font-size:14px;color:var(--fg3);cursor:pointer;padding:2px 5px;border-radius:4px;}
+.ai-brief-card.loading .ai-brief-text{color:var(--fg3);}
 .hist-modal{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.5);}
 .hist-modal[hidden]{display:none!important;}
 .hist-sheet{background:var(--bg);border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:80dvh;display:flex;flex-direction:column;overflow:hidden;}
@@ -820,6 +825,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
   </header>
 
   <section id="tab-cal" class="tab on">
+    <div id="ai-brief-card" class="ai-brief-card" hidden></div>
     <div id="goal-card" class="goal-card"></div>
     <div id="clarify-view" hidden>
       <div class="clarify-nav">
@@ -1208,7 +1214,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
     <div class="m-actions" style="margin-top:16px;">
       <button class="btn-ok" id="settings-close" style="width:100%;">閉じる</button>
     </div>
-    <p style="text-align:center;font-size:11px;color:var(--fg3);margin-top:12px;">LifeHub v1.0.3</p>
+    <p style="text-align:center;font-size:11px;color:var(--fg3);margin-top:12px;">LifeHub v1.1.0</p>
   </div>
 </div>
 
@@ -2873,6 +2879,7 @@ document.getElementById('mo-settings').onclick=e=>{if(e.target===e.currentTarget
 // ===== お知らせ =====
 // 新しいお知らせを追加するときは先頭に追加する（idは一意な文字列）
 const ANNOUNCEMENTS=[
+  {id:'ann_005',date:'2026-11-12',title:'アップデート v1.1.0',body:'AIがあなたの今日のスケジュール・タスク・筋トレ状況を把握して、毎朝ひとこと届けるようになりました。ホーム画面上部をご確認ください。'},
   {id:'ann_004',date:'2026-11-12',title:'アップデート v1.0.3',body:'AIチャット入力時にキーボードが入力欄に重なる不具合を修正しました。'},
   {id:'ann_003',date:'2026-11-12',title:'アップデート v1.0.2',body:'① AIアシスタントが画面下から開くシートに変わりました。② シートの大きさを切り替えて、カレンダーを見ながら会話できます。③ AI返答を音声で読み上げる🔊ボタンを追加。④ タスク・筋トレ種目の過去履歴を📋ボタンで確認できます。⑤ タップ位置のズレを修正。'},
   {id:'ann_002',date:'2026-11-11',title:'アップデート v2.25.0',body:'① カレンダーに「Clarify」レイアウトを追加。日付・目標・予定・タスクだけをシンプルに表示できます。② iOS表示の崩れ・タップ位置のズレを修正。③ 全ボタンを押しやすいサイズに拡大。'},
@@ -3015,6 +3022,7 @@ if(window._DEV_MODE){
 }
 const WORKER_URL='https://lifehub-ai.y-atsuhisa7234.workers.dev';
 const CHANGELOG=[
+  {v:'v1.1.0',d:'AIが毎朝ひとことを自動生成（データ連携強化）'},
   {v:'v1.0.3',d:'キーボード・入力欄重なりバグ修正'},
   {v:'v1.0.2',d:'音声読み上げ・サイズ切替・履歴機能を追加'},
   {v:'v1.0.1',d:'AIチャットをボトムシート表示に変更'},
@@ -4622,6 +4630,8 @@ window.updatePcSettingsUI();
     const todayD=new Date(today+'T00:00:00');
     const futD=new Date(todayD);futD.setDate(futD.getDate()+14);
     const futStr=futD.toISOString().slice(0,10);
+    // 過去30日の日付リスト
+    const past30=[];for(let i=0;i<30;i++){const d=new Date(todayD);d.setDate(d.getDate()-i);past30.push(d.toISOString().slice(0,10));}
     const evs=(db.events||[]).filter(e=>{
       if(e.repeat==='daily')return true;
       if(e.repeat==='weekly'&&new Date(e.date+'T00:00:00').getDay()===todayD.getDay())return true;
@@ -4632,7 +4642,26 @@ window.updatePcSettingsUI();
       .map(t=>`・[id:${t.id}][${t.priority==='high'?'高':t.priority==='low'?'低':'中'}] ${t.title}${t.due?' 期限:'+t.due:''}`).join('\n')||'なし';
     const goals=(db.goals||[]).filter(g=>!g.done).map(g=>`・[id:${g.id}] ${g.title} 進捗:${g.progress||0}%${g.dueDate?' 期限:'+g.dueDate:''}`).join('\n')||'なし';
     const cals=(db.calendars||[]).map(c=>`・[id:${c.id}] ${c.name}`).join('\n')||'なし';
-    return `【今日の日付】${today}\n【今後14日間の予定】\n${evs}\n【未完了タスク】\n${tasks}\n【進行中の目標】\n${goals}\n【カレンダー一覧】\n${cals}`;
+    // タスク達成率（直近30日の繰り返しタスク）
+    const repTasks=(db.tasks||[]).filter(t=>t.repeat&&t.repeat!='none');
+    let taskStats='データなし';
+    if(repTasks.length){
+      const done7=repTasks.reduce((s,t)=>s+(t.completedDates||[]).filter(d=>{const dd=new Date(todayD);dd.setDate(dd.getDate()-7);return d>=dd.toISOString().slice(0,10)&&d<=today;}).length,0);
+      taskStats=`繰り返しタスク${repTasks.length}件・直近7日間の完了数:${done7}回`;
+    }
+    // 筋トレ履歴（直近14日）
+    const woDates=Object.keys(db.workouts||{}).filter(d=>d>=past30[13]&&d<=today).sort().reverse();
+    let woStats='記録なし';
+    if(woDates.length){
+      const thisWeek=woDates.filter(d=>{const dd=new Date(todayD);dd.setDate(dd.getDate()-7);return d>=dd.toISOString().slice(0,10);}).length;
+      const lastWeek=woDates.filter(d=>{const d1=new Date(todayD);d1.setDate(d1.getDate()-14);const d2=new Date(todayD);d2.setDate(d2.getDate()-7);return d>=d1.toISOString().slice(0,10)&&d<d2.toISOString().slice(0,10);}).length;
+      const recent=woDates.slice(0,5).map(d=>{
+        const exs=db.workouts[d]||[];
+        return `${d}(${exs.map(e=>e.name).join('/')})`;
+      }).join('、');
+      woStats=`今週${thisWeek}回・先週${lastWeek}回 / 直近:${recent}`;
+    }
+    return `【今日の日付】${today}\n【今後14日間の予定】\n${evs}\n【未完了タスク】\n${tasks}\n【進行中の目標】\n${goals}\n【カレンダー一覧】\n${cals}\n【タスク達成状況】${taskStats}\n【筋トレ履歴（直近14日）】${woStats}`;
   }
   function executeTool(name,input){
     if(name==='add_event'){
@@ -4824,6 +4853,47 @@ function openExerciseHistory(name){
 }
 document.getElementById('hist-modal-close').onclick=()=>document.getElementById('hist-modal').hidden=true;
 document.getElementById('hist-modal').onclick=e=>{if(e.target===e.currentTarget)e.currentTarget.hidden=true;};
+
+// ===== AIデイリーブリーフ =====
+(function(){
+  const BRIEF_KEY='lh_ai_brief';
+  const card=document.getElementById('ai-brief-card');
+  if(!card)return;
+
+  function renderCard(text,loading){
+    card.hidden=false;
+    card.className='ai-brief-card'+(loading?' loading':'');
+    card.innerHTML=`<div class="ai-brief-label">✦ AIからの今日のひとこと</div><div class="ai-brief-text">${safeHtml(text)}</div><button class="ai-brief-refresh" title="更新">↺</button>`;
+    card.querySelector('.ai-brief-refresh').onclick=()=>generateBrief(true);
+  }
+
+  async function generateBrief(force){
+    const today=todayStr();
+    if(!force){
+      try{
+        const cached=JSON.parse(localStorage.getItem(BRIEF_KEY)||'null');
+        if(cached&&cached.date===today){renderCard(cached.text);return;}
+      }catch{}
+    }
+    renderCard('分析中…',true);
+    if(window._DEV_MODE){renderCard('[DEVモード] AIブリーフは本番・stagingのみ動作します。');return;}
+    try{
+      const ctx=getContext();
+      const prompt=`以下はユーザーの今日のライフデータです。\n\n${ctx}\n\n上記データを踏まえて、今日のユーザーへの「ひとこと」を2〜3文で書いてください。予定・タスク・筋トレ状況を絡めて、具体的かつポジティブに。余計な前置きなしで本文だけ返してください。`;
+      const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:200,system:'あなたはLifeHubのAIアシスタントです。ユーザーの生活データを把握しており、日本語で短く的確なコメントをします。',messages:[{role:'user',content:prompt}]})});
+      if(!res.ok)throw new Error('HTTP '+res.status);
+      const data=await res.json();
+      const text=data.content?.find(c=>c.type==='text')?.text||'今日も頑張ろう！';
+      try{localStorage.setItem(BRIEF_KEY,JSON.stringify({date:today,text}));}catch{}
+      renderCard(text);
+    }catch(e){
+      card.hidden=true;
+    }
+  }
+
+  // 初回表示（少し遅延してdbが読み込まれた後に実行）
+  setTimeout(generateBrief,1500);
+})();
 </script>
 </body>
 </html>
