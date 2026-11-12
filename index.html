@@ -119,6 +119,25 @@ input[type=number]{-moz-appearance:textfield;}
 .fab-float.pos-br{right:max(16px,env(safe-area-inset-right,0px));}
 .fab-float.pos-bl{left:max(16px,env(safe-area-inset-left,0px));}
 .fab-float:active{transform:scale(.93);}
+/* AI chat */
+.ai-fab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(var(--nav-h) + 14px + env(safe-area-inset-bottom,0px));width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(99,102,241,.5);z-index:9;transition:transform .12s;}
+.ai-fab:active{transform:scale(.93);}
+.ai-modal{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;background:var(--bg);max-width:480px;margin:0 auto;}
+.ai-modal[hidden]{display:none;}
+.ai-modal-hdr{display:flex;align-items:center;gap:10px;padding:calc(var(--safe-top) + 4px) 16px 12px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.ai-modal-hdr h2{flex:1;font-size:16px;font-weight:700;}
+.ai-close{background:none;border:none;font-size:22px;color:var(--fg2);cursor:pointer;padding:6px;}
+.ai-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;}
+.ai-msg{max-width:85%;padding:10px 14px;border-radius:16px;font-size:14px;line-height:1.5;}
+.ai-msg.user{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:4px;}
+.ai-msg.ai{align-self:flex-start;background:var(--surface);color:var(--fg);border-bottom-left-radius:4px;}
+.ai-msg.ai.thinking{color:var(--fg2);font-style:italic;}
+.ai-input-row{display:flex;gap:8px;padding:12px 16px calc(12px + var(--safe-bot));border-top:1px solid var(--border);flex-shrink:0;}
+.ai-input{flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:22px;padding:10px 16px;font-size:14px;font-family:inherit;color:var(--fg);outline:none;}
+.ai-input:focus{border-color:var(--accent);}
+.ai-send{width:42px;height:42px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ai-send:disabled{opacity:.4;}
+.ai-empty{text-align:center;color:var(--fg2);font-size:13px;padding:40px 20px;line-height:1.6;}
 .hdr-settings-btn{background:none;border:none;color:var(--fg2);cursor:pointer;padding:10px;font-size:17px;line-height:1;border-radius:8px;}
 .hdr-settings-btn:hover{background:var(--surface2);}
 .prof-btn{background:none;border:none;cursor:pointer;padding:7px;display:flex;align-items:center;}
@@ -379,18 +398,6 @@ input[type=number]{-moz-appearance:textfield;}
 .sleep-time-in:focus{border-color:var(--accent);outline:none;}
 .sleep-dur{font-size:14px;font-weight:700;color:var(--accent);margin-left:auto;}
 .sleep-total{font-size:13px;font-weight:700;color:var(--fg2);margin-top:10px;padding-top:8px;border-top:1px solid var(--border);text-align:right;}
-.sl-quick-btns{display:flex;gap:10px;margin-bottom:14px;}
-.sl-quick-btn{flex:1;padding:14px 8px;border:none;border-radius:var(--r-s);font-size:14px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:64px;transition:opacity .15s;}
-.sl-quick-btn:active{opacity:.65;}
-.sl-bed-btn{background:#dde1f9;color:#3730a3;}
-.sl-wake-btn{background:#fde8c8;color:#9a3412;}
-.sl-time-badge{font-size:11px;font-weight:600;opacity:.75;min-height:14px;}
-@media(prefers-color-scheme:dark){
-  :root:not([data-theme="light"]) .sl-bed-btn{background:#1E1B4B;color:#a5b4fc;}
-  :root:not([data-theme="light"]) .sl-wake-btn{background:#431407;color:#fdba74;}
-}
-:root[data-theme="dark"] .sl-bed-btn{background:#1E1B4B;color:#a5b4fc;}
-:root[data-theme="dark"] .sl-wake-btn{background:#431407;color:#fdba74;}
 .sl-add-nap-btn{display:block;width:100%;margin-top:10px;background:none;border:1.5px dashed var(--border);border-radius:var(--r-s);padding:13px;font-size:13px;color:var(--fg2);cursor:pointer;text-align:center;font-family:inherit;}
 .sl-add-nap-btn:hover{border-color:var(--accent);color:var(--accent);}
 .ml-legend{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
@@ -899,10 +906,6 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
       </div>
       <div class="card sleep-card">
         <div class="sleep-head">😴 睡眠記録</div>
-        <div class="sl-quick-btns">
-          <button id="sl-bed-now" class="sl-quick-btn sl-bed-btn">🌙 就寝<span id="sl-bed-badge" class="sl-time-badge"></span></button>
-          <button id="sl-wake-now" class="sl-quick-btn sl-wake-btn">☀️ 起床<span id="sl-wake-badge" class="sl-time-badge"></span></button>
-        </div>
         <div class="sleep-inputs">
           <div class="sleep-field"><span class="sleep-lbl">就寝</span><input type="time" id="sl-bedtime" class="sleep-time-in"></div>
           <div class="sleep-field"><span class="sleep-lbl">起床</span><input type="time" id="sl-waketime" class="sleep-time-in"></div>
@@ -995,6 +998,22 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
 </div>
 
 <button class="fab-float pos-br" id="fab-float" hidden>＋</button>
+<button class="ai-fab" id="ai-fab" title="AIアシスタント">✨</button>
+
+<div class="ai-modal" id="ai-modal" hidden>
+  <div class="ai-modal-hdr">
+    <span style="font-size:20px;">✨</span>
+    <h2>AIアシスタント</h2>
+    <button class="ai-close" id="ai-close">✕</button>
+  </div>
+  <div class="ai-messages" id="ai-messages">
+    <div class="ai-empty">今日の予定・タスク・目標を把握しています。<br>何でも聞いてください。</div>
+  </div>
+  <div class="ai-input-row">
+    <input class="ai-input" id="ai-input" type="text" placeholder="メッセージを入力..." autocomplete="off">
+    <button class="ai-send" id="ai-send">▶</button>
+  </div>
+</div>
 
 <div class="overlay" id="mo-profiles" hidden>
   <div class="modal" style="max-height:90vh;overflow-y:auto;">
@@ -1058,6 +1077,19 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
       <div class="pos-opt-row">
         <button class="pos-opt" data-cal="general"><span class="pos-opt-icon">📅</span>General</button>
         <button class="pos-opt" data-cal="clarify"><span class="pos-opt-icon">✨</span>Clarify</button>
+      </div>
+    </div>
+    <div class="m-field" style="margin-top:16px;">
+      <label>AI Worker URL</label>
+      <input id="ai-worker-url" type="url" placeholder="https://your-worker.workers.dev" autocomplete="off">
+      <div style="font-size:11px;color:var(--fg2);margin-top:4px;">Cloudflare WorkerのURLを入力するとAIが使えます</div>
+    </div>
+    <div class="m-field" style="margin-top:16px;">
+      <label>テーマ</label>
+      <div class="pos-opt-row">
+        <button class="pos-opt" data-theme-opt="system"><span class="pos-opt-icon">🌐</span>自動</button>
+        <button class="pos-opt" data-theme-opt="light"><span class="pos-opt-icon">☀️</span>ライト</button>
+        <button class="pos-opt" data-theme-opt="dark"><span class="pos-opt-icon">🌙</span>ダーク</button>
       </div>
     </div>
     <div class="m-field" style="margin-top:16px;">
@@ -1692,6 +1724,8 @@ if(!db.nutrients)db.nutrients=[];
 if(!db.settings)db.settings={addBtnPos:'center',highlightTab:'wo',calLayout:'general'};
 if(!db.settings.highlightTab)db.settings.highlightTab='wo';
 if(!db.settings.calLayout)db.settings.calLayout='general';
+if(!db.settings.theme)db.settings.theme='system';
+if(!db.settings.workerUrl)db.settings.workerUrl='';
 if(!db.calendars||!db.calendars.length){
   db.calendars=[
     {id:uid(),name:'マイカレンダー',color:'#4F46E5'}
@@ -2473,6 +2507,20 @@ document.querySelectorAll('.pos-opt[data-cal]').forEach(btn=>{
     if(st.tab==='cal')renderCal();
   };
 });
+function applyTheme(theme){
+  if(theme==='light')document.documentElement.setAttribute('data-theme','light');
+  else if(theme==='dark')document.documentElement.setAttribute('data-theme','dark');
+  else document.documentElement.removeAttribute('data-theme');
+}
+applyTheme(db.settings.theme||'system');
+document.querySelectorAll('.pos-opt[data-theme-opt]').forEach(btn=>{
+  btn.onclick=()=>{
+    db.settings.theme=btn.dataset.themeOpt;
+    save(db);
+    applyTheme(btn.dataset.themeOpt);
+    document.querySelectorAll('.pos-opt[data-theme-opt]').forEach(b=>b.classList.toggle('on',b.dataset.themeOpt===btn.dataset.themeOpt));
+  };
+});
 document.getElementById('cl-prev').onclick=()=>{
   const d=new Date(st.selDate+'T00:00:00');d.setDate(d.getDate()-1);
   st.selDate=fmt(d);st.calY=d.getFullYear();st.calM=d.getMonth();renderCal();
@@ -2706,6 +2754,8 @@ document.getElementById('hdr-settings').onclick=()=>{
   document.querySelectorAll('.pos-opt[data-pos]').forEach(b=>b.classList.toggle('on',b.dataset.pos===(s.addBtnPos||'center')));
   document.querySelectorAll('.pos-opt[data-hl]').forEach(b=>b.classList.toggle('on',b.dataset.hl===(s.highlightTab||'wo')));
   document.querySelectorAll('.pos-opt[data-cal]').forEach(b=>b.classList.toggle('on',b.dataset.cal===(s.calLayout||'general')));
+  document.querySelectorAll('.pos-opt[data-theme-opt]').forEach(b=>b.classList.toggle('on',b.dataset.themeOpt===(s.theme||'system')));
+  document.getElementById('ai-worker-url').value=s.workerUrl||'';
   document.getElementById('mo-settings').hidden=false;
 };
 document.querySelectorAll('.pos-opt[data-pos]').forEach(btn=>{
@@ -2724,12 +2774,20 @@ document.querySelectorAll('.pos-opt[data-hl]').forEach(btn=>{
     if(st.tab==='other')renderOther();
   };
 });
-document.getElementById('settings-close').onclick=()=>{document.getElementById('mo-settings').hidden=true;};
+document.getElementById('settings-close').onclick=()=>{
+  db.settings.workerUrl=document.getElementById('ai-worker-url').value.trim();
+  save(db);
+  document.getElementById('mo-settings').hidden=true;
+};
+document.getElementById('ai-worker-url').addEventListener('change',()=>{
+  db.settings.workerUrl=document.getElementById('ai-worker-url').value.trim();
+  save(db);
+});
 document.getElementById('mo-settings').onclick=e=>{if(e.target===e.currentTarget)e.currentTarget.hidden=true;};
 // ===== お知らせ =====
 // 新しいお知らせを追加するときは先頭に追加する（idは一意な文字列）
 const ANNOUNCEMENTS=[
-  {id:'ann_002',date:'2026-11-11',title:'アップデート v2.25.0',body:'① カレンダーに「Clarify」レイアウトを追加。日付・目標・予定・タスクだけをシンプルに表示できます。② 睡眠タブに就寝/起床のクイック記録ボタンを追加。③ iOS表示の崩れ・タップ位置のズレを修正。④ 全ボタンを押しやすいサイズに拡大。'},
+  {id:'ann_002',date:'2026-11-11',title:'アップデート v2.25.0',body:'① カレンダーに「Clarify」レイアウトを追加。日付・目標・予定・タスクだけをシンプルに表示できます。② iOS表示の崩れ・タップ位置のズレを修正。③ 全ボタンを押しやすいサイズに拡大。'},
   {id:'ann_001',date:'2026-11-10',title:'LifeHub 公開しました！',body:'いつでもどこでも使えるように、GitHubでの公開を開始しました。今後もアップデートを続けていきます。設定の「アップデート履歴」でいつでも変更内容を確認できます。'},
 ];
 (()=>{
@@ -3796,12 +3854,6 @@ function renderSleepTab(){
   document.getElementById('sl-waketime').value=sl.wakeTime||'';
   renderNaps();
   updateSlDur();
-  // クイックボタンのバッジ更新（今日の就寝・昨日からの起床）
-  const today=todayStr();
-  const ydD=new Date(today+'T00:00:00');ydD.setDate(ydD.getDate()-1);
-  const yd=fmt(ydD);
-  document.getElementById('sl-bed-badge').textContent=(db.sleep[today]||{}).bedtime||'';
-  document.getElementById('sl-wake-badge').textContent=(db.sleep[yd]||{}).wakeTime||'';
 }
 document.getElementById('sl-prev').onclick=()=>{const d=new Date(st.slDate);d.setDate(d.getDate()-1);st.slDate=fmt(d);renderSleepTab();};
 document.getElementById('sl-next').onclick=()=>{const d=new Date(st.slDate);d.setDate(d.getDate()+1);st.slDate=fmt(d);renderSleepTab();};
@@ -3815,24 +3867,6 @@ document.getElementById('sl-waketime').addEventListener('change',()=>{
   db.sleep[st.slDate].wakeTime=document.getElementById('sl-waketime').value;
   save(db);updateSlDur();
 });
-document.getElementById('sl-bed-now').onclick=()=>{
-  const now=new Date();
-  const t=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
-  const today=todayStr();
-  if(!db.sleep[today])db.sleep[today]={};
-  db.sleep[today].bedtime=t;
-  save(db);st.slDate=today;renderSleepTab();
-};
-document.getElementById('sl-wake-now').onclick=()=>{
-  const now=new Date();
-  const t=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
-  // 起床は昨夜の睡眠記録（昨日）に保存
-  const ydD=new Date(todayStr()+'T00:00:00');ydD.setDate(ydD.getDate()-1);
-  const yd=fmt(ydD);
-  if(!db.sleep[yd])db.sleep[yd]={};
-  db.sleep[yd].wakeTime=t;
-  save(db);st.slDate=yd;renderSleepTab();
-};
 document.getElementById('sl-add-nap').onclick=()=>{
   const ds=st.slDate;
   if(!db.sleep[ds])db.sleep[ds]={};
@@ -4241,6 +4275,71 @@ document.getElementById('btn-pc-clear').onclick=()=>{
 };
 // Init settings UI
 window.updatePcSettingsUI();
+
+// ── AIチャット ────────────────────────────────────────────
+(function(){
+  const aiHistory=[];
+  function getContext(){
+    const today=todayStr();
+    const evs=(db.events||[]).filter(e=>{
+      if(e.repeat==='daily')return true;
+      if(e.repeat==='weekly'&&new Date(e.date+'T00:00:00').getDay()===new Date(today+'T00:00:00').getDay())return true;
+      return e.date===today||(e.endDate&&e.date<=today&&e.endDate>=today);
+    }).map(e=>`・${e.time||'終日'} ${e.title}`).join('\n')||'なし';
+    const tasks=(db.tasks||[]).filter(t=>!taskIsDoneOn(t,today)&&(!t.due||t.due>=today)).slice(0,10).map(t=>`・[${t.priority||'中'}] ${t.title}`).join('\n')||'なし';
+    const goals=(db.goals||[]).filter(g=>!g.done).map(g=>`・${g.title}`).join('\n')||'なし';
+    return `【今日の日付】${today}\n【今日の予定】\n${evs}\n【未完了タスク（上位10件）】\n${tasks}\n【進行中の目標】\n${goals}`;
+  }
+  function addMsg(role,text,thinking){
+    aiHistory.push({role,content:text});
+    const wrap=document.getElementById('ai-messages');
+    const empty=wrap.querySelector('.ai-empty');
+    if(empty)empty.remove();
+    const div=document.createElement('div');
+    div.className='ai-msg '+(role==='user'?'user':'ai')+(thinking?' thinking':'');
+    div.textContent=text;
+    wrap.appendChild(div);
+    wrap.scrollTop=wrap.scrollHeight;
+  }
+  async function sendMsg(){
+    const input=document.getElementById('ai-input');
+    const btn=document.getElementById('ai-send');
+    const text=input.value.trim();
+    if(!text)return;
+    input.value='';btn.disabled=true;
+    addMsg('user',text);
+    addMsg('ai','考え中…',true);
+    const thinkingEl=document.getElementById('ai-messages').lastChild;
+    try{
+      let reply;
+      if(window._DEV_MODE){
+        await new Promise(r=>setTimeout(r,800));
+        reply='[DEVモード] AIは動作していません。Worker URLを設定すると実際に動作します。\n\n取得したコンテキスト:\n'+getContext();
+      } else {
+        const workerUrl=db.settings.workerUrl||'';
+        if(!workerUrl){thinkingEl.textContent='設定からWorker URLを入力してください';thinkingEl.className='ai-msg ai';btn.disabled=false;return;}
+        const system='あなたはLifeHubのAIアシスタントです。ユーザーの生活データを把握しており、日本語で簡潔にアドバイスします。\n\n'+getContext();
+        const messages=aiHistory.slice(0,-1).map(m=>({role:m.role==='user'?'user':'assistant',content:m.content}));
+        messages.push({role:'user',content:text});
+        const res=await fetch(workerUrl,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model:'claude-sonnet-5-5',max_tokens:1024,system,messages})});
+        if(!res.ok)throw new Error('HTTP '+res.status);
+        const data=await res.json();
+        reply=data.content?.[0]?.text||'応答を取得できませんでした';
+      }
+      thinkingEl.textContent=reply;
+      thinkingEl.className='ai-msg ai';
+      aiHistory[aiHistory.length-1]={role:'assistant',content:reply};
+    }catch(e){
+      thinkingEl.textContent='エラーが発生しました: '+e.message;
+      thinkingEl.className='ai-msg ai';
+    }
+    btn.disabled=false;
+  }
+  document.getElementById('ai-fab').onclick=()=>{document.getElementById('ai-modal').hidden=false;document.getElementById('ai-input').focus();};
+  document.getElementById('ai-close').onclick=()=>{document.getElementById('ai-modal').hidden=true;};
+  document.getElementById('ai-send').onclick=sendMsg;
+  document.getElementById('ai-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}});
+})();
 </script>
 </body>
 </html>
