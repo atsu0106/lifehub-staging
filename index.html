@@ -1301,6 +1301,10 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
   <button id="dev-date-apply" style="font-size:11px;padding:3px 10px;border:none;border-radius:4px;background:#fff;color:#f97316;font-weight:700;cursor:pointer;">日付変更</button>
   <button id="dev-date-reset" style="font-size:11px;padding:3px 10px;border:none;border-radius:4px;background:#fff;color:#f97316;font-weight:700;cursor:pointer;">今日に戻す</button>
   <span id="dev-date-label" style="font-size:11px;opacity:.8;"></span>
+  <button id="dev-lu-common" style="font-size:11px;padding:3px 10px;border:none;border-radius:4px;background:#fbbf24;color:#333;font-weight:700;cursor:pointer;">LU:C</button>
+  <button id="dev-lu-uncommon" style="font-size:11px;padding:3px 10px;border:none;border-radius:4px;background:#60a5fa;color:#fff;font-weight:700;cursor:pointer;">LU:U</button>
+  <button id="dev-lu-rare" style="font-size:11px;padding:3px 10px;border:none;border-radius:4px;background:#c084fc;color:#fff;font-weight:700;cursor:pointer;">LU:R</button>
+  <button id="dev-lu-ultra" style="font-size:11px;padding:3px 10px;border:none;border-radius:4px;background:#fde68a;color:#333;font-weight:700;cursor:pointer;">LU:UR</button>
 </div>
 
 <!-- Timer modal -->
@@ -3075,6 +3079,12 @@ if(window._DEV_MODE){
     window._devDate=null;inp.value=fmt(new Date());
     document.getElementById('dev-date-label').textContent='今日に戻した';
   };
+  ['common','uncommon','rare','ultra'].forEach(r=>{
+    document.getElementById('dev-lu-'+r).onclick=()=>{
+      const g=calcGameStats();
+      showLevelUpAnim(g.level,g.title,r);
+    };
+  });
 }
 const WORKER_URL='https://lifehub-ai.y-atsuhisa7234.workers.dev';
 const CHANGELOG=[
@@ -4916,6 +4926,10 @@ window.updatePcSettingsUI();
       }
     }
     setTimeout(generateBrief,1500);
+    // lh_last_levelが未設定なら現在レベルを黙って保存（初回起動・演出なし）
+    if(!localStorage.getItem('lh_last_level')){
+      try{localStorage.setItem('lh_last_level',String(calcGameStats().level));}catch{}
+    }
   })();
 
   // ── AIデーリーミッション ──
