@@ -519,6 +519,16 @@ input[type=number]{-moz-appearance:textfield;}
 .goal-link-badge{font-size:11px;color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);padding:1px 6px;border-radius:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;display:inline-block;vertical-align:middle;}
 .tk-loc{font-size:11px;color:var(--fg2);margin-top:2px;}
 .tk-memo{font-size:11px;color:var(--fg2);margin-top:3px;line-height:1.4;white-space:pre-wrap;word-break:break-word;}
+.tk-progress-card{background:var(--surface);border-radius:var(--r);padding:14px 16px;margin-bottom:14px;box-shadow:var(--shadow);}
+.tk-progress-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.tk-progress-hdr-title{font-size:13px;font-weight:700;color:var(--fg);}
+.tk-progress-refresh{background:none;border:none;font-size:16px;color:var(--fg2);cursor:pointer;padding:4px;line-height:1;transition:opacity .2s;}
+.tk-progress-refresh:disabled{opacity:.4;}
+.tk-progress-pct{font-size:26px;font-weight:800;color:var(--accent);margin-bottom:8px;line-height:1;}
+.tk-progress-bar-wrap{background:var(--surface2);border-radius:99px;height:10px;overflow:hidden;}
+.tk-progress-bar{height:100%;border-radius:99px;background:linear-gradient(90deg,#6366f1,#8b5cf6);transition:width .7s cubic-bezier(.4,0,.2,1);}
+.tk-progress-status{font-size:12px;color:var(--fg2);margin-top:6px;}
+.tk-ai-score{font-size:11px;color:#8b5cf6;font-weight:700;}
 .tk-daily-memo{margin-top:6px;margin-left:32px;}
 .tk-daily-memo-btn{background:none;border:1px dashed var(--border);border-radius:6px;padding:5px 10px;font-size:12px;color:var(--fg2);cursor:pointer;width:100%;text-align:left;line-height:1.4;}
 .tk-daily-memo-input{width:100%;min-height:64px;background:var(--surface2);border:1.5px solid var(--accent);border-radius:6px;padding:6px 8px;font-size:13px;font-family:inherit;color:var(--fg);outline:none;resize:vertical;box-sizing:border-box;line-height:1.5;margin-top:4px;display:none;}
@@ -818,6 +828,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
       <span style="font-size:1rem;font-weight:700;color:var(--fg);">タスク</span>
       <button id="tk-add-btn" style="width:36px;height:36px;border-radius:50%;border:none;background:var(--accent);color:#fff;font-size:1.4rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;">＋</button>
     </div>
+    <div id="tk-progress-wrap"></div>
     <div id="tk-today-section"></div>
     <div class="filter-row">
       <button class="fbtn on" data-f="all">すべて</button>
@@ -1757,8 +1768,8 @@ Object.values(db.workouts||{}).forEach(exs=>{
 });
 // migrate repeating tasks: add completedDates array
 (db.tasks||[]).forEach(t=>{if(t.repeat&&!t.completedDates)t.completedDates=[];});
-// migrate tasks: add dailyMemos
-(db.tasks||[]).forEach(t=>{if(!t.dailyMemos)t.dailyMemos={};});
+// migrate tasks: add dailyMemos and aiProgress
+(db.tasks||[]).forEach(t=>{if(!t.dailyMemos)t.dailyMemos={};if(!('aiProgress' in t))t.aiProgress=null;});
 if(!db.nutrients)db.nutrients=[];
 if(!db.aiChats)db.aiChats=[];
 if(!db.settings)db.settings={addBtnPos:'center',highlightTab:'wo',calLayout:'general'};
@@ -3187,6 +3198,9 @@ function renderTasks(){
       `<div class="tk-repeat-hist"><span class="tk-hist-toggle">✓ 達成 ${histDates.length}回 ▾</span><div class="tk-hist-dates" hidden>${histDates.map(d=>`<span class="tk-hist-date">${jpDate(d)}${dailyMemos[d]?' 📝':''}</span>`).join('')}</div></div>`:'';
     const todayMemoVal=dailyMemos[todayStr()]||'';
     const dailyMemoHtml=task.repeat?`<div class="tk-daily-memo"><button class="tk-daily-memo-btn">${todayMemoVal?'📝 '+esc(todayMemoVal.slice(0,40))+(todayMemoVal.length>40?'…':''):'📝 今日のメモを追加...'}</button><textarea class="tk-daily-memo-input" placeholder="今日の気づき・できたこと・できなかったこと...">${esc(todayMemoVal)}</textarea></div>`:'';
+    const score=calcTaskScore(task);
+    const aiScoreHtml=(!doneToday&&score!==null)?`<span class="tk-ai-score">✦ ${score}%</span>`:'';
+    const aiCommentHtml=(!doneToday&&task.aiProgress?.comment)?`<div class="tk-memo" style="color:#8b5cf6;">${esc(task.aiProgress.comment)}</div>`:'';
     el.innerHTML=`<button class="check-btn${doneToday?' on':''}" aria-label="完了">✓</button>
       <div class="tk-info"><div class="tk-title">${esc(task.title)}</div>
       ${task.location?`<div class="tk-loc">📍 ${esc(task.location)}</div>`:''}
@@ -3195,10 +3209,12 @@ function renderTasks(){
         ${task.repeat?`<span class="repeat-badge">${repLbl[task.repeat]}</span>`:''}
         ${task.due&&!task.repeat?`<span>${jpDate(task.due)}まで</span>`:''}
         ${goalName?`<span class="goal-link-badge">🎯 ${esc(goalName)}</span>`:''}
+        ${aiScoreHtml}
       </div>
       ${!task.repeat&&task.done&&task.completedAt?`<div class="tk-completed-at">✓ 完了: ${jpDate(task.completedAt)}</div>`:''}
       ${histHtml}
       ${dailyMemoHtml}
+      ${aiCommentHtml}
       ${task.memo?`<div class="tk-memo">${esc(task.memo)}</div>`:''}</div>
       <button class="edit-btn">✎</button>
       <button class="del-btn">×</button>`;
@@ -3240,7 +3256,94 @@ function renderTasks(){
     sep.textContent='完了済み';list.appendChild(sep);
   }
   done.forEach(renderItem);
+  renderProgressMeter();
 }
+
+// ── タスク進捗メーター ──────────────────────────────────────
+let _aiEstimating=false;
+let _aiProgressChecked=false;
+
+function calcTaskScore(task){
+  if(!task.repeat&&task.done)return 100;
+  if(task.repeat){
+    const cut=new Date();cut.setDate(cut.getDate()-30);
+    const cutStr=cut.toISOString().slice(0,10);
+    const recent=(task.completedDates||[]).filter(d=>d>=cutStr).length;
+    const expected={daily:30,weekly:4,monthly:1}[task.repeat]||4;
+    return Math.min(100,Math.round(recent/expected*100));
+  }
+  return task.aiProgress?task.aiProgress.score:null;
+}
+
+function renderProgressMeter(){
+  const wrap=document.getElementById('tk-progress-wrap');
+  if(!wrap)return;
+  const active=(db.tasks||[]).filter(t=>!(!t.repeat&&t.done));
+  if(!active.length){wrap.innerHTML='';return;}
+  const scores=active.map(calcTaskScore).filter(s=>s!==null);
+  const avg=scores.length?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length):null;
+  const needsAI=active.some(t=>!t.repeat&&!t.done&&!t.aiProgress);
+  const isStale=active.some(t=>!t.repeat&&!t.done&&t.aiProgress&&(Date.now()-new Date(t.aiProgress.updatedAt).getTime())>12*3600*1000);
+  const pct=avg!==null?avg+'%':'--';
+  const barW=avg!==null?avg:0;
+  const color=barW>=70?'linear-gradient(90deg,#22c55e,#16a34a)':barW>=40?'linear-gradient(90deg,#f59e0b,#d97706)':'linear-gradient(90deg,#6366f1,#8b5cf6)';
+  wrap.innerHTML=`<div class="tk-progress-card">
+    <div class="tk-progress-hdr">
+      <span class="tk-progress-hdr-title">📊 全タスク進捗</span>
+      <button class="tk-progress-refresh" id="tk-prg-refresh">🔄</button>
+    </div>
+    <div class="tk-progress-pct" style="color:${barW>=70?'#22c55e':barW>=40?'#f59e0b':'var(--accent)'};">${pct}</div>
+    <div class="tk-progress-bar-wrap"><div class="tk-progress-bar" style="width:${barW}%;background:${color};"></div></div>
+    <div class="tk-progress-status" id="tk-prg-status">${needsAI||isStale?'AIが進捗を評価中..':'評価済み'}</div>
+  </div>`;
+  document.getElementById('tk-prg-refresh').onclick=()=>estimateProgressWithAI(true);
+  if((needsAI||isStale)&&!_aiEstimating&&!_aiProgressChecked){
+    _aiProgressChecked=true;
+    estimateProgressWithAI(false);
+  }
+}
+
+async function estimateProgressWithAI(manual){
+  if(_aiEstimating&&!manual)return;
+  const workerUrl=db.settings.workerUrl||'';
+  if(!workerUrl)return;
+  const active=(db.tasks||[]).filter(t=>!(!t.repeat&&t.done));
+  const targets=active.filter(t=>!t.repeat&&!t.done);
+  if(!targets.length)return;
+  _aiEstimating=true;
+  const btn=document.getElementById('tk-prg-refresh');
+  const status=document.getElementById('tk-prg-status');
+  if(btn)btn.disabled=true;
+  if(status)status.textContent='🤖 AIが進捗を評価中...';
+  const cut=new Date();cut.setDate(cut.getDate()-14);const cutStr=cut.toISOString().slice(0,10);
+  const recentChat=(db.aiChats||[]).slice(0,5).flatMap(c=>c.messages||[]).filter(m=>m.role==='user').map(m=>m.content).join('\n').slice(0,800);
+  const taskList=targets.map(t=>{
+    const memos=Object.entries(t.dailyMemos||{}).filter(([d])=>d>=cutStr).sort(([a],[b])=>b.localeCompare(a)).map(([d,m])=>`${d}: ${m}`).join('\n');
+    return `---\nID: ${t.id}\nタイトル: ${t.title}${t.memo?'\n詳細: '+t.memo:''}${memos?'\n記録:\n'+memos:''}`;
+  }).join('\n');
+  const prompt=`以下のタスクの進捗を、ユーザーの記録をもとに評価してください。\n\n【最近のユーザー発言（参考）】\n${recentChat||'なし'}\n\n【タスク一覧】\n${taskList}\n\nJSON配列のみ返してください（他テキスト不要）:\n[{"id":"...","score":整数0〜100,"comment":"20字以内のポジティブなコメント"}]`;
+  try{
+    const res=await fetch(workerUrl,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-sonnet-5-5',max_tokens:600,system:'あなたはLifeHubのAI進捗評価アシスタントです。ユーザーのモチベーション維持・向上を最優先に評価してください。正確さより励ましを重視し、少しでも取り組みの記録があれば高めに評価してください。全く記録がない場合でも最低20点を付けてください。コメントは必ずポジティブなトーンで20字以内にしてください。',messages:[{role:'user',content:prompt}]})});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    const text=data.content?.find(c=>c.type==='text')?.text||'';
+    const m=text.match(/\[[\s\S]*\]/);
+    if(m){
+      const results=JSON.parse(m[0]);
+      const now=new Date().toISOString();
+      results.forEach(r=>{const t=db.tasks.find(t=>t.id===r.id);if(t)t.aiProgress={score:r.score,comment:r.comment,updatedAt:now};});
+      save(db);
+      const s=document.getElementById('tk-prg-status');if(s)s.textContent='評価完了 ✓';
+      renderTasks();
+    }
+  }catch(e){
+    const s=document.getElementById('tk-prg-status');if(s)s.textContent='評価エラー: '+e.message;
+  }finally{
+    _aiEstimating=false;
+    const b=document.getElementById('tk-prg-refresh');if(b)b.disabled=false;
+  }
+}
+
 let _editTaskId=null;
 function _openTaskModal(task){
   const isEdit=!!task;
