@@ -729,6 +729,10 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
 .ob-input:focus{border-color:var(--accent);}
 .ob-btn{padding:15px;border-radius:12px;background:var(--accent);color:#fff;font-size:1rem;font-weight:700;border:none;cursor:pointer;font-family:inherit;margin-top:4px;}
 .ob-btn:active{opacity:.85;}
+.ob-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:4px;}
+.ob-chip{padding:10px 16px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);color:var(--fg);font-size:.9rem;cursor:pointer;transition:all .15s;font-family:inherit;}
+.ob-chip.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;}
+.ob-skip-btn{background:none;border:none;color:var(--fg3);font-size:.85rem;cursor:pointer;padding:6px;text-decoration:underline;font-family:inherit;text-align:center;}
 
 /* Clarify view */
 .clarify-nav{display:flex;align-items:center;justify-content:space-between;padding:0 4px 10px;}
@@ -854,10 +858,21 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
     <div class="ob-logo">🗓</div>
     <h1 class="ob-title">LifeHub</h1>
     <p class="ob-sub">あなただけの生活管理アプリ</p>
-    <div class="ob-form">
+    <div class="ob-form" id="ob-step1">
       <label class="ob-label">名前を入力してください</label>
       <input id="ob-name" class="ob-input" type="text" placeholder="例: 渡辺" maxlength="20" autocomplete="off">
-      <button id="ob-start" class="ob-btn">はじめる →</button>
+      <button id="ob-next" class="ob-btn">次へ →</button>
+    </div>
+    <div class="ob-form" id="ob-step2" hidden>
+      <label class="ob-label">何のために使いますか？（複数選択可）</label>
+      <div class="ob-chips">
+        <button class="ob-chip" data-val="study">📚 勉強・試験</button>
+        <button class="ob-chip" data-val="fitness">💪 筋トレ・体づくり</button>
+        <button class="ob-chip" data-val="habit">📅 習慣管理</button>
+        <button class="ob-chip" data-val="goal">🎯 目標達成</button>
+      </div>
+      <button id="ob-start" class="ob-btn" style="margin-top:8px;">はじめる →</button>
+      <button id="ob-skip" class="ob-skip-btn">スキップ</button>
     </div>
   </div>
 </div>
@@ -1267,7 +1282,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
     <div class="m-actions" style="margin-top:16px;">
       <button class="btn-ok" id="settings-close" style="width:100%;">閉じる</button>
     </div>
-    <p style="text-align:center;font-size:11px;color:var(--fg3);margin-top:12px;">LifeHub v1.3.0</p>
+    <p style="text-align:center;font-size:11px;color:var(--fg3);margin-top:12px;">LifeHub v1.4.0</p>
   </div>
 </div>
 
@@ -1876,6 +1891,7 @@ Object.values(db.workouts||{}).forEach(exs=>{
 (db.tasks||[]).forEach(t=>{if(!t.dailyMemos)t.dailyMemos={};if(!('aiProgress' in t))t.aiProgress=null;});
 if(!db.nutrients)db.nutrients=[];
 if(!db.aiChats)db.aiChats=[];
+if(!db.userProfile)db.userProfile={useCase:[]};
 if(!db.settings)db.settings={addBtnPos:'center',highlightTab:'wo',calLayout:'general'};
 if(!db.settings.highlightTab)db.settings.highlightTab='wo';
 if(!db.settings.calLayout)db.settings.calLayout='general';
@@ -4545,19 +4561,35 @@ document.getElementById('ml-next').onclick=()=>{const d=new Date(st.mlDate);d.se
     ob.hidden=false;
     app.style.display='none';
     const inp=document.getElementById('ob-name');
-    const btn=document.getElementById('ob-start');
-    function startApp(){
+    const nextBtn=document.getElementById('ob-next');
+    const startBtn=document.getElementById('ob-start');
+    const skipBtn=document.getElementById('ob-skip');
+    const step1=document.getElementById('ob-step1');
+    const step2=document.getElementById('ob-step2');
+    function goToStep2(){
       const name=inp.value.trim()||'マイデータ';
       const profs=getProfs();
       if(profs[0])profs[0].name=name;
       saveProfs(profs);
+      step1.hidden=true;
+      step2.hidden=false;
+    }
+    nextBtn.addEventListener('click',goToStep2);
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter')goToStep2();});
+    step2.querySelectorAll('.ob-chip').forEach(chip=>{
+      chip.addEventListener('click',()=>chip.classList.toggle('active'));
+    });
+    function finishOnboarding(){
+      const selected=[...step2.querySelectorAll('.ob-chip.active')].map(c=>c.dataset.val);
+      db.userProfile={useCase:selected,setupAt:todayStr()};
+      save(db);
       ob.hidden=true;
       app.style.display='';
       renderProfHeader();
       renderGoals();renderCal();renderTasks();
     }
-    btn.addEventListener('click',startApp);
-    inp.addEventListener('keydown',e=>{if(e.key==='Enter')startApp();});
+    startBtn.addEventListener('click',finishOnboarding);
+    skipBtn.addEventListener('click',finishOnboarding);
     setTimeout(()=>inp.focus(),100);
   }
 })();
@@ -4732,7 +4764,9 @@ window.updatePcSettingsUI();
       }).join('、');
       woStats=`今週${thisWeek}回・先週${lastWeek}回 / 直近:${recent}`;
     }
-    return `【今日の日付】${today}\n【今後14日間の予定】\n${evs}\n【未完了タスク】\n${tasks}\n【進行中の目標】\n${goals}\n【カレンダー一覧】\n${cals}\n【タスク達成状況】${taskStats}\n【筋トレ履歴（直近14日）】${woStats}`;
+    const useCaseMap={study:'勉強・試験',fitness:'筋トレ・体づくり',habit:'習慣管理',goal:'目標達成'};
+    const useCaseStr=(db.userProfile?.useCase||[]).map(v=>useCaseMap[v]||v).join('・')||'未設定';
+    return `【今日の日付】${today}\n【使用目的】${useCaseStr}\n【今後14日間の予定】\n${evs}\n【未完了タスク】\n${tasks}\n【進行中の目標】\n${goals}\n【カレンダー一覧】\n${cals}\n【タスク達成状況】${taskStats}\n【筋トレ履歴（直近14日）】${woStats}`;
   }
   function executeTool(name,input){
     if(name==='add_event'){
@@ -5101,6 +5135,22 @@ document.getElementById('hist-modal-close').onclick=()=>document.getElementById(
 document.getElementById('hist-modal').onclick=e=>{if(e.target===e.currentTarget)e.currentTarget.hidden=true;};
 
 // ===== ゲームステータス =====
+function calcGoalMult(goalId){
+  if(!goalId)return 1;
+  const goal=(db.goals||[]).find(g=>g.id===goalId&&!g.done);
+  if(!goal)return 1;
+  let mult=1;
+  const prog=goal.progress||0;
+  if(prog>=80)mult*=2.0;
+  else if(prog>=60)mult*=1.5;
+  else if(prog>=40)mult*=1.2;
+  if(goal.dueDate){
+    const daysLeft=Math.ceil((new Date(goal.dueDate)-new Date())/86400000);
+    if(daysLeft>=0&&daysLeft<=7)mult*=1.8;
+    else if(daysLeft>=0&&daysLeft<=30)mult*=1.3;
+  }
+  return Math.min(mult,4.0);
+}
 function calcGameStats(){
   // 頻度別XP倍率: 低頻度ほど高報酬
   const freqXp={monthly:30,weekly:12,daily:3,'':15};// repeat値→XP/回
@@ -5112,8 +5162,9 @@ function calcGameStats(){
     const xpPerDone=freqXp[t.repeat||'']??15;
     const isStudy=studyKw.some(k=>t.title.includes(k));
     const studyBonus=isStudy?8:0;
-    if(t.done){totalTasks++;studyTasks+=isStudy?1:0;taskXp+=xpPerDone+studyBonus;}
-    for(const d of t.completedDates||[]){totalTasks++;studyTasks+=isStudy?1:0;taskXp+=xpPerDone+studyBonus;}
+    const goalMult=calcGoalMult(t.goalId);
+    if(t.done){totalTasks++;studyTasks+=isStudy?1:0;taskXp+=Math.round((xpPerDone+studyBonus)*goalMult);}
+    for(const d of t.completedDates||[]){totalTasks++;studyTasks+=isStudy?1:0;taskXp+=Math.round((xpPerDone+studyBonus)*goalMult);}
   }
   // 筋トレ日数
   const totalWorkouts=Object.keys(db.workouts||{}).length;
