@@ -4279,16 +4279,80 @@ window.updatePcSettingsUI();
 // ── AIチャット ────────────────────────────────────────────
 (function(){
   const aiHistory=[];
+  const AI_TOOLS=[
+    {name:'add_event',description:'カレンダーに予定を追加する',input_schema:{type:'object',properties:{title:{type:'string',description:'予定のタイトル'},date:{type:'string',description:'日付（YYYY-MM-DD）'},time:{type:'string',description:'開始時刻（HH:MM）終日なら省略'},time_end:{type:'string',description:'終了時刻（HH:MM）省略可'},location:{type:'string',description:'場所（省略可）'},memo:{type:'string',description:'メモ（省略可）'}},required:['title','date']}},
+    {name:'add_task',description:'タスクを追加する',input_schema:{type:'object',properties:{title:{type:'string',description:'タスクのタイトル'},priority:{type:'string',enum:['high','mid','low'],description:'優先度 high=高/mid=中/low=低'},due:{type:'string',description:'期限（YYYY-MM-DD）省略可'},memo:{type:'string',description:'メモ（省略可）'}},required:['title']}},
+    {name:'complete_task',description:'タスクを完了にする。コンテキストのタスクIDを使う',input_schema:{type:'object',properties:{task_id:{type:'string',description:'タスクのID（コンテキストの[id:...]）'}},required:['task_id']}},
+    {name:'add_goal',description:'目標を追加する',input_schema:{type:'object',properties:{title:{type:'string',description:'目標のタイトル'},level:{type:'string',enum:['high','mid','low'],description:'重要度'},due:{type:'string',description:'期限（YYYY-MM-DD）省略可'}},required:['title']}},
+  ];
   function getContext(){
     const today=todayStr();
+    const todayD=new Date(today+'T00:00:00');
+    const futD=new Date(todayD);futD.setDate(futD.getDate()+14);
+    const futStr=futD.toISOString().slice(0,10);
     const evs=(db.events||[]).filter(e=>{
       if(e.repeat==='daily')return true;
-      if(e.repeat==='weekly'&&new Date(e.date+'T00:00:00').getDay()===new Date(today+'T00:00:00').getDay())return true;
-      return e.date===today||(e.endDate&&e.date<=today&&e.endDate>=today);
-    }).map(e=>`・${e.time||'終日'} ${e.title}`).join('\n')||'なし';
-    const tasks=(db.tasks||[]).filter(t=>!taskIsDoneOn(t,today)&&(!t.due||t.due>=today)).slice(0,10).map(t=>`・[${t.priority||'中'}] ${t.title}`).join('\n')||'なし';
-    const goals=(db.goals||[]).filter(g=>!g.done).map(g=>`・${g.title}`).join('\n')||'なし';
-    return `【今日の日付】${today}\n【今日の予定】\n${evs}\n【未完了タスク（上位10件）】\n${tasks}\n【進行中の目標】\n${goals}`;
+      if(e.repeat==='weekly'&&new Date(e.date+'T00:00:00').getDay()===todayD.getDay())return true;
+      return e.date>=today&&e.date<=futStr||(e.endDate&&e.date<=futStr&&e.endDate>=today);
+    }).map(e=>`・[id:${e.id}] ${e.date} ${e.time||'終日'} ${e.title}${e.location?' @'+e.location:''}`).join('\n')||'なし';
+    const tasks=(db.tasks||[]).filter(t=>!taskIsDoneOn(t,today)&&!t.done)
+      .sort((a,b)=>({'high':0,'mid':1,'low':2}[a.priority||'mid']||1)-({'high':0,'mid':1,'low':2}[b.priority||'mid']||1))
+      .map(t=>`・[id:${t.id}][${t.priority==='high'?'高':t.priority==='low'?'低':'中'}] ${t.title}${t.due?' 期限:'+t.due:''}`).join('\n')||'なし';
+    const goals=(db.goals||[]).filter(g=>!g.done).map(g=>`・[id:${g.id}] ${g.title} 進捗:${g.progress||0}%${g.dueDate?' 期限:'+g.dueDate:''}`).join('\n')||'なし';
+    const cals=(db.calendars||[]).map(c=>`・[id:${c.id}] ${c.name}`).join('\n')||'なし';
+    return `【今日の日付】${today}\n【今後14日間の予定】\n${evs}\n【未完了タスク】\n${tasks}\n【進行中の目標】\n${goals}\n【カレンダー一覧】\n${cals}`;
+  }
+  function executeTool(name,input){
+    const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2);
+    if(name==='add_event'){
+      const ev={id:uid(),date:input.date,title:input.title,time:input.time||'',timeEnd:input.time_end||'',allDay:!input.time,color:'',calendarId:(db.calendars[0]||{}).id||'',location:input.location||'',memo:input.memo||'',repeat:'none',repeatEnd:null,exceptions:[]};
+      db.events.push(ev);save(db);return `「${ev.title}」を${ev.date}に追加しました。`;
+    }
+    if(name==='add_task'){
+      const task={id:uid(),title:input.title,done:false,priority:input.priority||'mid',due:input.due||'',repeat:'',goalId:'',location:'',memo:input.memo||'',completedAt:null,completedDates:[]};
+      db.tasks.push(task);save(db);return `タスク「${task.title}」を追加しました。`;
+    }
+    if(name==='complete_task'){
+      const task=db.tasks.find(t=>t.id===input.task_id);
+      if(!task)return `ID「${input.task_id}」のタスクが見つかりませんでした。`;
+      task.done=true;task.completedAt=todayStr();save(db);return `「${task.title}」を完了にしました。`;
+    }
+    if(name==='add_goal'){
+      const goal={id:uid(),title:input.title,type:'manual',progress:0,freq:'monthly',freqMonths:1,lastReview:null,level:input.level||'mid',dueDate:input.due||null,createdAt:todayStr(),done:false,achievedAt:null};
+      db.goals.push(goal);save(db);return `目標「${goal.title}」を追加しました。`;
+    }
+    return `不明なツール: ${name}`;
+  }
+  function showToolConfirm(toolUseBlocks){
+    const TLABEL={add_event:'📅 予定を追加',add_task:'✅ タスクを追加',complete_task:'☑ タスクを完了',add_goal:'🎯 目標を追加'};
+    return new Promise(resolve=>{
+      const wrap=document.getElementById('ai-messages');
+      const div=document.createElement('div');div.className='ai-msg ai';
+      let txt='以下を実行してもよいですか？\n\n';
+      for(const tool of toolUseBlocks){
+        txt+=`【${TLABEL[tool.name]||tool.name}】\n`;
+        const i=tool.input;
+        if(i.title)txt+=`・${i.title}\n`;
+        if(i.date)txt+=`・日付: ${i.date}\n`;
+        if(i.time)txt+=`・時刻: ${i.time}${i.time_end?'〜'+i.time_end:''}\n`;
+        if(i.location)txt+=`・場所: ${i.location}\n`;
+        if(i.priority)txt+=`・優先度: ${i.priority==='high'?'高':i.priority==='low'?'低':'中'}\n`;
+        if(i.due)txt+=`・期限: ${i.due}\n`;
+        if(i.level)txt+=`・重要度: ${i.level==='high'?'高':i.level==='low'?'低':'中'}\n`;
+        if(i.task_id){const t=db.tasks.find(t=>t.id===i.task_id);txt+=`・「${t?t.title:i.task_id}」\n`;}
+        txt+='\n';
+      }
+      div.textContent=txt;
+      const bw=document.createElement('div');bw.style.cssText='margin-top:8px;display:flex;gap:8px;';
+      const yes=document.createElement('button');yes.textContent='✓ 実行';
+      yes.style.cssText='flex:1;padding:8px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer;min-height:40px;';
+      yes.onclick=()=>{div.remove();resolve(true);};
+      const no=document.createElement('button');no.textContent='✗ キャンセル';
+      no.style.cssText='flex:1;padding:8px;background:var(--surface-2,#e5e5ea);color:var(--text);border:none;border-radius:8px;font-size:14px;cursor:pointer;min-height:40px;';
+      no.onclick=()=>{div.remove();resolve(false);};
+      bw.appendChild(yes);bw.appendChild(no);div.appendChild(bw);
+      wrap.appendChild(div);wrap.scrollTop=wrap.scrollHeight;
+    });
   }
   function addMsg(role,text,thinking){
     aiHistory.push({role,content:text});
@@ -4318,13 +4382,26 @@ window.updatePcSettingsUI();
       } else {
         const workerUrl=db.settings.workerUrl||'';
         if(!workerUrl){thinkingEl.textContent='設定からWorker URLを入力してください';thinkingEl.className='ai-msg ai';btn.disabled=false;return;}
-        const system='あなたはLifeHubのAIアシスタントです。ユーザーの生活データを把握しており、日本語で簡潔にアドバイスします。\n\n'+getContext();
-        const messages=aiHistory.slice(0,-2).map(m=>({role:m.role==='user'?'user':'assistant',content:m.content}));
-        messages.push({role:'user',content:text});
-        const res=await fetch(workerUrl,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-sonnet-5-5',max_tokens:1024,system,messages})});
-        if(!res.ok)throw new Error('HTTP '+res.status);
-        const data=await res.json();
-        reply=data.content?.find(c=>c.type==='text')?.text||'応答を取得できませんでした';
+        const system='あなたはLifeHubのAIアシスタントです。ユーザーの生活データを把握しており、日本語で簡潔にアドバイスします。ツールを使ってデータの追加・変更が可能です。ユーザーが何かを追加・変更したそうな場合は積極的にツールを活用してください。\n\n'+getContext();
+        const apiMessages=aiHistory.slice(0,-2).filter(m=>m.role==='user'||m.role==='assistant').map(m=>({role:m.role==='user'?'user':'assistant',content:m.content}));
+        apiMessages.push({role:'user',content:text});
+        while(true){
+          const res=await fetch(workerUrl,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-sonnet-5-5',max_tokens:1024,system,messages:apiMessages,tools:AI_TOOLS})});
+          if(!res.ok)throw new Error('HTTP '+res.status);
+          const data=await res.json();
+          const toolUseBlocks=data.content?.filter(c=>c.type==='tool_use')||[];
+          if(data.stop_reason==='tool_use'&&toolUseBlocks.length>0){
+            apiMessages.push({role:'assistant',content:data.content});
+            thinkingEl.textContent='確認が必要です';thinkingEl.className='ai-msg ai';
+            const confirmed=await showToolConfirm(toolUseBlocks);
+            thinkingEl.textContent='考え中…';thinkingEl.className='ai-msg ai thinking';
+            const toolResults=toolUseBlocks.map(tool=>({type:'tool_result',tool_use_id:tool.id,content:confirmed?executeTool(tool.name,tool.input):'ユーザーがキャンセルしました'}));
+            apiMessages.push({role:'user',content:toolResults});
+          } else {
+            reply=data.content?.find(c=>c.type==='text')?.text||'応答を取得できませんでした';
+            break;
+          }
+        }
       }
       thinkingEl.textContent=reply;
       thinkingEl.className='ai-msg ai';
