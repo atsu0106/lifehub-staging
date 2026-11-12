@@ -4342,7 +4342,7 @@ window.updatePcSettingsUI();
         if(i.task_id){const t=db.tasks.find(t=>t.id===i.task_id);txt+=`・「${t?t.title:i.task_id}」\n`;}
         txt+='\n';
       }
-      div.textContent=txt;
+      div.innerHTML=safeHtml(txt);
       const bw=document.createElement('div');bw.style.cssText='margin-top:8px;display:flex;gap:8px;';
       const yes=document.createElement('button');yes.textContent='✓ 実行';
       yes.style.cssText='flex:1;padding:8px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer;min-height:40px;';
@@ -4354,6 +4354,7 @@ window.updatePcSettingsUI();
       wrap.appendChild(div);wrap.scrollTop=wrap.scrollHeight;
     });
   }
+  function safeHtml(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
   function addMsg(role,text,thinking){
     aiHistory.push({role,content:text});
     const wrap=document.getElementById('ai-messages');
@@ -4361,7 +4362,7 @@ window.updatePcSettingsUI();
     if(empty)empty.remove();
     const div=document.createElement('div');
     div.className='ai-msg '+(role==='user'?'user':'ai')+(thinking?' thinking':'');
-    div.textContent=text;
+    div.innerHTML=safeHtml(text);
     wrap.appendChild(div);
     wrap.scrollTop=wrap.scrollHeight;
   }
@@ -4403,7 +4404,7 @@ window.updatePcSettingsUI();
           }
         }
       }
-      thinkingEl.textContent=reply;
+      thinkingEl.innerHTML=safeHtml(reply);
       thinkingEl.className='ai-msg ai';
       aiHistory[aiHistory.length-1]={role:'assistant',content:reply};
     }catch(e){
