@@ -1697,9 +1697,13 @@ const ACTIVE_STORE='lh_active';
   if(!aid||!profs.find(p=>p.id===aid)){aid=profs[0].id;localStorage.setItem(ACTIVE_STORE,aid);}
   window._LH_PID=aid;
 })();
-// iOS standalone: タッチオフセットバグの修正
+// iOS: body{position:fixed}環境でscrollOffsetが蓄積するバグをリセット（全モード共通）
+window.scrollTo(0,0);
+document.addEventListener('scroll',function(){window.scrollTo(0,0);},{passive:true});
+// iOS standalone: safe-area-inset-topを実測してCSS変数に適用
 (function(){
   if(!window.navigator.standalone&&!window.matchMedia('(display-mode:standalone)').matches)return;
+  if(window._DEV_MODE)return;
   const app=document.getElementById('app');if(!app)return;
   const p=document.createElement('div');
   p.setAttribute('style','position:fixed;top:env(safe-area-inset-top,0px);left:0;width:0;height:0;pointer-events:none;');
