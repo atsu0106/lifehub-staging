@@ -516,6 +516,10 @@ input[type=number]{-moz-appearance:textfield;}
 .goal-link-badge{font-size:11px;color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);padding:1px 6px;border-radius:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;display:inline-block;vertical-align:middle;}
 .tk-loc{font-size:11px;color:var(--fg2);margin-top:2px;}
 .tk-memo{font-size:11px;color:var(--fg2);margin-top:3px;line-height:1.4;white-space:pre-wrap;word-break:break-word;}
+.tk-daily-memo{margin-top:6px;margin-left:32px;}
+.tk-daily-memo-btn{background:none;border:1px dashed var(--border);border-radius:6px;padding:5px 10px;font-size:12px;color:var(--fg2);cursor:pointer;width:100%;text-align:left;line-height:1.4;}
+.tk-daily-memo-input{width:100%;min-height:64px;background:var(--surface2);border:1.5px solid var(--accent);border-radius:6px;padding:6px 8px;font-size:13px;font-family:inherit;color:var(--fg);outline:none;resize:vertical;box-sizing:border-box;line-height:1.5;margin-top:4px;display:none;}
+.tk-daily-memo-input.open{display:block;}
 .today-tasks-head{font-size:13px;font-weight:700;color:var(--fg);margin:12px 0 6px;padding-left:2px;}
 .today-tk-item{border-left:3px solid var(--accent);}
 .repeat-badge{font-size:11px;color:#059669;background:rgba(5,150,105,.12);padding:1px 6px;border-radius:20px;}
@@ -1466,8 +1470,8 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
       </select>
     </div>
     <div class="m-field"><label>場所（任意）</label><input id="te-location" placeholder="例: 国会議事堂"></div>
-    <div class="m-field"><label>自由記述（任意）</label>
-      <textarea id="te-memo" placeholder="メモ・詳細など" style="width:100%;min-height:72px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r-s);padding:8px 10px;font-size:13px;font-family:inherit;color:var(--fg);outline:none;resize:vertical;box-sizing:border-box;line-height:1.5;"></textarea>
+    <div class="m-field"><label>メモ（任意）</label>
+      <textarea id="te-memo" placeholder="タスクの詳細・やり方など" style="width:100%;min-height:72px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r-s);padding:8px 10px;font-size:13px;font-family:inherit;color:var(--fg);outline:none;resize:vertical;box-sizing:border-box;line-height:1.5;"></textarea>
     </div>
     <div id="tk-photo-strip-wrap"></div>
     <div class="m-actions">
@@ -1743,6 +1747,8 @@ Object.values(db.workouts||{}).forEach(exs=>{
 });
 // migrate repeating tasks: add completedDates array
 (db.tasks||[]).forEach(t=>{if(t.repeat&&!t.completedDates)t.completedDates=[];});
+// migrate tasks: add dailyMemos
+(db.tasks||[]).forEach(t=>{if(!t.dailyMemos)t.dailyMemos={};});
 if(!db.nutrients)db.nutrients=[];
 if(!db.aiChats)db.aiChats=[];
 if(!db.settings)db.settings={addBtnPos:'center',highlightTab:'wo',calLayout:'general'};
@@ -3166,8 +3172,11 @@ function renderTasks(){
     const el=document.createElement('div');el.className='card tk-item'+(doneToday?' done':'');
     const goalName=task.goalId?(db.goals||[]).find(g=>g.id===task.goalId)?.text:'';
     const histDates=(task.completedDates||[]).slice().sort().reverse();
+    const dailyMemos=task.dailyMemos||{};
     const histHtml=task.repeat&&histDates.length?
-      `<div class="tk-repeat-hist"><span class="tk-hist-toggle">✓ 達成 ${histDates.length}回 ▾</span><div class="tk-hist-dates" hidden>${histDates.map(d=>`<span class="tk-hist-date">${jpDate(d)}</span>`).join('')}</div></div>`:'';
+      `<div class="tk-repeat-hist"><span class="tk-hist-toggle">✓ 達成 ${histDates.length}回 ▾</span><div class="tk-hist-dates" hidden>${histDates.map(d=>`<span class="tk-hist-date">${jpDate(d)}${dailyMemos[d]?' 📝':''}</span>`).join('')}</div></div>`:'';
+    const todayMemoVal=dailyMemos[todayStr()]||'';
+    const dailyMemoHtml=task.repeat?`<div class="tk-daily-memo"><button class="tk-daily-memo-btn">${todayMemoVal?'📝 '+esc(todayMemoVal.slice(0,40))+(todayMemoVal.length>40?'…':''):'📝 今日のメモを追加...'}</button><textarea class="tk-daily-memo-input" placeholder="今日の気づき・できたこと・できなかったこと...">${esc(todayMemoVal)}</textarea></div>`:'';
     el.innerHTML=`<button class="check-btn${doneToday?' on':''}" aria-label="完了">✓</button>
       <div class="tk-info"><div class="tk-title">${esc(task.title)}</div>
       ${task.location?`<div class="tk-loc">📍 ${esc(task.location)}</div>`:''}
@@ -3179,6 +3188,7 @@ function renderTasks(){
       </div>
       ${!task.repeat&&task.done&&task.completedAt?`<div class="tk-completed-at">✓ 完了: ${jpDate(task.completedAt)}</div>`:''}
       ${histHtml}
+      ${dailyMemoHtml}
       ${task.memo?`<div class="tk-memo">${esc(task.memo)}</div>`:''}</div>
       <button class="edit-btn">✎</button>
       <button class="del-btn">×</button>`;
@@ -3194,6 +3204,20 @@ function renderTasks(){
         const d=histToggle.nextElementSibling;d.hidden=!d.hidden;
         histToggle.textContent=histToggle.textContent.replace(d.hidden?'▴':'▾',d.hidden?'▾':'▴');
       };
+    }
+    const dmBtn=el.querySelector('.tk-daily-memo-btn');
+    if(dmBtn){
+      const dmInput=el.querySelector('.tk-daily-memo-input');
+      dmBtn.onclick=()=>{dmInput.classList.add('open');dmInput.focus();};
+      dmInput.addEventListener('blur',()=>{
+        const val=dmInput.value.trim();
+        if(!task.dailyMemos)task.dailyMemos={};
+        if(val)task.dailyMemos[todayStr()]=val;
+        else delete task.dailyMemos[todayStr()];
+        save(db);
+        dmBtn.textContent=val?'📝 '+val.slice(0,40)+(val.length>40?'…':''):'📝 今日のメモを追加...';
+        dmInput.classList.remove('open');
+      });
     }
     el.querySelector('.check-btn').onclick=()=>toggleTaskDone(task.id);
     el.querySelector('.edit-btn').onclick=()=>openTaskEdit(task);
@@ -3247,7 +3271,7 @@ document.getElementById('te-ok').onclick=()=>{
     db.taskPhotos[_editTaskId]=_tkPhotos;
   } else {
     const newId=uid();
-    db.tasks.push({id:newId,title,done:false,pri,due,goalId,repeat,location,memo});
+    db.tasks.push({id:newId,title,done:false,pri,due,goalId,repeat,location,memo,dailyMemos:{}});
     db.taskPhotos[newId]=_tkPhotos;
   }
   save(db);document.getElementById('mo-task-edit').hidden=true;renderTasks();renderGoals();
@@ -4308,7 +4332,7 @@ window.updatePcSettingsUI();
 
   const AI_TOOLS=[
     {name:'add_event',description:'カレンダーに予定を追加する',input_schema:{type:'object',properties:{title:{type:'string',description:'予定のタイトル'},date:{type:'string',description:'日付（YYYY-MM-DD）'},time:{type:'string',description:'開始時刻（HH:MM）終日なら省略'},time_end:{type:'string',description:'終了時刻（HH:MM）省略可'},location:{type:'string',description:'場所（省略可）'},memo:{type:'string',description:'メモ（省略可）'}},required:['title','date']}},
-    {name:'add_task',description:'タスクを追加する',input_schema:{type:'object',properties:{title:{type:'string',description:'タスクのタイトル'},priority:{type:'string',enum:['high','mid','low'],description:'優先度 high=高/mid=中/low=低'},due:{type:'string',description:'期限（YYYY-MM-DD）省略可'},memo:{type:'string',description:'メモ（省略可）'}},required:['title']}},
+    {name:'add_task',description:'タスクを追加する。titleには短いタスク名、memoにはタスクの具体的な内容・やり方・注意点を記入する',input_schema:{type:'object',properties:{title:{type:'string',description:'短いタスク名（例: ベンチプレス練習）'},priority:{type:'string',enum:['high','mid','low'],description:'優先度 high=高/mid=中/low=低'},due:{type:'string',description:'期限（YYYY-MM-DD）省略可'},memo:{type:'string',description:'タスクの具体的な内容・やり方・ポイントなど'}},required:['title']}},
     {name:'complete_task',description:'タスクを完了にする。コンテキストのタスクIDを使う',input_schema:{type:'object',properties:{task_id:{type:'string',description:'タスクのID（コンテキストの[id:...]）'}},required:['task_id']}},
     {name:'add_goal',description:'目標を追加する',input_schema:{type:'object',properties:{title:{type:'string',description:'目標のタイトル'},level:{type:'string',enum:['high','mid','low'],description:'重要度'},due:{type:'string',description:'期限（YYYY-MM-DD）省略可'}},required:['title']}},
   ];
