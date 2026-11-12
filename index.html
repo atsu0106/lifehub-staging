@@ -4571,7 +4571,7 @@ window.updatePcSettingsUI();
     {name:'add_task',description:'タスクを追加する。titleには短いタスク名、memoにはタスクの具体的な内容・やり方・注意点を記入する',input_schema:{type:'object',properties:{title:{type:'string',description:'短いタスク名（例: ベンチプレス練習）'},priority:{type:'string',enum:['high','mid','low'],description:'優先度 high=高/mid=中/low=低'},due:{type:'string',description:'期限（YYYY-MM-DD）省略可'},memo:{type:'string',description:'タスクの具体的な内容・やり方・ポイントなど'}},required:['title']}},
     {name:'complete_task',description:'タスクを完了にする。コンテキストのタスクIDを使う',input_schema:{type:'object',properties:{task_id:{type:'string',description:'タスクのID（コンテキストの[id:...]）'}},required:['task_id']}},
     {name:'add_goal',description:'目標を追加する',input_schema:{type:'object',properties:{title:{type:'string',description:'目標のタイトル'},level:{type:'string',enum:['high','mid','low'],description:'重要度'},due:{type:'string',description:'期限（YYYY-MM-DD）省略可'}},required:['title']}},
-    {name:'award_event_xp',description:'過去の予定に経験値（XP）を付与する。会話でイベントの難易度・達成感を聞き出した後に呼ぶ。まだXPが付いていない過去の予定だけに使う',input_schema:{type:'object',properties:{event_id:{type:'string',description:'予定のID（コンテキストの[id:...]）'},xp:{type:'number',description:'付与するXP。難易度に応じて10〜100の範囲で決める'},reason:{type:'string',description:'XP付与の理由（例: 難しい試験を乗り越えた）'}},required:['event_id','xp','reason']}},
+    {name:'award_event_xp',description:'過去の予定に経験値（XP）を付与する。会話でイベントの難易度・達成感を聞き出した後に呼ぶ。まだXPが付いていない過去の予定だけに使う',input_schema:{type:'object',properties:{event_id:{type:'string',description:'予定のID（コンテキストの[id:...]）'},xp:{type:'number',description:'付与するXP。日常予定=5〜20、授業=5〜15、定期試験=40〜100、CBT/OSCE=1000〜3000、国試=5000〜10000'},reason:{type:'string',description:'XP付与の理由（例: 難しい試験を乗り越えた）'}},required:['event_id','xp','reason']}},
   ];
 
   // ── セッション管理 ──
@@ -4731,7 +4731,7 @@ window.updatePcSettingsUI();
     if(name==='award_event_xp'){
       const ev=(db.events||[]).find(e=>e.id===input.event_id);
       if(!ev)return `ID「${input.event_id}」の予定が見つかりませんでした。`;
-      ev.aiXp=Math.min(100,Math.max(1,Math.round(input.xp)));
+      ev.aiXp=Math.max(1,Math.round(input.xp));
       ev.aiXpReason=input.reason||'';
       save(db);
       return `「${ev.title}」に${ev.aiXp}XPを付与しました。（${input.reason}）`;
@@ -4788,7 +4788,7 @@ window.updatePcSettingsUI();
         reply='[DEVモード] AIは動作していません。Worker URLを設定すると実際に動作します。\n\n取得したコンテキスト:\n'+getContext();
       } else {
         const workerUrl=WORKER_URL;
-        const system='あなたはLifeHubのAIアシスタントです。ユーザーの生活データを把握しており、日本語でアドバイスします。ツールを使ってデータの追加・変更が可能です。ユーザーが何かを追加・変更したそうな場合は積極的にツールを活用してください。\n\n【XP付与ルール】\n過去の予定でaiXpが付いていないものがあれば、会話の流れで自然に「どうだった？」と聞き出し、award_event_xp でXPを付与する。\n目安: 国試・OSCE等の重大試験=80〜100、定期試験=40〜60、実習・発表=30〜50、普通の授業=5〜15、日常的な予定=10〜20。\nユーザーが「大変だった」と言っても、その予定の内容から明らかに軽い場合は低く設定する。ユーザーの申告より予定の実態を優先して判断すること。\n\n【回答フォーマットのルール】\n・適切な場所で改行を入れ、読みやすくする\n・複数の内容がある場合は箇条書き（・）を使う\n・句読点（。、）を正しく使い、文章を短く区切る\n・何を言いたいか一目でわかるよう、結論や要点を最初に書く\n・長くなりすぎず、必要な情報に絞って答える\n\n'+getContext();
+        const system='あなたはLifeHubのAIアシスタントです。ユーザーの生活データを把握しており、日本語でアドバイスします。ツールを使ってデータの追加・変更が可能です。ユーザーが何かを追加・変更したそうな場合は積極的にツールを活用してください。\n\n【XP付与ルール】\n過去の予定でaiXpが付いていないものがあれば、会話の流れで自然に「どうだった？」と聞き出し、award_event_xp でXPを付与する。\n目安: 国試・医師国家試験=5000〜10000、CBT・OSCE等の一発勝負系大型試験=1000〜3000、定期試験=40〜100、難しい実習・発表=30〜80、普通の授業=5〜15、日常的な予定=5〜20。\n年に一度・一発勝負・人生を左右するレベルの予定は桁違いのXPを与えてよい。\nユーザーが「大変だった」と言っても、その予定の内容から明らかに軽い場合は低く設定する。ユーザーの申告より予定の実態を優先して判断すること。\n\n【回答フォーマットのルール】\n・適切な場所で改行を入れ、読みやすくする\n・複数の内容がある場合は箇条書き（・）を使う\n・句読点（。、）を正しく使い、文章を短く区切る\n・何を言いたいか一目でわかるよう、結論や要点を最初に書く\n・長くなりすぎず、必要な情報に絞って答える\n\n'+getContext();
         const apiMessages=aiHistory.slice(0,-2).filter(m=>m.role==='user'||m.role==='assistant').map(m=>({role:m.role,content:m.content}));
         apiMessages.push({role:'user',content:text});
         while(true){
