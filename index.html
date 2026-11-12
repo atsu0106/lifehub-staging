@@ -136,6 +136,21 @@ input[type=number]{-moz-appearance:textfield;}
 .ai-brief-card .ai-brief-text{font-size:13px;color:var(--fg);line-height:1.65;}
 .ai-brief-card .ai-brief-refresh{position:absolute;top:10px;right:10px;background:none;border:none;font-size:14px;color:var(--fg3);cursor:pointer;padding:2px 5px;border-radius:4px;}
 .ai-brief-card.loading .ai-brief-text{color:var(--fg3);}
+.daily-mission-card{margin:8px 12px 0;background:var(--surface);border-radius:12px;overflow:hidden;}
+.dm-header{display:flex;align-items:center;gap:8px;padding:10px 14px 8px;}
+.dm-title{font-size:12px;font-weight:700;color:var(--fg);flex:1;}
+.dm-streak{font-size:11px;font-weight:700;color:#f97316;background:rgba(249,115,22,.12);padding:2px 8px;border-radius:20px;}
+.dm-progress-bar{height:3px;background:var(--border);margin:0 14px 10px;}
+.dm-progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .4s ease;}
+.dm-list{padding:0 14px 12px;display:flex;flex-direction:column;gap:8px;}
+.dm-item{display:flex;align-items:center;gap:10px;cursor:pointer;}
+.dm-check{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.dm-item.done .dm-check{background:var(--accent);border-color:var(--accent);color:#fff;font-size:11px;}
+.dm-item.done .dm-text{color:var(--fg3);text-decoration:line-through;}
+.dm-text{font-size:13px;color:var(--fg);line-height:1.4;}
+.dm-refresh{background:none;border:none;font-size:13px;color:var(--fg3);cursor:pointer;padding:2px 5px;border-radius:4px;}
+.dm-complete-banner{padding:10px 14px;text-align:center;font-size:13px;font-weight:700;color:var(--accent);background:rgba(var(--accent-rgb,.34,.85,.67),.08);border-top:1px solid var(--border);}
+.daily-mission-card.loading .dm-text{color:var(--fg3);}
 .hist-modal{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.5);}
 .hist-modal[hidden]{display:none!important;}
 .hist-sheet{background:var(--bg);border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:80dvh;display:flex;flex-direction:column;overflow:hidden;}
@@ -826,6 +841,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
 
   <section id="tab-cal" class="tab on">
     <div id="ai-brief-card" class="ai-brief-card" hidden></div>
+    <div id="daily-mission-card" class="daily-mission-card" hidden></div>
     <div id="goal-card" class="goal-card"></div>
     <div id="clarify-view" hidden>
       <div class="clarify-nav">
@@ -1214,7 +1230,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
     <div class="m-actions" style="margin-top:16px;">
       <button class="btn-ok" id="settings-close" style="width:100%;">閉じる</button>
     </div>
-    <p style="text-align:center;font-size:11px;color:var(--fg3);margin-top:12px;">LifeHub v1.1.0</p>
+    <p style="text-align:center;font-size:11px;color:var(--fg3);margin-top:12px;">LifeHub v1.2.0</p>
   </div>
 </div>
 
@@ -2879,6 +2895,7 @@ document.getElementById('mo-settings').onclick=e=>{if(e.target===e.currentTarget
 // ===== お知らせ =====
 // 新しいお知らせを追加するときは先頭に追加する（idは一意な文字列）
 const ANNOUNCEMENTS=[
+  {id:'ann_006',date:'2026-11-13',title:'アップデート v1.2.0',body:'AIが今日のデータを読んで毎日3つのミッションを自動生成するようになりました。タスク完了・筋トレ記録・AIと話すと自動的に達成判定されます。連続達成でストリークを伸ばそう🔥'},
   {id:'ann_005',date:'2026-11-12',title:'アップデート v1.1.0',body:'AIがあなたの今日のスケジュール・タスク・筋トレ状況を把握して、毎朝ひとこと届けるようになりました。ホーム画面上部をご確認ください。'},
   {id:'ann_004',date:'2026-11-12',title:'アップデート v1.0.3',body:'AIチャット入力時にキーボードが入力欄に重なる不具合を修正しました。'},
   {id:'ann_003',date:'2026-11-12',title:'アップデート v1.0.2',body:'① AIアシスタントが画面下から開くシートに変わりました。② シートの大きさを切り替えて、カレンダーを見ながら会話できます。③ AI返答を音声で読み上げる🔊ボタンを追加。④ タスク・筋トレ種目の過去履歴を📋ボタンで確認できます。⑤ タップ位置のズレを修正。'},
@@ -3022,6 +3039,7 @@ if(window._DEV_MODE){
 }
 const WORKER_URL='https://lifehub-ai.y-atsuhisa7234.workers.dev';
 const CHANGELOG=[
+  {v:'v1.2.0',d:'AIデーリーミッション・ストリーク機能を追加'},
   {v:'v1.1.0',d:'AIが毎朝ひとことを自動生成（データ連携強化）'},
   {v:'v1.0.3',d:'キーボード・入力欄重なりバグ修正'},
   {v:'v1.0.2',d:'音声読み上げ・サイズ切替・履歴機能を追加'},
@@ -3215,10 +3233,11 @@ function toggleTaskDone(id){
     const today=todayStr();
     const idx=t.completedDates.indexOf(today);
     if(idx>=0)t.completedDates.splice(idx,1);
-    else t.completedDates.push(today);
+    else{t.completedDates.push(today);window._missionHook?.('complete_task',{taskId:t.id});}
   } else {
     t.done=!t.done;
     t.completedAt=t.done?TODAY:null;
+    if(t.done)window._missionHook?.('complete_task',{taskId:t.id});
   }
   save(db);renderTodayTasks();renderTasks();
 }
@@ -3791,6 +3810,7 @@ function exAddAndClose(name){
   else initSet={time:null};
   db.workouts[st.woDate].push({id:uid(),name,category:cat,sets:[initSet]});
   save(db);inp.value='';exHideSug();renderWo();
+  window._missionHook?.('log_workout');
 }
 function exHideSug(){document.getElementById('ex-sug-list').classList.remove('show');}
 function exShowSug(){
@@ -4776,7 +4796,7 @@ window.updatePcSettingsUI();
     window.visualViewport.addEventListener('resize',_aiKbAdjust);
     window.visualViewport.addEventListener('scroll',_aiKbAdjust);
   }
-  function openAiModal(){const m=document.getElementById('ai-modal'),o=document.getElementById('ai-overlay');m.hidden=false;requestAnimationFrame(()=>{m.classList.add('open');o.classList.add('open');});document.getElementById('ai-input').focus();}
+  function openAiModal(){const m=document.getElementById('ai-modal'),o=document.getElementById('ai-overlay');m.hidden=false;requestAnimationFrame(()=>{m.classList.add('open');o.classList.add('open');});document.getElementById('ai-input').focus();window._missionHook?.('open_ai');}
   function closeAiModal(){const m=document.getElementById('ai-modal'),o=document.getElementById('ai-overlay');m.classList.remove('open');o.classList.remove('open');m.style.bottom='';setTimeout(()=>{m.hidden=true;},300);}
   document.getElementById('ai-fab').onclick=openAiModal;
   document.getElementById('ai-close').onclick=closeAiModal;
@@ -4847,6 +4867,132 @@ window.updatePcSettingsUI();
       }
     }
     setTimeout(generateBrief,1500);
+  })();
+
+  // ── AIデーリーミッション ──
+  (function(){
+    const MISSION_KEY='lh_daily_missions';
+    const STREAK_KEY='lh_mission_streak';
+    const card=document.getElementById('daily-mission-card');
+    if(!card)return;
+
+    function loadStreak(){try{return JSON.parse(localStorage.getItem(STREAK_KEY)||'{"count":0,"lastDate":""}')}catch{return{count:0,lastDate:''}}}
+    function saveStreak(s){try{localStorage.setItem(STREAK_KEY,JSON.stringify(s))}catch{}}
+
+    function loadMissions(){
+      const today=todayStr();
+      try{
+        const d=JSON.parse(localStorage.getItem(MISSION_KEY)||'null');
+        if(d&&d.date===today)return d;
+      }catch{}
+      return null;
+    }
+    function saveMissions(data){try{localStorage.setItem(MISSION_KEY,JSON.stringify(data))}catch{}}
+
+    function checkStreakUpdate(missions){
+      const today=todayStr();
+      if(!missions.every(m=>m.done))return;
+      const st=loadStreak();
+      const yesterday=new Date(today+'T00:00:00');yesterday.setDate(yesterday.getDate()-1);
+      const yStr=yesterday.toISOString().slice(0,10);
+      const newCount=(st.lastDate===yStr||st.lastDate===today)?st.count+(st.lastDate===today?0:1):1;
+      saveStreak({count:newCount,lastDate:today});
+    }
+
+    function renderMissions(data){
+      const missions=data.missions;
+      const doneCount=missions.filter(m=>m.done).length;
+      const total=missions.length;
+      const st=loadStreak();
+      const allDone=doneCount===total;
+      card.hidden=false;
+      card.className='daily-mission-card'+(data.loading?' loading':'');
+      let html=`<div class="dm-header"><div class="dm-title">🎯 デーリーミッション ${data.loading?'':'<span style="font-size:11px;color:var(--fg3);font-weight:400;">${doneCount}/${total}</span>'}</div>`;
+      if(st.count>1)html+=`<div class="dm-streak">🔥 ${st.count}日連続</div>`;
+      html+=`<button class="dm-refresh" title="再生成">↺</button></div>`;
+      html+=`<div class="dm-progress-bar"><div class="dm-progress-fill" style="width:${data.loading?0:Math.round(doneCount/total*100)}%"></div></div>`;
+      html+=`<div class="dm-list">`;
+      for(const m of missions){
+        html+=`<div class="dm-item${m.done?' done':''}" data-id="${m.id}"><div class="dm-check">${m.done?'✓':''}</div><div class="dm-text">${esc(m.text)}</div></div>`;
+      }
+      html+=`</div>`;
+      if(allDone&&!data.loading){
+        const st2=loadStreak();
+        html+=`<div class="dm-complete-banner">🎉 全ミッション達成！${st2.count>1?` ${st2.count}日連続ストリーク継続中🔥`:''}</div>`;
+      }
+      card.innerHTML=html;
+      card.querySelector('.dm-refresh').onclick=()=>generateMissions(true);
+      card.querySelectorAll('.dm-item').forEach(el=>{
+        el.onclick=()=>{
+          const cached=loadMissions();if(!cached)return;
+          const m=cached.missions.find(x=>x.id===el.dataset.id);if(!m||m.type!=='manual')return;
+          m.done=!m.done;
+          checkStreakUpdate(cached.missions);
+          saveMissions(cached);
+          renderMissions(cached);
+        };
+      });
+    }
+
+    async function generateMissions(force){
+      const today=todayStr();
+      if(!force){
+        const cached=loadMissions();
+        if(cached){renderMissions(cached);return;}
+      }
+      const placeholder={date:today,loading:true,missions:[
+        {id:'m1',text:'生成中…',type:'loading',done:false},
+        {id:'m2',text:'生成中…',type:'loading',done:false},
+        {id:'m3',text:'生成中…',type:'loading',done:false},
+      ]};
+      renderMissions(placeholder);
+      if(window._DEV_MODE){
+        const devData={date:today,loading:false,missions:[
+          {id:'m1',text:'タスクを1つ完了する',type:'complete_task',done:false},
+          {id:'m2',text:'筋トレを記録する',type:'log_workout',done:false},
+          {id:'m3',text:'AIと話す',type:'open_ai',done:false},
+        ]};
+        saveMissions(devData);renderMissions(devData);return;
+      }
+      try{
+        const ctx=getContext();
+        const prompt=`以下はユーザーの今日のライフデータです。\n\n${ctx}\n\n今日やるべき3つのミッションをJSONで生成してください。ユーザーの実際のタスク・予定・筋トレ状況を踏まえて具体的に。\n\n返答はJSON配列のみ（説明不要）:\n[\n  {"id":"m1","text":"ミッション説明（20字以内）","type":"complete_task","taskId":"タスクのid（特定する場合のみ）"},\n  {"id":"m2","text":"...","type":"log_workout"},\n  {"id":"m3","text":"...","type":"open_ai"}\n]\n\ntypeは complete_task / log_workout / open_ai / manual のいずれか。`;
+        const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:300,system:'あなたはLifeHubのミッション生成AIです。ユーザーのデータを読んで今日のミッションをJSON配列で返します。JSON以外は一切出力しないでください。',messages:[{role:'user',content:prompt}]})});
+        if(!res.ok)throw new Error('HTTP '+res.status);
+        const data=await res.json();
+        const raw=data.content?.find(c=>c.type==='text')?.text||'[]';
+        const jsonMatch=raw.match(/\[[\s\S]*\]/);
+        const parsed=jsonMatch?JSON.parse(jsonMatch[0]):[];
+        const missions=parsed.slice(0,3).map((m,i)=>({id:m.id||`m${i+1}`,text:m.text||'ミッション',type:m.type||'manual',taskId:m.taskId||null,done:false}));
+        if(!missions.length)throw new Error('no missions');
+        const mData={date:today,loading:false,missions};
+        saveMissions(mData);renderMissions(mData);
+      }catch(e){
+        const fallback={date:today,loading:false,missions:[
+          {id:'m1',text:'タスクを1つ完了する',type:'complete_task',done:false},
+          {id:'m2',text:'筋トレを記録する',type:'log_workout',done:false},
+          {id:'m3',text:'AIと話す',type:'open_ai',done:false},
+        ]};
+        saveMissions(fallback);renderMissions(fallback);
+      }
+    }
+
+    // 達成フック（グローバルに公開）
+    window._missionHook=function(type,extra){
+      const today=todayStr();
+      const cached=loadMissions();
+      if(!cached||cached.date!==today)return;
+      let updated=false;
+      for(const m of cached.missions){
+        if(m.done)continue;
+        if(type==='complete_task'&&(m.type==='complete_task')&&(!m.taskId||m.taskId===extra?.taskId)){m.done=true;updated=true;}
+        else if(type==='log_workout'&&m.type==='log_workout'){m.done=true;updated=true;}
+        else if(type==='open_ai'&&m.type==='open_ai'){m.done=true;updated=true;}
+      }
+      if(updated){checkStreakUpdate(cached.missions);saveMissions(cached);renderMissions(cached);}
+    };
+
+    setTimeout(generateMissions,2500);
   })();
 })();
 
