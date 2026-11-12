@@ -122,10 +122,23 @@ input[type=number]{-moz-appearance:textfield;}
 /* AI chat */
 .ai-fab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(var(--nav-h) + 14px + env(safe-area-inset-bottom,0px));width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(99,102,241,.5);z-index:9;transition:transform .12s;}
 .ai-fab:active{transform:scale(.93);}
-.ai-modal{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;background:var(--bg);max-width:480px;margin:0 auto;}
+.ai-modal{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;background:var(--bg);max-width:480px;margin:0 auto;overflow:hidden;}
 .ai-modal[hidden]{display:none;}
-.ai-modal-hdr{display:flex;align-items:center;gap:10px;padding:calc(var(--safe-top) + 4px) 16px 12px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.ai-modal-hdr{display:flex;align-items:center;gap:8px;padding:calc(var(--safe-top) + 4px) 12px 12px;border-bottom:1px solid var(--border);flex-shrink:0;}
 .ai-modal-hdr h2{flex:1;font-size:16px;font-weight:700;}
+.ai-hdr-btn{background:none;border:none;font-size:20px;color:var(--fg2);cursor:pointer;padding:6px;line-height:1;}
+.ai-hist-panel{position:absolute;inset:0;z-index:10;background:var(--bg);display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .25s ease;}
+.ai-hist-panel.open{transform:translateX(0);}
+.ai-hist-hdr{display:flex;align-items:center;gap:8px;padding:calc(var(--safe-top) + 4px) 12px 12px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.ai-hist-hdr h2{flex:1;font-size:16px;font-weight:700;}
+.ai-hist-list{flex:1;overflow-y:auto;padding:8px 0;}
+.ai-hist-item{display:flex;flex-direction:column;gap:2px;padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--border);}
+.ai-hist-item:active{background:var(--surface2);}
+.ai-hist-item.active{background:var(--surface2);}
+.ai-hist-item-title{font-size:14px;font-weight:500;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ai-hist-item-date{font-size:12px;color:var(--fg2);}
+.ai-hist-empty{text-align:center;color:var(--fg2);font-size:14px;padding:40px 16px;}
+.ai-new-btn{margin:12px 16px;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;}
 .ai-close{background:none;border:none;font-size:22px;color:var(--fg2);cursor:pointer;padding:6px;}
 .ai-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;}
 .ai-msg{max-width:85%;padding:10px 14px;border-radius:16px;font-size:14px;line-height:1.5;}
@@ -1001,9 +1014,19 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
 <button class="ai-fab" id="ai-fab" title="AIアシスタント">✨</button>
 
 <div class="ai-modal" id="ai-modal" hidden>
+  <!-- 履歴パネル -->
+  <div class="ai-hist-panel" id="ai-hist-panel">
+    <div class="ai-hist-hdr">
+      <button class="ai-hdr-btn" id="ai-hist-close">←</button>
+      <h2>チャット履歴</h2>
+    </div>
+    <button class="ai-new-btn" id="ai-new-chat">✏ 新しいチャット</button>
+    <div class="ai-hist-list" id="ai-hist-list"></div>
+  </div>
+  <!-- メインチャット -->
   <div class="ai-modal-hdr">
-    <span style="font-size:20px;">✨</span>
-    <h2>AIアシスタント</h2>
+    <button class="ai-hdr-btn" id="ai-hist-open">☰</button>
+    <h2 id="ai-chat-title">AIアシスタント</h2>
     <button class="ai-close" id="ai-close">✕</button>
   </div>
   <div class="ai-messages" id="ai-messages">
@@ -1721,6 +1744,7 @@ Object.values(db.workouts||{}).forEach(exs=>{
 // migrate repeating tasks: add completedDates array
 (db.tasks||[]).forEach(t=>{if(t.repeat&&!t.completedDates)t.completedDates=[];});
 if(!db.nutrients)db.nutrients=[];
+if(!db.aiChats)db.aiChats=[];
 if(!db.settings)db.settings={addBtnPos:'center',highlightTab:'wo',calLayout:'general'};
 if(!db.settings.highlightTab)db.settings.highlightTab='wo';
 if(!db.settings.calLayout)db.settings.calLayout='general';
@@ -4278,13 +4302,96 @@ window.updatePcSettingsUI();
 
 // ── AIチャット ────────────────────────────────────────────
 (function(){
-  const aiHistory=[];
+  const UID=()=>Date.now().toString(36)+Math.random().toString(36).slice(2);
+  let currentSessionId=null;
+  let aiHistory=[];
+
   const AI_TOOLS=[
     {name:'add_event',description:'カレンダーに予定を追加する',input_schema:{type:'object',properties:{title:{type:'string',description:'予定のタイトル'},date:{type:'string',description:'日付（YYYY-MM-DD）'},time:{type:'string',description:'開始時刻（HH:MM）終日なら省略'},time_end:{type:'string',description:'終了時刻（HH:MM）省略可'},location:{type:'string',description:'場所（省略可）'},memo:{type:'string',description:'メモ（省略可）'}},required:['title','date']}},
     {name:'add_task',description:'タスクを追加する',input_schema:{type:'object',properties:{title:{type:'string',description:'タスクのタイトル'},priority:{type:'string',enum:['high','mid','low'],description:'優先度 high=高/mid=中/low=低'},due:{type:'string',description:'期限（YYYY-MM-DD）省略可'},memo:{type:'string',description:'メモ（省略可）'}},required:['title']}},
     {name:'complete_task',description:'タスクを完了にする。コンテキストのタスクIDを使う',input_schema:{type:'object',properties:{task_id:{type:'string',description:'タスクのID（コンテキストの[id:...]）'}},required:['task_id']}},
     {name:'add_goal',description:'目標を追加する',input_schema:{type:'object',properties:{title:{type:'string',description:'目標のタイトル'},level:{type:'string',enum:['high','mid','low'],description:'重要度'},due:{type:'string',description:'期限（YYYY-MM-DD）省略可'}},required:['title']}},
   ];
+
+  // ── セッション管理 ──
+  function saveSession(){
+    if(!currentSessionId||!aiHistory.length)return;
+    const idx=db.aiChats.findIndex(c=>c.id===currentSessionId);
+    const firstUser=aiHistory.find(m=>m.role==='user');
+    const title=firstUser?firstUser.content.slice(0,40)+(firstUser.content.length>40?'…':''):'新しいチャット';
+    const sess={id:currentSessionId,title,updatedAt:new Date().toISOString(),messages:[...aiHistory]};
+    if(idx>=0)db.aiChats[idx]=sess;
+    else db.aiChats.unshift(sess);
+    save(db);
+  }
+  function startNewSession(){
+    saveSession();
+    currentSessionId=UID();
+    aiHistory=[];
+    const wrap=document.getElementById('ai-messages');
+    wrap.innerHTML='<div class="ai-empty">今日の予定・タスク・目標を把握しています。<br>何でも聞いてください。</div>';
+    document.getElementById('ai-chat-title').textContent='AIアシスタント';
+  }
+  function loadSession(sess){
+    saveSession();
+    currentSessionId=sess.id;
+    aiHistory=[...sess.messages];
+    const wrap=document.getElementById('ai-messages');
+    wrap.innerHTML='';
+    for(const m of aiHistory){
+      const div=document.createElement('div');
+      div.className='ai-msg '+(m.role==='user'?'user':'ai');
+      div.innerHTML=safeHtml(m.content);
+      wrap.appendChild(div);
+    }
+    wrap.scrollTop=wrap.scrollHeight;
+    document.getElementById('ai-chat-title').textContent=sess.title.slice(0,20)+(sess.title.length>20?'…':'');
+  }
+
+  // ── 履歴パネル ──
+  function renderHistList(){
+    const list=document.getElementById('ai-hist-list');
+    list.innerHTML='';
+    if(!db.aiChats.length){
+      list.innerHTML='<div class="ai-hist-empty">履歴はありません</div>';
+      return;
+    }
+    for(const sess of db.aiChats){
+      const item=document.createElement('div');
+      item.className='ai-hist-item'+(sess.id===currentSessionId?' active':'');
+      const d=new Date(sess.updatedAt);
+      const dateStr=`${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+      item.innerHTML=`<div class="ai-hist-item-title">${safeHtml(sess.title)}</div><div class="ai-hist-item-date">${dateStr}</div>`;
+      item.onclick=()=>{
+        loadSession(sess);
+        closeHistPanel();
+      };
+      list.appendChild(item);
+    }
+  }
+  function openHistPanel(){
+    renderHistList();
+    document.getElementById('ai-hist-panel').classList.add('open');
+  }
+  function closeHistPanel(){
+    document.getElementById('ai-hist-panel').classList.remove('open');
+  }
+
+  // ── 表示 ──
+  function safeHtml(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
+  function addMsg(role,text,thinking){
+    aiHistory.push({role,content:text});
+    const wrap=document.getElementById('ai-messages');
+    const empty=wrap.querySelector('.ai-empty');
+    if(empty)empty.remove();
+    const div=document.createElement('div');
+    div.className='ai-msg '+(role==='user'?'user':'ai')+(thinking?' thinking':'');
+    div.innerHTML=safeHtml(text);
+    wrap.appendChild(div);
+    wrap.scrollTop=wrap.scrollHeight;
+  }
+
+  // ── ツール ──
   function getContext(){
     const today=todayStr();
     const todayD=new Date(today+'T00:00:00');
@@ -4303,13 +4410,12 @@ window.updatePcSettingsUI();
     return `【今日の日付】${today}\n【今後14日間の予定】\n${evs}\n【未完了タスク】\n${tasks}\n【進行中の目標】\n${goals}\n【カレンダー一覧】\n${cals}`;
   }
   function executeTool(name,input){
-    const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2);
     if(name==='add_event'){
-      const ev={id:uid(),date:input.date,title:input.title,time:input.time||'',timeEnd:input.time_end||'',allDay:!input.time,color:'',calendarId:(db.calendars[0]||{}).id||'',location:input.location||'',memo:input.memo||'',repeat:'none',repeatEnd:null,exceptions:[]};
+      const ev={id:UID(),date:input.date,title:input.title,time:input.time||'',timeEnd:input.time_end||'',allDay:!input.time,color:'',calendarId:(db.calendars[0]||{}).id||'',location:input.location||'',memo:input.memo||'',repeat:'none',repeatEnd:null,exceptions:[]};
       db.events.push(ev);save(db);return `「${ev.title}」を${ev.date}に追加しました。`;
     }
     if(name==='add_task'){
-      const task={id:uid(),title:input.title,done:false,priority:input.priority||'mid',due:input.due||'',repeat:'',goalId:'',location:'',memo:input.memo||'',completedAt:null,completedDates:[]};
+      const task={id:UID(),title:input.title,done:false,priority:input.priority||'mid',due:input.due||'',repeat:'',goalId:'',location:'',memo:input.memo||'',completedAt:null,completedDates:[]};
       db.tasks.push(task);save(db);return `タスク「${task.title}」を追加しました。`;
     }
     if(name==='complete_task'){
@@ -4318,7 +4424,7 @@ window.updatePcSettingsUI();
       task.done=true;task.completedAt=todayStr();save(db);return `「${task.title}」を完了にしました。`;
     }
     if(name==='add_goal'){
-      const goal={id:uid(),title:input.title,type:'manual',progress:0,freq:'monthly',freqMonths:1,lastReview:null,level:input.level||'mid',dueDate:input.due||null,createdAt:todayStr(),done:false,achievedAt:null};
+      const goal={id:UID(),title:input.title,type:'manual',progress:0,freq:'monthly',freqMonths:1,lastReview:null,level:input.level||'mid',dueDate:input.due||null,createdAt:todayStr(),done:false,achievedAt:null};
       db.goals.push(goal);save(db);return `目標「${goal.title}」を追加しました。`;
     }
     return `不明なツール: ${name}`;
@@ -4354,24 +4460,15 @@ window.updatePcSettingsUI();
       wrap.appendChild(div);wrap.scrollTop=wrap.scrollHeight;
     });
   }
-  function safeHtml(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
-  function addMsg(role,text,thinking){
-    aiHistory.push({role,content:text});
-    const wrap=document.getElementById('ai-messages');
-    const empty=wrap.querySelector('.ai-empty');
-    if(empty)empty.remove();
-    const div=document.createElement('div');
-    div.className='ai-msg '+(role==='user'?'user':'ai')+(thinking?' thinking':'');
-    div.innerHTML=safeHtml(text);
-    wrap.appendChild(div);
-    wrap.scrollTop=wrap.scrollHeight;
-  }
+
+  // ── 送信 ──
   async function sendMsg(){
     const input=document.getElementById('ai-input');
     const btn=document.getElementById('ai-send');
     const text=input.value.trim();
     if(!text)return;
     input.value='';input.style.height='auto';btn.disabled=true;
+    if(!currentSessionId)currentSessionId=UID();
     addMsg('user',text);
     addMsg('ai','考え中…',true);
     const thinkingEl=document.getElementById('ai-messages').lastChild;
@@ -4384,7 +4481,7 @@ window.updatePcSettingsUI();
         const workerUrl=db.settings.workerUrl||'';
         if(!workerUrl){thinkingEl.textContent='設定からWorker URLを入力してください';thinkingEl.className='ai-msg ai';btn.disabled=false;return;}
         const system='あなたはLifeHubのAIアシスタントです。ユーザーの生活データを把握しており、日本語でアドバイスします。ツールを使ってデータの追加・変更が可能です。ユーザーが何かを追加・変更したそうな場合は積極的にツールを活用してください。\n\n【回答フォーマットのルール】\n・適切な場所で改行を入れ、読みやすくする\n・複数の内容がある場合は箇条書き（・）を使う\n・句読点（。、）を正しく使い、文章を短く区切る\n・何を言いたいか一目でわかるよう、結論や要点を最初に書く\n・長くなりすぎず、必要な情報に絞って答える\n\n'+getContext();
-        const apiMessages=aiHistory.slice(0,-2).filter(m=>m.role==='user'||m.role==='assistant').map(m=>({role:m.role==='user'?'user':'assistant',content:m.content}));
+        const apiMessages=aiHistory.slice(0,-2).filter(m=>m.role==='user'||m.role==='assistant').map(m=>({role:m.role,content:m.content}));
         apiMessages.push({role:'user',content:text});
         while(true){
           const res=await fetch(workerUrl,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-sonnet-5-5',max_tokens:1024,system,messages:apiMessages,tools:AI_TOOLS})});
@@ -4407,14 +4504,20 @@ window.updatePcSettingsUI();
       thinkingEl.innerHTML=safeHtml(reply);
       thinkingEl.className='ai-msg ai';
       aiHistory[aiHistory.length-1]={role:'assistant',content:reply};
+      saveSession();
     }catch(e){
       thinkingEl.textContent='エラーが発生しました: '+e.message;
       thinkingEl.className='ai-msg ai';
     }
     btn.disabled=false;
   }
+
+  // ── イベント ──
   document.getElementById('ai-fab').onclick=()=>{document.getElementById('ai-modal').hidden=false;document.getElementById('ai-input').focus();};
   document.getElementById('ai-close').onclick=()=>{document.getElementById('ai-modal').hidden=true;};
+  document.getElementById('ai-hist-open').onclick=openHistPanel;
+  document.getElementById('ai-hist-close').onclick=closeHistPanel;
+  document.getElementById('ai-new-chat').onclick=()=>{startNewSession();closeHistPanel();document.getElementById('ai-input').focus();};
   document.getElementById('ai-send').onclick=sendMsg;
   const aiInput=document.getElementById('ai-input');
   aiInput.addEventListener('input',()=>{aiInput.style.height='auto';aiInput.style.height=Math.min(aiInput.scrollHeight,160)+'px';});
