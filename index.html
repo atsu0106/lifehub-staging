@@ -136,6 +136,20 @@ input[type=number]{-moz-appearance:textfield;}
 .ai-brief-card .ai-brief-text{font-size:13px;color:var(--fg);line-height:1.65;}
 .ai-brief-card .ai-brief-refresh{position:absolute;top:10px;right:10px;background:none;border:none;font-size:14px;color:var(--fg3);cursor:pointer;padding:2px 5px;border-radius:4px;}
 .ai-brief-card.loading .ai-brief-text{color:var(--fg3);}
+@keyframes lu-particle{0%{transform:translateY(0) rotate(0deg);opacity:1;}100%{transform:translateY(110vh) rotate(720deg);opacity:0;}}
+@keyframes lu-pop{0%{transform:scale(.4);opacity:0;}60%{transform:scale(1.15);}100%{transform:scale(1);opacity:1;}}
+@keyframes lu-fade{0%{opacity:0;}100%{opacity:1;}}
+@keyframes lu-aurora{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
+@keyframes lu-shake{0%,100%{transform:scale(1);}20%,60%{transform:scale(1.08);}40%,80%{transform:scale(.96);}}
+@keyframes lu-star{0%{transform:scale(0) rotate(0deg);opacity:0;}50%{opacity:1;}100%{transform:scale(1) rotate(360deg);opacity:0;}}
+@keyframes lu-ultra-bg{0%{background-position:0% 0%;}100%{background-position:200% 200%;}}
+.lu-particle{position:absolute;width:8px;height:8px;border-radius:2px;pointer-events:none;animation:lu-particle linear forwards;}
+.lu-content{position:relative;z-index:2;text-align:center;animation:lu-pop .5s cubic-bezier(.34,1.56,.64,1) both;}
+.lu-badge{font-size:12px;font-weight:900;letter-spacing:.2em;margin-bottom:6px;}
+.lu-level-num{font-size:72px;font-weight:900;line-height:1;}
+.lu-title{font-size:18px;font-weight:700;margin-top:4px;}
+.lu-rarity{font-size:13px;font-weight:700;margin-top:8px;letter-spacing:.1em;}
+.lu-hint{font-size:11px;margin-top:16px;opacity:.6;}
 .gs-level-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
 .gs-level-badge{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#7c3aed);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;}
 .gs-level-badge .gs-lv-label{font-size:9px;font-weight:700;color:rgba(255,255,255,.8);letter-spacing:.05em;}
@@ -3265,7 +3279,7 @@ function toggleTaskDone(id){
     t.completedAt=t.done?TODAY:null;
     if(t.done)window._missionHook?.('complete_task',{taskId:t.id});
   }
-  save(db);renderTodayTasks();renderTasks();
+  save(db);renderTodayTasks();renderTasks();checkLevelUp();
 }
 function renderTasks(){
   renderTodayTasks();
@@ -3836,7 +3850,7 @@ function exAddAndClose(name){
   else initSet={time:null};
   db.workouts[st.woDate].push({id:uid(),name,category:cat,sets:[initSet]});
   save(db);inp.value='';exHideSug();renderWo();
-  window._missionHook?.('log_workout');
+  window._missionHook?.('log_workout');checkLevelUp();
 }
 function exHideSug(){document.getElementById('ex-sug-list').classList.remove('show');}
 function exShowSug(){
@@ -4733,7 +4747,7 @@ window.updatePcSettingsUI();
       if(!ev)return `ID「${input.event_id}」の予定が見つかりませんでした。`;
       ev.aiXp=Math.max(1,Math.round(input.xp));
       ev.aiXpReason=input.reason||'';
-      save(db);
+      save(db);checkLevelUp();
       return `「${ev.title}」に${ev.aiXp}XPを付与しました。（${input.reason}）`;
     }
     return `不明なツール: ${name}`;
@@ -5130,6 +5144,54 @@ function calcGameStats(){
   ];
   return{level,xp,remaining,xpForNext,str,int,vit,title,badges,totalTasks,totalWorkouts,streak};
 }
+function checkLevelUp(){
+  const g=calcGameStats();
+  let last=1;try{last=parseInt(localStorage.getItem('lh_last_level')||'1');}catch{}
+  if(g.level<=last)return;
+  localStorage.setItem('lh_last_level',String(g.level));
+  const today=todayStr();
+  let seen;try{seen=JSON.parse(localStorage.getItem('lh_lu_seen')||'null');}catch{}
+  if(seen&&seen.date===today)return;// 1日1回
+  const roll=Math.random();
+  let rarity;
+  if(roll<0.03)rarity='ultra';
+  else if(roll<0.15)rarity='rare';
+  else if(roll<0.40)rarity='uncommon';
+  else rarity='common';
+  try{localStorage.setItem('lh_lu_seen',JSON.stringify({date:today,level:g.level,rarity}));}catch{}
+  showLevelUpAnim(g.level,g.title,rarity);
+}
+function showLevelUpAnim(level,title,rarity){
+  const ov=document.getElementById('lu-overlay');
+  if(!ov)return;
+  const cfg={
+    common:{bg:'rgba(0,0,0,.85)',badge:'LEVEL UP',badgeColor:'#fbbf24',numColor:'#fff',rarityLabel:'',rarityColor:'#fbbf24',particles:30,colors:['#fbbf24','#f59e0b','#fff']},
+    uncommon:{bg:'rgba(0,0,20,.9)',badge:'LEVEL UP',badgeColor:'#60a5fa',numColor:'#e0f2fe',rarityLabel:'★ UNCOMMON',rarityColor:'#60a5fa',particles:60,colors:['#60a5fa','#818cf8','#c084fc','#fff']},
+    rare:{bg:'',badge:'LEVEL UP',badgeColor:'#f0abfc',numColor:'#fff',rarityLabel:'★★ RARE',rarityColor:'#f0abfc',particles:100,colors:['#f0abfc','#c084fc','#818cf8','#60a5fa','#34d399']},
+    ultra:{bg:'',badge:'— ULTRA RARE —',badgeColor:'#fde68a',numColor:'#fde68a',rarityLabel:'★★★ ULTRA RARE',rarityColor:'#fde68a',particles:150,colors:['#fde68a','#fbbf24','#f59e0b','#f0abfc','#c084fc','#60a5fa','#34d399','#fff']},
+  }[rarity];
+  // 背景
+  if(rarity==='rare')ov.style.background='linear-gradient(135deg,#1e1b4b,#312e81,#4c1d95,#1e1b4b)';
+  else if(rarity==='ultra')ov.style.cssText+='background:linear-gradient(45deg,#1a0030,#003040,#001a30,#300010,#1a0030);background-size:400% 400%;animation:lu-ultra-bg 3s linear infinite;';
+  else ov.style.background=cfg.bg;
+  // パーティクル
+  const frags=[];
+  for(let i=0;i<cfg.particles;i++){
+    const p=document.createElement('div');
+    p.className='lu-particle';
+    p.style.cssText=`left:${Math.random()*100}%;top:-10px;background:${cfg.colors[i%cfg.colors.length]};width:${4+Math.random()*8}px;height:${4+Math.random()*8}px;border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${1.5+Math.random()*2.5}s;animation-delay:${Math.random()*1}s;`;
+    frags.push(p);
+  }
+  // コンテンツ
+  const content=document.createElement('div');
+  content.className='lu-content';
+  content.innerHTML=`<div class="lu-badge" style="color:${cfg.badgeColor}">${cfg.badge}</div><div class="lu-level-num" style="color:${cfg.numColor}${rarity==='ultra'?';text-shadow:0 0 40px #fde68a,0 0 80px #f59e0b':''}">${level}</div><div class="lu-title" style="color:${cfg.numColor};opacity:.8">${title}</div>${cfg.rarityLabel?`<div class="lu-rarity" style="color:${cfg.rarityColor}">${cfg.rarityLabel}</div>`:''}<div class="lu-hint" style="color:#fff">タップで閉じる</div>`;
+  ov.innerHTML='';
+  frags.forEach(p=>ov.appendChild(p));
+  ov.appendChild(content);
+  ov.hidden=false;
+  ov.onclick=()=>{ov.hidden=true;ov.style.cssText='position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;';};
+}
 function renderGameStats(){
   const panel=document.getElementById('game-stats-panel');
   if(!panel)return;
@@ -5154,5 +5216,6 @@ function renderGameStats(){
   `;
 }
 </script>
+<div id="lu-overlay" hidden style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;"></div>
 </body>
 </html>
