@@ -133,7 +133,7 @@ input[type=number]{-moz-appearance:textfield;}
 .ai-msg.ai{align-self:flex-start;background:var(--surface);color:var(--fg);border-bottom-left-radius:4px;}
 .ai-msg.ai.thinking{color:var(--fg2);font-style:italic;}
 .ai-input-row{display:flex;gap:8px;padding:12px 16px calc(12px + var(--safe-bot));border-top:1px solid var(--border);flex-shrink:0;}
-.ai-input{flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:22px;padding:10px 16px;font-size:14px;font-family:inherit;color:var(--fg);outline:none;}
+.ai-input{flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:16px;padding:10px 16px;font-size:14px;font-family:inherit;color:var(--fg);outline:none;resize:none;overflow-y:hidden;line-height:1.4;min-height:42px;max-height:160px;overflow-y:auto;}
 .ai-input:focus{border-color:var(--accent);}
 .ai-send{width:42px;height:42px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .ai-send:disabled{opacity:.4;}
@@ -1010,7 +1010,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
     <div class="ai-empty">今日の予定・タスク・目標を把握しています。<br>何でも聞いてください。</div>
   </div>
   <div class="ai-input-row">
-    <input class="ai-input" id="ai-input" type="text" placeholder="メッセージを入力..." autocomplete="off">
+    <textarea class="ai-input" id="ai-input" placeholder="メッセージを入力..." autocomplete="off" rows="1"></textarea>
     <button class="ai-send" id="ai-send">▶</button>
   </div>
 </div>
@@ -4371,7 +4371,7 @@ window.updatePcSettingsUI();
     const btn=document.getElementById('ai-send');
     const text=input.value.trim();
     if(!text)return;
-    input.value='';btn.disabled=true;
+    input.value='';input.style.height='auto';btn.disabled=true;
     addMsg('user',text);
     addMsg('ai','考え中…',true);
     const thinkingEl=document.getElementById('ai-messages').lastChild;
@@ -4416,7 +4416,9 @@ window.updatePcSettingsUI();
   document.getElementById('ai-fab').onclick=()=>{document.getElementById('ai-modal').hidden=false;document.getElementById('ai-input').focus();};
   document.getElementById('ai-close').onclick=()=>{document.getElementById('ai-modal').hidden=true;};
   document.getElementById('ai-send').onclick=sendMsg;
-  document.getElementById('ai-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}});
+  const aiInput=document.getElementById('ai-input');
+  aiInput.addEventListener('input',()=>{aiInput.style.height='auto';aiInput.style.height=Math.min(aiInput.scrollHeight,160)+'px';});
+  aiInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}});
 })();
 </script>
 </body>
