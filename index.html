@@ -1282,7 +1282,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
     <div class="m-actions" style="margin-top:16px;">
       <button class="btn-ok" id="settings-close" style="width:100%;">閉じる</button>
     </div>
-    <p style="text-align:center;font-size:11px;color:var(--fg3);margin-top:12px;">LifeHub v1.4.0</p>
+    <p style="text-align:center;font-size:11px;color:var(--fg3);margin-top:12px;">LifeHub v1.5.0</p>
   </div>
 </div>
 
@@ -1892,6 +1892,7 @@ Object.values(db.workouts||{}).forEach(exs=>{
 if(!db.nutrients)db.nutrients=[];
 if(!db.aiChats)db.aiChats=[];
 if(!db.userProfile)db.userProfile={useCase:[]};
+if(!db.lifeXp)db.lifeXp=[];
 if(!db.settings)db.settings={addBtnPos:'center',highlightTab:'wo',calLayout:'general'};
 if(!db.settings.highlightTab)db.settings.highlightTab='wo';
 if(!db.settings.calLayout)db.settings.calLayout='general';
@@ -4628,6 +4629,7 @@ window.updatePcSettingsUI();
     {name:'complete_task',description:'タスクを完了にする。コンテキストのタスクIDを使う',input_schema:{type:'object',properties:{task_id:{type:'string',description:'タスクのID（コンテキストの[id:...]）'}},required:['task_id']}},
     {name:'add_goal',description:'目標を追加する',input_schema:{type:'object',properties:{title:{type:'string',description:'目標のタイトル'},level:{type:'string',enum:['high','mid','low'],description:'重要度'},due:{type:'string',description:'期限（YYYY-MM-DD）省略可'}},required:['title']}},
     {name:'award_event_xp',description:'過去の予定に経験値（XP）を付与する。会話でイベントの難易度・達成感を聞き出した後に呼ぶ。まだXPが付いていない過去の予定だけに使う',input_schema:{type:'object',properties:{event_id:{type:'string',description:'予定のID（コンテキストの[id:...]）'},xp:{type:'number',description:'付与するXP。日常予定=5〜20、授業=5〜15、定期試験=40〜100、CBT/OSCE=1000〜3000、国試=5000〜10000'},reason:{type:'string',description:'XP付与の理由（例: 難しい試験を乗り越えた）'}},required:['event_id','xp','reason']}},
+    {name:'award_xp',description:'カレンダーに登録されていない体験・喜び・発見に経験値（XP）を付与する。ユーザーが美味しいご飯を食べた・旅行に行った・新しいことを学んだ・感動したなど、幸せや充実感に繋がる体験を話してくれたときに使う',input_schema:{type:'object',properties:{title:{type:'string',description:'体験のタイトル（例: 渋谷の新しいラーメン屋、京都旅行、量子力学の基礎を理解した）'},category:{type:'string',enum:['travel','food','learning','joy','challenge','other'],description:'travel=旅行, food=美味しい発見, learning=学び/新しい知識, joy=喜び/感動/楽しかった体験, challenge=挑戦/初体験, other=その他'},xp:{type:'number',description:'付与するXP。美味しい発見=3〜10、新しい学び=5〜20、感動体験=5〜15、旅行の目的地1か所=20〜50（特別な場所は100以上も可）、初体験=10〜30'},reason:{type:'string',description:'XP付与の理由（例: 本当に美味しくて幸せな体験だったから）'}},required:['title','category','xp','reason']}},
   ];
 
   // ── セッション管理 ──
@@ -4794,10 +4796,18 @@ window.updatePcSettingsUI();
       save(db);checkLevelUp();
       return `「${ev.title}」に${ev.aiXp}XPを付与しました。（${input.reason}）`;
     }
+    if(name==='award_xp'){
+      const entry={id:UID(),date:todayStr(),title:input.title,category:input.category||'other',xp:Math.max(1,Math.round(input.xp)),reason:input.reason||'',awardedAt:new Date().toISOString()};
+      if(!db.lifeXp)db.lifeXp=[];
+      db.lifeXp.push(entry);
+      save(db);checkLevelUp();
+      const catIcon={travel:'✈️',food:'🍽️',learning:'💡',joy:'😊',challenge:'⚡',other:'🌟'}[entry.category]||'🌟';
+      return `${catIcon}「${entry.title}」に${entry.xp}XP付与しました！（${entry.reason}）`;
+    }
     return `不明なツール: ${name}`;
   }
   function showToolConfirm(toolUseBlocks){
-    const TLABEL={add_event:'📅 予定を追加',add_task:'✅ タスクを追加',complete_task:'☑ タスクを完了',add_goal:'🎯 目標を追加',award_event_xp:'⭐ 予定にXPを付与'};
+    const TLABEL={add_event:'📅 予定を追加',add_task:'✅ タスクを追加',complete_task:'☑ タスクを完了',add_goal:'🎯 目標を追加',award_event_xp:'⭐ 予定にXPを付与',award_xp:'🌟 体験にXPを付与'};
     return new Promise(resolve=>{
       const wrap=document.getElementById('ai-messages');
       const div=document.createElement('div');div.className='ai-msg ai';
@@ -4813,6 +4823,9 @@ window.updatePcSettingsUI();
         if(i.due)txt+=`・期限: ${i.due}\n`;
         if(i.level)txt+=`・重要度: ${i.level==='high'?'高':i.level==='low'?'低':'中'}\n`;
         if(i.task_id){const t=db.tasks.find(t=>t.id===i.task_id);txt+=`・「${t?t.title:i.task_id}」\n`;}
+        if(i.xp)txt+=`・XP: ${i.xp}\n`;
+        if(i.reason)txt+=`・理由: ${i.reason}\n`;
+        if(i.category){const cmap={travel:'✈️旅行',food:'🍽️食体験',learning:'💡学び',joy:'😊喜び',challenge:'⚡挑戦',other:'🌟その他'};txt+=`・カテゴリ: ${cmap[i.category]||i.category}\n`;}
         txt+='\n';
       }
       div.innerHTML=safeHtml(txt);
@@ -4846,7 +4859,7 @@ window.updatePcSettingsUI();
         reply='[DEVモード] AIは動作していません。Worker URLを設定すると実際に動作します。\n\n取得したコンテキスト:\n'+getContext();
       } else {
         const workerUrl=WORKER_URL;
-        const system='あなたはLifeHubのAIアシスタントです。ユーザーの生活データを把握しており、日本語でアドバイスします。ツールを使ってデータの追加・変更が可能です。ユーザーが何かを追加・変更したそうな場合は積極的にツールを活用してください。\n\n【XP付与ルール】\n過去の予定でaiXpが付いていないものがあれば、会話の流れで自然に「どうだった？」と聞き出し、award_event_xp でXPを付与する。\n目安: 国試・医師国家試験=5000〜10000、CBT・OSCE等の一発勝負系大型試験=1000〜3000、定期試験=40〜100、難しい実習・発表=30〜80、普通の授業=5〜15、日常的な予定=5〜20、遊び・趣味・楽しい予定=1〜5。\nXPは「努力・苦労・達成」に対する報酬。楽しいだけの予定（友達と遊ぶ・趣味・娯楽など）は基本1〜5の低めに設定する。年に一度・一発勝負・人生を左右するレベルの予定は桁違いのXPを与えてよい。\nユーザーの申告より予定の実態を優先して判断すること。\n\n【回答フォーマットのルール】\n・適切な場所で改行を入れ、読みやすくする\n・複数の内容がある場合は箇条書き（・）を使う\n・句読点（。、）を正しく使い、文章を短く区切る\n・何を言いたいか一目でわかるよう、結論や要点を最初に書く\n・長くなりすぎず、必要な情報に絞って答える\n\n'+getContext();
+        const system='あなたはLifeHubのAIアシスタントです。ユーザーの生活データを把握しており、日本語でアドバイスします。ツールを使ってデータの追加・変更が可能です。ユーザーが何かを追加・変更したそうな場合は積極的にツールを活用してください。\n\n【XP哲学】\nXPは「人生の充実」への報酬。努力・達成だけでなく、幸せな体験・発見・成長にも与える。LifeHubはユーザーの人生をゲーム化し、充実した人生を送るための相棒である。\n\n【award_event_xp — 過去の予定へのXP】\n過去の予定でaiXpが付いていないものがあれば、会話の流れで自然に「どうだった？」と聞き出し付与する。\n目安: 国試=5000〜10000、CBT/OSCE=1000〜3000、定期試験=40〜100、難しい実習=30〜80、授業=5〜15、日常予定=5〜20、楽しい遊び=1〜5。\nユーザーの申告より予定の実態を優先。\n\n【award_xp — 体験・幸せへのXP（新機能）】\nユーザーが以下を話してくれたときは自然に聞き出し award_xp を使う:\n・美味しいご飯や新しいお店を発見した → food: 3〜10\n・旅行・新しい場所に行った → travel: 20〜100（特別な場所は100以上も可。旅行の目的地1か所ごとに付与）\n・新しいことを学んだ・理解が深まった → learning: 5〜30\n・感動・喜び・楽しかった体験 → joy: 5〜20\n・初めての挑戦・体験 → challenge: 10〜30\nポイント: 目標が「旅行をたくさんしたい」なら旅行で働いてお金を貯めること（タスク）も目標連動XP対象。旅行先1か所訪問は award_xp(travel)で記録する。\n\n【回答フォーマットのルール】\n・適切な場所で改行を入れ、読みやすくする\n・複数の内容がある場合は箇条書き（・）を使う\n・句読点（。、）を正しく使い、文章を短く区切る\n・何を言いたいか一目でわかるよう、結論や要点を最初に書く\n・長くなりすぎず、必要な情報に絞って答える\n\n'+getContext();
         const apiMessages=aiHistory.slice(0,-2).filter(m=>m.role==='user'||m.role==='assistant').map(m=>({role:m.role,content:m.content}));
         apiMessages.push({role:'user',content:text});
         while(true){
@@ -5184,8 +5197,12 @@ function calcGameStats(){
     else if(evKw.fun.some(k=>t.includes(k)))eventXp+=2;
     else eventXp+=10;
   }
+  // 体験XP（lifeXp）
+  const lifeXpList=db.lifeXp||[];
+  const lifeXp=lifeXpList.reduce((s,e)=>s+e.xp,0);
+  const travelCount=lifeXpList.filter(e=>e.category==='travel').length;
   // XP合算
-  const xp=taskXp+totalWorkouts*15+streak*8+eventXp;
+  const xp=taskXp+totalWorkouts*15+streak*8+eventXp+lifeXp;
   // レベル計算（累積XP方式）
   let level=1,xpForNext=100,remaining=xp;
   while(remaining>=xpForNext){remaining-=xpForNext;level++;xpForNext=Math.floor(level*100*1.2);}
@@ -5193,6 +5210,7 @@ function calcGameStats(){
   const str=Math.min(99,Math.floor(totalWorkouts*2.5));
   const int=Math.min(99,Math.floor((studyTasks*4+totalTasks*1)));
   const vit=Math.min(99,Math.floor(streak*5+totalWorkouts*0.5+totalTasks*0.3));
+  const hap=Math.min(99,Math.floor(lifeXp/5+travelCount*3));
   // 称号
   const titles=['見習い','学習者','努力家','習慣人','挑戦者','達人','伝説','覇者'];
   const title=titles[Math.min(level-1,titles.length-1)];
@@ -5207,7 +5225,7 @@ function calcGameStats(){
     {id:'b7',icon:'🧠',label:'勉強家',earned:studyTasks>=10},
     {id:'b8',icon:'⚡',label:'Lv.5到達',earned:level>=5},
   ];
-  return{level,xp,remaining,xpForNext,str,int,vit,title,badges,totalTasks,totalWorkouts,streak};
+  return{level,xp,remaining,xpForNext,str,int,vit,hap,title,badges,totalTasks,totalWorkouts,streak,lifeXp,lifeXpList};
 }
 function checkLevelUp(){
   const g=calcGameStats();
@@ -5276,8 +5294,10 @@ function renderGameStats(){
       <div class="gs-stat"><div class="gs-stat-name">STR</div><div class="gs-stat-val">${g.str}</div>${statBar(g.str,'#ef4444')}</div>
       <div class="gs-stat"><div class="gs-stat-name">INT</div><div class="gs-stat-val">${g.int}</div>${statBar(g.int,'#3b82f6')}</div>
       <div class="gs-stat"><div class="gs-stat-name">VIT</div><div class="gs-stat-val">${g.vit}</div>${statBar(g.vit,'#10b981')}</div>
+      <div class="gs-stat"><div class="gs-stat-name">HAP</div><div class="gs-stat-val">${g.hap}</div>${statBar(g.hap,'#f59e0b')}</div>
     </div>
     <div class="gs-badges">${g.badges.map(b=>`<div class="gs-badge ${b.earned?'earned':'locked'}">${b.icon} ${b.label}</div>`).join('')}</div>
+    ${g.lifeXpList.length>0?`<div style="margin-top:12px;"><div style="font-size:11px;font-weight:700;color:var(--fg2);margin-bottom:6px;">🌟 体験XP (累計 ${g.lifeXp}XP)</div>${g.lifeXpList.slice(-5).reverse().map(e=>{const ic={travel:'✈️',food:'🍽️',learning:'💡',joy:'😊',challenge:'⚡',other:'🌟'}[e.category]||'🌟';return `<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid var(--border);font-size:12px;"><span>${ic}</span><span style="flex:1;color:var(--fg)">${e.title}</span><span style="font-weight:700;color:var(--accent)">+${e.xp}</span></div>`;}).join('')}</div>`:''}
   `;
 }
 </script>
