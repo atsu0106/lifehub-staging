@@ -1315,6 +1315,13 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
       <div id="game-stats-panel" style="margin-top:10px;"></div>
     </div>
     <div class="m-field" style="margin-top:16px;">
+      <label>📥 Googleカレンダーをインポート</label>
+      <p style="font-size:12px;color:var(--fg2);margin:6px 0 10px;">Googleカレンダー → 設定 → エクスポート で取得した<strong>.icsファイル</strong>を選択してください。既存データは保持されます。</p>
+      <input type="file" id="ics-file-input" accept=".ics,text/calendar" style="display:none;">
+      <button id="ics-import-btn" style="width:100%;padding:11px;border:1.5px dashed var(--border);border-radius:10px;background:var(--surface2);color:var(--fg2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">📂 .icsファイルを選択</button>
+      <div id="ics-result" style="margin-top:8px;font-size:12px;color:var(--ok);display:none;"></div>
+    </div>
+    <div class="m-field" style="margin-top:16px;">
       <div id="hist-toggle" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;padding:4px 0;">
         <label style="cursor:pointer;font-weight:600;">📋 アップデート履歴</label>
         <span id="hist-arrow" style="font-size:12px;color:var(--fg3);">▾</span>
@@ -3029,6 +3036,122 @@ document.querySelectorAll('.pos-opt[data-hl]').forEach(btn=>{
     if(st.tab==='other')renderOther();
   };
 });
+// ── ICSインポート ─────────────────────────────────────────
+(function(){
+  function parseIcs(text){
+    // 折り返し行（RFC5545: 行頭スペース/タブは前行の続き）を結合
+    const lines=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').replace(/\n[ \t]/g,'').split('\n');
+    const events=[];let cur=null;
+    for(const raw of lines){
+      const col=raw.indexOf(':');if(col<0)continue;
+      const keyFull=raw.slice(0,col).toUpperCase();
+      const val=raw.slice(col+1).trim();
+      const key=keyFull.split(';')[0];
+      if(key==='BEGIN'&&val==='VEVENT'){cur={};continue;}
+      if(key==='END'&&val==='VEVENT'){if(cur)events.push(cur);cur=null;continue;}
+      if(!cur)continue;
+      if(key==='SUMMARY')cur.summary=val.replace(/\\,/g,',').replace(/\\n/g,' ').replace(/\\;/g,';');
+      else if(key==='DTSTART'){cur.dtstart=val;cur.dtstartParams=keyFull;}
+      else if(key==='DTEND'){cur.dtend=val;cur.dtendParams=keyFull;}
+      else if(key==='LOCATION')cur.location=val.replace(/\\,/g,',').replace(/\\n/g,'\n');
+      else if(key==='DESCRIPTION')cur.description=val.replace(/\\,/g,',').replace(/\\n/g,'\n');
+      else if(key==='UID')cur.uid=val;
+      else if(key==='RRULE')cur.rrule=val;
+    }
+    return events;
+  }
+  function parseDt(val,params){
+    if(!val)return null;
+    // 終日: YYYYMMDD
+    if(/^\d{8}$/.test(val)){return {date:val.slice(0,4)+'-'+val.slice(4,6)+'-'+val.slice(6,8),allDay:true};}
+    // 日時: YYYYMMDDTHHMMSSZ または YYYYMMDDTHHMMSS
+    const m=val.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)$/);
+    if(!m)return null;
+    const isUtc=m[7]==='Z'||(params&&params.includes('TZID')?false:m[7]==='Z');
+    const d=new Date(Date.UTC(+m[1],+m[2]-1,+m[3],+m[4],+m[5],+m[6]));
+    if(isUtc){
+      // UTCをJSTに変換（+9時間）
+      d.setUTCHours(d.getUTCHours()+9);
+    }
+    const yyyy=d.getUTCFullYear();
+    const mm=String(d.getUTCMonth()+1).padStart(2,'0');
+    const dd=String(d.getUTCDate()).padStart(2,'0');
+    const hh=String(d.getUTCHours()).padStart(2,'0');
+    const mi=String(d.getUTCMinutes()).padStart(2,'0');
+    return {date:`${yyyy}-${mm}-${dd}`,time:`${hh}:${mi}`,allDay:false};
+  }
+  function rruleToRepeat(rrule){
+    if(!rrule)return 'none';
+    if(rrule.includes('FREQ=DAILY'))return 'daily';
+    if(rrule.includes('FREQ=WEEKLY'))return 'weekly';
+    if(rrule.includes('FREQ=MONTHLY'))return 'monthly';
+    return 'none';
+  }
+  function importIcs(text){
+    const rawEvents=parseIcs(text);
+    const calId=(db.calendars[0]||{}).id||'';
+    const existingUids=new Set((db.events||[]).map(e=>e.gcal_uid).filter(Boolean));
+    let added=0,skipped=0;
+    for(const ev of rawEvents){
+      if(!ev.summary)continue;
+      // 重複チェック
+      if(ev.uid&&existingUids.has(ev.uid)){skipped++;continue;}
+      const st=parseDt(ev.dtstart,ev.dtstartParams);
+      if(!st){skipped++;continue;}
+      const en=parseDt(ev.dtend,ev.dtendParams);
+      const repeat=rruleToRepeat(ev.rrule);
+      const newEv={
+        id:UID(),
+        gcal_uid:ev.uid||null,
+        date:st.date,
+        title:ev.summary,
+        time:st.allDay?'':(st.time||''),
+        timeEnd:en&&!en.allDay?(en.time||''):'',
+        allDay:st.allDay,
+        color:'',
+        calendarId:calId,
+        location:ev.location||'',
+        memo:ev.description||'',
+        repeat,
+        repeatEnd:null,
+        exceptions:[],
+      };
+      if(!db.events)db.events=[];
+      db.events.push(newEv);
+      if(ev.uid)existingUids.add(ev.uid);
+      added++;
+    }
+    save(db);
+    renderCal();
+    return {added,skipped,total:rawEvents.length};
+  }
+  const btn=document.getElementById('ics-import-btn');
+  const fileInput=document.getElementById('ics-file-input');
+  const result=document.getElementById('ics-result');
+  if(!btn||!fileInput)return;
+  btn.onclick=()=>fileInput.click();
+  fileInput.onchange=()=>{
+    const file=fileInput.files[0];
+    if(!file)return;
+    btn.textContent='読み込み中…';btn.disabled=true;
+    const reader=new FileReader();
+    reader.onload=e=>{
+      try{
+        const r=importIcs(e.target.result);
+        result.style.display='';result.style.color='var(--ok)';
+        result.textContent=`✅ 追加 ${r.added}件、スキップ（重複） ${r.skipped}件（合計 ${r.total}件）`;
+      }catch(err){
+        result.style.display='';result.style.color='var(--err)';
+        result.textContent=`❌ 読み込みに失敗しました: ${err.message}`;
+      }
+      btn.textContent='📂 .icsファイルを選択';btn.disabled=false;
+      fileInput.value='';
+    };
+    reader.readAsText(file,'UTF-8');
+  };
+})();
+// ── End ICSインポート ──
+
 document.getElementById('settings-close').onclick=()=>{
   save(db);
   document.getElementById('mo-settings').hidden=true;
