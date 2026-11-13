@@ -9,6 +9,9 @@
 <meta name="apple-mobile-web-app-title" content="LifeHub">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#4F46E5">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22LifeHub%22%2C%22short_name%22%3A%22LifeHub%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23F3F4F9%22%2C%22theme_color%22%3A%22%234F46E5%22%2C%22orientation%22%3A%22portrait-primary%22%7D">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap">
 
@@ -1680,6 +1683,19 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
 </div>
 
 <script>
+// ── バージョン管理・キャッシュバスト ─────────────────────────
+(function(){
+  const APP_VER='1.6.0';
+  const stored=localStorage.getItem('lh_ver');
+  if(stored&&stored!==APP_VER){
+    localStorage.setItem('lh_ver',APP_VER);
+    // キャッシュバスト: URLに _cb パラメータを付けて強制再取得
+    const base=location.href.replace(/[?&]_cb=[^&]*/,'').replace(/[?&]$/,'');
+    location.replace(base+(base.includes('?')?'&':'?')+'_cb='+APP_VER.replace(/\./g,''));
+    return;
+  }
+  localStorage.setItem('lh_ver',APP_VER);
+})();
 // ── Passcode ──────────────────────────────────────────────
 (function(){
   const PC_KEY='lh_passcode';
