@@ -225,6 +225,14 @@ input[type=number]{-moz-appearance:textfield;}
 .ai-send:disabled{opacity:.4;}
 .ai-mic{width:42px;height:42px;border-radius:50%;background:var(--surface2);border:1.5px solid var(--border);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s,border-color .2s;}
 .ai-mic.recording{background:#ef4444;border-color:#ef4444;animation:mic-pulse 1s infinite;}
+.ai-attach{width:42px;height:42px;border-radius:50%;background:var(--surface2);border:1.5px solid var(--border);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ai-attach-preview{display:flex;flex-wrap:wrap;gap:6px;padding:8px 16px 0;overflow-x:auto;}
+.ai-attach-chip{position:relative;display:flex;align-items:center;gap:6px;padding:4px 8px 4px 6px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--fg);max-width:160px;}
+.ai-attach-chip img{width:32px;height:32px;object-fit:cover;border-radius:4px;flex-shrink:0;}
+.ai-attach-chip .chip-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:90px;}
+.ai-attach-chip .chip-del{margin-left:2px;cursor:pointer;color:var(--fg3);font-size:14px;line-height:1;flex-shrink:0;}
+.ai-msg-img{max-width:200px;max-height:200px;border-radius:8px;display:block;margin-top:4px;cursor:pointer;}
+.ai-msg-file{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--fg);margin-top:4px;}
 @keyframes mic-pulse{0%,100%{opacity:1;}50%{opacity:.6;}}
 .ai-empty{text-align:center;color:var(--fg2);font-size:13px;padding:40px 20px;line-height:1.6;}
 .hdr-settings-btn{background:none;border:none;color:var(--fg2);cursor:pointer;padding:10px;font-size:17px;line-height:1;border-radius:8px;}
@@ -1158,8 +1166,11 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
   <div class="ai-messages" id="ai-messages">
     <div class="ai-empty">今日の予定・タスク・目標を把握しています。<br>何でも聞いてください。</div>
   </div>
+  <div id="ai-attach-preview" class="ai-attach-preview" style="display:none;"></div>
   <div class="ai-input-row">
     <button class="ai-mic" id="ai-mic" title="音声入力">🎤</button>
+    <button class="ai-attach" id="ai-attach" title="ファイルを添付" style="display:none;">📎</button>
+    <input type="file" id="ai-file-input" accept="image/*,.pdf" multiple style="display:none;">
     <textarea class="ai-input" id="ai-input" placeholder="メッセージを入力..." autocomplete="off" rows="1"></textarea>
     <button class="ai-send" id="ai-send">▶</button>
   </div>
@@ -1268,6 +1279,20 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
       </div>
     </div>
     <div class="m-field" style="margin-top:16px;">
+      <label>💬 AIチャット設定</label>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding:12px 14px;background:var(--surface);border-radius:10px;border:1px solid var(--border);">
+        <div>
+          <div style="font-size:14px;font-weight:600;color:var(--fg);">📎 ファイル添付（画像・PDF）</div>
+          <div style="font-size:12px;color:var(--fg3);margin-top:2px;">チャットに写真やPDFを添付してAIに送れる</div>
+        </div>
+        <label style="position:relative;display:inline-block;width:48px;height:28px;flex-shrink:0;">
+          <input type="checkbox" id="toggle-attach" style="opacity:0;width:0;height:0;">
+          <span id="toggle-attach-track" style="position:absolute;inset:0;background:var(--border);border-radius:14px;cursor:pointer;transition:background .2s;"></span>
+          <span id="toggle-attach-thumb" style="position:absolute;top:3px;left:3px;width:22px;height:22px;background:#fff;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);pointer-events:none;"></span>
+        </label>
+      </div>
+    </div>
+    <div class="m-field" style="margin-top:16px;">
       <label>🎮 ゲームステータス</label>
       <div id="game-stats-panel" style="margin-top:10px;"></div>
     </div>
@@ -1282,7 +1307,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
     <div class="m-actions" style="margin-top:16px;">
       <button class="btn-ok" id="settings-close" style="width:100%;">閉じる</button>
     </div>
-    <p style="text-align:center;font-size:11px;color:var(--fg3);margin-top:12px;">LifeHub v1.5.0</p>
+    <p style="text-align:center;font-size:11px;color:var(--fg3);margin-top:12px;">LifeHub v1.6.0</p>
   </div>
 </div>
 
@@ -1898,6 +1923,7 @@ if(!db.settings.highlightTab)db.settings.highlightTab='wo';
 if(!db.settings.calLayout)db.settings.calLayout='general';
 if(!db.settings.theme)db.settings.theme='system';
 if(!db.settings.workerUrl)db.settings.workerUrl=''; // legacy compat
+if(db.settings.enableAttach===undefined)db.settings.enableAttach=false;
 if(!db.calendars||!db.calendars.length){
   db.calendars=[
     {id:uid(),name:'マイカレンダー',color:'#4F46E5'}
@@ -2927,9 +2953,25 @@ document.getElementById('hdr-settings').onclick=()=>{
   document.querySelectorAll('.pos-opt[data-hl]').forEach(b=>b.classList.toggle('on',b.dataset.hl===(s.highlightTab||'wo')));
   document.querySelectorAll('.pos-opt[data-cal]').forEach(b=>b.classList.toggle('on',b.dataset.cal===(s.calLayout||'general')));
   document.querySelectorAll('.pos-opt[data-theme-opt]').forEach(b=>b.classList.toggle('on',b.dataset.themeOpt===(s.theme||'system')));
+  // 添付トグル状態を反映
+  const attachToggle=document.getElementById('toggle-attach');
+  const attachTrack=document.getElementById('toggle-attach-track');
+  const attachThumb=document.getElementById('toggle-attach-thumb');
+  const enabled=db.settings.enableAttach||false;
+  attachToggle.checked=enabled;
+  attachTrack.style.background=enabled?'var(--accent)':'var(--border)';
+  attachThumb.style.left=enabled?'23px':'3px';
   document.getElementById('mo-settings').hidden=false;
   renderGameStats();
 };
+document.getElementById('toggle-attach').addEventListener('change',function(){
+  const on=this.checked;
+  db.settings.enableAttach=on;
+  save(db);
+  document.getElementById('toggle-attach-track').style.background=on?'var(--accent)':'var(--border)';
+  document.getElementById('toggle-attach-thumb').style.left=on?'23px':'3px';
+  document.getElementById('ai-attach').style.display=on?'flex':'none';
+});
 document.querySelectorAll('.pos-opt[data-pos]').forEach(btn=>{
   btn.onclick=()=>{
     db.settings.addBtnPos=btn.dataset.pos;
@@ -4712,14 +4754,72 @@ window.updatePcSettingsUI();
     utter.onerror=()=>{btn.classList.remove('speaking');btn.textContent='🔊';};
     window.speechSynthesis.speak(utter);
   }
-  function addMsg(role,text,thinking){
-    aiHistory.push({role,content:text});
+  // 添付ファイル管理
+  let pendingAttachments=[];
+  function renderAttachPreview(){
+    const bar=document.getElementById('ai-attach-preview');
+    if(!bar)return;
+    if(!pendingAttachments.length){bar.style.display='none';bar.innerHTML='';return;}
+    bar.style.display='flex';
+    bar.innerHTML=pendingAttachments.map((a,i)=>{
+      const preview=a.mediaType.startsWith('image/')
+        ?`<img src="data:${a.mediaType};base64,${a.data}" style="width:32px;height:32px;object-fit:cover;border-radius:4px;flex-shrink:0;">`
+        :`<span style="font-size:18px;">📄</span>`;
+      return `<div class="ai-attach-chip"><span>${preview}</span><span class="chip-name">${a.name}</span><span class="chip-del" data-idx="${i}">×</span></div>`;
+    }).join('');
+    bar.querySelectorAll('.chip-del').forEach(btn=>{
+      btn.onclick=()=>{pendingAttachments.splice(parseInt(btn.dataset.idx),1);renderAttachPreview();};
+    });
+  }
+  const fileInput=document.getElementById('ai-file-input');
+  const attachBtn=document.getElementById('ai-attach');
+  if(attachBtn){
+    // 初期表示（設定に応じて）
+    if(db.settings.enableAttach)attachBtn.style.display='flex';
+    attachBtn.onclick=()=>fileInput.click();
+  }
+  if(fileInput){
+    fileInput.addEventListener('change',async()=>{
+      for(const file of fileInput.files){
+        if(!file)continue;
+        const reader=new FileReader();
+        const data=await new Promise(res=>{reader.onload=e=>res(e.target.result.split(',')[1]);reader.readAsDataURL(file);});
+        pendingAttachments.push({name:file.name,mediaType:file.type||'application/octet-stream',data});
+      }
+      fileInput.value='';
+      renderAttachPreview();
+    });
+  }
+
+  function addMsg(role,content,thinking){
+    // content は文字列 or {text,attachments:[]}
+    const text=typeof content==='string'?content:content.text||'';
+    const attachments=typeof content==='object'&&content.attachments?content.attachments:[];
+    const histContent=typeof content==='string'?text:buildApiContent(text,attachments);
+    aiHistory.push({role,content:histContent});
     const wrap=document.getElementById('ai-messages');
     const empty=wrap.querySelector('.ai-empty');
     if(empty)empty.remove();
     const div=document.createElement('div');
     div.className='ai-msg '+(role==='user'?'user':'ai')+(thinking?' thinking':'');
-    div.innerHTML=safeHtml(text);
+    // 添付プレビュー
+    if(attachments.length){
+      attachments.forEach(a=>{
+        if(a.mediaType.startsWith('image/')){
+          const img=document.createElement('img');
+          img.src=`data:${a.mediaType};base64,${a.data}`;
+          img.className='ai-msg-img';
+          img.onclick=()=>{window.open(img.src,'_blank');};
+          div.appendChild(img);
+        } else {
+          const chip=document.createElement('div');
+          chip.className='ai-msg-file';
+          chip.textContent='📄 '+a.name;
+          div.appendChild(chip);
+        }
+      });
+    }
+    if(text){const t=document.createElement('div');t.innerHTML=safeHtml(text);div.appendChild(t);}
     if(role==='assistant'&&!thinking){
       const tb=document.createElement('button');tb.className='ai-tts-btn';tb.textContent='🔊';
       tb.onclick=()=>{tb.classList.toggle('was-speaking',tb.classList.contains('speaking'));speakText(text,tb);};
@@ -4727,6 +4827,17 @@ window.updatePcSettingsUI();
     }
     wrap.appendChild(div);
     wrap.scrollTop=wrap.scrollHeight;
+  }
+  function buildApiContent(text,attachments){
+    if(!attachments||!attachments.length)return text;
+    const parts=attachments.map(a=>{
+      if(a.mediaType==='application/pdf'){
+        return {type:'document',source:{type:'base64',media_type:'application/pdf',data:a.data}};
+      }
+      return {type:'image',source:{type:'base64',media_type:a.mediaType,data:a.data}};
+    });
+    if(text)parts.push({type:'text',text});
+    return parts;
   }
 
   // ── ツール ──
@@ -4846,10 +4957,12 @@ window.updatePcSettingsUI();
     const input=document.getElementById('ai-input');
     const btn=document.getElementById('ai-send');
     const text=input.value.trim();
-    if(!text)return;
+    const attachments=[...pendingAttachments];
+    if(!text&&!attachments.length)return;
     input.value='';input.style.height='auto';btn.disabled=true;
+    pendingAttachments=[];renderAttachPreview();
     if(!currentSessionId)currentSessionId=UID();
-    addMsg('user',text);
+    addMsg('user',{text,attachments});
     addMsg('ai','考え中…',true);
     const thinkingEl=document.getElementById('ai-messages').lastChild;
     try{
@@ -4861,7 +4974,8 @@ window.updatePcSettingsUI();
         const workerUrl=WORKER_URL;
         const system='あなたはLifeHubのAIアシスタントです。ユーザーの生活データを把握しており、日本語でアドバイスします。ツールを使ってデータの追加・変更が可能です。ユーザーが何かを追加・変更したそうな場合は積極的にツールを活用してください。\n\n【XP哲学】\nXPは「人生の充実」への報酬。努力・達成だけでなく、幸せな体験・発見・成長にも与える。LifeHubはユーザーの人生をゲーム化し、充実した人生を送るための相棒である。\n\n【award_event_xp — 過去の予定へのXP】\n過去の予定でaiXpが付いていないものがあれば、会話の流れで自然に「どうだった？」と聞き出し付与する。\n目安: 国試=5000〜10000、CBT/OSCE=1000〜3000、定期試験=40〜100、難しい実習=30〜80、授業=5〜15、日常予定=5〜20、楽しい遊び=1〜5。\nユーザーの申告より予定の実態を優先。\n\n【award_xp — 体験・幸せへのXP（新機能）】\nユーザーが以下を話してくれたときは自然に聞き出し award_xp を使う:\n・美味しいご飯や新しいお店を発見した → food: 3〜10\n・旅行・新しい場所に行った → travel: 20〜100（特別な場所は100以上も可。旅行の目的地1か所ごとに付与）\n・新しいことを学んだ・理解が深まった → learning: 5〜30\n・感動・喜び・楽しかった体験 → joy: 5〜20\n・初めての挑戦・体験 → challenge: 10〜30\nポイント: 目標が「旅行をたくさんしたい」なら旅行で働いてお金を貯めること（タスク）も目標連動XP対象。旅行先1か所訪問は award_xp(travel)で記録する。\n\n【回答フォーマットのルール】\n・適切な場所で改行を入れ、読みやすくする\n・複数の内容がある場合は箇条書き（・）を使う\n・句読点（。、）を正しく使い、文章を短く区切る\n・何を言いたいか一目でわかるよう、結論や要点を最初に書く\n・長くなりすぎず、必要な情報に絞って答える\n\n'+getContext();
         const apiMessages=aiHistory.slice(0,-2).filter(m=>m.role==='user'||m.role==='assistant').map(m=>({role:m.role,content:m.content}));
-        apiMessages.push({role:'user',content:text});
+        const userContent=buildApiContent(text,attachments);
+        apiMessages.push({role:'user',content:userContent});
         while(true){
           const res=await fetch(workerUrl,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-sonnet-5-5',max_tokens:1024,system,messages:apiMessages,tools:AI_TOOLS})});
           if(!res.ok)throw new Error('HTTP '+res.status);
