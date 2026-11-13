@@ -5027,15 +5027,17 @@ window.updatePcSettingsUI();
     btn.disabled=false;
   }
 
-  // ── イベント ──
+  // ── キーボード対応 ──
   function _aiKbAdjust(){
     const m=document.getElementById('ai-modal');
     if(!m||!m.classList.contains('open'))return;
-    const vvh=window.visualViewport?.height??window.innerHeight;
-    const kbH=Math.max(0,window.innerHeight-vvh);
+    const vv=window.visualViewport;
+    if(!vv)return;
+    if(!window._DEV_MODE)window.scrollTo(0,0);// iOSスクロールズレ防止
+    const kbH=Math.max(0,window.innerHeight-vv.height-(vv.offsetTop||0));
     if(kbH>50){
       m.style.bottom=kbH+'px';
-      m.style.height=(vvh-16)+'px';// 16px上余白: キーボード上に収まるよう高さも制限
+      m.style.height=(vv.height-10)+'px';
     } else {
       m.style.bottom='';
       m.style.height='';
@@ -5045,8 +5047,25 @@ window.updatePcSettingsUI();
     window.visualViewport.addEventListener('resize',_aiKbAdjust,{passive:true});
     window.visualViewport.addEventListener('scroll',_aiKbAdjust,{passive:true});
   }
-  function openAiModal(){const m=document.getElementById('ai-modal'),o=document.getElementById('ai-overlay');m.hidden=false;requestAnimationFrame(()=>{m.classList.add('open');o.classList.add('open');});document.getElementById('ai-input').focus();window._missionHook?.('open_ai');}
-  function closeAiModal(){const m=document.getElementById('ai-modal'),o=document.getElementById('ai-overlay');m.classList.remove('open');o.classList.remove('open');m.style.bottom='';setTimeout(()=>{m.hidden=true;},300);}
+  // iOSキーボードは表示完了まで~300msかかるため、focus時にも遅延実行
+  const _aiInputEl=document.getElementById('ai-input');
+  if(_aiInputEl){
+    _aiInputEl.addEventListener('focus',()=>{setTimeout(_aiKbAdjust,50);setTimeout(_aiKbAdjust,350);},{passive:true});
+    _aiInputEl.addEventListener('blur',()=>{setTimeout(_aiKbAdjust,300);},{passive:true});
+  }
+  function openAiModal(){
+    const m=document.getElementById('ai-modal'),o=document.getElementById('ai-overlay');
+    m.style.bottom='';m.style.height='';// 前回の値をリセット
+    m.hidden=false;
+    requestAnimationFrame(()=>{m.classList.add('open');o.classList.add('open');});
+    document.getElementById('ai-input').focus();
+    window._missionHook?.('open_ai');
+  }
+  function closeAiModal(){
+    const m=document.getElementById('ai-modal'),o=document.getElementById('ai-overlay');
+    m.classList.remove('open');o.classList.remove('open');
+    setTimeout(()=>{m.style.bottom='';m.style.height='';m.hidden=true;},300);// transition後にリセット
+  }
   document.getElementById('ai-fab').onclick=openAiModal;
   document.getElementById('ai-close').onclick=closeAiModal;
   document.getElementById('ai-overlay').onclick=closeAiModal;
