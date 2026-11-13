@@ -2481,6 +2481,7 @@ document.getElementById('ga-ok').onclick=()=>{
   save(db);
   document.getElementById('mo-goal-add').hidden=true;
   renderGoals();
+  window._missionHook?.('add_goal');
 };
 
 // ── Calendar ──────────────────────────────────────────────
@@ -5125,7 +5126,7 @@ window.updatePcSettingsUI();
         reply='[DEVモード] AIは動作していません。Worker URLを設定すると実際に動作します。\n\n取得したコンテキスト:\n'+getContext();
       } else {
         const workerUrl=WORKER_URL;
-        const system='あなたはLifeHubのAIアシスタントです。ユーザーの生活データを把握しており、日本語でアドバイスします。ツールを使ってデータの追加・変更が可能です。ユーザーが何かを追加・変更したそうな場合は積極的にツールを活用してください。\n\n【XP哲学】\nXPは「人生の充実」への報酬。努力・達成だけでなく、幸せな体験・発見・成長にも与える。LifeHubはユーザーの人生をゲーム化し、充実した人生を送るための相棒である。\n\n【award_event_xp — 過去の予定へのXP】\n過去の予定でaiXpが付いていないものがあれば、会話の流れで自然に「どうだった？」と聞き出し付与する。\n目安: 国試=5000〜10000、CBT/OSCE=1000〜3000、定期試験=40〜100、難しい実習=30〜80、授業=5〜15、日常予定=5〜20、楽しい遊び=1〜5。\nユーザーの申告より予定の実態を優先。\n\n【award_xp — 体験・幸せへのXP（新機能）】\nユーザーが以下を話してくれたときは自然に聞き出し award_xp を使う:\n・美味しいご飯や新しいお店を発見した → food: 3〜10\n・旅行・新しい場所に行った → travel: 20〜100（特別な場所は100以上も可。旅行の目的地1か所ごとに付与）\n・新しいことを学んだ・理解が深まった → learning: 5〜30\n・感動・喜び・楽しかった体験 → joy: 5〜20\n・初めての挑戦・体験 → challenge: 10〜30\nポイント: 目標が「旅行をたくさんしたい」なら旅行で働いてお金を貯めること（タスク）も目標連動XP対象。旅行先1か所訪問は award_xp(travel)で記録する。\n\n【回答フォーマットのルール】\n・適切な場所で改行を入れ、読みやすくする\n・複数の内容がある場合は箇条書き（・）を使う\n・句読点（。、）を正しく使い、文章を短く区切る\n・何を言いたいか一目でわかるよう、結論や要点を最初に書く\n・長くなりすぎず、必要な情報に絞って答える\n\n'+getContext();
+        const system='あなたはLifeHubのAIアシスタントです。ユーザーの生活データを把握しており、日本語でアドバイスします。ツールを使ってデータの追加・変更・削除が可能です。\n\n【ツール使用のルール（最重要）】\nツールは、ユーザーが「追加して」「記録して」「変更して」「削除して」「入力して」など、明示的に操作を指示した場合のみ使用してください。ユーザーの意図を推測して自主的にツールを呼び出さないでください。ユーザーが話してくれた内容（例: 筋トレをした、ご飯を食べた）でも、「記録しますか？」と一度確認してから、OKをもらった後にツールを呼び出してください。\n\n【XP哲学】\nXPは「人生の充実」への報酬。努力・達成だけでなく、幸せな体験・発見・成長にも与える。LifeHubはユーザーの人生をゲーム化し、充実した人生を送るための相棒である。\n\n【award_event_xp — 過去の予定へのXP】\n過去の予定でaiXpが付いていないものがあれば、会話の流れで自然に「どうだった？」と聞き出し付与する。\n目安: 国試=5000〜10000、CBT/OSCE=1000〜3000、定期試験=40〜100、難しい実習=30〜80、授業=5〜15、日常予定=5〜20、楽しい遊び=1〜5。\nユーザーの申告より予定の実態を優先。\n\n【award_xp — 体験・幸せへのXP（新機能）】\nユーザーが以下を話してくれたときは自然に聞き出し award_xp を使う:\n・美味しいご飯や新しいお店を発見した → food: 3〜10\n・旅行・新しい場所に行った → travel: 20〜100（特別な場所は100以上も可。旅行の目的地1か所ごとに付与）\n・新しいことを学んだ・理解が深まった → learning: 5〜30\n・感動・喜び・楽しかった体験 → joy: 5〜20\n・初めての挑戦・体験 → challenge: 10〜30\nポイント: 目標が「旅行をたくさんしたい」なら旅行で働いてお金を貯めること（タスク）も目標連動XP対象。旅行先1か所訪問は award_xp(travel)で記録する。\n\n【回答フォーマットのルール】\n・適切な場所で改行を入れ、読みやすくする\n・複数の内容がある場合は箇条書き（・）を使う\n・句読点（。、）を正しく使い、文章を短く区切る\n・何を言いたいか一目でわかるよう、結論や要点を最初に書く\n・長くなりすぎず、必要な情報に絞って答える\n\n'+getContext();
         const apiMessages=aiHistory.slice(0,-2).filter(m=>m.role==='user'||m.role==='assistant').map(m=>({role:m.role,content:m.content}));
         const userContent=buildApiContent(text,attachments);
         apiMessages.push({role:'user',content:userContent});
@@ -5328,7 +5329,14 @@ window.updatePcSettingsUI();
       card.querySelectorAll('.dm-item').forEach(el=>{
         el.onclick=()=>{
           const cached=loadMissions();if(!cached)return;
-          const m=cached.missions.find(x=>x.id===el.dataset.id);if(!m||m.type!=='manual')return;
+          const m=cached.missions.find(x=>x.id===el.dataset.id);if(!m)return;
+          if(m.type==='add_goal'){
+            // 目標追加モーダルを開く
+            if(typeof switchToTab==='function')switchToTab('cal');
+            setTimeout(()=>{if(typeof openGoalAdd==='function')openGoalAdd();},150);
+            return;
+          }
+          if(m.type!=='manual')return;
           m.done=!m.done;
           checkStreakUpdate(cached.missions);
           saveMissions(cached);
@@ -5342,6 +5350,16 @@ window.updatePcSettingsUI();
       if(!force){
         const cached=loadMissions();
         if(cached){renderMissions(cached);return;}
+      }
+      // 目標が0件（初回・未設定）→ AIを呼ばずオンボーディングミッションを表示
+      const activeGoals=(db.goals||[]).filter(g=>!g.done);
+      if(!activeGoals.length){
+        const data={date:today,loading:false,missions:[
+          {id:'m1',text:'最初の目標を決める 🎯',type:'add_goal',done:false},
+          {id:'m2',text:'AIと話して目標を考える',type:'open_ai',done:false},
+          {id:'m3',text:'アプリの各機能を探索する',type:'manual',done:false},
+        ]};
+        saveMissions(data);renderMissions(data);return;
       }
       const placeholder={date:today,loading:true,missions:[
         {id:'m1',text:'生成中…',type:'loading',done:false},
@@ -5359,7 +5377,8 @@ window.updatePcSettingsUI();
       }
       try{
         const ctx=getContext();
-        const prompt=`以下はユーザーの今日のライフデータです。\n\n${ctx}\n\n今日やるべき3つのミッションをJSONで生成してください。ユーザーの実際のタスク・予定・筋トレ状況を踏まえて具体的に。\n\n返答はJSON配列のみ（説明不要）:\n[\n  {"id":"m1","text":"ミッション説明（20字以内）","type":"complete_task","taskId":"タスクのid（特定する場合のみ）"},\n  {"id":"m2","text":"...","type":"log_workout"},\n  {"id":"m3","text":"...","type":"open_ai"}\n]\n\ntypeは complete_task / log_workout / open_ai / manual のいずれか。`;
+        const goalList=activeGoals.map(g=>`・${g.title}（進捗${g.progress||0}%${g.dueDate?'・期限'+g.dueDate:''}）`).join('\n');
+        const prompt=`以下はユーザーの今日のライフデータです。\n\n${ctx}\n\n【現在の目標】\n${goalList}\n\n今日やるべき3つのミッションをJSONで生成してください。\n【重要】ミッションは「現在の目標」に直接つながるアクションを優先してください。目標の進捗を高めるために今日具体的に何をすべきかを考えて設定してください。タスク・筋トレ・予定なども踏まえて具体的に。\n\n返答はJSON配列のみ（説明不要）:\n[\n  {"id":"m1","text":"ミッション説明（20字以内）","type":"complete_task","taskId":"タスクのid（特定する場合のみ）"},\n  {"id":"m2","text":"...","type":"log_workout"},\n  {"id":"m3","text":"...","type":"open_ai"}\n]\n\ntypeは complete_task / log_workout / open_ai / manual のいずれか。`;
         const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:300,system:'あなたはLifeHubのミッション生成AIです。ユーザーのデータを読んで今日のミッションをJSON配列で返します。JSON以外は一切出力しないでください。',messages:[{role:'user',content:prompt}]})});
         if(!res.ok)throw new Error('HTTP '+res.status);
         const data=await res.json();
@@ -5391,6 +5410,7 @@ window.updatePcSettingsUI();
         if(type==='complete_task'&&(m.type==='complete_task')&&(!m.taskId||m.taskId===extra?.taskId)){m.done=true;updated=true;}
         else if(type==='log_workout'&&m.type==='log_workout'){m.done=true;updated=true;}
         else if(type==='open_ai'&&m.type==='open_ai'){m.done=true;updated=true;}
+        else if(type==='add_goal'&&m.type==='add_goal'){m.done=true;updated=true;}
       }
       if(updated){checkStreakUpdate(cached.missions);saveMissions(cached);renderMissions(cached);}
     };
