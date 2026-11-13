@@ -172,6 +172,11 @@ input[type=number]{-moz-appearance:textfield;}
 .gs-badge{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:11px;color:var(--fg2);display:flex;align-items:center;gap:4px;}
 .gs-badge.earned{border-color:var(--accent);color:var(--fg);}
 .gs-badge.locked{opacity:.4;}
+.gs-share-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+.gs-share-btn{flex:1;min-width:0;padding:9px 10px;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#4F46E5,#7c3aed);color:#fff;display:flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap;}
+.gs-share-btn.secondary{background:var(--surface2);color:var(--fg2);}
+.lu-share-btn{margin-top:16px;padding:12px 28px;border:2px solid rgba(255,255,255,.4);border-radius:50px;background:rgba(255,255,255,.1);color:#fff;font-size:14px;font-weight:700;cursor:pointer;backdrop-filter:blur(10px);}
+.lu-share-btn:active{background:rgba(255,255,255,.2);}
 .daily-mission-card{margin:8px 12px 0;background:var(--surface);border-radius:12px;overflow:hidden;}
 .dm-header{display:flex;align-items:center;gap:8px;padding:10px 14px 8px;}
 .dm-title{font-size:12px;font-weight:700;color:var(--fg);flex:1;}
@@ -2258,7 +2263,16 @@ function renderGoals(){
       }
       row.querySelector('.goal-del').onclick=e=>{e.stopPropagation();const idx=db.goals.findIndex(x=>x.id===g.id);if(idx>-1){db.goals.splice(idx,1);save(db);renderGoals();}};
       row.querySelector('.goal-edit-btn').onclick=e=>{e.stopPropagation();openGoalEdit(g);};
-      row.querySelector('.goal-achieve-btn').onclick=e=>{e.stopPropagation();g.done=true;g.achievedAt=TODAY;save(db);renderGoals();};
+      row.querySelector('.goal-achieve-btn').onclick=e=>{
+        e.stopPropagation();g.done=true;g.achievedAt=TODAY;save(db);renderGoals();
+        const elapsed=g.createdAt?Math.round((new Date(TODAY)-new Date(g.createdAt))/(1000*60*60*24)):null;
+        // share prompt after a short delay
+        setTimeout(()=>{
+          if(confirm(`🎉 目標達成！\n「${g.text}」\n\nシェアカードを作りますか？`)){
+            generateShareCanvas('goal',{title:g.text,elapsed}).then(cv=>shareCanvas(cv,`LifeHubで「${g.text}」を達成！ #LifeHub`)).catch(()=>{});
+          }
+        },400);
+      };
       row.querySelector('.goal-item-inner').onclick=()=>openGoalReview(g);
       body.appendChild(row);
     });
@@ -5389,6 +5403,273 @@ function calcGameStats(){
   ];
   return{level,xp,remaining,xpForNext,str,int,vit,hap,title,badges,totalTasks,totalWorkouts,streak,lifeXp,lifeXpList};
 }
+/* ===== Share Card System ===== */
+function _roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);
+  ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+  ctx.lineTo(x+r,y+h);ctx.arcTo(x,y+h,x,y+h-r,r);
+  ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);
+  ctx.closePath();
+}
+function _drawStatBar(ctx,label,val,color,x,y,barW){
+  const H=24;
+  ctx.fillStyle='rgba(255,255,255,0.65)';
+  ctx.font='700 22px "Noto Sans JP",sans-serif';
+  ctx.textBaseline='middle';
+  ctx.fillText(label,x,y+H/2);
+  const bx=x+58,bw=barW-58;
+  ctx.fillStyle='rgba(255,255,255,0.12)';
+  _roundRect(ctx,bx,y+4,bw,H-8,6);ctx.fill();
+  ctx.fillStyle=color;
+  _roundRect(ctx,bx,y+4,bw*Math.min(val/100,1),H-8,6);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,0.9)';
+  ctx.font='700 20px "Noto Sans JP",sans-serif';
+  ctx.textAlign='right';
+  ctx.fillText(String(val),bx+bw-4,y+H/2);
+  ctx.textAlign='left';
+}
+function _getWeeklyStats(){
+  const now=new Date();
+  const day=now.getDay();
+  const mon=new Date(now);mon.setDate(now.getDate()-(day===0?6:day-1));
+  mon.setHours(0,0,0,0);
+  const monStr=mon.toISOString().slice(0,10);
+  const todStr=now.toISOString().slice(0,10);
+  let tasksDone=0,xpEarned=0;
+  (db.tasks||[]).forEach(t=>{
+    const isStudy=['study','lang','cert','read'].some(k=>t.text?.toLowerCase().includes(k)||t.tags?.includes(k));
+    const studyBonus=isStudy?15:0;
+    const goalMult=calcGoalMult(t.goalId);
+    const base=10+studyBonus;
+    for(const d of t.completedDates||[]){if(d>=monStr&&d<=todStr){tasksDone++;xpEarned+=Math.round(base*goalMult);}}
+    if(t.done&&t.updatedAt&&t.updatedAt.slice(0,10)>=monStr&&t.updatedAt.slice(0,10)<=todStr){
+      tasksDone++;xpEarned+=Math.round(base*goalMult);
+    }
+  });
+  let workoutDays=0;
+  Object.keys(db.workouts||{}).forEach(d=>{if(d>=monStr&&d<=todStr&&(db.workouts[d]||[]).length>0)workoutDays++;});
+  let lifeXpThisWeek=0;
+  (db.lifeXp||[]).forEach(e=>{if(e.date>=monStr&&e.date<=todStr)lifeXpThisWeek+=e.xp;});
+  return{tasksDone,xpEarned:xpEarned+workoutDays*15+lifeXpThisWeek,workoutDays,lifeXpThisWeek,weekStart:monStr};
+}
+async function generateShareCanvas(type,extra={}){
+  const W=1080,H=1080;
+  const cv=document.createElement('canvas');cv.width=W;cv.height=H;
+  const ctx=cv.getContext('2d');
+  await document.fonts.ready;
+  const g=calcGameStats();
+  // Background
+  const bg=ctx.createLinearGradient(0,0,W,H);
+  bg.addColorStop(0,'#0a0b14');bg.addColorStop(0.5,'#131726');bg.addColorStop(1,'#0d0f1c');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  // Decorative circles
+  ctx.save();ctx.globalAlpha=0.07;
+  ctx.fillStyle='#818CF8';
+  ctx.beginPath();ctx.arc(W*0.9,H*0.08,320,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#7c3aed';
+  ctx.beginPath();ctx.arc(W*0.05,H*0.95,240,0,Math.PI*2);ctx.fill();
+  ctx.restore();
+  // Top bar
+  ctx.save();ctx.globalAlpha=0.15;
+  const tb=ctx.createLinearGradient(0,0,W,0);
+  tb.addColorStop(0,'#4F46E5');tb.addColorStop(1,'#7c3aed');
+  ctx.fillStyle=tb;ctx.fillRect(0,0,W,6);ctx.restore();
+  if(type==='status')_drawStatusCard(ctx,W,H,g);
+  else if(type==='levelup')_drawLevelUpCard(ctx,W,H,g,extra);
+  else if(type==='goal')_drawGoalCard(ctx,W,H,g,extra);
+  else if(type==='weekly')_drawWeeklyCard(ctx,W,H,g);
+  // Branding
+  ctx.fillStyle='rgba(255,255,255,0.3)';
+  ctx.font='500 28px "Noto Sans JP",sans-serif';
+  ctx.textAlign='right';ctx.textBaseline='bottom';
+  ctx.fillText('#LifeHub',W-54,H-48);
+  ctx.textAlign='left';ctx.textBaseline='alphabetic';
+  return cv;
+}
+function _drawStatusCard(ctx,W,H,g){
+  const name=db.userProfile?.name||'Player';
+  // Level badge
+  const lbg=ctx.createLinearGradient(54,80,54+140,80+140);
+  lbg.addColorStop(0,'#4F46E5');lbg.addColorStop(1,'#7c3aed');
+  ctx.fillStyle=lbg;_roundRect(ctx,54,80,140,140,20);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,0.7)';
+  ctx.font='700 26px "Noto Sans JP",sans-serif';
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('LEVEL',54+70,80+42);
+  ctx.fillStyle='#fff';
+  ctx.font='900 72px "Noto Sans JP",sans-serif';
+  ctx.fillText(String(g.level),54+70,80+100);
+  ctx.textAlign='left';ctx.textBaseline='alphabetic';
+  // Name and title
+  ctx.fillStyle='rgba(255,255,255,0.5)';
+  ctx.font='500 28px "Noto Sans JP",sans-serif';
+  ctx.fillText(name,210,130);
+  ctx.fillStyle='#fff';
+  ctx.font='700 46px "Noto Sans JP",sans-serif';
+  ctx.fillText(g.title,210,190);
+  // XP bar
+  ctx.fillStyle='rgba(255,255,255,0.1)';
+  _roundRect(ctx,54,250,W-108,18,9);ctx.fill();
+  const xpPct=(g.xpForNext-g.remaining)/g.xpForNext;
+  const xpg=ctx.createLinearGradient(54,0,W-108,0);
+  xpg.addColorStop(0,'#4F46E5');xpg.addColorStop(1,'#a78bfa');
+  ctx.fillStyle=xpg;_roundRect(ctx,54,250,(W-108)*xpPct,18,9);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,0.4)';
+  ctx.font='500 24px "Noto Sans JP",sans-serif';
+  ctx.textAlign='right';
+  ctx.fillText(`${g.xp.toLocaleString()} XP 累計`,W-54,243);
+  ctx.textAlign='left';
+  // Stats
+  const statY=310;const statW=(W-108-24)/4;
+  [[g.str,'STR','#ef4444'],[g.int,'INT','#3b82f6'],[g.vit,'VIT','#10b981'],[g.hap,'HAP','#f59e0b']].forEach(([val,lbl,col],i)=>{
+    const sx=54+i*(statW+8);
+    ctx.fillStyle='rgba(255,255,255,0.06)';_roundRect(ctx,sx,statY,statW,220,16);ctx.fill();
+    ctx.fillStyle=col;ctx.font='700 28px "Noto Sans JP",sans-serif';
+    ctx.textAlign='center';ctx.textBaseline='top';
+    ctx.fillText(lbl,sx+statW/2,statY+16);
+    ctx.fillStyle='#fff';ctx.font='900 68px "Noto Sans JP",sans-serif';
+    ctx.textBaseline='middle';
+    ctx.fillText(String(val),sx+statW/2,statY+120);
+    // mini bar
+    ctx.fillStyle='rgba(255,255,255,0.1)';
+    _roundRect(ctx,sx+10,statY+180,statW-20,10,5);ctx.fill();
+    ctx.fillStyle=col;_roundRect(ctx,sx+10,statY+180,(statW-20)*val/100,10,5);ctx.fill();
+    ctx.textAlign='left';ctx.textBaseline='alphabetic';
+  });
+  // Streak + badge
+  const streak=g.streak||0;
+  ctx.fillStyle='rgba(249,115,22,0.15)';_roundRect(ctx,54,560,260,70,12);ctx.fill();
+  ctx.fillStyle='#f97316';ctx.font='700 30px "Noto Sans JP",sans-serif';
+  ctx.textBaseline='middle';ctx.textAlign='center';
+  ctx.fillText(`🔥 ${streak}日連続`,54+130,595);
+  ctx.fillStyle='rgba(255,255,255,0.08)';_roundRect(ctx,330,560,W-108-276,70,12);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='700 28px "Noto Sans JP",sans-serif';
+  ctx.fillText(`${g.totalTasks}タスク完了`,330+(W-108-276)/2,595);
+  ctx.textAlign='left';ctx.textBaseline='alphabetic';
+  // Badges (top 4 earned)
+  const earned=g.badges.filter(b=>b.earned).slice(0,4);
+  earned.forEach((b,i)=>{
+    ctx.fillStyle='rgba(79,70,229,0.2)';_roundRect(ctx,54+i*220,660,210,70,12);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,0.8)';ctx.font='500 26px "Noto Sans JP",sans-serif';
+    ctx.textBaseline='middle';ctx.textAlign='center';
+    ctx.fillText(`${b.icon} ${b.label}`,54+i*220+105,695);
+    ctx.textAlign='left';ctx.textBaseline='alphabetic';
+  });
+  // Date
+  ctx.fillStyle='rgba(255,255,255,0.3)';ctx.font='500 24px "Noto Sans JP",sans-serif';
+  ctx.textBaseline='bottom';
+  ctx.fillText(new Date().toLocaleDateString('ja-JP'),54,H-48);
+  ctx.textBaseline='alphabetic';
+}
+function _drawLevelUpCard(ctx,W,H,g,extra){
+  // Celebration gradient overlay
+  ctx.save();ctx.globalAlpha=0.4;
+  const cg=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,W*0.7);
+  cg.addColorStop(0,'#7c3aed');cg.addColorStop(1,'transparent');
+  ctx.fillStyle=cg;ctx.fillRect(0,0,W,H);ctx.restore();
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle='rgba(255,255,255,0.4)';
+  ctx.font='700 44px "Noto Sans JP",sans-serif';ctx.letterSpacing='0.3em';
+  ctx.fillText('LEVEL UP',W/2,180);
+  const rarity=extra.rarity||'common';
+  const rarityCol={common:'#fbbf24',uncommon:'#60a5fa',rare:'#f0abfc',ultra:'#fde68a'}[rarity];
+  if(rarity!=='common'){
+    ctx.fillStyle=rarityCol;ctx.font='700 32px "Noto Sans JP",sans-serif';
+    ctx.fillText({'uncommon':'★ UNCOMMON','rare':'★★ RARE','ultra':'★★★ ULTRA RARE'}[rarity]||'',W/2,240);
+  }
+  ctx.fillStyle='#fff';ctx.font='900 300px "Noto Sans JP",sans-serif';
+  ctx.fillText(String(g.level),W/2,560);
+  ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='700 54px "Noto Sans JP",sans-serif';
+  ctx.fillText(g.title,W/2,780);
+  ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='500 32px "Noto Sans JP",sans-serif';
+  ctx.fillText(`累計 ${g.xp.toLocaleString()} XP`,W/2,870);
+  ctx.textAlign='left';ctx.textBaseline='alphabetic';
+}
+function _drawGoalCard(ctx,W,H,g,extra){
+  ctx.save();ctx.globalAlpha=0.35;
+  const cg=ctx.createRadialGradient(W/2,H*0.4,0,W/2,H*0.4,W*0.65);
+  cg.addColorStop(0,'#059669');cg.addColorStop(1,'transparent');
+  ctx.fillStyle=cg;ctx.fillRect(0,0,W,H);ctx.restore();
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle='#10b981';ctx.font='700 44px "Noto Sans JP",sans-serif';
+  ctx.fillText('🎯 目標達成！',W/2,200);
+  const title=extra.title||'目標';
+  ctx.fillStyle='#fff';ctx.font='700 60px "Noto Sans JP",sans-serif';
+  // wrap long text
+  const words=title;const maxW=W-120;
+  ctx.font='700 58px "Noto Sans JP",sans-serif';
+  if(ctx.measureText(words).width>maxW){
+    ctx.font='700 44px "Noto Sans JP",sans-serif';
+  }
+  ctx.fillText(words,W/2,350);
+  if(extra.elapsed!=null){
+    ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font='500 36px "Noto Sans JP",sans-serif';
+    ctx.fillText(`${extra.elapsed}日間で達成`,W/2,450);
+  }
+  // Level
+  ctx.fillStyle='rgba(255,255,255,0.1)';_roundRect(ctx,W/2-180,540,360,180,20);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='700 28px "Noto Sans JP",sans-serif';
+  ctx.fillText('LEVEL',W/2,575);
+  ctx.fillStyle='#fff';ctx.font='900 110px "Noto Sans JP",sans-serif';
+  ctx.fillText(String(g.level),W/2,670);
+  ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='500 30px "Noto Sans JP",sans-serif';
+  ctx.fillText(g.title,W/2,750);
+  ctx.fillStyle='rgba(16,185,129,0.6)';ctx.font='700 34px "Noto Sans JP",sans-serif';
+  ctx.fillText(`累計 ${g.xp.toLocaleString()} XP`,W/2,840);
+  ctx.textAlign='left';ctx.textBaseline='alphabetic';
+}
+function _drawWeeklyCard(ctx,W,H,g){
+  const wk=_getWeeklyStats();
+  ctx.save();ctx.globalAlpha=0.3;
+  const cg=ctx.createRadialGradient(W/2,H*0.35,0,W/2,H*0.35,W*0.7);
+  cg.addColorStop(0,'#1e1b4b');cg.addColorStop(1,'transparent');
+  ctx.fillStyle=cg;ctx.fillRect(0,0,W,H);ctx.restore();
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='700 36px "Noto Sans JP",sans-serif';
+  ctx.fillText('WEEKLY REPORT',W/2,130);
+  ctx.fillStyle='#fff';ctx.font='700 54px "Noto Sans JP",sans-serif';
+  const wd=new Date(wk.weekStart+'T00:00:00');
+  ctx.fillText(`${wd.getMonth()+1}/${wd.getDate()} の週`,W/2,210);
+  ctx.textAlign='left';ctx.textBaseline='alphabetic';
+  const items=[
+    {icon:'✅',label:'タスク完了',val:wk.tasksDone+'件',col:'#10b981'},
+    {icon:'💪',label:'ジム',val:wk.workoutDays+'日',col:'#ef4444'},
+    {icon:'⭐',label:'獲得XP',val:wk.xpEarned.toLocaleString()+'XP',col:'#a78bfa'},
+    {icon:'🌟',label:'体験XP',val:wk.lifeXpThisWeek+'XP',col:'#f59e0b'},
+  ];
+  items.forEach((it,i)=>{
+    const row=i<2?i:null;const col=i%2;
+    const iy=300+Math.floor(i/2)*200;const ix=54+col*500;
+    ctx.fillStyle='rgba(255,255,255,0.06)';_roundRect(ctx,ix,iy,460,170,16);ctx.fill();
+    ctx.fillStyle=it.col;ctx.font='700 30px "Noto Sans JP",sans-serif';
+    ctx.textBaseline='top';ctx.fillText(`${it.icon} ${it.label}`,ix+20,iy+18);
+    ctx.fillStyle='#fff';ctx.font='900 72px "Noto Sans JP",sans-serif';
+    ctx.textBaseline='bottom';ctx.fillText(it.val,ix+20,iy+160);
+    ctx.textBaseline='alphabetic';
+  });
+  // Level
+  ctx.fillStyle='rgba(255,255,255,0.08)';_roundRect(ctx,54,730,W-108,170,16);ctx.fill();
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font='700 28px "Noto Sans JP",sans-serif';
+  ctx.fillText('LEVEL',W/2,780);
+  ctx.fillStyle='#fff';ctx.font='900 80px "Noto Sans JP",sans-serif';
+  ctx.fillText(`${g.level}  ${g.title}`,W/2,860);
+  ctx.textAlign='left';ctx.textBaseline='alphabetic';
+}
+async function shareCanvas(canvas,text){
+  canvas.toBlob(async blob=>{
+    const file=new File([blob],'lifehub-share.png',{type:'image/png'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      try{await navigator.share({files:[file],title:'LifeHub',text:text||'LifeHubで成長中！ #LifeHub'});return;}catch(e){if(e.name==='AbortError')return;}
+    }
+    // fallback: download
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='lifehub-share.png';a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+  },'image/png');
+}
+/* ===== End Share Card System ===== */
+
 function checkLevelUp(){
   const g=calcGameStats();
   let last=1;try{last=parseInt(localStorage.getItem('lh_last_level')||'1');}catch{}
@@ -5430,12 +5711,21 @@ function showLevelUpAnim(level,title,rarity){
   // コンテンツ
   const content=document.createElement('div');
   content.className='lu-content';
+  const shareBtn=document.createElement('button');
+  shareBtn.className='lu-share-btn';shareBtn.textContent='📤 シェアする';
+  shareBtn.onclick=async e=>{
+    e.stopPropagation();
+    shareBtn.disabled=true;shareBtn.textContent='生成中…';
+    try{const cv=await generateShareCanvas('levelup',{rarity});await shareCanvas(cv,`LifeHubでレベル${level}に到達！「${title}」 #LifeHub`);}catch(err){}
+    shareBtn.disabled=false;shareBtn.textContent='📤 シェアする';
+  };
   content.innerHTML=`<div class="lu-badge" style="color:${cfg.badgeColor}">${cfg.badge}</div><div class="lu-level-num" style="color:${cfg.numColor}${rarity==='ultra'?';text-shadow:0 0 40px #fde68a,0 0 80px #f59e0b':''}">${level}</div><div class="lu-title" style="color:${cfg.numColor};opacity:.8">${title}</div>${cfg.rarityLabel?`<div class="lu-rarity" style="color:${cfg.rarityColor}">${cfg.rarityLabel}</div>`:''}<div class="lu-hint" style="color:#fff">タップで閉じる</div>`;
+  content.appendChild(shareBtn);
   ov.innerHTML='';
   frags.forEach(p=>ov.appendChild(p));
   ov.appendChild(content);
   ov.hidden=false;
-  ov.onclick=()=>{ov.hidden=true;ov.style.cssText='position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;';};
+  ov.onclick=e=>{if(e.target===ov||e.target.classList.contains('lu-content')||e.target.classList.contains('lu-hint')){ov.hidden=true;ov.style.cssText='position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;';}};
 }
 function renderGameStats(){
   const panel=document.getElementById('game-stats-panel');
@@ -5460,7 +5750,23 @@ function renderGameStats(){
     </div>
     <div class="gs-badges">${g.badges.map(b=>`<div class="gs-badge ${b.earned?'earned':'locked'}">${b.icon} ${b.label}</div>`).join('')}</div>
     ${g.lifeXpList.length>0?`<div style="margin-top:12px;"><div style="font-size:11px;font-weight:700;color:var(--fg2);margin-bottom:6px;">🌟 体験XP (累計 ${g.lifeXp}XP)</div>${g.lifeXpList.slice(-5).reverse().map(e=>{const ic={travel:'✈️',food:'🍽️',learning:'💡',joy:'😊',challenge:'⚡',other:'🌟'}[e.category]||'🌟';return `<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid var(--border);font-size:12px;"><span>${ic}</span><span style="flex:1;color:var(--fg)">${e.title}</span><span style="font-weight:700;color:var(--accent)">+${e.xp}</span></div>`;}).join('')}</div>`:''}
+    <div class="gs-share-row" id="gs-share-row"></div>
   `;
+  // wire share buttons
+  const shareRow=panel.querySelector('#gs-share-row');
+  const mkBtn=(label,type,text)=>{
+    const b=document.createElement('button');b.className='gs-share-btn';b.textContent=label;
+    b.onclick=async()=>{b.disabled=true;b.textContent='生成中…';
+      try{const cv=await generateShareCanvas(type);await shareCanvas(cv,text);}catch(e){}
+      b.disabled=false;b.textContent=label;};
+    return b;
+  };
+  shareRow.appendChild(mkBtn('📤 ステータスをシェア','status','LifeHubで成長中！ #LifeHub'));
+  const wkBtn=document.createElement('button');wkBtn.className='gs-share-btn secondary';wkBtn.textContent='📊 今週のサマリー';
+  wkBtn.onclick=async()=>{wkBtn.disabled=true;wkBtn.textContent='生成中…';
+    try{const cv=await generateShareCanvas('weekly');await shareCanvas(cv,'今週の実績をシェア！ #LifeHub');}catch(e){}
+    wkBtn.disabled=false;wkBtn.textContent='📊 今週のサマリー';};
+  shareRow.appendChild(wkBtn);
 }
 </script>
 <div id="lu-overlay" hidden style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;"></div>
