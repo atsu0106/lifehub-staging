@@ -5009,12 +5009,19 @@ window.updatePcSettingsUI();
   function _aiKbAdjust(){
     const m=document.getElementById('ai-modal');
     if(!m||!m.classList.contains('open'))return;
-    const kbH=Math.max(0,window.innerHeight-(window.visualViewport?.height??window.innerHeight));
-    m.style.bottom=kbH>50?kbH+'px':'';
+    const vvh=window.visualViewport?.height??window.innerHeight;
+    const kbH=Math.max(0,window.innerHeight-vvh);
+    if(kbH>50){
+      m.style.bottom=kbH+'px';
+      m.style.height=(vvh-16)+'px';// 16px上余白: キーボード上に収まるよう高さも制限
+    } else {
+      m.style.bottom='';
+      m.style.height='';
+    }
   }
   if(window.visualViewport){
-    window.visualViewport.addEventListener('resize',_aiKbAdjust);
-    window.visualViewport.addEventListener('scroll',_aiKbAdjust);
+    window.visualViewport.addEventListener('resize',_aiKbAdjust,{passive:true});
+    window.visualViewport.addEventListener('scroll',_aiKbAdjust,{passive:true});
   }
   function openAiModal(){const m=document.getElementById('ai-modal'),o=document.getElementById('ai-overlay');m.hidden=false;requestAnimationFrame(()=>{m.classList.add('open');o.classList.add('open');});document.getElementById('ai-input').focus();window._missionHook?.('open_ai');}
   function closeAiModal(){const m=document.getElementById('ai-modal'),o=document.getElementById('ai-overlay');m.classList.remove('open');o.classList.remove('open');m.style.bottom='';setTimeout(()=>{m.hidden=true;},300);}
