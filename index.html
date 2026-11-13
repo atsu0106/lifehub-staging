@@ -177,6 +177,16 @@ input[type=number]{-moz-appearance:textfield;}
 .gs-share-btn.secondary{background:var(--surface2);color:var(--fg2);}
 .lu-share-btn{margin-top:16px;padding:12px 28px;border:2px solid rgba(255,255,255,.4);border-radius:50px;background:rgba(255,255,255,.1);color:#fff;font-size:14px;font-weight:700;cursor:pointer;backdrop-filter:blur(10px);}
 .lu-share-btn:active{background:rgba(255,255,255,.2);}
+/* Share Preview Modal */
+.share-pv-modal{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;}
+.share-pv-modal[hidden]{display:none!important;}
+.share-pv-img{max-width:min(90vw,420px);max-height:55vh;border-radius:12px;object-fit:contain;transition:transform .2s;}
+.share-pv-flips{display:flex;gap:10px;margin-top:16px;}
+.share-pv-flip{padding:10px 20px;border-radius:10px;border:1.5px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:#fff;font-size:14px;font-weight:700;cursor:pointer;}
+.share-pv-flip.active{background:rgba(255,255,255,.25);border-color:#fff;}
+.share-pv-actions{display:flex;gap:10px;margin-top:12px;width:100%;max-width:360px;}
+.share-pv-do{flex:1;padding:14px;border-radius:12px;background:linear-gradient(135deg,#4F46E5,#7c3aed);color:#fff;font-size:15px;font-weight:700;border:none;cursor:pointer;}
+.share-pv-cancel{padding:14px 20px;border-radius:12px;background:rgba(255,255,255,.1);color:#fff;font-size:15px;font-weight:700;border:none;cursor:pointer;}
 .daily-mission-card{margin:8px 12px 0;background:var(--surface);border-radius:12px;overflow:hidden;}
 .dm-header{display:flex;align-items:center;gap:8px;padding:10px 14px 8px;}
 .dm-title{font-size:12px;font-weight:700;color:var(--fg);flex:1;}
@@ -740,15 +750,15 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
 .ob-title{font-size:2rem;font-weight:700;color:var(--fg);margin:0 0 6px;}
 .ob-sub{color:var(--fg2);font-size:.95rem;margin:0 0 40px;text-align:center;}
 .ob-form{display:flex;flex-direction:column;gap:12px;width:100%;}
-.ob-label{font-size:.85rem;font-weight:600;color:var(--fg2);}
+.ob-label{font-size:1rem;font-weight:600;color:var(--fg2);}
 .ob-input{padding:14px 16px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface);font-size:1.1rem;color:var(--fg);outline:none;font-family:inherit;}
 .ob-input:focus{border-color:var(--accent);}
 .ob-btn{padding:15px;border-radius:12px;background:var(--accent);color:#fff;font-size:1rem;font-weight:700;border:none;cursor:pointer;font-family:inherit;margin-top:4px;}
 .ob-btn:active{opacity:.85;}
 .ob-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:4px;}
-.ob-chip{padding:10px 16px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);color:var(--fg);font-size:.9rem;cursor:pointer;transition:all .15s;font-family:inherit;}
+.ob-chip{padding:12px 18px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);color:var(--fg);font-size:1rem;cursor:pointer;transition:all .15s;font-family:inherit;}
 .ob-chip.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;}
-.ob-skip-btn{background:none;border:none;color:var(--fg3);font-size:.85rem;cursor:pointer;padding:6px;text-decoration:underline;font-family:inherit;text-align:center;}
+.ob-skip-btn{background:none;border:none;color:var(--fg3);font-size:1rem;cursor:pointer;padding:6px;text-decoration:underline;font-family:inherit;text-align:center;}
 
 /* Clarify view */
 .clarify-nav{display:flex;align-items:center;justify-content:space-between;padding:0 4px 10px;}
@@ -4660,7 +4670,8 @@ document.getElementById('ml-next').onclick=()=>{const d=new Date(st.mlDate);d.se
     });
     function finishOnboarding(){
       const selected=[...step2.querySelectorAll('.ob-chip.active')].map(c=>c.dataset.val);
-      db.userProfile={useCase:selected,setupAt:todayStr()};
+      const savedName=inp.value.trim()||'マイデータ';
+      db.userProfile={useCase:selected,setupAt:todayStr(),name:savedName};
       save(db);
       ob.hidden=true;
       app.style.display='';
@@ -5657,16 +5668,54 @@ function _drawWeeklyCard(ctx,W,H,g){
   ctx.fillText(`${g.level}  ${g.title}`,W/2,860);
   ctx.textAlign='left';ctx.textBaseline='alphabetic';
 }
-async function shareCanvas(canvas,text){
+function _applyFlip(srcCanvas,flipH,flipV){
+  if(!flipH&&!flipV)return srcCanvas;
+  const cv=document.createElement('canvas');cv.width=srcCanvas.width;cv.height=srcCanvas.height;
+  const ctx=cv.getContext('2d');
+  ctx.translate(flipH?cv.width:0,flipV?cv.height:0);
+  ctx.scale(flipH?-1:1,flipV?-1:1);
+  ctx.drawImage(srcCanvas,0,0);
+  return cv;
+}
+function _doShareBlob(canvas,text){
   canvas.toBlob(async blob=>{
     const file=new File([blob],'lifehub-share.png',{type:'image/png'});
     if(navigator.canShare&&navigator.canShare({files:[file]})){
       try{await navigator.share({files:[file],title:'LifeHub',text:text||'LifeHubで成長中！ #LifeHub'});return;}catch(e){if(e.name==='AbortError')return;}
     }
-    // fallback: download
     const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='lifehub-share.png';a.click();
     setTimeout(()=>URL.revokeObjectURL(a.href),3000);
   },'image/png');
+}
+async function shareCanvas(canvas,text){
+  // show preview modal
+  const modal=document.getElementById('share-pv-modal');
+  const img=document.getElementById('share-pv-img');
+  const btnH=document.getElementById('share-pv-fliph');
+  const btnV=document.getElementById('share-pv-flipv');
+  const btnDo=document.getElementById('share-pv-do');
+  const btnCancel=document.getElementById('share-pv-cancel');
+  if(!modal){_doShareBlob(canvas,text);return;}
+  let flipH=false,flipV=false;
+  function updatePreview(){
+    img.style.transform=`scale(${flipH?-1:1},${flipV?-1:1})`;
+    btnH.classList.toggle('active',flipH);
+    btnV.classList.toggle('active',flipV);
+  }
+  img.src=canvas.toDataURL('image/png');
+  updatePreview();
+  modal.hidden=false;
+  // cleanup previous listeners
+  const newH=btnH.cloneNode(true);const newV=btnV.cloneNode(true);
+  const newDo=btnDo.cloneNode(true);const newCancel=btnCancel.cloneNode(true);
+  btnH.replaceWith(newH);btnV.replaceWith(newV);btnDo.replaceWith(newDo);btnCancel.replaceWith(newCancel);
+  newH.addEventListener('click',()=>{flipH=!flipH;updatePreview();});
+  newV.addEventListener('click',()=>{flipV=!flipV;updatePreview();});
+  newDo.addEventListener('click',()=>{
+    modal.hidden=true;
+    _doShareBlob(_applyFlip(canvas,flipH,flipV),text);
+  });
+  newCancel.addEventListener('click',()=>{modal.hidden=true;});
 }
 /* ===== End Share Card System ===== */
 
@@ -5770,5 +5819,16 @@ function renderGameStats(){
 }
 </script>
 <div id="lu-overlay" hidden style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;"></div>
+<div id="share-pv-modal" class="share-pv-modal" hidden>
+  <img id="share-pv-img" class="share-pv-img" src="" alt="シェアカードプレビュー">
+  <div class="share-pv-flips">
+    <button class="share-pv-flip" id="share-pv-fliph">↔ 左右反転</button>
+    <button class="share-pv-flip" id="share-pv-flipv">↕ 上下反転</button>
+  </div>
+  <div class="share-pv-actions">
+    <button class="share-pv-do" id="share-pv-do">📤 シェアする</button>
+    <button class="share-pv-cancel" id="share-pv-cancel">✕</button>
+  </div>
+</div>
 </body>
 </html>
