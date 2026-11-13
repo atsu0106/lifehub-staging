@@ -4719,6 +4719,15 @@ window.updatePcSettingsUI();
     {name:'add_goal',description:'目標を追加する',input_schema:{type:'object',properties:{title:{type:'string',description:'目標のタイトル'},level:{type:'string',enum:['high','mid','low'],description:'重要度'},due:{type:'string',description:'期限（YYYY-MM-DD）省略可'}},required:['title']}},
     {name:'award_event_xp',description:'過去の予定に経験値（XP）を付与する。会話でイベントの難易度・達成感を聞き出した後に呼ぶ。まだXPが付いていない過去の予定だけに使う',input_schema:{type:'object',properties:{event_id:{type:'string',description:'予定のID（コンテキストの[id:...]）'},xp:{type:'number',description:'付与するXP。日常予定=5〜20、授業=5〜15、定期試験=40〜100、CBT/OSCE=1000〜3000、国試=5000〜10000'},reason:{type:'string',description:'XP付与の理由（例: 難しい試験を乗り越えた）'}},required:['event_id','xp','reason']}},
     {name:'award_xp',description:'カレンダーに登録されていない体験・喜び・発見に経験値（XP）を付与する。ユーザーが美味しいご飯を食べた・旅行に行った・新しいことを学んだ・感動したなど、幸せや充実感に繋がる体験を話してくれたときに使う',input_schema:{type:'object',properties:{title:{type:'string',description:'体験のタイトル（例: 渋谷の新しいラーメン屋、京都旅行、量子力学の基礎を理解した）'},category:{type:'string',enum:['travel','food','learning','joy','challenge','other'],description:'travel=旅行, food=美味しい発見, learning=学び/新しい知識, joy=喜び/感動/楽しかった体験, challenge=挑戦/初体験, other=その他'},xp:{type:'number',description:'付与するXP。美味しい発見=3〜10、新しい学び=5〜20、感動体験=5〜15、旅行の目的地1か所=20〜50（特別な場所は100以上も可）、初体験=10〜30'},reason:{type:'string',description:'XP付与の理由（例: 本当に美味しくて幸せな体験だったから）'}},required:['title','category','xp','reason']}},
+    {name:'edit_event',description:'既存の予定を編集する。タイトル・日付・時刻・場所・メモを変更できる。変更したいフィールドだけ指定する',input_schema:{type:'object',properties:{event_id:{type:'string',description:'予定のID（コンテキストの[id:...]）'},title:{type:'string'},date:{type:'string',description:'YYYY-MM-DD'},time:{type:'string',description:'HH:MM、終日にするなら空文字'},time_end:{type:'string',description:'HH:MM'},location:{type:'string'},memo:{type:'string'}},required:['event_id']}},
+    {name:'delete_event',description:'予定を削除する',input_schema:{type:'object',properties:{event_id:{type:'string',description:'予定のID（コンテキストの[id:...]）'}},required:['event_id']}},
+    {name:'edit_task',description:'既存のタスクを編集する。変更したいフィールドだけ指定する',input_schema:{type:'object',properties:{task_id:{type:'string',description:'タスクのID（コンテキストの[id:...]）'},title:{type:'string'},priority:{type:'string',enum:['high','mid','low']},due:{type:'string',description:'YYYY-MM-DD、期限を消すなら空文字'},memo:{type:'string'}},required:['task_id']}},
+    {name:'delete_task',description:'タスクを削除する',input_schema:{type:'object',properties:{task_id:{type:'string',description:'タスクのID（コンテキストの[id:...]）'}},required:['task_id']}},
+    {name:'log_workout',description:'筋トレ・運動を記録する。ユーザーが今日やったトレーニングを報告・口頭で教えてくれた時に代わりに記録する',input_schema:{type:'object',properties:{date:{type:'string',description:'日付（YYYY-MM-DD）省略時は今日'},name:{type:'string',description:'種目名（例: ベンチプレス、スクワット、ランニング）'},category:{type:'string',enum:['weight','bodyweight','cardio','stretch'],description:'weight=ウエイト, bodyweight=自重, cardio=有酸素, stretch=ストレッチ'},sets:{type:'array',description:'セット情報の配列',items:{type:'object',properties:{w:{type:'number',description:'重量(kg) ウエイト種目のみ'},r:{type:'number',description:'回数 ウエイト・自重種目のみ'},time:{type:'number',description:'時間(分) 有酸素のみ'},distance:{type:'number',description:'距離(km) 有酸素のみ'}}}}},required:['name','category','sets']}},
+    {name:'update_goal_progress',description:'目標の進捗（達成率）を更新する',input_schema:{type:'object',properties:{goal_id:{type:'string',description:'目標のID（コンテキストの[id:...]）'},progress:{type:'number',description:'進捗 0〜100(%)'}},required:['goal_id','progress']}},
+    {name:'achieve_goal',description:'目標を達成済みにする',input_schema:{type:'object',properties:{goal_id:{type:'string',description:'目標のID（コンテキストの[id:...]）'}},required:['goal_id']}},
+    {name:'edit_goal',description:'目標を編集する。変更したいフィールドだけ指定する',input_schema:{type:'object',properties:{goal_id:{type:'string',description:'目標のID（コンテキストの[id:...]）'},title:{type:'string'},level:{type:'string',enum:['high','mid','low'],description:'重要度'},due:{type:'string',description:'YYYY-MM-DD、期限を消すなら空文字'}},required:['goal_id']}},
+    {name:'log_sleep',description:'睡眠を記録する。ユーザーが昨夜の就寝・今日の起床時刻を話した時に記録する',input_schema:{type:'object',properties:{date:{type:'string',description:'対象日（YYYY-MM-DD）'},bedtime:{type:'string',description:'就寝時刻（HH:MM）省略可'},wake_time:{type:'string',description:'起床時刻（HH:MM）省略可'}},required:['date']}},
   ];
 
   // ── セッション管理 ──
@@ -4926,7 +4935,11 @@ window.updatePcSettingsUI();
     }
     const useCaseMap={study:'勉強・試験',fitness:'筋トレ・体づくり',habit:'習慣管理',goal:'目標達成'};
     const useCaseStr=(db.userProfile?.useCase||[]).map(v=>useCaseMap[v]||v).join('・')||'未設定';
-    return `【今日の日付】${today}\n【使用目的】${useCaseStr}\n【今後14日間の予定】\n${evs}\n【未完了タスク】\n${tasks}\n【進行中の目標】\n${goals}\n【カレンダー一覧】\n${cals}\n【タスク達成状況】${taskStats}\n【筋トレ履歴（直近14日）】${woStats}`;
+    // 睡眠データ（直近3日）
+    const sleepLines=[];
+    for(let i=0;i<3;i++){const d=new Date(todayD);d.setDate(d.getDate()-i);const ds=d.toISOString().slice(0,10);const sl=db.sleep[ds]||{};if(sl.bedtime||sl.wakeTime)sleepLines.push(`${ds} 就寝:${sl.bedtime||'未記録'} 起床:${sl.wakeTime||'未記録'}`);}
+    const sleepStats=sleepLines.length?sleepLines.join('\n'):'記録なし';
+    return `【今日の日付】${today}\n【使用目的】${useCaseStr}\n【今後14日間の予定】\n${evs}\n【未完了タスク】\n${tasks}\n【進行中の目標】\n${goals}\n【カレンダー一覧】\n${cals}\n【タスク達成状況】${taskStats}\n【筋トレ履歴（直近14日）】${woStats}\n【睡眠記録（直近3日）】\n${sleepStats}`;
   }
   function executeTool(name,input){
     if(name==='add_event'){
@@ -4962,10 +4975,95 @@ window.updatePcSettingsUI();
       const catIcon={travel:'✈️',food:'🍽️',learning:'💡',joy:'😊',challenge:'⚡',other:'🌟'}[entry.category]||'🌟';
       return `${catIcon}「${entry.title}」に${entry.xp}XP付与しました！（${entry.reason}）`;
     }
+    if(name==='edit_event'){
+      const ev=(db.events||[]).find(e=>e.id===input.event_id);
+      if(!ev)return `ID「${input.event_id}」の予定が見つかりませんでした。`;
+      if(input.title!==undefined)ev.title=input.title;
+      if(input.date!==undefined)ev.date=input.date;
+      if(input.time!==undefined){ev.time=input.time||'';ev.allDay=!input.time;}
+      if(input.time_end!==undefined)ev.timeEnd=input.time_end||'';
+      if(input.location!==undefined)ev.location=input.location||'';
+      if(input.memo!==undefined)ev.memo=input.memo||'';
+      save(db);renderCal();
+      return `「${ev.title}」を更新しました。`;
+    }
+    if(name==='delete_event'){
+      const idx=(db.events||[]).findIndex(e=>e.id===input.event_id);
+      if(idx<0)return `ID「${input.event_id}」の予定が見つかりませんでした。`;
+      const title=db.events[idx].title;
+      db.events.splice(idx,1);save(db);renderCal();
+      return `「${title}」を削除しました。`;
+    }
+    if(name==='edit_task'){
+      const task=(db.tasks||[]).find(t=>t.id===input.task_id);
+      if(!task)return `ID「${input.task_id}」のタスクが見つかりませんでした。`;
+      if(input.title!==undefined)task.title=input.title;
+      if(input.priority!==undefined)task.priority=input.priority;
+      if(input.due!==undefined)task.due=input.due||'';
+      if(input.memo!==undefined)task.memo=input.memo||'';
+      save(db);renderTasks();renderTodayTasks();
+      return `「${task.title}」を更新しました。`;
+    }
+    if(name==='delete_task'){
+      const idx=(db.tasks||[]).findIndex(t=>t.id===input.task_id);
+      if(idx<0)return `ID「${input.task_id}」のタスクが見つかりませんでした。`;
+      const title=db.tasks[idx].title;
+      db.tasks.splice(idx,1);save(db);renderTasks();renderTodayTasks();
+      return `「${title}」を削除しました。`;
+    }
+    if(name==='log_workout'){
+      const date=input.date||todayStr();
+      if(!db.workouts[date])db.workouts[date]=[];
+      const sets=(input.sets||[]).map(s=>{
+        const set={};
+        if(s.w!=null)set.w=s.w;
+        if(s.r!=null)set.r=s.r;
+        if(s.time!=null)set.time=s.time;
+        if(s.distance!=null)set.distance=s.distance;
+        if(s.speed!=null)set.speed=s.speed;
+        return set;
+      });
+      db.workouts[date].push({id:UID(),name:input.name,category:input.category||'weight',sets});
+      save(db);checkLevelUp();
+      const setDesc=sets.map((s,i)=>`${i+1}セット:${s.w!=null?s.w+'kg×':''}${s.r!=null?s.r+'回':''}${s.time!=null?s.time+'分':''}${s.distance!=null?s.distance+'km':''}`).join(' / ');
+      return `「${input.name}」を記録しました（${date}）。${setDesc}`;
+    }
+    if(name==='update_goal_progress'){
+      const goal=(db.goals||[]).find(g=>g.id===input.goal_id);
+      if(!goal)return `ID「${input.goal_id}」の目標が見つかりませんでした。`;
+      goal.progress=Math.max(0,Math.min(100,Math.round(input.progress)));
+      save(db);renderGoals();
+      return `「${goal.title}」の進捗を${goal.progress}%に更新しました。`;
+    }
+    if(name==='achieve_goal'){
+      const goal=(db.goals||[]).find(g=>g.id===input.goal_id);
+      if(!goal)return `ID「${input.goal_id}」の目標が見つかりませんでした。`;
+      goal.done=true;goal.achievedAt=todayStr();
+      save(db);renderGoals();checkLevelUp();
+      return `「${goal.title}」を達成済みにしました！おめでとうございます🎉`;
+    }
+    if(name==='edit_goal'){
+      const goal=(db.goals||[]).find(g=>g.id===input.goal_id);
+      if(!goal)return `ID「${input.goal_id}」の目標が見つかりませんでした。`;
+      if(input.title!==undefined)goal.title=input.title;
+      if(input.level!==undefined)goal.level=input.level;
+      if(input.due!==undefined)goal.dueDate=input.due||null;
+      save(db);renderGoals();
+      return `「${goal.title}」を更新しました。`;
+    }
+    if(name==='log_sleep'){
+      const date=input.date||todayStr();
+      if(!db.sleep[date])db.sleep[date]={};
+      if(input.bedtime)db.sleep[date].bedtime=input.bedtime;
+      if(input.wake_time)db.sleep[date].wakeTime=input.wake_time;
+      save(db);
+      if(typeof renderSleepTab==='function')renderSleepTab();
+      return `睡眠を記録しました（${date}）。${input.bedtime?'就寝:'+input.bedtime:''}${input.wake_time?' 起床:'+input.wake_time:''}`;
+    }
     return `不明なツール: ${name}`;
   }
   function showToolConfirm(toolUseBlocks){
-    const TLABEL={add_event:'📅 予定を追加',add_task:'✅ タスクを追加',complete_task:'☑ タスクを完了',add_goal:'🎯 目標を追加',award_event_xp:'⭐ 予定にXPを付与',award_xp:'🌟 体験にXPを付与'};
+    const TLABEL={add_event:'📅 予定を追加',add_task:'✅ タスクを追加',complete_task:'☑ タスクを完了',add_goal:'🎯 目標を追加',award_event_xp:'⭐ 予定にXPを付与',award_xp:'🌟 体験にXPを付与',edit_event:'✏️ 予定を編集',delete_event:'🗑 予定を削除',edit_task:'✏️ タスクを編集',delete_task:'🗑 タスクを削除',log_workout:'💪 筋トレを記録',update_goal_progress:'📊 目標進捗を更新',achieve_goal:'🏆 目標を達成済みに',edit_goal:'✏️ 目標を編集',log_sleep:'💤 睡眠を記録'};
     return new Promise(resolve=>{
       const wrap=document.getElementById('ai-messages');
       const div=document.createElement('div');div.className='ai-msg ai';
@@ -4981,9 +5079,17 @@ window.updatePcSettingsUI();
         if(i.due)txt+=`・期限: ${i.due}\n`;
         if(i.level)txt+=`・重要度: ${i.level==='high'?'高':i.level==='low'?'低':'中'}\n`;
         if(i.task_id){const t=db.tasks.find(t=>t.id===i.task_id);txt+=`・「${t?t.title:i.task_id}」\n`;}
+        if(i.event_id){const e=(db.events||[]).find(e=>e.id===i.event_id);txt+=`・「${e?e.title:i.event_id}」\n`;}
+        if(i.goal_id){const g=(db.goals||[]).find(g=>g.id===i.goal_id);txt+=`・「${g?g.title:i.goal_id}」\n`;}
         if(i.xp)txt+=`・XP: ${i.xp}\n`;
         if(i.reason)txt+=`・理由: ${i.reason}\n`;
-        if(i.category){const cmap={travel:'✈️旅行',food:'🍽️食体験',learning:'💡学び',joy:'😊喜び',challenge:'⚡挑戦',other:'🌟その他'};txt+=`・カテゴリ: ${cmap[i.category]||i.category}\n`;}
+        if(i.category&&!i.name){const cmap={travel:'✈️旅行',food:'🍽️食体験',learning:'💡学び',joy:'😊喜び',challenge:'⚡挑戦',other:'🌟その他',weight:'🏋️ウエイト',bodyweight:'💪自重',cardio:'🏃有酸素',stretch:'🤸ストレッチ'};txt+=`・カテゴリ: ${cmap[i.category]||i.category}\n`;}
+        if(i.name)txt+=`・種目: ${i.name}\n`;
+        if(i.category&&i.name){const cmap={weight:'🏋️ウエイト',bodyweight:'💪自重',cardio:'🏃有酸素',stretch:'🤸ストレッチ'};txt+=`・カテゴリ: ${cmap[i.category]||i.category}\n`;}
+        if(i.sets&&i.sets.length)txt+=`・${i.sets.length}セット: ${i.sets.map((s,j)=>`${j+1}セット${s.w!=null?s.w+'kg×':''}${s.r!=null?s.r+'回':''}${s.time!=null?s.time+'分':''}${s.distance!=null?s.distance+'km':''}`).join(' ')}\n`;
+        if(i.progress!=null)txt+=`・進捗: ${i.progress}%\n`;
+        if(i.bedtime)txt+=`・就寝: ${i.bedtime}\n`;
+        if(i.wake_time)txt+=`・起床: ${i.wake_time}\n`;
         txt+='\n';
       }
       div.innerHTML=safeHtml(txt);
