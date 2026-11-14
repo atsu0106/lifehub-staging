@@ -1267,7 +1267,10 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
 
 <div class="overlay" id="mo-settings" hidden>
   <div class="modal" style="max-height:90vh;overflow-y:auto;">
-    <h3>⚙ 設定</h3>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <h3 style="margin:0;">⚙ 設定</h3>
+      <button id="settings-close-top" style="background:none;border:none;font-size:22px;color:var(--fg2);cursor:pointer;padding:4px 8px;line-height:1;border-radius:8px;">✕</button>
+    </div>
     <div class="m-field">
       <label>「予定追加」ボタンの位置</label>
       <div class="pos-opt-row">
@@ -3096,6 +3099,7 @@ document.querySelectorAll('.pos-opt[data-hl]').forEach(btn=>{
   const WORKER = 'https://lifehub-ai.y-atsuhisa7234.workers.dev';
   const SECRET = 'lh-gmail-7x9k2m4p8q';
   let _gmailItems = [];
+  const safeHtml = t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
   async function fetchActions(){
     try{
@@ -3368,10 +3372,9 @@ document.querySelectorAll('.pos-opt[data-hl]').forEach(btn=>{
 })();
 // ── End ICSインポート ──
 
-document.getElementById('settings-close').onclick=()=>{
-  save(db);
-  document.getElementById('mo-settings').hidden=true;
-};
+function closeSettings(){save(db);document.getElementById('mo-settings').hidden=true;}
+document.getElementById('settings-close').onclick=closeSettings;
+document.getElementById('settings-close-top').onclick=closeSettings;
 document.getElementById('mo-settings').onclick=e=>{if(e.target===e.currentTarget)e.currentTarget.hidden=true;};
 // ===== お知らせ =====
 // 新しいお知らせを追加するときは先頭に追加する（idは一意な文字列）
@@ -6265,7 +6268,7 @@ function renderGameStats(){
   </div>
   <div class="gmail-sheet-body" id="gmail-sheet-body"></div>
 </div>
-<div id="gmail-overlay" style="position:fixed;inset:0;z-index:299;background:rgba(0,0,0,.4);display:none;" id="gmail-overlay"></div>
+<div id="gmail-overlay" style="position:fixed;inset:0;z-index:299;background:rgba(0,0,0,.4);display:none;"></div>
 <div id="lu-overlay" hidden style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;"></div>
 <div id="share-pv-modal" class="share-pv-modal" hidden>
   <img id="share-pv-img" class="share-pv-img" src="" alt="シェアカードプレビュー">
