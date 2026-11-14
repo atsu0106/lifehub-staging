@@ -922,8 +922,10 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
       <div class="ob-chips">
         <button class="ob-chip" data-val="study">📚 勉強・試験</button>
         <button class="ob-chip" data-val="fitness">💪 筋トレ・体づくり</button>
+        <button class="ob-chip" data-val="diet">🍱 食事・ダイエット</button>
         <button class="ob-chip" data-val="habit">📅 習慣管理</button>
         <button class="ob-chip" data-val="goal">🎯 目標達成</button>
+        <button class="ob-chip" data-val="work">💼 仕事・秘書AI</button>
       </div>
       <button id="ob-start" class="ob-btn" style="margin-top:8px;">はじめる →</button>
       <button id="ob-skip" class="ob-skip-btn">スキップ</button>
@@ -1270,6 +1272,15 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
       <h3 style="margin:0;">⚙ 設定</h3>
       <button id="settings-close-top" style="background:none;border:none;font-size:22px;color:var(--fg2);cursor:pointer;padding:4px 8px;line-height:1;border-radius:8px;">✕</button>
+    </div>
+    <div class="m-field">
+      <label>表示する機能</label>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:14px;">🏋️ トレーニング記録</span><label style="position:relative;display:inline-block;width:48px;height:28px;flex-shrink:0;"><input type="checkbox" id="ft-toggle-workout" style="opacity:0;width:0;height:0;"><span id="ft-track-workout" style="position:absolute;inset:0;background:var(--accent);border-radius:14px;cursor:pointer;transition:background .2s;"></span><span id="ft-thumb-workout" style="position:absolute;top:3px;left:23px;width:22px;height:22px;background:#fff;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);pointer-events:none;"></span></label></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:14px;">🍱 食事記録</span><label style="position:relative;display:inline-block;width:48px;height:28px;flex-shrink:0;"><input type="checkbox" id="ft-toggle-meals" style="opacity:0;width:0;height:0;"><span id="ft-track-meals" style="position:absolute;inset:0;background:var(--accent);border-radius:14px;cursor:pointer;transition:background .2s;"></span><span id="ft-thumb-meals" style="position:absolute;top:3px;left:23px;width:22px;height:22px;background:#fff;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);pointer-events:none;"></span></label></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:14px;">😴 睡眠記録</span><label style="position:relative;display:inline-block;width:48px;height:28px;flex-shrink:0;"><input type="checkbox" id="ft-toggle-sleep" style="opacity:0;width:0;height:0;"><span id="ft-track-sleep" style="position:absolute;inset:0;background:var(--accent);border-radius:14px;cursor:pointer;transition:background .2s;"></span><span id="ft-thumb-sleep" style="position:absolute;top:3px;left:23px;width:22px;height:22px;background:#fff;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);pointer-events:none;"></span></label></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:14px;">📧 Gmailアクション</span><label style="position:relative;display:inline-block;width:48px;height:28px;flex-shrink:0;"><input type="checkbox" id="ft-toggle-gmail" style="opacity:0;width:0;height:0;"><span id="ft-track-gmail" style="position:absolute;inset:0;background:var(--border);border-radius:14px;cursor:pointer;transition:background .2s;"></span><span id="ft-thumb-gmail" style="position:absolute;top:3px;left:3px;width:22px;height:22px;background:#fff;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);pointer-events:none;"></span></label></div>
+      </div>
     </div>
     <div class="m-field">
       <label>「予定追加」ボタンの位置</label>
@@ -1999,6 +2010,51 @@ if(!db.lifeXp)db.lifeXp=[];
 if(!db.settings)db.settings={addBtnPos:'center',highlightTab:'wo',calLayout:'general'};
 if(!db.settings.highlightTab)db.settings.highlightTab='wo';
 if(!db.settings.calLayout)db.settings.calLayout='general';
+if(!db.settings.features)db.settings.features={workout:true,meals:true,sleep:true,gmail:false};
+
+function autoConfigFeatures(useCases){
+  const f=db.settings.features;
+  if(useCases.includes('fitness')){f.workout=true;f.sleep=true;}
+  if(useCases.includes('diet')){f.meals=true;f.sleep=true;}
+  if(useCases.includes('work')){f.gmail=true;}
+  if(useCases.includes('study')||useCases.includes('goal')||useCases.includes('habit')){
+    // バランス型：全部ON
+    f.workout=true;f.meals=true;f.sleep=true;
+  }
+  // fitnessもdietも選ばなかった場合は食事・筋トレを任意OFFにしない（デフォルトON維持）
+  // ハイライトタブを有効な機能に自動設定
+  const hl=db.settings.highlightTab;
+  const hlFeature={wo:'workout',meals:'meals',sleep:'sleep',health:'workout'};
+  if(hlFeature[hl]&&!f[hlFeature[hl]]){
+    if(f.workout)db.settings.highlightTab='wo';
+    else if(f.meals)db.settings.highlightTab='meals';
+    else if(f.sleep)db.settings.highlightTab='sleep';
+  }
+  save(db);
+  applyFeatureVisibility();
+}
+
+function applyFeatureVisibility(){
+  const f=db.settings.features||{workout:true,meals:true,sleep:true,gmail:false};
+  // ハイライトタブ選択肢を更新
+  document.querySelector('.pos-opt[data-hl="wo"]')?.parentElement && (() => {
+    document.querySelectorAll('.pos-opt[data-hl]').forEach(b=>{
+      const featureMap={wo:'workout',meals:'meals',sleep:'sleep',health:'workout'};
+      b.style.display=f[featureMap[b.dataset.hl]!==undefined?featureMap[b.dataset.hl]:'workout']?'':'none';
+    });
+  })();
+  // 機能トグルのUI状態を更新
+  ['workout','meals','sleep','gmail'].forEach(key=>{
+    const track=document.getElementById(`ft-track-${key}`);
+    const thumb=document.getElementById(`ft-thumb-${key}`);
+    const cb=document.getElementById(`ft-toggle-${key}`);
+    if(!track)return;
+    const on=f[key]!==false;
+    if(cb)cb.checked=on;
+    track.style.background=on?'var(--accent)':'var(--border)';
+    thumb.style.left=on?'23px':'3px';
+  });
+}
 if(!db.settings.theme)db.settings.theme='system';
 if(!db.settings.workerUrl)db.settings.workerUrl=''; // legacy compat
 if(db.settings.enableAttach===undefined)db.settings.enableAttach=false;
@@ -2809,6 +2865,7 @@ function applyTheme(theme){
 }
 applyTheme(db.settings.theme||'system');
 applyLeftyMode();
+applyFeatureVisibility();
 document.querySelectorAll('.pos-opt[data-theme-opt]').forEach(btn=>{
   btn.onclick=()=>{
     db.settings.theme=btn.dataset.themeOpt;
@@ -3052,6 +3109,8 @@ document.getElementById('hdr-settings').onclick=()=>{
   document.querySelectorAll('.pos-opt[data-cal]').forEach(b=>b.classList.toggle('on',b.dataset.cal===(s.calLayout||'general')));
   document.querySelectorAll('.pos-opt[data-theme-opt]').forEach(b=>b.classList.toggle('on',b.dataset.themeOpt===(s.theme||'system')));
   document.querySelectorAll('.pos-opt[data-lefty]').forEach(b=>b.classList.toggle('on',b.dataset.lefty===(s.leftHand?'on':'off')));
+  // 機能トグル状態を反映
+  applyFeatureVisibility();
   // 添付トグル状態を反映
   const attachToggle=document.getElementById('toggle-attach');
   const attachTrack=document.getElementById('toggle-attach-track');
@@ -3063,6 +3122,26 @@ document.getElementById('hdr-settings').onclick=()=>{
   document.getElementById('mo-settings').hidden=false;
   renderGameStats();
 };
+// 機能トグルハンドラ
+['workout','meals','sleep','gmail'].forEach(key=>{
+  document.getElementById(`ft-toggle-${key}`)?.addEventListener('change',function(){
+    if(!db.settings.features)db.settings.features={workout:true,meals:true,sleep:true,gmail:false};
+    db.settings.features[key]=this.checked;
+    // OFFにした機能がハイライトタブに設定されていたら次の有効な機能に切り替え
+    if(!this.checked){
+      const hlMap={workout:'wo',meals:'meals',sleep:'sleep'};
+      if(hlMap[key]===db.settings.highlightTab){
+        const f=db.settings.features;
+        if(f.workout&&key!=='workout')db.settings.highlightTab='wo';
+        else if(f.meals&&key!=='meals')db.settings.highlightTab='meals';
+        else if(f.sleep&&key!=='sleep')db.settings.highlightTab='sleep';
+        updateHlNav();
+      }
+    }
+    save(db);
+    applyFeatureVisibility();
+  });
+});
 document.getElementById('toggle-attach').addEventListener('change',function(){
   const on=this.checked;
   db.settings.enableAttach=on;
@@ -3250,8 +3329,9 @@ document.querySelectorAll('.pos-opt[data-hl]').forEach(btn=>{
   document.getElementById('gmail-close').onclick = closeSheet;
   document.getElementById('gmail-overlay').onclick = closeSheet;
 
-  // 起動時に非同期でアクション取得
+  // 起動時に非同期でアクション取得（Gmail機能がONの場合のみ）
   setTimeout(async ()=>{
+    if(db.settings.features?.gmail===false)return;
     _gmailItems = await fetchActions();
     updateBadge(_gmailItems.length);
   }, 2000);
@@ -5015,6 +5095,7 @@ document.getElementById('ml-next').onclick=()=>{const d=new Date(st.mlDate);d.se
       const selected=[...step2.querySelectorAll('.ob-chip.active')].map(c=>c.dataset.val);
       const savedName=inp.value.trim()||'マイデータ';
       db.userProfile={useCase:selected,setupAt:todayStr(),name:savedName};
+      if(selected.length>0)autoConfigFeatures(selected);
       save(db);
       ob.hidden=true;
       app.style.display='';
