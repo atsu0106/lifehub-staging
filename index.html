@@ -258,6 +258,31 @@ body.lefty .m-actions{flex-direction:row-reverse;}
 .ai-empty{text-align:center;color:var(--fg2);font-size:13px;padding:40px 20px;line-height:1.6;}
 .hdr-settings-btn{background:none;border:none;color:var(--fg2);cursor:pointer;padding:10px;font-size:17px;line-height:1;border-radius:8px;}
 .hdr-settings-btn:hover{background:var(--surface2);}
+.hdr-gmail-btn{position:relative;background:none;border:none;color:var(--fg2);cursor:pointer;padding:8px;font-size:18px;line-height:1;border-radius:8px;}
+.hdr-gmail-btn:hover{background:var(--surface2);}
+.gmail-badge{position:absolute;top:4px;right:2px;min-width:16px;height:16px;border-radius:8px;background:#ef4444;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 3px;}
+/* Gmail sheet */
+.gmail-sheet{position:fixed;bottom:0;left:0;right:0;max-height:80dvh;z-index:300;background:var(--bg);border-radius:20px 20px 0 0;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1);}
+.gmail-sheet.open{transform:translateY(0);}
+.gmail-sheet[hidden]{display:none!important;}
+.gmail-sheet-hdr{display:flex;align-items:center;gap:8px;padding:14px 16px 10px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.gmail-sheet-hdr h2{flex:1;font-size:16px;font-weight:700;}
+.gmail-sheet-body{overflow-y:auto;padding:12px 14px 32px;flex:1;}
+.gmail-item{background:var(--surface);border-radius:12px;padding:12px 14px;margin-bottom:10px;}
+.gmail-item-hdr{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;}
+.gmail-from{font-size:11px;color:var(--fg3);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.gmail-subj{font-size:13px;font-weight:700;color:var(--fg);margin-bottom:2px;}
+.gmail-summary{font-size:12px;color:var(--fg2);margin-bottom:8px;line-height:1.5;}
+.gmail-actions-list{display:flex;flex-direction:column;gap:6px;}
+.gmail-action-row{display:flex;align-items:center;gap:8px;background:var(--surface2);border-radius:8px;padding:8px 10px;}
+.gmail-action-type{font-size:14px;flex-shrink:0;}
+.gmail-action-text{flex:1;font-size:12px;color:var(--fg);line-height:1.4;}
+.gmail-action-add{padding:5px 12px;border-radius:8px;background:var(--accent);color:#fff;border:none;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;}
+.gmail-action-add:disabled{opacity:.5;}
+.gmail-item-dismiss{background:none;border:none;color:var(--fg3);font-size:18px;cursor:pointer;padding:2px 4px;line-height:1;}
+.gmail-empty{text-align:center;padding:40px 20px;color:var(--fg2);font-size:14px;line-height:1.6;}
+.gmail-all-btn{width:100%;margin-top:12px;padding:13px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#7c3aed);color:#fff;border:none;font-size:14px;font-weight:700;cursor:pointer;}
+body.lefty .hdr-gmail-btn{order:-2;}
 .prof-btn{background:none;border:none;cursor:pointer;padding:7px;display:flex;align-items:center;}
 .prof-avatar{width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;}
 .prof-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border);cursor:pointer;border-radius:6px;}
@@ -910,6 +935,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
   <header class="hdr">
     <span class="hdr-logo">LifeHub <span style="font-size:10px;font-weight:700;background:#9333ea;color:#fff;padding:1px 5px;border-radius:4px;vertical-align:middle;">STG</span></span>
     <span class="hdr-date" id="hdr-date"></span>
+    <button class="hdr-gmail-btn" id="hdr-gmail" hidden title="メールからのアクション">📧<span class="gmail-badge" id="gmail-badge">0</span></button>
     <button class="prof-btn" id="prof-btn" title="プロフィール切り替え">
       <span class="prof-avatar" id="prof-avatar" style="background:#4F46E5">?</span>
     </button>
@@ -3065,6 +3091,167 @@ document.querySelectorAll('.pos-opt[data-hl]').forEach(btn=>{
     if(st.tab==='other')renderOther();
   };
 });
+// ── Gmail連携 ─────────────────────────────────────────────
+(function(){
+  const WORKER = 'https://lifehub-ai.y-atsuhisa7234.workers.dev';
+  const SECRET = 'lh-gmail-7x9k2m4p8q';
+  let _gmailItems = [];
+
+  async function fetchActions(){
+    try{
+      const res = await fetch(`${WORKER}/gmail-actions`, {
+        headers: { 'X-LifeHub-Token': SECRET }
+      });
+      if(!res.ok) return [];
+      return await res.json();
+    } catch(e){ return []; }
+  }
+
+  async function dismissEmail(emailId){
+    try{
+      await fetch(`${WORKER}/gmail-confirm`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain', 'X-LifeHub-Token': SECRET },
+        body: JSON.stringify({ emailId })
+      });
+    } catch(e){}
+  }
+
+  function typeIcon(t){ return t==='event'?'📅':t==='task'?'✅':'↩️'; }
+
+  function renderSheet(items){
+    const body = document.getElementById('gmail-sheet-body');
+    if(items.length === 0){
+      body.innerHTML = '<div class="gmail-empty">📭 新しいアクションはありません</div>';
+      return;
+    }
+    body.innerHTML = items.map((item,i)=>`
+      <div class="gmail-item" id="gmail-item-${i}">
+        <div class="gmail-item-hdr">
+          <div style="flex:1"><div class="gmail-subj">${safeHtml(item.subject)}</div><div class="gmail-from">${safeHtml(item.from)}</div></div>
+          <button class="gmail-item-dismiss" data-dismiss="${i}" title="却下">✕</button>
+        </div>
+        <div class="gmail-summary">${safeHtml(item.summary||'')}</div>
+        <div class="gmail-actions-list">${item.actions.map((a,j)=>`
+          <div class="gmail-action-row">
+            <span class="gmail-action-type">${typeIcon(a.type)}</span>
+            <div class="gmail-action-text"><strong>${safeHtml(a.title)}</strong>${a.date?`<br><span style="color:var(--fg3)">${a.date}${a.time?' '+a.time:''}${a.location?' · '+safeHtml(a.location):''}</span>`:''}${a.description?`<br>${safeHtml(a.description)}`:''}
+            </div>
+            <button class="gmail-action-add" data-item="${i}" data-action="${j}">追加</button>
+          </div>`).join('')}
+        </div>
+      </div>`).join('') +
+      (items.length > 1 ? `<button class="gmail-all-btn" id="gmail-add-all">📥 全部追加（${items.reduce((s,it)=>s+it.actions.length,0)}件）</button>` : '');
+
+    // 追加ボタン
+    body.querySelectorAll('.gmail-action-add').forEach(btn=>{
+      btn.onclick = async ()=>{
+        const item = items[+btn.dataset.item];
+        const action = item.actions[+btn.dataset.action];
+        btn.disabled = true; btn.textContent = '✓';
+        addActionToApp(action);
+        // 全アクション追加済みなら dismiss
+        const row = btn.closest('.gmail-item');
+        const remaining = row.querySelectorAll('.gmail-action-add:not(:disabled)');
+        if(remaining.length === 0){
+          await dismissEmail(item.emailId);
+          _gmailItems = _gmailItems.filter(it=>it.emailId!==item.emailId);
+          updateBadge(_gmailItems.length);
+        }
+      };
+    });
+
+    // 却下ボタン
+    body.querySelectorAll('[data-dismiss]').forEach(btn=>{
+      btn.onclick = async ()=>{
+        const item = items[+btn.dataset.dismiss];
+        await dismissEmail(item.emailId);
+        _gmailItems = _gmailItems.filter(it=>it.emailId!==item.emailId);
+        updateBadge(_gmailItems.length);
+        renderSheet(_gmailItems);
+      };
+    });
+
+    // 全部追加ボタン
+    const allBtn = body.querySelector('#gmail-add-all');
+    if(allBtn) allBtn.onclick = async ()=>{
+      allBtn.disabled = true; allBtn.textContent = '追加中…';
+      for(const item of items){
+        for(const action of item.actions) addActionToApp(action);
+        await dismissEmail(item.emailId);
+      }
+      _gmailItems = [];
+      updateBadge(0);
+      renderSheet([]);
+    };
+  }
+
+  function addActionToApp(action){
+    const today = TODAY;
+    if(action.type === 'event'){
+      const ev = {
+        id: 'ev_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),
+        title: action.title,
+        date: action.date || today,
+        time: action.time || '',
+        timeEnd: action.time_end || '',
+        location: action.location || '',
+        memo: action.description || '',
+        color: '#4F46E5'
+      };
+      if(!db.events) db.events = [];
+      db.events.push(ev);
+      save(db); renderCal();
+    } else if(action.type === 'task' || action.type === 'reply'){
+      const task = {
+        id: 'tk_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),
+        text: action.title + (action.description ? ' — '+action.description : ''),
+        done: false,
+        pri: 2,
+        date: action.date || today,
+        createdAt: today
+      };
+      if(!db.tasks) db.tasks = [];
+      db.tasks.push(task);
+      save(db); if(typeof renderTasks==='function') renderTasks();
+    }
+    window._missionHook?.('task_add');
+  }
+
+  function updateBadge(count){
+    const btn = document.getElementById('hdr-gmail');
+    const badge = document.getElementById('gmail-badge');
+    btn.hidden = count === 0;
+    badge.textContent = count;
+  }
+
+  function openSheet(){
+    const sheet = document.getElementById('gmail-sheet');
+    const ov = document.getElementById('gmail-overlay');
+    renderSheet(_gmailItems);
+    sheet.hidden = false;
+    ov.style.display = 'block';
+    requestAnimationFrame(()=>sheet.classList.add('open'));
+  }
+
+  function closeSheet(){
+    const sheet = document.getElementById('gmail-sheet');
+    const ov = document.getElementById('gmail-overlay');
+    sheet.classList.remove('open');
+    ov.style.display = 'none';
+    setTimeout(()=>{ sheet.hidden = true; }, 300);
+  }
+
+  document.getElementById('hdr-gmail').onclick = openSheet;
+  document.getElementById('gmail-close').onclick = closeSheet;
+  document.getElementById('gmail-overlay').onclick = closeSheet;
+
+  // 起動時に非同期でアクション取得
+  setTimeout(async ()=>{
+    _gmailItems = await fetchActions();
+    updateBadge(_gmailItems.length);
+  }, 2000);
+})();
 // ── ICSインポート ─────────────────────────────────────────
 (function(){
   function parseIcs(text){
@@ -6070,6 +6257,15 @@ function renderGameStats(){
   shareRow.appendChild(wkBtn);
 }
 </script>
+<!-- Gmail Sheet -->
+<div id="gmail-sheet" class="gmail-sheet" hidden>
+  <div class="gmail-sheet-hdr">
+    <h2>📧 メールからのアクション</h2>
+    <button class="ai-hdr-btn" id="gmail-close">✕</button>
+  </div>
+  <div class="gmail-sheet-body" id="gmail-sheet-body"></div>
+</div>
+<div id="gmail-overlay" style="position:fixed;inset:0;z-index:299;background:rgba(0,0,0,.4);display:none;" id="gmail-overlay"></div>
 <div id="lu-overlay" hidden style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;"></div>
 <div id="share-pv-modal" class="share-pv-modal" hidden>
   <img id="share-pv-img" class="share-pv-img" src="" alt="シェアカードプレビュー">
