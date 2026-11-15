@@ -72,6 +72,7 @@ input[type=number]{-moz-appearance:textfield;}
   position:fixed;inset:0;
   max-width:480px;margin:0 auto;
   overflow:hidden;
+  z-index:1;
   --bleed-l:max(16px,env(safe-area-inset-left,0px));
   --bleed-r:max(16px,env(safe-area-inset-right,0px));
   --safe-top:max(env(safe-area-inset-top,0px),36px);
@@ -3597,6 +3598,22 @@ function closeSettings(){save(db);document.getElementById('mo-settings').hidden=
 document.getElementById('settings-close').onclick=closeSettings;
 document.getElementById('settings-close-top').onclick=closeSettings;
 document.getElementById('mo-settings').onclick=e=>{if(e.target===e.currentTarget)e.currentTarget.hidden=true;};
+
+// iOS PWA fix: モーダルが開いている間は#appのタッチイベントを無効化
+// (position:fixed;overflow:hiddenのコンポジットレイヤーがモーダルのタッチを横取りするバグの対策)
+(function(){
+  const appEl=document.getElementById('app');
+  const MODAL_IDS=['mo-settings','mo-profiles','mo-day','mo-ev','mo-goal','mo-goal-add','mo-task-edit','mo-ann','mo-review','mo-timer','mo-ml-add','mo-nutrients','mo-calendars','hist-modal'];
+  function syncPointerEvents(){
+    const anyOpen=MODAL_IDS.some(id=>{const el=document.getElementById(id);return el&&!el.hidden;});
+    appEl.style.pointerEvents=anyOpen?'none':'';
+  }
+  MODAL_IDS.forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    new MutationObserver(syncPointerEvents).observe(el,{attributeFilter:['hidden']});
+  });
+})();
 // ===== お知らせ =====
 // 新しいお知らせを追加するときは先頭に追加する（idは一意な文字列）
 const ANNOUNCEMENTS=[
