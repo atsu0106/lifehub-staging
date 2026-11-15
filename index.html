@@ -897,6 +897,37 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
 .pc-key.pc-del{font-size:20px;background:none;box-shadow:none;color:var(--fg2);}
 .pc-key.pc-empty{background:none;box-shadow:none;pointer-events:none;}
 @keyframes pc-shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+/* ── Settings redesign ── */
+.settings-modal{max-height:95dvh;overflow:hidden;display:flex;flex-direction:column;padding:0;}
+.settings-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.settings-hdr-title{font-size:17px;font-weight:700;color:var(--fg);}
+.settings-close-btn{background:none;border:none;font-size:22px;color:var(--fg2);cursor:pointer;padding:4px 8px;line-height:1;border-radius:8px;}
+.settings-body{overflow-y:auto;padding:12px 16px calc(16px + env(safe-area-inset-bottom,0px));flex:1;}
+.st-sec{font-size:11px;font-weight:700;color:var(--fg3);text-transform:uppercase;letter-spacing:.06em;padding:14px 4px 6px;}
+.st-sec:first-child{padding-top:4px;}
+.st-card{background:var(--surface2);border-radius:14px;overflow:hidden;margin-bottom:4px;}
+.st-row{display:flex;align-items:center;gap:12px;padding:11px 14px;min-height:48px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.st-row+.st-row{border-top:1px solid var(--border);}
+.st-ic{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.st-label{flex:1;font-size:14px;font-weight:500;color:var(--fg);}
+.st-val{font-size:13px;color:var(--fg3);}
+.st-arrow{font-size:18px;color:var(--fg3);line-height:1;margin-left:2px;}
+.st-row-toggle{cursor:default;}
+.st-toggle{position:relative;width:48px;height:28px;flex-shrink:0;}
+.st-toggle input{opacity:0;width:0;height:0;}
+.st-toggle-track{position:absolute;inset:0;border-radius:14px;cursor:pointer;transition:background .2s;}
+.st-toggle-thumb{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);pointer-events:none;}
+.st-inline{padding:4px 14px 12px;display:flex;flex-direction:column;gap:4px;border-top:1px solid var(--border);}
+.st-opts{display:flex;gap:6px;flex-wrap:wrap;}
+.st-opt{padding:6px 14px;border-radius:999px;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:transparent;color:var(--fg2);cursor:pointer;font-family:inherit;white-space:nowrap;}
+.st-opt.on{background:var(--accent-bg);border-color:var(--accent);color:var(--accent-fg);}
+.st-action-row{display:flex;align-items:center;gap:12px;padding:11px 14px;min-height:48px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.st-action-row+.st-action-row{border-top:1px solid var(--border);}
+.st-action-label{flex:1;font-size:14px;font-weight:500;color:var(--fg);}
+.st-action-danger{color:var(--err);}
+.st-game-wrap{padding:4px 14px 12px;border-top:1px solid var(--border);}
+.st-ics-wrap{padding:4px 14px 12px;border-top:1px solid var(--border);}
+.st-hist-wrap{padding:4px 14px 12px;border-top:1px solid var(--border);}
 </style>
 </head>
 <body>
@@ -1289,122 +1320,209 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
 </div>
 
 <div class="overlay" id="mo-settings" hidden>
-  <div class="modal" style="max-height:90vh;overflow-y:auto;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-      <h3 style="margin:0;">⚙ 設定</h3>
-      <button id="settings-close-top" style="background:none;border:none;font-size:22px;color:var(--fg2);cursor:pointer;padding:4px 8px;line-height:1;border-radius:8px;">✕</button>
+  <div class="modal settings-modal">
+    <!-- ヘッダー -->
+    <div class="settings-hdr">
+      <span class="settings-hdr-title">設定</span>
+      <button class="settings-close-btn" id="settings-close-top">✕</button>
     </div>
-    <div class="m-field">
-      <label>表示する機能</label>
-      <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:14px;">🏋️ トレーニング記録</span><label style="position:relative;display:inline-block;width:48px;height:28px;flex-shrink:0;"><input type="checkbox" id="ft-toggle-workout" style="opacity:0;width:0;height:0;"><span id="ft-track-workout" style="position:absolute;inset:0;background:var(--accent);border-radius:14px;cursor:pointer;transition:background .2s;"></span><span id="ft-thumb-workout" style="position:absolute;top:3px;left:23px;width:22px;height:22px;background:#fff;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);pointer-events:none;"></span></label></div>
-        <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:14px;">🍱 食事記録</span><label style="position:relative;display:inline-block;width:48px;height:28px;flex-shrink:0;"><input type="checkbox" id="ft-toggle-meals" style="opacity:0;width:0;height:0;"><span id="ft-track-meals" style="position:absolute;inset:0;background:var(--accent);border-radius:14px;cursor:pointer;transition:background .2s;"></span><span id="ft-thumb-meals" style="position:absolute;top:3px;left:23px;width:22px;height:22px;background:#fff;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);pointer-events:none;"></span></label></div>
-        <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:14px;">😴 睡眠記録</span><label style="position:relative;display:inline-block;width:48px;height:28px;flex-shrink:0;"><input type="checkbox" id="ft-toggle-sleep" style="opacity:0;width:0;height:0;"><span id="ft-track-sleep" style="position:absolute;inset:0;background:var(--accent);border-radius:14px;cursor:pointer;transition:background .2s;"></span><span id="ft-thumb-sleep" style="position:absolute;top:3px;left:23px;width:22px;height:22px;background:#fff;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);pointer-events:none;"></span></label></div>
-        <div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:14px;">📧 Gmailアクション</span><label style="position:relative;display:inline-block;width:48px;height:28px;flex-shrink:0;"><input type="checkbox" id="ft-toggle-gmail" style="opacity:0;width:0;height:0;"><span id="ft-track-gmail" style="position:absolute;inset:0;background:var(--border);border-radius:14px;cursor:pointer;transition:background .2s;"></span><span id="ft-thumb-gmail" style="position:absolute;top:3px;left:3px;width:22px;height:22px;background:#fff;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);pointer-events:none;"></span></label></div>
-      </div>
-    </div>
-    <div class="m-field">
-      <label>「予定追加」ボタンの位置</label>
-      <div class="pos-opt-row">
-        <button class="pos-opt" data-pos="center">
-          <span class="pos-opt-icon">↕</span>中央<br>(ナビ内)
-        </button>
-        <button class="pos-opt" data-pos="br">
-          <span class="pos-opt-icon">↘</span>右下<br>(フロート)
-        </button>
-        <button class="pos-opt" data-pos="bl">
-          <span class="pos-opt-icon">↙</span>左下<br>(フロート)
-        </button>
-      </div>
-    </div>
-    <div class="m-field" style="margin-top:16px;">
-      <label>ハイライトタブ（4番目のナビ）</label>
-      <div class="pos-opt-row">
-        <button class="pos-opt" data-hl="wo"><span class="pos-opt-icon">🏋️</span>トレーニング</button>
-        <button class="pos-opt" data-hl="meals"><span class="pos-opt-icon">🍱</span>食事</button>
-        <button class="pos-opt" data-hl="sleep"><span class="pos-opt-icon">😴</span>睡眠</button>
-        <button class="pos-opt" data-hl="health"><span class="pos-opt-icon">❤️</span>健康</button>
-      </div>
-    </div>
-    <div class="m-field" style="margin-top:16px;">
-      <label>カレンダーレイアウト</label>
-      <div class="pos-opt-row">
-        <button class="pos-opt" data-cal="general"><span class="pos-opt-icon">📅</span>General</button>
-        <button class="pos-opt" data-cal="clarify"><span class="pos-opt-icon">✨</span>Clarify</button>
-      </div>
-    </div>
-    <div class="m-field" style="margin-top:16px;">
-      <label>左利きモード</label>
-      <div class="pos-opt-row" style="margin-top:8px;">
-        <button class="pos-opt" id="lefty-off" data-lefty="off"><span class="pos-opt-icon">👉</span>右利き</button>
-        <button class="pos-opt" id="lefty-on" data-lefty="on"><span class="pos-opt-icon">👈</span>左利き</button>
-      </div>
-      <p style="font-size:11px;color:var(--fg3);margin:6px 0 0;">⚙ボタン・AIボタンが左側に移動します</p>
-    </div>
-    <div class="m-field" style="margin-top:16px;">
-      <label>テーマ</label>
-      <div class="pos-opt-row">
-        <button class="pos-opt" data-theme-opt="system"><span class="pos-opt-icon">🌐</span>自動</button>
-        <button class="pos-opt" data-theme-opt="light"><span class="pos-opt-icon">☀️</span>ライト</button>
-        <button class="pos-opt" data-theme-opt="dark"><span class="pos-opt-icon">🌙</span>ダーク</button>
-      </div>
-    </div>
-    <div class="m-field" style="margin-top:16px;">
-      <label>アクセス制限</label>
-      <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;">
-        <div id="pc-status" style="font-size:13px;color:var(--fg2);padding:4px 0;"></div>
-        <button id="btn-pc-set" class="btn-cancel" style="width:100%;">🔑 パスコードを設定する</button>
-        <button id="btn-pc-clear" class="btn-cancel" style="width:100%;display:none;">🔓 パスコードを解除する</button>
-      </div>
-    </div>
-    <div class="m-field" style="margin-top:16px;">
-      <label>データ管理</label>
-      <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;">
-        <button id="btn-export" class="btn-cancel" style="width:100%;">📤 データをエクスポート（バックアップ）</button>
-        <label id="btn-import-lbl" class="btn-cancel" style="width:100%;padding:14px 12px;font-size:15px;font-weight:700;text-align:center;cursor:pointer;box-sizing:border-box;display:flex;align-items:center;justify-content:center;border-radius:var(--r-s);min-height:52px;">
-          📥 データをインポート（復元）
-          <input type="file" id="import-file" accept=".json" style="display:none;">
-        </label>
-        <button id="btn-reset" style="width:100%;padding:12px;font-size:.95rem;border:none;border-radius:var(--r-s);background:#fee2e2;color:#dc2626;cursor:pointer;font-family:inherit;font-weight:600;">🗑️ 全データを削除（まっさらに戻す）</button>
-      </div>
-    </div>
-    <div class="m-field" style="margin-top:16px;">
-      <label>💬 AIチャット設定</label>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding:12px 14px;background:var(--surface);border-radius:10px;border:1px solid var(--border);">
-        <div>
-          <div style="font-size:14px;font-weight:600;color:var(--fg);">📎 ファイル添付（画像・PDF）</div>
-          <div style="font-size:12px;color:var(--fg3);margin-top:2px;">チャットに写真やPDFを添付してAIに送れる</div>
+    <!-- スクロール本体 -->
+    <div class="settings-body">
+
+      <!-- 外観 -->
+      <div class="st-sec">外観</div>
+      <div class="st-card">
+        <div class="st-row st-row-toggle">
+          <span class="st-ic" style="background:#6366f1;">🎨</span>
+          <span class="st-label">テーマ</span>
+          <div class="st-opts" style="gap:4px;">
+            <button class="st-opt" data-theme-opt="system">自動</button>
+            <button class="st-opt" data-theme-opt="light">☀️</button>
+            <button class="st-opt" data-theme-opt="dark">🌙</button>
+          </div>
         </div>
-        <label style="position:relative;display:inline-block;width:48px;height:28px;flex-shrink:0;">
-          <input type="checkbox" id="toggle-attach" style="opacity:0;width:0;height:0;">
-          <span id="toggle-attach-track" style="position:absolute;inset:0;background:var(--border);border-radius:14px;cursor:pointer;transition:background .2s;"></span>
-          <span id="toggle-attach-thumb" style="position:absolute;top:3px;left:3px;width:22px;height:22px;background:#fff;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);pointer-events:none;"></span>
-        </label>
+        <div class="st-row st-row-toggle">
+          <span class="st-ic" style="background:#8b5cf6;">👈</span>
+          <div style="flex:1;">
+            <div class="st-label">左利きモード</div>
+            <div style="font-size:11px;color:var(--fg3);margin-top:1px;">⚙・AIボタンが左側に移動</div>
+          </div>
+          <label class="st-toggle">
+            <input type="checkbox" id="lefty-toggle-ck" style="opacity:0;width:0;height:0;">
+            <span id="lefty-toggle-track" class="st-toggle-track" style="background:var(--border);"></span>
+            <span id="lefty-toggle-thumb" class="st-toggle-thumb"></span>
+          </label>
+        </div>
       </div>
-    </div>
-    <div class="m-field" style="margin-top:16px;">
-      <label>🎮 ゲームステータス</label>
-      <div id="game-stats-panel" style="margin-top:10px;"></div>
-    </div>
-    <div class="m-field" style="margin-top:16px;">
-      <label>📥 Googleカレンダーをインポート</label>
-      <p style="font-size:12px;color:var(--fg2);margin:6px 0 10px;">Googleカレンダー → 設定 → エクスポート で取得した<strong>.icsファイル</strong>を選択してください。既存データは保持されます。</p>
-      <input type="file" id="ics-file-input" accept=".ics,text/calendar" style="display:none;">
-      <button id="ics-import-btn" style="width:100%;padding:11px;border:1.5px dashed var(--border);border-radius:10px;background:var(--surface2);color:var(--fg2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">📂 .icsファイルを選択</button>
-      <div id="ics-result" style="margin-top:8px;font-size:12px;color:var(--ok);display:none;"></div>
-    </div>
-    <div class="m-field" style="margin-top:16px;">
-      <div id="hist-toggle" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;padding:4px 0;">
-        <label style="cursor:pointer;font-weight:600;">📋 アップデート履歴</label>
-        <span id="hist-arrow" style="font-size:12px;color:var(--fg3);">▾</span>
+
+      <!-- ナビゲーション -->
+      <div class="st-sec">ナビゲーション</div>
+      <div class="st-card">
+        <div class="st-row st-row-toggle">
+          <span class="st-ic" style="background:#0ea5e9;">➕</span>
+          <span class="st-label" style="flex:0 0 auto;margin-right:8px;">追加ボタン</span>
+          <div class="st-opts" style="justify-content:flex-end;">
+            <button class="st-opt" data-pos="center">中央</button>
+            <button class="st-opt" data-pos="br">右下</button>
+            <button class="st-opt" data-pos="bl">左下</button>
+          </div>
+        </div>
+        <div class="st-row st-row-toggle">
+          <span class="st-ic" style="background:#f59e0b;">⭐</span>
+          <span class="st-label" style="flex:0 0 auto;margin-right:8px;">ハイライトタブ</span>
+          <div class="st-opts" style="justify-content:flex-end;">
+            <button class="st-opt" data-hl="wo">🏋️</button>
+            <button class="st-opt" data-hl="meals">🍱</button>
+            <button class="st-opt" data-hl="sleep">😴</button>
+            <button class="st-opt" data-hl="health">❤️</button>
+          </div>
+        </div>
+        <div class="st-row st-row-toggle">
+          <span class="st-ic" style="background:#10b981;">📅</span>
+          <span class="st-label" style="flex:0 0 auto;margin-right:8px;">カレンダー</span>
+          <div class="st-opts" style="justify-content:flex-end;">
+            <button class="st-opt" data-cal="general">General</button>
+            <button class="st-opt" data-cal="clarify">Clarify</button>
+          </div>
+        </div>
       </div>
-      <div id="hist-list" hidden style="margin-top:8px;display:flex;flex-direction:column;gap:6px;">
+
+      <!-- 表示する機能 -->
+      <div class="st-sec">表示する機能</div>
+      <div class="st-card">
+        <div class="st-row st-row-toggle">
+          <span class="st-ic" style="background:#ef4444;">🏋️</span>
+          <span class="st-label">トレーニング記録</span>
+          <label class="st-toggle">
+            <input type="checkbox" id="ft-toggle-workout" style="opacity:0;width:0;height:0;">
+            <span id="ft-track-workout" class="st-toggle-track" style="background:var(--accent);"></span>
+            <span id="ft-thumb-workout" class="st-toggle-thumb" style="left:23px;"></span>
+          </label>
+        </div>
+        <div class="st-row st-row-toggle">
+          <span class="st-ic" style="background:#f59e0b;">🍱</span>
+          <span class="st-label">食事記録</span>
+          <label class="st-toggle">
+            <input type="checkbox" id="ft-toggle-meals" style="opacity:0;width:0;height:0;">
+            <span id="ft-track-meals" class="st-toggle-track" style="background:var(--accent);"></span>
+            <span id="ft-thumb-meals" class="st-toggle-thumb" style="left:23px;"></span>
+          </label>
+        </div>
+        <div class="st-row st-row-toggle">
+          <span class="st-ic" style="background:#6366f1;">😴</span>
+          <span class="st-label">睡眠記録</span>
+          <label class="st-toggle">
+            <input type="checkbox" id="ft-toggle-sleep" style="opacity:0;width:0;height:0;">
+            <span id="ft-track-sleep" class="st-toggle-track" style="background:var(--accent);"></span>
+            <span id="ft-thumb-sleep" class="st-toggle-thumb" style="left:23px;"></span>
+          </label>
+        </div>
+        <div class="st-row st-row-toggle">
+          <span class="st-ic" style="background:#0ea5e9;">📧</span>
+          <span class="st-label">Gmailアクション</span>
+          <label class="st-toggle">
+            <input type="checkbox" id="ft-toggle-gmail" style="opacity:0;width:0;height:0;">
+            <span id="ft-track-gmail" class="st-toggle-track" style="background:var(--border);"></span>
+            <span id="ft-thumb-gmail" class="st-toggle-thumb"></span>
+          </label>
+        </div>
       </div>
-    </div>
-    <div class="m-actions" style="margin-top:16px;">
-      <button class="btn-ok" id="settings-close" style="width:100%;">閉じる</button>
-    </div>
-    <p style="text-align:center;font-size:11px;color:var(--fg3);margin-top:12px;">LifeHub v1.6.0</p>
+
+      <!-- AI・連携 -->
+      <div class="st-sec">AI・連携</div>
+      <div class="st-card">
+        <div class="st-row st-row-toggle">
+          <span class="st-ic" style="background:#8b5cf6;">📎</span>
+          <div style="flex:1;">
+            <div class="st-label">ファイル添付（チャット）</div>
+            <div style="font-size:11px;color:var(--fg3);margin-top:1px;">画像・PDFをAIに送れる</div>
+          </div>
+          <label class="st-toggle">
+            <input type="checkbox" id="toggle-attach" style="opacity:0;width:0;height:0;">
+            <span id="toggle-attach-track" class="st-toggle-track" style="background:var(--border);"></span>
+            <span id="toggle-attach-thumb" class="st-toggle-thumb"></span>
+          </label>
+        </div>
+        <div class="st-row" id="st-ics-row" style="cursor:pointer;">
+          <span class="st-ic" style="background:#10b981;">📥</span>
+          <div style="flex:1;">
+            <div class="st-label">Googleカレンダーをインポート</div>
+            <div style="font-size:11px;color:var(--fg3);margin-top:1px;" id="ics-result">.icsファイルを読み込む</div>
+          </div>
+          <span class="st-arrow">›</span>
+          <input type="file" id="ics-file-input" accept=".ics,text/calendar" style="display:none;">
+        </div>
+      </div>
+
+      <!-- セキュリティ -->
+      <div class="st-sec">セキュリティ</div>
+      <div class="st-card">
+        <div class="st-row" id="st-pc-row" style="cursor:pointer;">
+          <span class="st-ic" style="background:#64748b;">🔑</span>
+          <div style="flex:1;">
+            <div class="st-label">パスコード</div>
+            <div class="st-val" id="pc-status" style="font-size:11px;color:var(--fg3);margin-top:1px;"></div>
+          </div>
+          <span class="st-arrow">›</span>
+        </div>
+        <div class="st-row" id="st-pc-clear-row" style="cursor:pointer;display:none;">
+          <span class="st-ic" style="background:#ef4444;">🔓</span>
+          <span class="st-label">パスコードを解除する</span>
+          <span class="st-arrow">›</span>
+        </div>
+      </div>
+
+      <!-- データ -->
+      <div class="st-sec">データ</div>
+      <div class="st-card">
+        <div class="st-row" id="st-export-row" style="cursor:pointer;">
+          <span class="st-ic" style="background:#0ea5e9;">📤</span>
+          <span class="st-label">エクスポート（バックアップ）</span>
+          <span class="st-arrow">›</span>
+        </div>
+        <div class="st-row" id="st-import-row" style="cursor:pointer;">
+          <span class="st-ic" style="background:#10b981;">📥</span>
+          <span class="st-label">インポート（復元）</span>
+          <span class="st-arrow">›</span>
+          <input type="file" id="import-file" accept=".json" style="display:none;">
+        </div>
+        <div class="st-row st-action-danger" id="st-reset-row" style="cursor:pointer;">
+          <span class="st-ic" style="background:#fee2e2;">🗑️</span>
+          <span class="st-label st-action-danger">全データを削除</span>
+        </div>
+      </div>
+
+      <!-- その他 -->
+      <div class="st-sec">その他</div>
+      <div class="st-card">
+        <div class="st-row" id="st-game-row" style="cursor:pointer;">
+          <span class="st-ic" style="background:#f59e0b;">🎮</span>
+          <span class="st-label">ゲームステータス</span>
+          <span class="st-arrow" id="st-game-arrow">›</span>
+        </div>
+        <div class="st-game-wrap" id="game-stats-panel" hidden></div>
+        <div class="st-row" id="hist-toggle" style="cursor:pointer;">
+          <span class="st-ic" style="background:#6366f1;">📋</span>
+          <span class="st-label">アップデート履歴</span>
+          <span class="st-arrow" id="hist-arrow">›</span>
+        </div>
+        <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
+      </div>
+
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v1.6.0</p>
+      <div style="height:8px;"></div>
+    </div><!-- /.settings-body -->
+
+    <!-- 非表示ボタン（既存JSが参照するID） -->
+    <button id="settings-close" hidden></button>
+    <button class="pos-opt" id="lefty-off" data-lefty="off" hidden></button>
+    <button class="pos-opt" id="lefty-on" data-lefty="on" hidden></button>
+    <button id="btn-pc-set" hidden></button>
+    <button id="btn-pc-clear" hidden></button>
+    <button id="ics-import-btn" hidden></button>
+    <button id="btn-export" hidden></button>
+    <label id="btn-import-lbl" hidden><input type="file" id="import-file-dup" accept=".json" style="display:none;"></label>
+    <button id="btn-reset" hidden></button>
   </div>
 </div>
 
@@ -3598,6 +3716,88 @@ function closeSettings(){save(db);document.getElementById('mo-settings').hidden=
 document.getElementById('settings-close').onclick=closeSettings;
 document.getElementById('settings-close-top').onclick=closeSettings;
 document.getElementById('mo-settings').onclick=e=>{if(e.target===e.currentTarget)e.currentTarget.hidden=true;};
+
+// ── 新設定UI の行→既存処理 接続 ────────────────────────────
+(function(){
+  // データ操作行
+  const wire=(rowId,btnId)=>{
+    const row=document.getElementById(rowId);
+    const btn=document.getElementById(btnId);
+    if(row&&btn)row.onclick=()=>btn.click();
+  };
+  wire('st-export-row','btn-export');
+  wire('st-reset-row','btn-reset');
+  wire('st-pc-row','btn-pc-set');
+  wire('st-pc-clear-row','btn-pc-clear');
+
+  // ICSインポート
+  const icsRow=document.getElementById('st-ics-row');
+  const icsInput=document.getElementById('ics-file-input');
+  if(icsRow&&icsInput)icsRow.onclick=()=>icsInput.click();
+
+  // データインポート
+  const importRow=document.getElementById('st-import-row');
+  const importInput=document.getElementById('import-file');
+  if(importRow&&importInput)importRow.onclick=()=>importInput.click();
+
+  // 左利きトグル（新checkbox → 既存hidden btn）
+  const lck=document.getElementById('lefty-toggle-ck');
+  const ltrack=document.getElementById('lefty-toggle-track');
+  const lthumb=document.getElementById('lefty-toggle-thumb');
+  if(lck){
+    // 初期状態を設定
+    function syncLeftyToggle(){
+      const on=!!db.settings.leftHand;
+      lck.checked=on;
+      ltrack.style.background=on?'var(--accent)':'var(--border)';
+      lthumb.style.left=on?'23px':'3px';
+    }
+    syncLeftyToggle();
+    lck.onchange=function(){
+      const on=lck.checked;
+      db.settings.leftHand=on;
+      save(db);
+      ltrack.style.background=on?'var(--accent)':'var(--border)';
+      lthumb.style.left=on?'23px':'3px';
+      applyLeftyMode();
+    };
+  }
+
+  // ゲームステータス展開
+  const gameRow=document.getElementById('st-game-row');
+  const gameArrow=document.getElementById('st-game-arrow');
+  const gamePanel=document.getElementById('game-stats-panel');
+  if(gameRow&&gamePanel){
+    gameRow.onclick=()=>{
+      const open=!gamePanel.hidden;
+      gamePanel.hidden=open;
+      if(gameArrow)gameArrow.textContent=open?'›':'⌄';
+      if(!open&&typeof renderGameStats==='function')renderGameStats();
+    };
+  }
+
+  // ICS行のsubtext更新（import成功後）
+  const origIcsResult=document.getElementById('ics-result');
+  if(origIcsResult){
+    const obs=new MutationObserver(()=>{
+      const txt=origIcsResult.textContent;
+      if(txt&&txt!=='.icsファイルを読み込む')origIcsResult.style.color='var(--ok)';
+    });
+    obs.observe(origIcsResult,{childList:true,characterData:true,subtree:true});
+  }
+
+  // updatePcSettingsUIをフック：st-pc-clear-rowの表示も更新
+  const origPcUI=window.updatePcSettingsUI;
+  window.updatePcSettingsUI=function(){
+    if(origPcUI)origPcUI();
+    const clearRow=document.getElementById('st-pc-clear-row');
+    if(!clearRow)return;
+    // origPcUIがbtn-pc-clearのdisplay:noneを更新済み → それを参照
+    const btnClr=document.getElementById('btn-pc-clear');
+    const hasCode=btnClr&&btnClr.style.display!=='none';
+    clearRow.style.display=hasCode?'':'none';
+  };
+})();
 
 // iOS PWA fix: モーダルが開いている間は#appのタッチイベントを無効化
 // (position:fixed;overflow:hiddenのコンポジットレイヤーがモーダルのタッチを横取りするバグの対策)
