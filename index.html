@@ -3478,6 +3478,7 @@ document.querySelectorAll('.pos-opt[data-hl]').forEach(btn=>{
 })();
 // ── ICSインポート ─────────────────────────────────────────
 (function(){
+  const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2);
   function parseIcs(text){
     // 折り返し行（RFC5545: 行頭スペース/タブは前行の続き）を結合
     const lines=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').replace(/\n[ \t]/g,'').split('\n');
@@ -3541,7 +3542,7 @@ document.querySelectorAll('.pos-opt[data-hl]').forEach(btn=>{
       const en=parseDt(ev.dtend,ev.dtendParams);
       const repeat=rruleToRepeat(ev.rrule);
       const newEv={
-        id:UID(),
+        id:uid(),
         gcal_uid:ev.uid||null,
         date:st.date,
         title:ev.summary,
