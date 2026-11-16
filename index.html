@@ -1458,6 +1458,19 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
           </div>
           <label class="toggle"><input type="checkbox" id="gmail-auto-add-toggle"><span class="toggle-track"><span class="toggle-thumb"></span></span></label>
         </div>
+        <div class="st-row" id="st-gmail-lookback-row" style="display:none;">
+          <span class="st-ic" style="background:#6366f1;">📆</span>
+          <div style="flex:1;">
+            <div class="st-label">チェック期間</div>
+            <div style="font-size:11px;color:var(--fg3);margin-top:1px;">過去何日分のメールを遡るか</div>
+          </div>
+          <select id="gmail-lookback-select" style="border:1.5px solid var(--border);border-radius:8px;padding:5px 8px;background:var(--surface2);color:var(--fg);font-size:13px;font-family:inherit;">
+            <option value="7">1週間</option>
+            <option value="30" selected>1か月</option>
+            <option value="90">3か月</option>
+            <option value="180">6か月</option>
+          </select>
+        </div>
       </div>
       <div class="st-card">
         <div class="st-row st-row-toggle">
@@ -3701,6 +3714,18 @@ document.querySelectorAll('.pos-opt[data-hl]').forEach(btn=>{
     };
   }
 
+  // チェック期間セレクタ初期化・保存
+  const lookbackSel = document.getElementById('gmail-lookback-select');
+  if(lookbackSel){
+    const saved = db.settings?.gmailLookback ?? 30;
+    lookbackSel.value = String(saved);
+    lookbackSel.onchange = ()=>{
+      if(!db.settings) db.settings={};
+      db.settings.gmailLookback = Number(lookbackSel.value);
+      save(db);
+    };
+  }
+
   document.getElementById('hdr-gmail').onclick = openSheet;
   document.getElementById('gmail-close').onclick = closeSheet;
   document.getElementById('gmail-overlay').onclick = closeSheet;
@@ -3723,12 +3748,14 @@ document.querySelectorAll('.pos-opt[data-hl]').forEach(btn=>{
         if(ic){ ic.textContent='✓'; ic.style.background='#dcfce7'; ic.style.color='#16a34a'; }
         document.getElementById('st-gmail-connect-arrow').style.display='none';
         document.getElementById('st-gmail-auto-row').style.display='flex';
+        document.getElementById('st-gmail-lookback-row').style.display='flex';
         // 機能トグルを自動でON
         const ck=document.getElementById('ft-toggle-gmail');
         if(ck&&!ck.checked){ ck.checked=true; ck.dispatchEvent(new Event('change')); }
       } else {
         if(disconnectRow) disconnectRow.style.display='none';
         document.getElementById('st-gmail-auto-row').style.display='none';
+        document.getElementById('st-gmail-lookback-row').style.display='none';
         if(label) label.textContent = 'Googleアカウントと連携';
         if(sub)   sub.textContent   = 'タップしてGmailを接続する';
         if(ic){ ic.textContent='G'; ic.style.background='#ea4335'; ic.style.color=''; }
@@ -3989,11 +4016,13 @@ document.getElementById('mo-settings').onclick=e=>{if(e.target===e.currentTarget
 (function(){
   const isIOSStandalone=/iPhone|iPad|iPod/.test(navigator.userAgent)&&window.navigator.standalone===true;
   if(!isIOSStandalone)return;
-  const appEl=document.getElementById('app');
   const MODAL_IDS=['mo-settings','mo-profiles','mo-day','mo-ev','mo-goal','mo-goal-add','mo-task-edit','mo-ann','mo-review','mo-timer','mo-ml-add','mo-nutrients','mo-calendars','hist-modal'];
+  // モーダル自体は#appの子要素なので#app全体をブロックしない。
+  // タブセクションとナビだけをブロックし、モーダルは操作可能にする。
+  const bgEls=[...document.querySelectorAll('.tab'),document.getElementById('main-nav')].filter(Boolean);
   function syncPointerEvents(){
     const anyOpen=MODAL_IDS.some(id=>{const el=document.getElementById(id);return el&&!el.hidden;});
-    appEl.style.pointerEvents=anyOpen?'none':'';
+    bgEls.forEach(el=>el.style.pointerEvents=anyOpen?'none':'');
   }
   MODAL_IDS.forEach(id=>{
     const el=document.getElementById(id);
