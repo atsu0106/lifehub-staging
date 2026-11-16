@@ -2234,10 +2234,28 @@ function save(d){
   try{localStorage.setItem(KEY,JSON.stringify(d));}
   catch(e){
     if(e.name==='QuotaExceededError'||e.name==='NS_ERROR_DOM_QUOTA_REACHED'){
-      alert('ストレージがいっぱいです。古い写真・動画を削除してから再試行してください。');
+      alert('ストレージがいっぱいです。設定→データのリセットで写真を含むデータを削除できます。');
     }
   }
 }
+// ── IndexedDB photo store (写真はlocalStorageではなくIDBに保存) ──────
+const _photoDB=(()=>{
+  const DB='lhPhotos',ST='photos',VER=1;let _db=null;
+  async function open(){
+    if(_db)return _db;
+    return new Promise((res,rej)=>{
+      const r=indexedDB.open(DB,VER);
+      r.onupgradeneeded=e=>e.target.result.createObjectStore(ST);
+      r.onsuccess=e=>{_db=e.target.result;res(_db);};
+      r.onerror=()=>rej(r.error);
+    });
+  }
+  return{
+    async save(id,data){const db=await open();return new Promise((res,rej)=>{const tx=db.transaction(ST,'readwrite');tx.objectStore(ST).put(data,id);tx.oncomplete=res;tx.onerror=()=>rej(tx.error);});},
+    async get(id){const db=await open();return new Promise((res,rej)=>{const tx=db.transaction(ST,'readonly');const r=tx.objectStore(ST).get(id);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});},
+    async del(id){const db=await open();return new Promise((res,rej)=>{const tx=db.transaction(ST,'readwrite');tx.objectStore(ST).delete(id);tx.oncomplete=res;tx.onerror=()=>rej(tx.error);});}
+  };
+})();
 function uid(){return Math.random().toString(36).slice(2,9);}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function fmt(d){return `${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`;}
@@ -2371,6 +2389,20 @@ if(!db.settings)db.settings={addBtnPos:'center',highlightTab:'wo',calLayout:'gen
 if(!db.settings.highlightTab)db.settings.highlightTab='wo';
 if(!db.settings.calLayout)db.settings.calLayout='general';
 if(!db.settings.features)db.settings.features={workout:true,meals:true,sleep:true,gmail:false};
+
+// 既存の写真データをlocalStorage→IndexedDBに移行
+(async()=>{
+  let changed=false;
+  function migrateArr(arr){
+    if(!Array.isArray(arr))return;
+    arr.forEach(p=>{if(p&&p.data&&p.id){_photoDB.save(p.id,p.data).catch(()=>{});delete p.data;changed=true;}});
+  }
+  Object.values(db.woPhotos||{}).forEach(arr=>migrateArr(arr));
+  Object.values(db.mlPhotos||{}).forEach(dayMap=>{Object.values(dayMap||{}).forEach(arr=>migrateArr(arr));});
+  Object.values(db.evPhotos||{}).forEach(arr=>migrateArr(arr));
+  Object.values(db.taskPhotos||{}).forEach(arr=>migrateArr(arr));
+  if(changed)save(db);
+})();
 
 function autoConfigFeatures(useCases){
   const f=db.settings.features;
@@ -2513,13 +2545,13 @@ function compressImage(file){
     reader.onload=e=>{
       const img=new Image();
       img.onload=()=>{
-        const MAX=1200;
+        const MAX=800;
         const scale=Math.min(MAX/img.width,MAX/img.height,1);
         const c=document.createElement('canvas');
         c.width=Math.round(img.width*scale);
         c.height=Math.round(img.height*scale);
         c.getContext('2d').drawImage(img,0,0,c.width,c.height);
-        resolve(c.toDataURL('image/jpeg',.82));
+        resolve(c.toDataURL('image/jpeg',.7));
       };
       img.src=e.target.result;
     };
@@ -2531,7 +2563,9 @@ async function processFiles(files,onEach){
     if(!f.type.startsWith('image/'))continue;
     try{
       const data=await compressImage(f);
-      onEach({id:uid(),type:'image',data,name:f.name});
+      const id=uid();
+      await _photoDB.save(id,data).catch(()=>{});
+      onEach({id,type:'image',name:f.name}); // dataはIDBに保存、dbには入れない
     }catch(err){alert(err.message);}
   }
 }
@@ -2540,7 +2574,9 @@ function openMediaViewer(media){
   const ov=document.createElement('div');ov.className='media-ov';
   const close=document.createElement('button');close.className='media-close';close.textContent='×';
   close.onclick=()=>ov.remove();
-  const el=document.createElement('img');el.src=media.data;
+  const el=document.createElement('img');el.alt='';
+  if(media.data){el.src=media.data;}
+  else{_photoDB.get(media.id).then(d=>{if(d)el.src=d;}).catch(()=>{});}
   ov.appendChild(close);ov.appendChild(el);
   ov.onclick=e=>{if(e.target===ov)ov.remove();};
   document.body.appendChild(ov);
@@ -2553,10 +2589,12 @@ function makePhotoStrip(photos,onAdd,onDel){
 
   photos.forEach((p,i)=>{
     const th=document.createElement('div');th.className='p-thumb';
-    const img=document.createElement('img');img.src=p.data;img.alt='';
+    const img=document.createElement('img');img.alt='';
+    if(p.data){img.src=p.data;}
+    else{_photoDB.get(p.id).then(d=>{if(d)img.src=d;}).catch(()=>{});}
     th.appendChild(img);
     const del=document.createElement('button');del.className='p-thumb-del';del.textContent='×';
-    del.onclick=e=>{e.stopPropagation();onDel(i);};
+    del.onclick=e=>{e.stopPropagation();if(!p.data)_photoDB.del(p.id).catch(()=>{});onDel(i);};
     th.appendChild(del);
     th.addEventListener('click',()=>openMediaViewer(p));
     strip.appendChild(th);
