@@ -1585,7 +1585,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v1.6.0</p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.56.4</p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -2335,8 +2335,8 @@ function autoConfigFeatures(useCases){
 function applyFeatureVisibility(){
   const f=db.settings.features||{workout:true,meals:true,sleep:true,gmail:false};
   // ハイライトタブ選択肢を更新
-  document.querySelector('.pos-opt[data-hl="wo"]')?.parentElement && (() => {
-    document.querySelectorAll('.pos-opt[data-hl]').forEach(b=>{
+  document.querySelector('.st-opt[data-hl="wo"]')?.parentElement && (() => {
+    document.querySelectorAll('.st-opt[data-hl]').forEach(b=>{
       const featureMap={wo:'workout',meals:'meals',sleep:'sleep',health:'workout'};
       b.style.display=f[featureMap[b.dataset.hl]!==undefined?featureMap[b.dataset.hl]:'workout']?'':'none';
     });
@@ -2400,7 +2400,7 @@ function applyAddBtnPos(){
     fabFloat.hidden=false;
     fabFloat.className='fab-float pos-'+(pos==='br'?'br':'bl');
   }
-  document.querySelectorAll('.pos-opt[data-pos]').forEach(b=>b.classList.toggle('on',b.dataset.pos===pos));
+  document.querySelectorAll('.st-opt[data-pos]').forEach(b=>b.classList.toggle('on',b.dataset.pos===pos));
 }
 function applyLeftyMode(){
   const on=db.settings.leftHand===true;
@@ -3172,12 +3172,12 @@ function deleteEvInstance(ev,dateStr){
   }
   save(db);renderCal();
 }
-document.querySelectorAll('.pos-opt[data-cal]').forEach(btn=>{
+document.querySelectorAll('.st-opt[data-cal]').forEach(btn=>{
   btn.onclick=()=>{
     db.settings.calLayout=btn.dataset.cal;
     save(db);
     st.calLayout=btn.dataset.cal;
-    document.querySelectorAll('.pos-opt[data-cal]').forEach(b=>b.classList.toggle('on',b.dataset.cal===btn.dataset.cal));
+    document.querySelectorAll('.st-opt[data-cal]').forEach(b=>b.classList.toggle('on',b.dataset.cal===btn.dataset.cal));
     if(st.tab==='cal')renderCal();
   };
 });
@@ -3189,12 +3189,12 @@ function applyTheme(theme){
 applyTheme(db.settings.theme||'system');
 applyLeftyMode();
 applyFeatureVisibility();
-document.querySelectorAll('.pos-opt[data-theme-opt]').forEach(btn=>{
+document.querySelectorAll('.st-opt[data-theme-opt]').forEach(btn=>{
   btn.onclick=()=>{
     db.settings.theme=btn.dataset.themeOpt;
     save(db);
     applyTheme(btn.dataset.themeOpt);
-    document.querySelectorAll('.pos-opt[data-theme-opt]').forEach(b=>b.classList.toggle('on',b.dataset.themeOpt===btn.dataset.themeOpt));
+    document.querySelectorAll('.st-opt[data-theme-opt]').forEach(b=>b.classList.toggle('on',b.dataset.themeOpt===btn.dataset.themeOpt));
   };
 });
 document.getElementById('cl-prev').onclick=()=>{
@@ -3429,10 +3429,10 @@ document.getElementById('mo-calendars').onclick=e=>{if(e.target===e.currentTarge
 // ── Settings Modal ─────────────────────────────────────────
 document.getElementById('hdr-settings').onclick=()=>{
   const s=db.settings;
-  document.querySelectorAll('.pos-opt[data-pos]').forEach(b=>b.classList.toggle('on',b.dataset.pos===(s.addBtnPos||'center')));
-  document.querySelectorAll('.pos-opt[data-hl]').forEach(b=>b.classList.toggle('on',b.dataset.hl===(s.highlightTab||'wo')));
-  document.querySelectorAll('.pos-opt[data-cal]').forEach(b=>b.classList.toggle('on',b.dataset.cal===(s.calLayout||'general')));
-  document.querySelectorAll('.pos-opt[data-theme-opt]').forEach(b=>b.classList.toggle('on',b.dataset.themeOpt===(s.theme||'system')));
+  document.querySelectorAll('.st-opt[data-pos]').forEach(b=>b.classList.toggle('on',b.dataset.pos===(s.addBtnPos||'center')));
+  document.querySelectorAll('.st-opt[data-hl]').forEach(b=>b.classList.toggle('on',b.dataset.hl===(s.highlightTab||'wo')));
+  document.querySelectorAll('.st-opt[data-cal]').forEach(b=>b.classList.toggle('on',b.dataset.cal===(s.calLayout||'general')));
+  document.querySelectorAll('.st-opt[data-theme-opt]').forEach(b=>b.classList.toggle('on',b.dataset.themeOpt===(s.theme||'system')));
   document.querySelectorAll('.pos-opt[data-lefty]').forEach(b=>b.classList.toggle('on',b.dataset.lefty===(s.leftHand?'on':'off')));
   // 機能トグル状態を反映
   applyFeatureVisibility();
@@ -3475,7 +3475,7 @@ document.getElementById('toggle-attach').addEventListener('change',function(){
   document.getElementById('toggle-attach-thumb').style.left=on?'23px':'3px';
   document.getElementById('ai-attach').style.display=on?'flex':'none';
 });
-document.querySelectorAll('.pos-opt[data-pos]').forEach(btn=>{
+document.querySelectorAll('.st-opt[data-pos]').forEach(btn=>{
   btn.onclick=()=>{
     db.settings.addBtnPos=btn.dataset.pos;
     save(db);
@@ -3489,11 +3489,11 @@ document.querySelectorAll('.pos-opt[data-lefty]').forEach(btn=>{
     applyLeftyMode();
   };
 });
-document.querySelectorAll('.pos-opt[data-hl]').forEach(btn=>{
+document.querySelectorAll('.st-opt[data-hl]').forEach(btn=>{
   btn.onclick=()=>{
     db.settings.highlightTab=btn.dataset.hl;
     save(db);
-    document.querySelectorAll('.pos-opt[data-hl]').forEach(b=>b.classList.toggle('on',b.dataset.hl===btn.dataset.hl));
+    document.querySelectorAll('.st-opt[data-hl]').forEach(b=>b.classList.toggle('on',b.dataset.hl===btn.dataset.hl));
     updateHlNav();
     if(st.tab==='other')renderOther();
   };
