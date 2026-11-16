@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>LifeHub [STAGING]</title>
+<title>LifeHub</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="LifeHub">
@@ -988,7 +988,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
 
 <div id="app">
   <header class="hdr">
-    <span class="hdr-logo">LifeHub <span style="font-size:10px;font-weight:700;background:#9333ea;color:#fff;padding:1px 5px;border-radius:4px;vertical-align:middle;">STG</span></span>
+    <span class="hdr-logo">LifeHub</span>
     <span class="hdr-date" id="hdr-date"></span>
     <button class="hdr-gmail-btn" id="hdr-gmail" hidden title="メールからのアクション">📧<span class="gmail-badge" id="gmail-badge">0</span></button>
     <button class="prof-btn" id="prof-btn" title="プロフィール切り替え">
@@ -2179,8 +2179,23 @@ function evOccursOn(ev, dateStr){
   return false;
 }
 function getEventsForDate(dateStr){
-  return (db.events||[]).filter(ev=>evOccursOn(ev,dateStr)&&!st.hiddenCals.has(ev.calendarId))
+  const regular=(db.events||[]).filter(ev=>evOccursOn(ev,dateStr)&&!st.hiddenCals.has(ev.calendarId))
     .sort((a,b)=>(a.time||'').localeCompare(b.time||''));
+  return [...regular,...getGmailEventsForDate(dateStr)];
+}
+function getGmailEventsForDate(dateStr){
+  if(!window._getGmailCalItems)return[];
+  const result=[];
+  for(const item of window._getGmailCalItems()){
+    const recDate=item.receivedAt?(()=>{try{return new Date(item.receivedAt).toISOString().substring(0,10);}catch(e){return null;}})():null;
+    if(recDate===dateStr)
+      result.push({_gmail:true,emailId:item.emailId,title:'📧 '+item.subject,date:dateStr,color:'#ea4335',allDay:true,_item:item});
+    (item.actions||[]).forEach(a=>{
+      if(a.type==='event'&&a.date===dateStr&&a.date!==recDate)
+        result.push({_gmail:true,emailId:item.emailId,title:'📅 '+a.title,date:dateStr,time:a.time||'',color:'#ea4335',_item:item,_action:a});
+    });
+  }
+  return result;
 }
 
 let db=load();
@@ -3031,8 +3046,9 @@ function renderDayModal(date){
   const list=document.getElementById('mo-day-list');
   const evs=(db.events||[]).filter(e=>e.date===date&&!st.hiddenCals.has(e.calendarId))
     .sort((a,b)=>(a.time||'').localeCompare(b.time||''));
+  const gevs=getGmailEventsForDate(date);
   list.innerHTML='';
-  if(!evs.length){
+  if(!evs.length&&!gevs.length){
     list.innerHTML=`<div class="empty"><div class="empty-icon">📭</div><p>予定はありません</p></div>`;
   }
   evs.forEach(ev=>{
@@ -3040,6 +3056,16 @@ function renderDayModal(date){
       ev=>{deleteEvInstance(ev,date);renderDayModal(date);},
       ev=>{openEvModal(ev);}
     ));
+  });
+  gevs.forEach(gev=>{
+    const card=document.createElement('div');card.className='card ev-card';card.style.cursor='pointer';
+    const icon=gev._action?'📅':'📧';
+    const label=gev._action?'予定 (Gmailより)':'メール受信';
+    const timeStr=gev._action&&gev._action.time?' · '+gev._action.time:'';
+    const title=String(gev.title.replace(/^[📧📅] /,'')).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    card.innerHTML=`<div class="ev-bar" style="background:#ea4335"></div><div class="ev-info" style="flex:1;min-width:0;"><div class="ev-title">${icon} ${title}</div><div class="ev-time">${label}${timeStr}</div></div><span style="font-size:12px;color:#ea4335;font-weight:600;padding-right:4px">確認›</span>`;
+    card.onclick=()=>{document.getElementById('mo-day').hidden=true;if(window._gmailOpenSheet)window._gmailOpenSheet();};
+    list.appendChild(card);
   });
 }
 function openDayModal(date){
@@ -3603,6 +3629,9 @@ document.querySelectorAll('.pos-opt[data-hl]').forEach(btn=>{
     ov.style.display = 'none';
     setTimeout(()=>{ sheet.hidden = true; }, 300);
   }
+
+  window._getGmailCalItems = () => _gmailItems;
+  window._gmailOpenSheet = () => openSheet();
 
   document.getElementById('hdr-gmail').onclick = openSheet;
   document.getElementById('gmail-close').onclick = closeSheet;
