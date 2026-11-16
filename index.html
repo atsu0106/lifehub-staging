@@ -1585,7 +1585,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.56.5</p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.57.0</p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -5882,6 +5882,8 @@ window.updatePcSettingsUI();
     {name:'achieve_goal',description:'目標を達成済みにする',input_schema:{type:'object',properties:{goal_id:{type:'string',description:'目標のID（コンテキストの[id:...]）'}},required:['goal_id']}},
     {name:'edit_goal',description:'目標を編集する。変更したいフィールドだけ指定する',input_schema:{type:'object',properties:{goal_id:{type:'string',description:'目標のID（コンテキストの[id:...]）'},title:{type:'string'},level:{type:'string',enum:['high','mid','low'],description:'重要度'},due:{type:'string',description:'YYYY-MM-DD、期限を消すなら空文字'}},required:['goal_id']}},
     {name:'log_sleep',description:'睡眠を記録する。ユーザーが昨夜の就寝・今日の起床時刻を話した時に記録する',input_schema:{type:'object',properties:{date:{type:'string',description:'対象日（YYYY-MM-DD）'},bedtime:{type:'string',description:'就寝時刻（HH:MM）省略可'},wake_time:{type:'string',description:'起床時刻（HH:MM）省略可'}},required:['date']}},
+    {name:'log_meal',description:'食事を記録する。朝食・昼食・夕食・間食を記録できる。ユーザーが食べたものを教えてくれた時に使う。カロリーは推定値でOK',input_schema:{type:'object',properties:{date:{type:'string',description:'日付（YYYY-MM-DD）省略時は今日'},meal_type:{type:'string',enum:['breakfast','lunch','dinner','snack'],description:'朝食=breakfast, 昼食=lunch, 夕食=dinner, 間食=snack'},items:{type:'array',description:'食事アイテムの配列',items:{type:'object',properties:{name:{type:'string',description:'食べたものの名前'},kcal:{type:'number',description:'カロリー（kcal）推定値でOK'}}}}},required:['meal_type','items']}},
+    {name:'log_health',description:'健康データを記録する。体重・体脂肪率・歩数・心拍数・水分摂取量など。ユーザーが測定値を話してくれた時に使う',input_schema:{type:'object',properties:{date:{type:'string',description:'日付（YYYY-MM-DD）省略時は今日'},weight:{type:'number',description:'体重(kg)'},body_fat:{type:'number',description:'体脂肪率(%)'},steps:{type:'number',description:'歩数'},heart_rate:{type:'number',description:'心拍数(bpm)'},systolic:{type:'number',description:'血圧 収縮期(mmHg)'},diastolic:{type:'number',description:'血圧 拡張期(mmHg)'},water:{type:'number',description:'水分摂取量(ml)'}},required:['date']}},
   ];
 
   // ── セッション管理 ──
@@ -6124,7 +6126,25 @@ window.updatePcSettingsUI();
     const sleepLines=[];
     for(let i=0;i<3;i++){const d=new Date(todayD);d.setDate(d.getDate()-i);const ds=d.toISOString().slice(0,10);const sl=db.sleep[ds]||{};if(sl.bedtime||sl.wakeTime)sleepLines.push(`${ds} 就寝:${sl.bedtime||'未記録'} 起床:${sl.wakeTime||'未記録'}`);}
     const sleepStats=sleepLines.length?sleepLines.join('\n'):'記録なし';
-    return `【今日の日付】${today}\n【使用目的】${useCaseStr}\n【今後14日間の予定】\n${evs}\n【未完了タスク】\n${tasks}\n【進行中の目標】\n${goals}\n【カレンダー一覧】\n${cals}\n【タスク達成状況】${taskStats}\n【筋トレ履歴（直近14日）】${woStats}\n【睡眠記録（直近3日）】\n${sleepStats}`;
+    // 食事記録（今日）
+    const todayMeals=db.meals?.[today]||{};
+    const mealTypeLabel={breakfast:'朝食',lunch:'昼食',dinner:'夕食',snack:'間食'};
+    const mealLines=Object.entries(mealTypeLabel).map(([k,label])=>{
+      const items=(todayMeals[k]||[]);if(!items.length)return null;
+      const totalKcal=items.reduce((s,i)=>s+(i.kcal||0),0);
+      return `${label}: ${items.map(i=>i.name+(i.kcal?`(${i.kcal}kcal)`:'')).join('、')}${totalKcal?' 合計'+totalKcal+'kcal':''}`;
+    }).filter(Boolean);
+    const mealStats=mealLines.length?mealLines.join('\n'):'記録なし';
+    // 健康データ（今日）
+    const todayHealth=db.health?.[today]||{};
+    const healthParts=[];
+    if(todayHealth.weight)healthParts.push(`体重:${todayHealth.weight}kg`);
+    if(todayHealth.bodyFat)healthParts.push(`体脂肪:${todayHealth.bodyFat}%`);
+    if(todayHealth.steps)healthParts.push(`歩数:${todayHealth.steps}歩`);
+    if(todayHealth.heartRate)healthParts.push(`心拍:${todayHealth.heartRate}bpm`);
+    if(todayHealth.water)healthParts.push(`水分:${todayHealth.water}ml`);
+    const healthStats=healthParts.length?healthParts.join(' '):'記録なし';
+    return `【今日の日付】${today}\n【使用目的】${useCaseStr}\n【今後14日間の予定】\n${evs}\n【未完了タスク】\n${tasks}\n【進行中の目標】\n${goals}\n【カレンダー一覧】\n${cals}\n【タスク達成状況】${taskStats}\n【筋トレ履歴（直近14日）】${woStats}\n【睡眠記録（直近3日）】\n${sleepStats}\n【今日の食事記録】\n${mealStats}\n【今日の健康データ】${healthStats}`;
   }
   function executeTool(name,input){
     if(name==='add_event'){
@@ -6245,10 +6265,46 @@ window.updatePcSettingsUI();
       if(typeof renderSleepTab==='function')renderSleepTab();
       return `睡眠を記録しました（${date}）。${input.bedtime?'就寝:'+input.bedtime:''}${input.wake_time?' 起床:'+input.wake_time:''}`;
     }
+    if(name==='log_meal'){
+      const date=input.date||todayStr();
+      const mt=input.meal_type||'snack';
+      if(!db.meals)db.meals={};
+      if(!db.meals[date])db.meals[date]={breakfast:[],lunch:[],dinner:[],snack:[]};
+      ['breakfast','lunch','dinner','snack'].forEach(k=>{if(!db.meals[date][k])db.meals[date][k]=[];});
+      const items=(input.items||[]).map(item=>({id:UID(),name:item.name,kcal:item.kcal||0,nutrients:{}}));
+      db.meals[date][mt].push(...items);
+      save(db);
+      if(typeof renderMeals==='function')renderMeals();
+      const tl={breakfast:'朝食',lunch:'昼食',dinner:'夕食',snack:'間食'};
+      const totalKcal=items.reduce((s,i)=>s+(i.kcal||0),0);
+      return `${tl[mt]||mt}を記録しました（${date}）: ${items.map(i=>i.name+(i.kcal?`(${i.kcal}kcal)`:'')).join('、')}${totalKcal?' 合計'+totalKcal+'kcal':''}`;
+    }
+    if(name==='log_health'){
+      const date=input.date||todayStr();
+      if(!db.health)db.health={};
+      if(!db.health[date])db.health[date]={};
+      const h=db.health[date];
+      if(input.weight!=null)h.weight=input.weight;
+      if(input.body_fat!=null)h.bodyFat=input.body_fat;
+      if(input.steps!=null)h.steps=input.steps;
+      if(input.heart_rate!=null)h.heartRate=input.heart_rate;
+      if(input.systolic!=null)h.systolic=input.systolic;
+      if(input.diastolic!=null)h.diastolic=input.diastolic;
+      if(input.water!=null)h.water=input.water;
+      save(db);
+      const parts=[];
+      if(input.weight!=null)parts.push(`体重:${input.weight}kg`);
+      if(input.body_fat!=null)parts.push(`体脂肪:${input.body_fat}%`);
+      if(input.steps!=null)parts.push(`歩数:${input.steps}歩`);
+      if(input.heart_rate!=null)parts.push(`心拍:${input.heart_rate}bpm`);
+      if(input.systolic!=null&&input.diastolic!=null)parts.push(`血圧:${input.systolic}/${input.diastolic}mmHg`);
+      if(input.water!=null)parts.push(`水分:${input.water}ml`);
+      return `健康データを記録しました（${date}）: ${parts.join(' ')}`;
+    }
     return `不明なツール: ${name}`;
   }
   function showToolConfirm(toolUseBlocks){
-    const TLABEL={add_event:'📅 予定を追加',add_task:'✅ タスクを追加',complete_task:'☑ タスクを完了',add_goal:'🎯 目標を追加',award_event_xp:'⭐ 予定にXPを付与',award_xp:'🌟 体験にXPを付与',edit_event:'✏️ 予定を編集',delete_event:'🗑 予定を削除',edit_task:'✏️ タスクを編集',delete_task:'🗑 タスクを削除',log_workout:'💪 筋トレを記録',update_goal_progress:'📊 目標進捗を更新',achieve_goal:'🏆 目標を達成済みに',edit_goal:'✏️ 目標を編集',log_sleep:'💤 睡眠を記録'};
+    const TLABEL={add_event:'📅 予定を追加',add_task:'✅ タスクを追加',complete_task:'☑ タスクを完了',add_goal:'🎯 目標を追加',award_event_xp:'⭐ 予定にXPを付与',award_xp:'🌟 体験にXPを付与',edit_event:'✏️ 予定を編集',delete_event:'🗑 予定を削除',edit_task:'✏️ タスクを編集',delete_task:'🗑 タスクを削除',log_workout:'💪 筋トレを記録',update_goal_progress:'📊 目標進捗を更新',achieve_goal:'🏆 目標を達成済みに',edit_goal:'✏️ 目標を編集',log_sleep:'💤 睡眠を記録',log_meal:'🍱 食事を記録',log_health:'❤️ 健康データを記録'};
     return new Promise(resolve=>{
       const wrap=document.getElementById('ai-messages');
       const div=document.createElement('div');div.className='ai-msg ai';
@@ -6275,6 +6331,13 @@ window.updatePcSettingsUI();
         if(i.progress!=null)txt+=`・進捗: ${i.progress}%\n`;
         if(i.bedtime)txt+=`・就寝: ${i.bedtime}\n`;
         if(i.wake_time)txt+=`・起床: ${i.wake_time}\n`;
+        if(i.meal_type){const ml={breakfast:'朝食',lunch:'昼食',dinner:'夕食',snack:'間食'};txt+=`・食事タイプ: ${ml[i.meal_type]||i.meal_type}\n`;}
+        if(i.items&&i.items.length)txt+=`・内容: ${i.items.map(it=>it.name+(it.kcal?`(${it.kcal}kcal)`:'')).join('、')}\n`;
+        if(i.weight!=null)txt+=`・体重: ${i.weight}kg\n`;
+        if(i.body_fat!=null)txt+=`・体脂肪率: ${i.body_fat}%\n`;
+        if(i.steps!=null)txt+=`・歩数: ${i.steps}歩\n`;
+        if(i.heart_rate!=null)txt+=`・心拍数: ${i.heart_rate}bpm\n`;
+        if(i.water!=null)txt+=`・水分摂取: ${i.water}ml\n`;
         txt+='\n';
       }
       div.innerHTML=safeHtml(txt);
@@ -6310,7 +6373,7 @@ window.updatePcSettingsUI();
         reply='[DEVモード] AIは動作していません。Worker URLを設定すると実際に動作します。\n\n取得したコンテキスト:\n'+getContext();
       } else {
         const workerUrl=WORKER_URL;
-        const system='あなたはLifeHubのAIアシスタントです。ユーザーの生活データを把握しており、日本語でアドバイスします。ツールを使ってデータの追加・変更・削除が可能です。\n\n【ツール使用のルール（最重要）】\nツールは、ユーザーが「追加して」「記録して」「変更して」「削除して」「入力して」など、明示的に操作を指示した場合のみ使用してください。ユーザーの意図を推測して自主的にツールを呼び出さないでください。ユーザーが話してくれた内容（例: 筋トレをした、ご飯を食べた）でも、「記録しますか？」と一度確認してから、OKをもらった後にツールを呼び出してください。\n\n【XP哲学】\nXPは「人生の充実」への報酬。努力・達成だけでなく、幸せな体験・発見・成長にも与える。LifeHubはユーザーの人生をゲーム化し、充実した人生を送るための相棒である。\n\n【award_event_xp — 過去の予定へのXP】\n過去の予定でaiXpが付いていないものがあれば、会話の流れで自然に「どうだった？」と聞き出し付与する。\n目安: 国試=5000〜10000、CBT/OSCE=1000〜3000、定期試験=40〜100、難しい実習=30〜80、授業=5〜15、日常予定=5〜20、楽しい遊び=1〜5。\nユーザーの申告より予定の実態を優先。\n\n【award_xp — 体験・幸せへのXP（新機能）】\nユーザーが以下を話してくれたときは自然に聞き出し award_xp を使う:\n・美味しいご飯や新しいお店を発見した → food: 3〜10\n・旅行・新しい場所に行った → travel: 20〜100（特別な場所は100以上も可。旅行の目的地1か所ごとに付与）\n・新しいことを学んだ・理解が深まった → learning: 5〜30\n・感動・喜び・楽しかった体験 → joy: 5〜20\n・初めての挑戦・体験 → challenge: 10〜30\nポイント: 目標が「旅行をたくさんしたい」なら旅行で働いてお金を貯めること（タスク）も目標連動XP対象。旅行先1か所訪問は award_xp(travel)で記録する。\n\n【回答フォーマットのルール】\n・適切な場所で改行を入れ、読みやすくする\n・複数の内容がある場合は箇条書き（・）を使う\n・句読点（。、）を正しく使い、文章を短く区切る\n・何を言いたいか一目でわかるよう、結論や要点を最初に書く\n・長くなりすぎず、必要な情報に絞って答える\n\n'+getContext();
+        const system='あなたはLifeHubのAIアシスタントです。\n\n【LifeHubの全機能（必ず把握すること）】\nLifeHubは以下の全機能を持つ総合生活管理アプリです：\n・📅 カレンダー: 予定の追加・編集・削除・繰り返し予定・複数カレンダー\n・✅ タスク管理: 追加・完了・編集・削除・優先度・期限・繰り返し・目標連携\n・🍱 食事記録: 朝食・昼食・夕食・間食の記録、カロリー・栄養素管理（log_mealツールで記録可能）\n・💪 筋トレ記録: 種目・セット数・重量・有酸素運動の記録、グラフ分析（log_workoutツールで記録可能）\n・😴 睡眠記録: 就寝・起床時刻、昼寝の記録（log_sleepツールで記録可能）\n・❤️ 健康データ: 体重・体脂肪率・歩数・心拍数・血圧・水分摂取量（log_healthツールで記録可能）\n・🎯 目標管理: 目標追加・進捗更新・達成済みマーク\n・🎮 ゲームステータス: XP・レベル・称号・実績バッジ\n・🤖 AI機能: デイリーブリーフ・ミッション生成・AIチャット（現在使用中）\n\nこれらすべての機能を持つアプリです。「○○の機能はない」と絶対に言わないでください。\n\nユーザーの生活データを把握しており、日本語でアドバイスします。ツールを使って全機能のデータを読み書きできます。\n\n【ツール使用のルール（最重要）】\nツールは、ユーザーが「追加して」「記録して」「変更して」「削除して」「入力して」など、明示的に操作を指示した場合のみ使用してください。ユーザーの意図を推測して自主的にツールを呼び出さないでください。ユーザーが話してくれた内容（例: 筋トレをした、ご飯を食べた）でも、「記録しますか？」と一度確認してから、OKをもらった後にツールを呼び出してください。\n\n【XP哲学】\nXPは「人生の充実」への報酬。努力・達成だけでなく、幸せな体験・発見・成長にも与える。LifeHubはユーザーの人生をゲーム化し、充実した人生を送るための相棒である。\n\n【award_event_xp — 過去の予定へのXP】\n過去の予定でaiXpが付いていないものがあれば、会話の流れで自然に「どうだった？」と聞き出し付与する。\n目安: 国試=5000〜10000、CBT/OSCE=1000〜3000、定期試験=40〜100、難しい実習=30〜80、授業=5〜15、日常予定=5〜20、楽しい遊び=1〜5。\nユーザーの申告より予定の実態を優先。\n\n【award_xp — 体験・幸せへのXP（新機能）】\nユーザーが以下を話してくれたときは自然に聞き出し award_xp を使う:\n・美味しいご飯や新しいお店を発見した → food: 3〜10\n・旅行・新しい場所に行った → travel: 20〜100（特別な場所は100以上も可。旅行の目的地1か所ごとに付与）\n・新しいことを学んだ・理解が深まった → learning: 5〜30\n・感動・喜び・楽しかった体験 → joy: 5〜20\n・初めての挑戦・体験 → challenge: 10〜30\nポイント: 目標が「旅行をたくさんしたい」なら旅行で働いてお金を貯めること（タスク）も目標連動XP対象。旅行先1か所訪問は award_xp(travel)で記録する。\n\n【回答フォーマットのルール】\n・適切な場所で改行を入れ、読みやすくする\n・複数の内容がある場合は箇条書き（・）を使う\n・句読点（。、）を正しく使い、文章を短く区切る\n・何を言いたいか一目でわかるよう、結論や要点を最初に書く\n・長くなりすぎず、必要な情報に絞って答える\n\n'+getContext();
         const apiMessages=aiHistory.slice(0,-2).filter(m=>m.role==='user'||m.role==='assistant').map(m=>({role:m.role,content:m.content}));
         const userContent=buildApiContent(text,attachments);
         apiMessages.push({role:'user',content:userContent});
