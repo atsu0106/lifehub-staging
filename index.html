@@ -3867,11 +3867,12 @@ document.querySelectorAll('.pos-opt[data-hl]').forEach(btn=>{
   // OAuth後のコールバック処理（?gmail_connected=1）
   if(location.search.includes('gmail_connected=1')){
     history.replaceState(null,'',location.pathname);
-    setTimeout(()=>{
-      showToast('✅ Gmailと連携しました！');
-      // 設定画面を開く
-      document.getElementById('settings-close')?.click();
-    }, 500);
+    // 機能フラグをONに設定
+    if(!db.settings.features)db.settings.features={workout:true,meals:true,sleep:true,gmail:true};
+    db.settings.features.gmail=true;
+    save(db);
+    updateMailTabVisibility();
+    setTimeout(()=>{showToast('✅ Gmailと連携しました！');}, 500);
     // 即アクション取得
     setTimeout(()=>fetchAndProcess(), 1500);
   }
@@ -5364,7 +5365,11 @@ document.getElementById('sl-add-nap').onclick=()=>{
 function renderOther(){
   const hl=db.settings?.highlightTab||'wo';
   document.querySelectorAll('.other-sub-btn').forEach(b=>{
-    if(b.dataset.s==='mail'){b.classList.toggle('on',st.otherSub==='mail');return;}
+    if(b.dataset.s==='mail'){
+      b.classList.toggle('on',st.otherSub==='mail');
+      b.style.display=db.settings?.features?.gmail===false?'none':'';
+      return;
+    }
     b.hidden=b.dataset.s===hl;
     b.classList.toggle('on',b.dataset.s===st.otherSub);
   });
