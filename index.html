@@ -270,6 +270,27 @@ body.lefty .m-actions{flex-direction:row-reverse;}
 .gmail-sheet-hdr{display:flex;align-items:center;gap:8px;padding:14px 16px 10px;border-bottom:1px solid var(--border);flex-shrink:0;}
 .gmail-sheet-hdr h2{flex:1;font-size:16px;font-weight:700;}
 .gmail-sheet-body{overflow-y:auto;padding:12px 14px 32px;flex:1;}
+/* Mail tab cards */
+.mail-card{background:var(--surface);border-radius:10px;margin-bottom:8px;overflow:hidden;box-shadow:var(--shadow);}
+.mail-card-top{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;}
+.mail-card-avatar{width:36px;height:36px;border-radius:50%;background:#ea4335;color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.mail-card-info{flex:1;min-width:0;}
+.mail-card-from{font-size:11px;color:var(--fg3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.mail-card-subject{font-size:13px;font-weight:600;color:var(--fg);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px;}
+.mail-card-summary{font-size:12px;color:var(--fg2);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.mail-card-meta{font-size:11px;color:var(--fg3);flex-shrink:0;text-align:right;}
+.mail-card-detail{padding:0 14px 12px;border-top:1px solid var(--border);display:none;}
+.mail-card-detail.open{display:block;}
+.mail-card-detail-toggle{background:none;border:none;color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;padding:0;margin-left:auto;display:block;padding-top:4px;}
+.mail-action-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);}
+.mail-action-row:last-of-type{border-bottom:none;}
+.mail-action-icon{font-size:14px;flex-shrink:0;}
+.mail-action-body{flex:1;min-width:0;}
+.mail-action-title{font-size:12px;font-weight:600;color:var(--fg);}
+.mail-action-sub{font-size:11px;color:var(--fg3);margin-top:1px;}
+.mail-action-add{padding:4px 10px;border-radius:6px;background:var(--accent);color:#fff;border:none;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.mail-action-add:disabled{opacity:.45;}
+.mail-dismiss-btn{background:none;border:none;color:var(--fg3);font-size:16px;cursor:pointer;padding:2px 4px;flex-shrink:0;}
 .gmail-item{background:var(--surface);border-radius:12px;padding:12px 14px;margin-bottom:10px;}
 .gmail-item-hdr{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;}
 .gmail-from{font-size:11px;color:var(--fg3);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -1063,6 +1084,10 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
       <button class="other-sub-btn on" data-s="meals"><span class="osb-icon">🍱</span>食事</button>
       <button class="other-sub-btn" data-s="sleep"><span class="osb-icon">😴</span>睡眠</button>
       <button class="other-sub-btn" data-s="health"><span class="osb-icon">❤️</span>健康</button>
+      <button class="other-sub-btn" data-s="mail" id="other-mail-btn" style="display:none;"><span class="osb-icon">📧</span>メール</button>
+    </div>
+    <div id="other-mail" hidden>
+      <div id="other-mail-list"></div>
     </div>
     <div id="other-wo" hidden>
       <div class="card date-bar" id="wo-datebar">
@@ -2202,9 +2227,8 @@ function evOccursOn(ev, dateStr){
   return false;
 }
 function getEventsForDate(dateStr){
-  const regular=(db.events||[]).filter(ev=>evOccursOn(ev,dateStr)&&!st.hiddenCals.has(ev.calendarId))
+  return (db.events||[]).filter(ev=>evOccursOn(ev,dateStr)&&!st.hiddenCals.has(ev.calendarId))
     .sort((a,b)=>(a.time||'').localeCompare(b.time||''));
-  return [...regular,...getGmailEventsForDate(dateStr)];
 }
 function getGmailEventsForDate(dateStr){
   if(!window._getGmailCalItems)return[];
@@ -3103,9 +3127,8 @@ function renderDayModal(date){
   const list=document.getElementById('mo-day-list');
   const evs=(db.events||[]).filter(e=>e.date===date&&!st.hiddenCals.has(e.calendarId))
     .sort((a,b)=>(a.time||'').localeCompare(b.time||''));
-  const gevs=getGmailEventsForDate(date);
   list.innerHTML='';
-  if(!evs.length&&!gevs.length){
+  if(!evs.length){
     list.innerHTML=`<div class="empty"><div class="empty-icon">📭</div><p>予定はありません</p></div>`;
   }
   evs.forEach(ev=>{
@@ -3113,16 +3136,6 @@ function renderDayModal(date){
       ev=>{deleteEvInstance(ev,date);renderDayModal(date);},
       ev=>{openEvModal(ev);}
     ));
-  });
-  gevs.forEach(gev=>{
-    const card=document.createElement('div');card.className='card ev-card';card.style.cursor='pointer';
-    const icon=gev._action?'📅':'📧';
-    const label=gev._action?'予定 (Gmailより)':'メール受信';
-    const timeStr=gev._action&&gev._action.time?' · '+gev._action.time:'';
-    const title=String(gev.title.replace(/^[📧📅] /,'')).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    card.innerHTML=`<div class="ev-bar" style="background:#ea4335"></div><div class="ev-info" style="flex:1;min-width:0;"><div class="ev-title">${icon} ${title}</div><div class="ev-time">${label}${timeStr}</div></div><span style="font-size:12px;color:#ea4335;font-weight:600;padding-right:4px">確認›</span>`;
-    card.onclick=()=>{document.getElementById('mo-day').hidden=true;if(window._gmailOpenSheet)window._gmailOpenSheet();};
-    list.appendChild(card);
   });
 }
 function openDayModal(date){
@@ -3695,18 +3708,35 @@ document.querySelectorAll('.pos-opt[data-hl]').forEach(btn=>{
 
   window._getGmailCalItems = () => _gmailItems;
   window._gmailOpenSheet = () => openSheet();
+  window._gmailDismiss = async (emailId)=>{
+    await dismissEmail(emailId);
+    _gmailItems=_gmailItems.filter(it=>it.emailId!==emailId);
+    updateBadge(_gmailItems.length);
+  };
+  window._gmailAddAction = (action)=>addActionToApp(action);
+
+  function updateMailTabVisibility(){
+    const btn=document.getElementById('other-mail-btn');
+    if(btn) btn.style.display=db.settings?.features?.gmail===false?'none':'';
+  }
+  updateMailTabVisibility();
 
   // ── 自動追加 ──────────────────────────────────────────────
   async function autoProcess(items){
     if(!items.length)return;
     let count=0;
+    const remaining=[];
     for(const item of items){
-      for(const action of (item.actions||[])){ addActionToApp(action); count++; }
-      await dismissEmail(item.emailId);
+      const evActions=(item.actions||[]).filter(a=>a.type==='event');
+      evActions.forEach(a=>{addActionToApp(a);count++;});
+      // task/reply は自動追加せずメールタブに残す
+      const hasNonEvent=(item.actions||[]).some(a=>a.type!=='event');
+      if(!hasNonEvent) await dismissEmail(item.emailId);
+      else remaining.push(item);
     }
-    _gmailItems=[];
-    updateBadge(0);
-    if(count>0) showToast(`📧 Gmail: ${count}件を自動追加しました`);
+    _gmailItems=remaining;
+    updateBadge(_gmailItems.length);
+    if(count>0) showToast(`📧 Gmail: ${count}件の予定を自動追加しました`);
   }
 
   async function fetchAndProcess(){
@@ -5305,6 +5335,7 @@ document.getElementById('sl-add-nap').onclick=()=>{
 function renderOther(){
   const hl=db.settings?.highlightTab||'wo';
   document.querySelectorAll('.other-sub-btn').forEach(b=>{
+    if(b.dataset.s==='mail'){b.classList.toggle('on',st.otherSub==='mail');return;}
     b.hidden=b.dataset.s===hl;
     b.classList.toggle('on',b.dataset.s===st.otherSub);
   });
@@ -5312,6 +5343,7 @@ function renderOther(){
   document.getElementById('other-meals').hidden=st.otherSub!=='meals';
   document.getElementById('other-sleep').hidden=st.otherSub!=='sleep';
   document.getElementById('other-health').hidden=st.otherSub!=='health';
+  document.getElementById('other-mail').hidden=st.otherSub!=='mail';
   if(st.otherSub==='wo'){
     document.querySelectorAll('.wo-vtab').forEach(b=>b.classList.toggle('on',b.dataset.v==='log'));
     document.getElementById('wo-datebar').style.display='';
@@ -5321,7 +5353,80 @@ function renderOther(){
   } else if(st.otherSub==='meals') renderMeals();
   else if(st.otherSub==='sleep') renderSleepTab();
   else if(st.otherSub==='health') renderHealth();
+  else if(st.otherSub==='mail') renderOtherMail();
   updateNavActive();
+}
+function renderOtherMail(){
+  const list=document.getElementById('other-mail-list');
+  const items=window._getGmailCalItems?window._getGmailCalItems():[];
+  if(!items.length){
+    list.innerHTML='<div class="empty" style="padding:40px 0"><div class="empty-icon">📭</div><p>新しいメールはありません</p></div>';
+    return;
+  }
+  list.innerHTML='';
+  items.forEach((item,i)=>{
+    const card=document.createElement('div');card.className='mail-card';
+    // 受信日フォーマット
+    let dateStr='';
+    try{const d=new Date(item.receivedAt);dateStr=`${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}catch(e){}
+    // 送信者のイニシャル
+    const fromName=(item.from||'?').replace(/<.*>/,'').trim();
+    const initial=(fromName[0]||'?').toUpperCase();
+    // esc
+    const e=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    card.innerHTML=`
+      <div class="mail-card-top" data-idx="${i}">
+        <div class="mail-card-avatar">${e(initial)}</div>
+        <div class="mail-card-info">
+          <div class="mail-card-from">${e(fromName)}</div>
+          <div class="mail-card-subject">${e(item.subject)}</div>
+          <div class="mail-card-summary">${e(item.summary||'')}</div>
+        </div>
+        <div class="mail-card-meta">${e(dateStr)}<br><span style="color:var(--accent);font-size:11px;font-weight:600;">${item.actions?.length||0}件</span></div>
+      </div>
+      <div class="mail-card-detail" id="mail-detail-${i}">
+        <button class="mail-card-detail-toggle" data-idx="${i}">アクションを見る ▾</button>
+        <div id="mail-actions-${i}" style="margin-top:8px;"></div>
+        <div style="display:flex;justify-content:flex-end;margin-top:6px;">
+          <button class="mail-dismiss-btn" data-dismiss="${i}" title="却下">✕ 却下</button>
+        </div>
+      </div>`;
+    list.appendChild(card);
+    // トップタップで展開
+    card.querySelector('.mail-card-top').onclick=()=>{
+      const det=document.getElementById(`mail-detail-${i}`);
+      det.classList.toggle('open');
+      if(det.classList.contains('open')) renderMailActions(i,item);
+    };
+    // 却下
+    card.querySelector('.mail-dismiss-btn').onclick=async e=>{
+      e.stopPropagation();
+      await window._gmailDismiss?.(item.emailId);
+      renderOtherMail();
+    };
+  });
+}
+function renderMailActions(idx,item){
+  const wrap=document.getElementById(`mail-actions-${idx}`);
+  if(!wrap)return;
+  const e=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  wrap.innerHTML='';
+  (item.actions||[]).forEach((action,j)=>{
+    const icon=action.type==='event'?'📅':action.type==='task'?'✅':'↩️';
+    const sub=[action.date,action.time,action.location].filter(Boolean).join(' · ');
+    const row=document.createElement('div');row.className='mail-action-row';
+    row.innerHTML=`<span class="mail-action-icon">${icon}</span>
+      <div class="mail-action-body">
+        <div class="mail-action-title">${e(action.title)}</div>
+        ${sub?`<div class="mail-action-sub">${e(sub)}</div>`:''}
+      </div>
+      <button class="mail-action-add" data-idx="${idx}" data-action="${j}">追加</button>`;
+    wrap.appendChild(row);
+    row.querySelector('.mail-action-add').onclick=async btn=>{
+      btn.target.disabled=true;btn.target.textContent='✓';
+      window._gmailAddAction?.(action);
+    };
+  });
 }
 function renderOtherSub(s){st.otherSub=s;renderOther();}
 document.querySelectorAll('.other-sub-btn').forEach(btn=>{
