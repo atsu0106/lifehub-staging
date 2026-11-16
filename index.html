@@ -1260,9 +1260,9 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
       <svg viewBox="0 0 24 24"><line x1="12" y1="4" x2="12" y2="20"/><line x1="4" y1="12" x2="20" y2="12"/></svg>
       予定追加
     </button>
-    <button class="nb" id="nav-hl" data-t="hl">
-      <svg id="nav-hl-svg" viewBox="0 0 24 24"><path d="M6 4v16M18 4v16M3 8h4M17 8h4M3 16h4M17 16h4"/></svg>
-      <span id="nav-hl-label">トレーニング</span>
+    <button class="nb" id="nav-ai" data-t="ai">
+      <svg viewBox="0 0 24 24"><path d="M12 2l1.8 7.2L21 11l-7.2 1.8L12 20l-1.8-7.2L3 11l7.2-1.8z"/></svg>
+      AI
     </button>
     <button class="nb" data-t="other">
       <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>
@@ -1272,7 +1272,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
 </div>
 
 <button class="fab-float pos-br" id="fab-float" hidden>＋</button>
-<button class="ai-fab" id="ai-fab" title="AIアシスタント">✨</button>
+<button class="ai-fab" id="ai-fab" title="AIアシスタント" style="display:none">✨</button>
 <div class="ai-overlay" id="ai-overlay"></div>
 <div class="ai-modal" id="ai-modal" hidden>
   <div class="ai-drag-handle"></div>
@@ -2417,20 +2417,14 @@ fabFloat.onclick=openEvModalAndSetup;
 // legacy reference
 const fab={onclick:null};
 function updateNavActive(){
-  const hl=db.settings?.highlightTab||'wo';
+  const aiOpen=!!(document.getElementById('ai-modal')?.classList.contains('open'));
   document.querySelectorAll('.nb').forEach(b=>{
-    if(b.id==='nav-hl') b.classList.toggle('on',st.tab==='other'&&st.otherSub===hl);
-    else if(b.dataset.t==='other') b.classList.toggle('on',st.tab==='other'&&st.otherSub!==hl);
-    else b.classList.toggle('on',b.dataset.t===st.tab);
+    if(b.id==='nav-ai') b.classList.toggle('on',aiOpen);
+    else b.classList.toggle('on',!aiOpen&&b.dataset.t===st.tab);
   });
 }
 function switchToTab(t){
-  const hl=db.settings?.highlightTab||'wo';
-  if(t==='hl'){t='other';st.otherSub=hl;}
-  else if(t==='other'){
-    const nonHl=['wo','meals','sleep'].filter(x=>x!==hl);
-    if(st.otherSub===hl)st.otherSub=nonHl[0];
-  }
+  if(t==='ai'){openAiModal();return;}
   st.tab=t;
   document.querySelectorAll('.tab').forEach(s=>s.classList.remove('on'));
   document.getElementById('tab-'+t).classList.add('on');
@@ -6364,16 +6358,16 @@ window.updatePcSettingsUI();
   }
   function openAiModal(){
     const m=document.getElementById('ai-modal'),o=document.getElementById('ai-overlay');
-    m.style.bottom='';m.style.height='';// 前回の値をリセット
+    m.style.bottom='';m.style.height='';
     m.hidden=false;
-    requestAnimationFrame(()=>{m.classList.add('open');o.classList.add('open');});
+    requestAnimationFrame(()=>{m.classList.add('open');o.classList.add('open');updateNavActive();});
     document.getElementById('ai-input').focus();
     window._missionHook?.('open_ai');
   }
   function closeAiModal(){
     const m=document.getElementById('ai-modal'),o=document.getElementById('ai-overlay');
     m.classList.remove('open');o.classList.remove('open');
-    setTimeout(()=>{m.style.bottom='';m.style.height='';m.hidden=true;},300);// transition後にリセット
+    setTimeout(()=>{m.style.bottom='';m.style.height='';m.hidden=true;updateNavActive();},300);
   }
   document.getElementById('ai-fab').onclick=openAiModal;
   document.getElementById('ai-close').onclick=closeAiModal;
