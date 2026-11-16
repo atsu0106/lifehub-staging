@@ -2424,7 +2424,11 @@ function updateNavActive(){
   });
 }
 function switchToTab(t){
-  if(t==='ai'){window._lhOpenAi?.();return;}
+  if(t==='ai'){
+    const m=document.getElementById('ai-modal'),o=document.getElementById('ai-overlay');
+    if(m&&o){m.style.bottom='';m.style.height='';m.hidden=false;requestAnimationFrame(()=>{m.classList.add('open');o.classList.add('open');updateNavActive();});const inp=document.getElementById('ai-input');if(inp)setTimeout(()=>inp.focus(),50);}
+    return;
+  }
   const tabEl=document.getElementById('tab-'+t);
   if(!tabEl)return;
   st.tab=t;
@@ -3321,8 +3325,10 @@ const HL_NAV={
 function updateHlNav(){
   const hl=db.settings?.highlightTab||'wo';
   const c=HL_NAV[hl];
-  document.getElementById('nav-hl-svg').innerHTML=c.svg;
-  document.getElementById('nav-hl-label').textContent=c.label;
+  const svgEl=document.getElementById('nav-hl-svg');
+  const labelEl=document.getElementById('nav-hl-label');
+  if(svgEl)svgEl.innerHTML=c.svg;
+  if(labelEl)labelEl.textContent=c.label;
   updateNavActive();
 }
 updateHlNav();
