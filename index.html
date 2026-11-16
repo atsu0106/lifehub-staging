@@ -750,7 +750,10 @@ body.lefty .hdr-gmail-btn{order:-2;}
 .tk-daily-memo-btn{background:none;border:1px dashed var(--border);border-radius:6px;padding:5px 10px;font-size:12px;color:var(--fg2);cursor:pointer;width:100%;text-align:left;line-height:1.4;}
 .tk-daily-memo-input{width:100%;min-height:64px;background:var(--surface2);border:1.5px solid var(--accent);border-radius:6px;padding:6px 8px;font-size:13px;font-family:inherit;color:var(--fg);outline:none;resize:vertical;box-sizing:border-box;line-height:1.5;margin-top:4px;display:none;}
 .tk-daily-memo-input.open{display:block;}
-.today-tasks-head{font-size:13px;font-weight:700;color:var(--fg);margin:12px 0 6px;padding-left:2px;}
+.today-tasks-head{font-size:13px;font-weight:700;color:var(--fg);margin:12px 0 4px;padding-left:2px;display:flex;align-items:center;justify-content:space-between;}
+.today-pct-badge{font-size:12px;font-weight:700;}
+.today-pct-bar{height:4px;background:var(--border);border-radius:2px;margin:0 0 8px;overflow:hidden;}
+.today-pct-fill{height:100%;border-radius:2px;transition:width .5s ease;}
 .today-tk-item{border-left:3px solid var(--accent);}
 .repeat-badge{font-size:11px;color:#059669;background:rgba(5,150,105,.12);padding:1px 6px;border-radius:20px;}
 .tk-hist-toggle{font-size:11px;color:#059669;cursor:pointer;user-select:none;}
@@ -1620,7 +1623,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.59.0</p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.60.0</p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -1764,6 +1767,11 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
 <div class="overlay" id="mo-ml-add" hidden>
   <div class="modal" style="max-height:90vh;overflow-y:auto;">
     <h3 id="mla-title">食事に追加</h3>
+    <div style="margin-bottom:10px;">
+      <button type="button" id="mla-photo-btn" style="width:100%;padding:10px 12px;background:var(--surface2);border:1.5px dashed var(--border);border-radius:var(--r-s);color:var(--fg2);font-size:13px;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">📷 写真で自動入力（AI推定）</button>
+      <input type="file" id="mla-photo-input" accept="image/*" capture="environment" style="display:none;">
+      <div id="mla-photo-status" style="font-size:11px;color:var(--accent);margin-top:4px;text-align:center;min-height:14px;"></div>
+    </div>
     <div class="m-field">
       <label>食品名</label>
       <input id="mla-name" placeholder="例: 鶏むね肉 100g">
@@ -4163,6 +4171,7 @@ document.getElementById('mo-settings').onclick=e=>{if(e.target===e.currentTarget
 // ===== お知らせ =====
 // 新しいお知らせを追加するときは先頭に追加する（idは一意な文字列）
 const ANNOUNCEMENTS=[
+  {id:'ann_013',date:'2026-11-17',title:'アップデート v2.60.0',body:'① 食事記録に「📷 写真で自動入力」を追加。料理の写真を撮るとAIがカロリー・栄養素を自動推定します。② 今日のタスク一覧に完了率（X/Y・Z%）を表示。③ 音声入力が途中で止まるバグを修正。'},
   {id:'ann_012',date:'2026-11-16',title:'アップデート v2.59.0',body:'タスク完了時にAIコーチとフィードバックチャットができるようになりました。「どうでしたか？」と聞いてくれるので、感想や気づきを話すとAIが次回へのアドバイスをします。スキップして即完了も可能です。'},
   {id:'ann_011',date:'2026-11-16',title:'アップデート v2.58.0',body:'① AIが過去7日間の食事・筋トレ詳細（重量・回数・距離）を参照できるようになりました。② AIチャットが途中で止まるバグを修正。③「その他」タブのトレーニングボタンが表示されないバグを修正。'},
   {id:'ann_010',date:'2026-11-13',title:'アップデート v1.6.0',body:'AIチャットに📎ファイル添付機能を追加。写真やPDFをAIに送れるようになりました。設定⚙️→「AIチャット設定」からONにしてください。'},
@@ -4473,7 +4482,11 @@ function renderTodayTasks(){
   if(!today.length){sec.innerHTML='';return;}
   const pLbl={high:'高',mid:'中',low:'低'};
   const repLbl={daily:'毎日',weekly:'毎週',monthly:'毎月'};
-  sec.innerHTML=`<div class="today-tasks-head">📅 今日のタスク</div>`+
+  const doneCount=today.filter(taskIsDoneToday).length;
+  const totalCount=today.length;
+  const pct=totalCount?Math.round(doneCount/totalCount*100):0;
+  const barColor=pct>=100?'#22c55e':pct>=50?'#f59e0b':'var(--accent)';
+  sec.innerHTML=`<div class="today-tasks-head"><span>📅 今日のタスク</span><span class="today-pct-badge" style="color:${barColor};">${doneCount}/${totalCount}（${pct}%）</span></div><div class="today-pct-bar"><div class="today-pct-fill" style="width:${pct}%;background:${barColor};"></div></div>`+
     today.map(task=>{
       const goalName=task.goalId?(db.goals||[]).find(g=>g.id===task.goalId)?.text:'';
       const repBadge=task.repeat?`<span class="repeat-badge">${repLbl[task.repeat]||''}</span>`:'';
@@ -5852,6 +5865,50 @@ function openMlEdit(k,item){
   document.getElementById('mla-kcal').value=item.kcal||'';
   _fillMlModal(k,item);
 }
+document.getElementById('mla-photo-btn').onclick=()=>document.getElementById('mla-photo-input').click();
+document.getElementById('mla-photo-input').onchange=()=>analyzePhotoMeal();
+async function analyzePhotoMeal(){
+  const file=document.getElementById('mla-photo-input').files[0];
+  if(!file)return;
+  const statusEl=document.getElementById('mla-photo-status');
+  const btn=document.getElementById('mla-photo-btn');
+  statusEl.textContent='📷 分析中...';btn.disabled=true;
+  try{
+    const reader=new FileReader();
+    const dataUrl=await new Promise(res=>{reader.onload=e=>res(e.target.result);reader.readAsDataURL(file);});
+    const base64=dataUrl.split(',')[1];
+    const mimeType=file.type||'image/jpeg';
+    const prompt='この料理・食事の写真を見て、含まれている食品と栄養成分を推定してください。複数の食品が見える場合は全体でまとめて推定してください。\n\n以下のJSON形式のみで返してください（コードブロック不要）:\n{"name":"料理名 (量の目安)","kcal":カロリー数値,"protein":タンパク質g数,"carbs":炭水化物g数,"fat":脂質g数,"note":"推定根拠や注意点（20字以内）"}';
+    const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({
+      model:'claude-haiku-5-5',max_tokens:400,
+      messages:[{role:'user',content:[
+        {type:'image',source:{type:'base64',media_type:mimeType,data:base64}},
+        {type:'text',text:prompt}
+      ]}]
+    })});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    const text=data.content?.find(c=>c.type==='text')?.text||'{}';
+    const m=text.match(/\{[\s\S]*\}/);
+    if(!m)throw new Error('parse');
+    const r=JSON.parse(m[0]);
+    if(r.name)document.getElementById('mla-name').value=r.name;
+    if(r.kcal!=null)document.getElementById('mla-kcal').value=String(Math.round(r.kcal));
+    const nuts=db.nutrients||[];
+    nuts.forEach(n=>{
+      const field=document.getElementById('mla-nut-'+n.id);if(!field)return;
+      const nm=(n.name||'').toLowerCase();
+      if(nm.includes('タンパク')||nm.includes('protein'))field.value=r.protein!=null?String(r.protein):'';
+      else if(nm.includes('炭水化物')||nm.includes('carb'))field.value=r.carbs!=null?String(r.carbs):'';
+      else if(nm.includes('脂質')||nm.includes('fat'))field.value=r.fat!=null?String(r.fat):'';
+    });
+    statusEl.textContent=r.note?`✓ ${r.note}`:'✓ 推定完了（内容を確認してから追加してください）';
+  }catch(e){
+    statusEl.textContent='⚠ 分析に失敗しました。手動で入力してください。';
+  }
+  btn.disabled=false;
+  document.getElementById('mla-photo-input').value='';
+}
 document.getElementById('mla-cancel').onclick=()=>{document.getElementById('mo-ml-add').hidden=true;editingMealId=null;};
 document.getElementById('mo-ml-add').onclick=e=>{if(e.target===e.currentTarget){e.currentTarget.hidden=true;editingMealId=null;}};
 document.getElementById('mla-ok').onclick=()=>{
@@ -6636,17 +6693,28 @@ window.updatePcSettingsUI();
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){micBtn.style.display='none';}
   else{
-    const rec=new SR();rec.lang='ja-JP';rec.interimResults=true;rec.continuous=false;
-    let isRec=false;
+    const rec=new SR();rec.lang='ja-JP';rec.interimResults=true;rec.continuous=true;
+    let isRec=false;let accText='';
     rec.onresult=e=>{
-      const t=Array.from(e.results).map(r=>r[0].transcript).join('');
-      aiInput.value=t;aiInput.style.height='auto';aiInput.style.height=Math.min(aiInput.scrollHeight,160)+'px';
+      let final='';let interim='';
+      for(let i=e.resultIndex;i<e.results.length;i++){
+        if(e.results[i].isFinal)final+=e.results[i][0].transcript;
+        else interim+=e.results[i][0].transcript;
+      }
+      accText+=final;
+      aiInput.value=accText+interim;aiInput.style.height='auto';aiInput.style.height=Math.min(aiInput.scrollHeight,160)+'px';
     };
-    rec.onend=()=>{isRec=false;micBtn.classList.remove('recording');micBtn.textContent='🎤';};
-    rec.onerror=()=>{isRec=false;micBtn.classList.remove('recording');micBtn.textContent='🎤';};
+    rec.onend=()=>{
+      if(isRec){try{rec.start();}catch(e){isRec=false;micBtn.classList.remove('recording');micBtn.textContent='🎤';}}
+      else{micBtn.classList.remove('recording');micBtn.textContent='🎤';}
+    };
+    rec.onerror=e=>{
+      if(e.error==='no-speech')return;
+      isRec=false;micBtn.classList.remove('recording');micBtn.textContent='🎤';
+    };
     micBtn.onclick=()=>{
-      if(isRec){rec.stop();}
-      else{rec.start();isRec=true;micBtn.classList.add('recording');micBtn.textContent='⏹';}
+      if(isRec){isRec=false;rec.stop();}
+      else{accText='';rec.start();isRec=true;micBtn.classList.add('recording');micBtn.textContent='⏹';}
     };
   }
 
