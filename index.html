@@ -1417,9 +1417,12 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
             <span id="ft-thumb-sleep" class="st-toggle-thumb" style="left:23px;"></span>
           </label>
         </div>
-        <div class="st-row st-row-toggle">
+        <div class="st-row st-row-toggle" id="st-gmail-feat-row">
           <span class="st-ic" style="background:#0ea5e9;">📧</span>
-          <span class="st-label">Gmailアクション</span>
+          <div style="flex:1;">
+            <div class="st-label">Gmailアクション</div>
+            <div style="font-size:11px;color:var(--fg3);margin-top:1px;" id="st-gmail-feat-sub">メールをAIが解析してタスク・予定を提案</div>
+          </div>
           <label class="st-toggle">
             <input type="checkbox" id="ft-toggle-gmail" style="opacity:0;width:0;height:0;">
             <span id="ft-track-gmail" class="st-toggle-track" style="background:var(--border);"></span>
@@ -1430,6 +1433,22 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
 
       <!-- AI・連携 -->
       <div class="st-sec">AI・連携</div>
+      <!-- Gmail OAuth connect card -->
+      <div class="st-card" id="st-gmail-connect-card">
+        <div class="st-row" id="st-gmail-connect-row" style="cursor:pointer;">
+          <span class="st-ic" style="background:#ea4335;">G</span>
+          <div style="flex:1;">
+            <div class="st-label" id="st-gmail-connect-label">Googleアカウントと連携</div>
+            <div style="font-size:11px;color:var(--fg3);margin-top:1px;" id="st-gmail-connect-sub">タップしてGmailを接続する</div>
+          </div>
+          <span id="st-gmail-connect-arrow" class="st-arrow">›</span>
+        </div>
+        <div class="st-row" id="st-gmail-disconnect-row" style="display:none;cursor:pointer;">
+          <span class="st-ic" style="background:#fee2e2;">🔌</span>
+          <span class="st-label st-action-danger">連携を解除する</span>
+          <span class="st-arrow">›</span>
+        </div>
+      </div>
       <div class="st-card">
         <div class="st-row st-row-toggle">
           <span class="st-ic" style="background:#8b5cf6;">📎</span>
@@ -3587,6 +3606,79 @@ document.querySelectorAll('.pos-opt[data-hl]').forEach(btn=>{
   document.getElementById('hdr-gmail').onclick = openSheet;
   document.getElementById('gmail-close').onclick = closeSheet;
   document.getElementById('gmail-overlay').onclick = closeSheet;
+
+  // ── Gmail OAuth UI ────────────────────────────────────────
+  const WORKER = 'https://lifehub-ai.y-atsuhisa7234.workers.dev';
+  const SECRET = 'lh-gmail-7x9k2m4p8q';
+
+  async function checkGmailConnection(){
+    try{
+      const res = await fetch(`${WORKER}/oauth/status`,{headers:{'X-LifeHub-Token':SECRET}});
+      const data = await res.json();
+      const connectRow = document.getElementById('st-gmail-connect-row');
+      const disconnectRow = document.getElementById('st-gmail-disconnect-row');
+      const label = document.getElementById('st-gmail-connect-label');
+      const sub   = document.getElementById('st-gmail-connect-sub');
+      const ic    = connectRow?.querySelector('.st-ic');
+      if(data.connected){
+        if(connectRow) connectRow.style.display='flex';
+        if(disconnectRow) disconnectRow.style.display='flex';
+        if(label) label.textContent = '連携済み ✓';
+        if(sub)   sub.textContent   = data.email ? data.email : 'Gmailが自動でチェックされます';
+        if(ic){ ic.textContent='✓'; ic.style.background='#dcfce7'; ic.style.color='#16a34a'; }
+        document.getElementById('st-gmail-connect-arrow').style.display='none';
+        // 機能トグルを自動でON
+        const ck=document.getElementById('ft-toggle-gmail');
+        if(ck&&!ck.checked){ ck.checked=true; ck.dispatchEvent(new Event('change')); }
+      } else {
+        if(disconnectRow) disconnectRow.style.display='none';
+        if(label) label.textContent = 'Googleアカウントと連携';
+        if(sub)   sub.textContent   = 'タップしてGmailを接続する';
+        if(ic){ ic.textContent='G'; ic.style.background='#ea4335'; ic.style.color=''; }
+        document.getElementById('st-gmail-connect-arrow').style.display='';
+      }
+    } catch(e){}
+  }
+
+  // 設定画面を開くたびに接続状態を確認
+  const moSettings = document.getElementById('mo-settings');
+  if(moSettings){
+    new MutationObserver(muts=>{
+      muts.forEach(m=>{ if(!moSettings.hidden) checkGmailConnection(); });
+    }).observe(moSettings,{attributeFilter:['hidden']});
+  }
+
+  // 連携ボタン
+  document.getElementById('st-gmail-connect-row').onclick = ()=>{
+    const returnUrl = location.origin + location.pathname;
+    location.href = `${WORKER}/oauth/start?return=${encodeURIComponent(returnUrl)}`;
+  };
+
+  // 解除ボタン
+  document.getElementById('st-gmail-disconnect-row').onclick = async ()=>{
+    if(!confirm('Googleアカウントとの連携を解除しますか？')) return;
+    await fetch(`${WORKER}/oauth/disconnect`,{method:'POST',headers:{'X-LifeHub-Token':SECRET}});
+    checkGmailConnection();
+    showToast('Gmail連携を解除しました');
+    // 機能トグルをOFF
+    const ck=document.getElementById('ft-toggle-gmail');
+    if(ck&&ck.checked){ ck.checked=false; ck.dispatchEvent(new Event('change')); }
+  };
+
+  // OAuth後のコールバック処理（?gmail_connected=1）
+  if(location.search.includes('gmail_connected=1')){
+    history.replaceState(null,'',location.pathname);
+    setTimeout(()=>{
+      showToast('✅ Gmailと連携しました！');
+      // 設定画面を開く
+      document.getElementById('settings-close')?.click();
+    }, 500);
+    // 即アクション取得
+    setTimeout(async ()=>{
+      _gmailItems = await fetchActions();
+      updateBadge(_gmailItems.length);
+    }, 1500);
+  }
 
   // 起動時に非同期でアクション取得（Gmail機能がONの場合のみ）
   setTimeout(async ()=>{
