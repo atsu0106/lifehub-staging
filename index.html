@@ -3609,9 +3609,6 @@ document.querySelectorAll('.pos-opt[data-hl]').forEach(btn=>{
   document.getElementById('gmail-overlay').onclick = closeSheet;
 
   // ── Gmail OAuth UI ────────────────────────────────────────
-  const WORKER = 'https://lifehub-ai.y-atsuhisa7234.workers.dev';
-  const SECRET = 'lh-gmail-7x9k2m4p8q';
-
   async function checkGmailConnection(){
     try{
       const res = await fetch(`${WORKER}/oauth/status`,{headers:{'X-LifeHub-Token':SECRET}});
