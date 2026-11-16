@@ -1476,13 +1476,21 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
           <span class="st-label st-action-danger">連携を解除する</span>
           <span class="st-arrow">›</span>
         </div>
-        <div class="st-row st-row-toggle" id="st-gmail-auto-row" style="display:none;">
-          <span class="st-ic" style="background:#f97316;">⚡</span>
+        <div class="st-row st-row-toggle" id="st-gmail-auto-event-row" style="display:none;">
+          <span class="st-ic" style="background:#4f46e5;">📅</span>
           <div style="flex:1;">
-            <div class="st-label">自動でカレンダーに追加</div>
-            <div style="font-size:11px;color:var(--fg3);margin-top:1px;">確認なしで予定・タスクを自動追加</div>
+            <div class="st-label">予定を自動追加</div>
+            <div style="font-size:11px;color:var(--fg3);margin-top:1px;">カレンダー予定を確認なしで自動追加</div>
           </div>
-          <label class="toggle"><input type="checkbox" id="gmail-auto-add-toggle"><span class="toggle-track"><span class="toggle-thumb"></span></span></label>
+          <label class="toggle"><input type="checkbox" id="gmail-auto-event-toggle"><span class="toggle-track"><span class="toggle-thumb"></span></span></label>
+        </div>
+        <div class="st-row st-row-toggle" id="st-gmail-auto-task-row" style="display:none;">
+          <span class="st-ic" style="background:#10b981;">✅</span>
+          <div style="flex:1;">
+            <div class="st-label">タスクを自動追加</div>
+            <div style="font-size:11px;color:var(--fg3);margin-top:1px;">タスクを確認なしで自動追加</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="gmail-auto-task-toggle"><span class="toggle-track"><span class="toggle-thumb"></span></span></label>
         </div>
         <div class="st-row" id="st-gmail-lookback-row" style="display:none;">
           <span class="st-ic" style="background:#6366f1;">📆</span>
@@ -2287,6 +2295,12 @@ db.tasks=(db.tasks||[]).map(t=>{
 });
 // remove tasks with undefined or empty title (bad data from Gmail bug)
 {const before=db.tasks.length;db.tasks=db.tasks.filter(t=>t.title&&t.title!=='undefined');if(db.tasks.length!==before)save(db);}
+// one-time cleanup: remove Gmail-auto-added tasks (source:'gmail' or long titles with " — " separator)
+{const before=db.tasks.length;db.tasks=db.tasks.filter(t=>{
+  if(t.source==='gmail')return false;
+  if(t.title&&t.title.length>50&&t.title.includes(' — '))return false;
+  return true;
+});if(db.tasks.length!==before)save(db);}
 if(!db.nutrients)db.nutrients=[];
 if(!db.aiChats)db.aiChats=[];
 if(!db.userProfile)db.userProfile={useCase:[]};
@@ -3611,6 +3625,7 @@ document.querySelectorAll('.pos-opt[data-hl]').forEach(btn=>{
         memo: '',
         completedAt: null,
         completedDates: [],
+        source: 'gmail',
         createdAt: today
       };
       if(!db.tasks) db.tasks = [];
@@ -3724,19 +3739,28 @@ document.querySelectorAll('.pos-opt[data-hl]').forEach(btn=>{
   // ── 自動追加 ──────────────────────────────────────────────
   async function autoProcess(items){
     if(!items.length)return;
-    let count=0;
-    const remaining=[];
+    let evCount=0,tkCount=0;
+    const autoEv=!!db.settings?.gmailAutoAddEvent;
+    const autoTk=!!db.settings?.gmailAutoAddTask;
     for(const item of items){
-      const evActions=(item.actions||[]).filter(a=>a.type==='event');
-      evActions.forEach(a=>{addActionToApp(a);count++;});
-      // task/reply は自動追加せずメールタブに残す
-      const hasNonEvent=(item.actions||[]).some(a=>a.type!=='event');
-      if(!hasNonEvent) await dismissEmail(item.emailId);
-      else remaining.push(item);
+      let handled=true;
+      (item.actions||[]).forEach(a=>{
+        if(a.type==='event'&&autoEv){addActionToApp(a);evCount++;}
+        else if((a.type==='task'||a.type==='reply')&&autoTk){addActionToApp(a);tkCount++;}
+        else handled=false;
+      });
+      if(handled) await dismissEmail(item.emailId);
     }
-    _gmailItems=remaining;
+    // 未処理分だけ残す
+    _gmailItems=items.filter(item=>(item.actions||[]).some(a=>{
+      if(a.type==='event')return !autoEv;
+      return !autoTk;
+    }));
     updateBadge(_gmailItems.length);
-    if(count>0) showToast(`📧 Gmail: ${count}件の予定を自動追加しました`);
+    const msgs=[];
+    if(evCount>0)msgs.push(`予定${evCount}件`);
+    if(tkCount>0)msgs.push(`タスク${tkCount}件`);
+    if(msgs.length>0)showToast(`📧 Gmail: ${msgs.join('・')}を自動追加しました`);
   }
 
   async function fetchAndProcess(){
@@ -3749,15 +3773,16 @@ document.querySelectorAll('.pos-opt[data-hl]').forEach(btn=>{
     }
   }
 
-  // 自動追加トグル初期化・保存
-  const autoToggle = document.getElementById('gmail-auto-add-toggle');
-  if(autoToggle){
-    autoToggle.checked = !!db.settings?.gmailAutoAdd;
-    autoToggle.onchange = ()=>{
-      if(!db.settings) db.settings={};
-      db.settings.gmailAutoAdd = autoToggle.checked;
-      save(db);
-    };
+  // 自動追加トグル初期化・保存（予定/タスク別）
+  const autoEventToggle = document.getElementById('gmail-auto-event-toggle');
+  if(autoEventToggle){
+    autoEventToggle.checked = !!db.settings?.gmailAutoAddEvent;
+    autoEventToggle.onchange = ()=>{ if(!db.settings)db.settings={}; db.settings.gmailAutoAddEvent=autoEventToggle.checked; save(db); };
+  }
+  const autoTaskToggle = document.getElementById('gmail-auto-task-toggle');
+  if(autoTaskToggle){
+    autoTaskToggle.checked = !!db.settings?.gmailAutoAddTask;
+    autoTaskToggle.onchange = ()=>{ if(!db.settings)db.settings={}; db.settings.gmailAutoAddTask=autoTaskToggle.checked; save(db); };
   }
 
   // チェック期間セレクタ初期化・保存
@@ -3793,14 +3818,16 @@ document.querySelectorAll('.pos-opt[data-hl]').forEach(btn=>{
         if(sub)   sub.textContent   = data.email ? data.email : 'Gmailが自動でチェックされます';
         if(ic){ ic.textContent='✓'; ic.style.background='#dcfce7'; ic.style.color='#16a34a'; }
         document.getElementById('st-gmail-connect-arrow').style.display='none';
-        document.getElementById('st-gmail-auto-row').style.display='flex';
+        document.getElementById('st-gmail-auto-event-row').style.display='flex';
+        document.getElementById('st-gmail-auto-task-row').style.display='flex';
         document.getElementById('st-gmail-lookback-row').style.display='flex';
         // 機能トグルを自動でON
         const ck=document.getElementById('ft-toggle-gmail');
         if(ck&&!ck.checked){ ck.checked=true; ck.dispatchEvent(new Event('change')); }
       } else {
         if(disconnectRow) disconnectRow.style.display='none';
-        document.getElementById('st-gmail-auto-row').style.display='none';
+        document.getElementById('st-gmail-auto-event-row').style.display='none';
+        document.getElementById('st-gmail-auto-task-row').style.display='none';
         document.getElementById('st-gmail-lookback-row').style.display='none';
         if(label) label.textContent = 'Googleアカウントと連携';
         if(sub)   sub.textContent   = 'タップしてGmailを接続する';
@@ -4385,7 +4412,7 @@ function taskOccursToday(task){
 }
 function renderTodayTasks(){
   const sec=document.getElementById('tk-today-section');if(!sec)return;
-  const today=(db.tasks||[]).filter(taskOccursToday);
+  const today=(db.tasks||[]).filter(t=>t.source!=='gmail').filter(taskOccursToday);
   if(!today.length){sec.innerHTML='';return;}
   const pLbl={high:'高',mid:'中',low:'低'};
   const repLbl={daily:'毎日',weekly:'毎週',monthly:'毎月'};
@@ -4442,7 +4469,7 @@ function toggleTaskDone(id){
 function renderTasks(){
   renderTodayTasks();
   const list=document.getElementById('tk-list');
-  let tasks=db.tasks||[];
+  let tasks=(db.tasks||[]).filter(t=>t.source!=='gmail');
   if(st.filter==='pending')tasks=tasks.filter(t=>!taskIsDoneToday(t));
   else if(st.filter==='done')tasks=tasks.filter(t=>taskIsDoneToday(t));
   list.innerHTML='';
