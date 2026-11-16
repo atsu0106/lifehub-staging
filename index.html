@@ -222,6 +222,20 @@ body.lefty .m-actions{flex-direction:row-reverse;}
 .ai-modal-hdr{display:flex;align-items:center;gap:8px;padding:10px 12px 12px;border-bottom:1px solid var(--border);flex-shrink:0;}
 .ai-modal-hdr h2{flex:1;font-size:16px;font-weight:700;}
 .ai-hdr-btn{background:none;border:none;font-size:20px;color:var(--fg2);cursor:pointer;padding:6px;line-height:1;}
+.ai-think-toggle{transition:color .2s,background .2s;border-radius:8px;}
+.ai-think-toggle.on{color:var(--accent);background:color-mix(in srgb,var(--accent) 15%,transparent);}
+.ai-thinking-block{align-self:flex-start;width:100%;margin-bottom:2px;}
+.ai-thinking-block details{background:color-mix(in srgb,var(--accent) 8%,var(--surface));border:1px solid color-mix(in srgb,var(--accent) 20%,transparent);border-radius:10px;overflow:hidden;}
+.ai-thinking-block summary{padding:7px 12px;font-size:12px;color:var(--accent);cursor:pointer;display:flex;align-items:center;gap:6px;user-select:none;list-style:none;}
+.ai-thinking-block summary::-webkit-details-marker{display:none;}
+.ai-thinking-block summary::before{content:'▶';font-size:9px;transition:transform .2s;display:inline-block;}
+.ai-thinking-block details[open] summary::before{transform:rotate(90deg);}
+.ai-thinking-content{padding:10px 12px;font-size:12px;color:var(--fg2);line-height:1.6;white-space:pre-wrap;border-top:1px solid color-mix(in srgb,var(--accent) 15%,transparent);max-height:200px;overflow-y:auto;}
+@keyframes thinking-pulse{0%,100%{opacity:.5}50%{opacity:1}}
+.ai-thinking-anim{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--accent);}
+.ai-thinking-anim span{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:thinking-pulse 1.2s ease-in-out infinite;}
+.ai-thinking-anim span:nth-child(2){animation-delay:.2s;}
+.ai-thinking-anim span:nth-child(3){animation-delay:.4s;}
 .ai-hist-panel{position:absolute;inset:0;z-index:10;background:var(--bg);display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .25s ease;border-radius:20px 20px 0 0;}
 .ai-hist-panel.open{transform:translateX(0);}
 .ai-hist-hdr{display:flex;align-items:center;gap:8px;padding:10px 12px 12px;border-bottom:1px solid var(--border);flex-shrink:0;}
@@ -1289,6 +1303,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
   <div class="ai-modal-hdr">
     <button class="ai-hdr-btn" id="ai-hist-open">☰</button>
     <h2 id="ai-chat-title">AIアシスタント</h2>
+    <button class="ai-hdr-btn ai-think-toggle" id="ai-think-toggle" title="思考モード（深く考える）">💭</button>
     <button class="ai-hdr-btn" id="ai-size-toggle" title="サイズ切替">⤢</button>
     <button class="ai-close" id="ai-close">✕</button>
   </div>
@@ -1585,7 +1600,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.57.0</p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.57.1</p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -5865,6 +5880,7 @@ window.updatePcSettingsUI();
   const UID=()=>Date.now().toString(36)+Math.random().toString(36).slice(2);
   let currentSessionId=null;
   let aiHistory=[];
+  let useThinking=false;
 
   const AI_TOOLS=[
     {name:'add_event',description:'カレンダーに予定を追加する',input_schema:{type:'object',properties:{title:{type:'string',description:'予定のタイトル'},date:{type:'string',description:'日付（YYYY-MM-DD）'},time:{type:'string',description:'開始時刻（HH:MM）終日なら省略'},time_end:{type:'string',description:'終了時刻（HH:MM）省略可'},location:{type:'string',description:'場所（省略可）'},memo:{type:'string',description:'メモ（省略可）'}},required:['title','date']}},
@@ -6377,10 +6393,31 @@ window.updatePcSettingsUI();
         const apiMessages=aiHistory.slice(0,-2).filter(m=>m.role==='user'||m.role==='assistant').map(m=>({role:m.role,content:m.content}));
         const userContent=buildApiContent(text,attachments);
         apiMessages.push({role:'user',content:userContent});
+        // 思考モード時はthinkingパラメータ追加・max_tokens拡張
+        const THINK_BUDGET=10000;
+        const reqBody={model:'claude-sonnet-5-5',max_tokens:useThinking?THINK_BUDGET+2048:1024,system,messages:apiMessages,tools:AI_TOOLS};
+        if(useThinking)reqBody.thinking={type:'enabled',budget_tokens:THINK_BUDGET};
+        if(useThinking){
+          thinkingEl.innerHTML='<div class="ai-thinking-anim">💭 深く考え中<span></span><span></span><span></span></div>';
+          thinkingEl.className='ai-msg ai';
+        }
         while(true){
-          const res=await fetch(workerUrl,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-sonnet-5-5',max_tokens:1024,system,messages:apiMessages,tools:AI_TOOLS})});
+          const res=await fetch(workerUrl,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify(reqBody)});
           if(!res.ok)throw new Error('HTTP '+res.status);
           const data=await res.json();
+          // 思考ブロックをthinkingElの直前に挿入（折りたたみ式）
+          const thinkBlocks=data.content?.filter(c=>c.type==='thinking')||[];
+          if(thinkBlocks.length){
+            const tDiv=document.createElement('div');tDiv.className='ai-thinking-block';
+            const det=document.createElement('details');
+            const sum=document.createElement('summary');sum.textContent='思考プロセス';
+            const cont=document.createElement('div');cont.className='ai-thinking-content';
+            cont.textContent=thinkBlocks.map(b=>b.thinking).join('\n\n');
+            det.appendChild(sum);det.appendChild(cont);tDiv.appendChild(det);
+            thinkingEl.before(tDiv);// thinkingElは残しつつ直前に挿入
+            thinkingEl.textContent='考え中…';thinkingEl.className='ai-msg ai thinking';
+            document.getElementById('ai-messages').scrollTop=document.getElementById('ai-messages').scrollHeight;
+          }
           const toolUseBlocks=data.content?.filter(c=>c.type==='tool_use')||[];
           if(data.stop_reason==='tool_use'&&toolUseBlocks.length>0){
             apiMessages.push({role:'assistant',content:data.content});
@@ -6389,6 +6426,7 @@ window.updatePcSettingsUI();
             thinkingEl.textContent='考え中…';thinkingEl.className='ai-msg ai thinking';
             const toolResults=toolUseBlocks.map(tool=>({type:'tool_result',tool_use_id:tool.id,content:confirmed?executeTool(tool.name,tool.input):'ユーザーがキャンセルしました'}));
             apiMessages.push({role:'user',content:toolResults});
+            reqBody.messages=apiMessages;
           } else {
             reply=data.content?.find(c=>c.type==='text')?.text||'応答を取得できませんでした';
             break;
@@ -6461,6 +6499,11 @@ window.updatePcSettingsUI();
     const m=document.getElementById('ai-modal');
     const small=m.classList.toggle('sm');
     document.getElementById('ai-size-toggle').textContent=small?'⤡':'⤢';
+  };
+  document.getElementById('ai-think-toggle').onclick=()=>{
+    useThinking=!useThinking;
+    document.getElementById('ai-think-toggle').classList.toggle('on',useThinking);
+    document.getElementById('ai-think-toggle').title=useThinking?'思考モード ON（深く考える）':'思考モード OFF';
   };
   document.getElementById('ai-hist-open').onclick=openHistPanel;
   document.getElementById('ai-hist-close').onclick=closeHistPanel;
