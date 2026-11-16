@@ -396,27 +396,28 @@ body.lefty .hdr-gmail-btn{order:-2;}
 .cal-def-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
 .cal-def-row:last-child{border:none;}
 .cal-def-name{flex:1;font-size:14px;font-weight:500;}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:18px;grid-auto-rows:minmax(68px,auto);}
-.dow{text-align:center;font-size:10px;font-weight:700;color:var(--fg3);
-  padding-bottom:5px;text-transform:uppercase;letter-spacing:.05em;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:0;margin-bottom:18px;grid-auto-rows:minmax(74px,auto);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.dow{text-align:center;font-size:10px;font-weight:600;color:var(--fg3);
+  padding:6px 0;background:var(--surface);border-bottom:1px solid var(--border);}
 .dow.sun{color:#EF4444;}.dow.sat{color:#3B82F6;}
-.cday{border-radius:6px;display:flex;flex-direction:column;align-items:stretch;
-  gap:1px;font-size:12px;font-weight:500;cursor:pointer;transition:background .1s;
-  padding:3px 2px;overflow:hidden;min-height:68px;}
+.cday{display:flex;flex-direction:column;align-items:stretch;
+  gap:1px;font-size:12px;font-weight:500;cursor:pointer;transition:background .12s;
+  padding:4px 2px 3px;overflow:hidden;min-height:74px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.cday:last-child,.cday:nth-child(7n){border-right:none;}
 .cday:hover{background:var(--surface2);}
-.cday.other{color:var(--fg3);}
-.cday.other .ev-pill{opacity:.5;}
+.cday.other{background:var(--bg);}
+.cday.other .ev-pill{opacity:.45;}
 .cal-day-num{font-size:11px;font-weight:600;text-align:center;line-height:20px;
-  width:20px;height:20px;border-radius:50%;margin:0 auto 1px;flex-shrink:0;}
+  width:22px;height:22px;border-radius:50%;margin:0 auto 2px;flex-shrink:0;}
 .cday.today>.cal-day-num{background:var(--accent);color:#fff;}
 .cday.sel{background:var(--accent-bg)!important;}
 .cday.sel>.cal-day-num{background:var(--accent);color:#fff;}
 .cday.holiday>.cal-day-num{color:#EF4444;}
 .cday.today.holiday>.cal-day-num{background:#EF4444;color:#fff;}
-.ev-pill{display:block;font-size:9px;line-height:14px;padding:0 3px;border-radius:3px;
-  color:#fff;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;margin-bottom:1px;}
+.ev-pill{display:block;font-size:10px;line-height:16px;padding:0 4px;border-radius:3px;
+  color:#fff;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;margin-bottom:1px;font-weight:500;}
 .ev-pill.allday{font-weight:600;}
-.ev-more{font-size:8px;color:var(--fg3);padding:0 3px;line-height:14px;}
+.ev-more{font-size:9px;color:var(--fg3);padding:0 4px;line-height:14px;}
 .holiday-dot{font-size:8px;color:#EF4444;line-height:12px;text-align:center;
   overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:0 2px;}
 .ev-card{display:flex;align-items:center;gap:11px;padding:11px 14px;margin-bottom:7px;}
@@ -2253,6 +2254,15 @@ Object.values(db.workouts||{}).forEach(exs=>{
 (db.tasks||[]).forEach(t=>{if(t.repeat&&!t.completedDates)t.completedDates=[];});
 // migrate tasks: add dailyMemos and aiProgress
 (db.tasks||[]).forEach(t=>{if(!t.dailyMemos)t.dailyMemos={};if(!('aiProgress' in t))t.aiProgress=null;});
+// migrate tasks: fix tasks with 'text' field (from Gmail auto-add bug) → 'title'
+db.tasks=(db.tasks||[]).map(t=>{
+  if(t.text!==undefined&&t.title===undefined){t.title=t.text;delete t.text;}
+  if(t.pri!==undefined&&t.priority===undefined){t.priority=t.pri===1?'high':t.pri===3?'low':'mid';delete t.pri;}
+  if(t.date!==undefined&&t.due===undefined){t.due=t.date;delete t.date;}
+  return t;
+});
+// remove tasks with undefined or empty title (bad data from Gmail bug)
+{const before=db.tasks.length;db.tasks=db.tasks.filter(t=>t.title&&t.title!=='undefined');if(db.tasks.length!==before)save(db);}
 if(!db.nutrients)db.nutrients=[];
 if(!db.aiChats)db.aiChats=[];
 if(!db.userProfile)db.userProfile={useCase:[]};
@@ -3578,10 +3588,16 @@ document.querySelectorAll('.pos-opt[data-hl]').forEach(btn=>{
     } else if(action.type === 'task' || action.type === 'reply'){
       const task = {
         id: 'tk_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),
-        text: action.title + (action.description ? ' — '+action.description : ''),
+        title: action.title + (action.description ? ' — '+action.description : ''),
         done: false,
-        pri: 2,
-        date: action.date || today,
+        priority: 'mid',
+        due: action.date || '',
+        repeat: '',
+        goalId: '',
+        location: '',
+        memo: '',
+        completedAt: null,
+        completedDates: [],
         createdAt: today
       };
       if(!db.tasks) db.tasks = [];
