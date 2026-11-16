@@ -2424,11 +2424,13 @@ function updateNavActive(){
   });
 }
 function switchToTab(t){
-  if(t==='ai'){openAiModal();return;}
+  if(t==='ai'){window._lhOpenAi?.();return;}
+  const tabEl=document.getElementById('tab-'+t);
+  if(!tabEl)return;
   st.tab=t;
   document.querySelectorAll('.tab').forEach(s=>s.classList.remove('on'));
-  document.getElementById('tab-'+t).classList.add('on');
-  document.getElementById('tab-'+t).scrollTop=0;
+  tabEl.classList.add('on');
+  tabEl.scrollTop=0;
   updateNavActive();
   if(t==='cal'){renderGoals();renderCal();}
   if(t==='tasks')renderTasks();
@@ -6369,6 +6371,8 @@ window.updatePcSettingsUI();
     m.classList.remove('open');o.classList.remove('open');
     setTimeout(()=>{m.style.bottom='';m.style.height='';m.hidden=true;updateNavActive();},300);
   }
+  window._lhOpenAi=openAiModal;
+  window._lhCloseAi=closeAiModal;
   document.getElementById('ai-fab').onclick=openAiModal;
   document.getElementById('ai-close').onclick=closeAiModal;
   document.getElementById('ai-overlay').onclick=closeAiModal;
