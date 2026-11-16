@@ -1585,7 +1585,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.56.4</p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.56.5</p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -6351,13 +6351,20 @@ window.updatePcSettingsUI();
     if(!vv)return;
     if(!window._DEV_MODE)window.scrollTo(0,0);// iOSスクロールズレ防止
     const kbH=Math.max(0,window.innerHeight-vv.height-(vv.offsetTop||0));
+    const inputRow=m.querySelector('.ai-input-row');
     if(kbH>50){
       m.style.bottom=kbH+'px';
       m.style.height=(vv.height-10)+'px';
+      // キーボード表示中はsafe-botパディング不要（キーボードが埋めるため）
+      if(inputRow)inputRow.style.paddingBottom='12px';
     } else {
       m.style.bottom='';
       m.style.height='';
+      if(inputRow)inputRow.style.paddingBottom='';
     }
+    // 入力欄が確実に見えるようメッセージ末尾へスクロール
+    const msgs=document.getElementById('ai-messages');
+    if(msgs)msgs.scrollTop=msgs.scrollHeight;
   }
   if(window.visualViewport){
     window.visualViewport.addEventListener('resize',_aiKbAdjust,{passive:true});
@@ -6366,7 +6373,7 @@ window.updatePcSettingsUI();
   // iOSキーボードは表示完了まで~300msかかるため、focus時にも遅延実行
   const _aiInputEl=document.getElementById('ai-input');
   if(_aiInputEl){
-    _aiInputEl.addEventListener('focus',()=>{setTimeout(_aiKbAdjust,50);setTimeout(_aiKbAdjust,350);},{passive:true});
+    _aiInputEl.addEventListener('focus',()=>{setTimeout(_aiKbAdjust,50);setTimeout(_aiKbAdjust,350);setTimeout(_aiKbAdjust,550);},{passive:true});
     _aiInputEl.addEventListener('blur',()=>{setTimeout(_aiKbAdjust,300);},{passive:true});
   }
   function openAiModal(){
@@ -6398,7 +6405,9 @@ window.updatePcSettingsUI();
   document.getElementById('ai-send').onclick=sendMsg;
   const aiInput=document.getElementById('ai-input');
   aiInput.addEventListener('input',()=>{aiInput.style.height='auto';aiInput.style.height=Math.min(aiInput.scrollHeight,160)+'px';});
-  aiInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}});
+  // モバイル（タッチデバイス）ではEnterで改行、ボタンで送信。PCはEnterで送信・Shift+Enterで改行
+  const _aiIsTouch='ontouchstart' in window||navigator.maxTouchPoints>0;
+  aiInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!_aiIsTouch){e.preventDefault();sendMsg();}});
   // 音声入力
   const micBtn=document.getElementById('ai-mic');
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
