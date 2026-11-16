@@ -3458,7 +3458,7 @@ document.querySelectorAll('.pos-opt[data-hl]').forEach(btn=>{
     body.innerHTML = items.map((item,i)=>`
       <div class="gmail-item" id="gmail-item-${i}">
         <div class="gmail-item-hdr">
-          <div style="flex:1"><div class="gmail-subj">${safeHtml(item.subject)}</div><div class="gmail-from">${safeHtml(item.from)}</div></div>
+          <div style="flex:1"><div class="gmail-subj">${safeHtml(item.subject)}</div><div class="gmail-from">${safeHtml(item.from)}</div>${item.receivedAt?`<div style="font-size:11px;color:var(--fg3);margin-top:2px;">📅 ${(()=>{try{const d=new Date(item.receivedAt);return`${d.getMonth()+1}月${d.getDate()}日 ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}catch(e){return item.receivedAt.substring(0,10);}})()}</div>`:''}</div>
           <button class="gmail-item-dismiss" data-dismiss="${i}" title="却下">✕</button>
         </div>
         <div class="gmail-summary">${safeHtml(item.summary||'')}</div>
