@@ -6394,7 +6394,7 @@ window.updatePcSettingsUI();
         const userContent=buildApiContent(text,attachments);
         apiMessages.push({role:'user',content:userContent});
         // 思考モード時はthinkingパラメータ追加・max_tokens拡張
-        const THINK_BUDGET=10000;
+        const THINK_BUDGET=3000;
         const reqBody={model:'claude-sonnet-5-5',max_tokens:useThinking?THINK_BUDGET+2048:1024,system,messages:apiMessages,tools:AI_TOOLS};
         if(useThinking)reqBody.thinking={type:'enabled',budget_tokens:THINK_BUDGET};
         if(useThinking){
