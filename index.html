@@ -3889,9 +3889,11 @@ document.getElementById('mo-settings').onclick=e=>{if(e.target===e.currentTarget
   };
 })();
 
-// iOS PWA fix: モーダルが開いている間は#appのタッチイベントを無効化
+// iOS PWA fix: iOSスタンドアロンモードのみ適用
 // (position:fixed;overflow:hiddenのコンポジットレイヤーがモーダルのタッチを横取りするバグの対策)
 (function(){
+  const isIOSStandalone=/iPhone|iPad|iPod/.test(navigator.userAgent)&&window.navigator.standalone===true;
+  if(!isIOSStandalone)return;
   const appEl=document.getElementById('app');
   const MODAL_IDS=['mo-settings','mo-profiles','mo-day','mo-ev','mo-goal','mo-goal-add','mo-task-edit','mo-ann','mo-review','mo-timer','mo-ml-add','mo-nutrients','mo-calendars','hist-modal'];
   function syncPointerEvents(){
