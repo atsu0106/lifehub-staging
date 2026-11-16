@@ -1449,6 +1449,14 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
           <span class="st-label st-action-danger">連携を解除する</span>
           <span class="st-arrow">›</span>
         </div>
+        <div class="st-row st-row-toggle" id="st-gmail-auto-row" style="display:none;">
+          <span class="st-ic" style="background:#f97316;">⚡</span>
+          <div style="flex:1;">
+            <div class="st-label">自動でカレンダーに追加</div>
+            <div style="font-size:11px;color:var(--fg3);margin-top:1px;">確認なしで予定・タスクを自動追加</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="gmail-auto-add-toggle"><span class="toggle-track"><span class="toggle-thumb"></span></span></label>
+        </div>
       </div>
       <div class="st-card">
         <div class="st-row st-row-toggle">
@@ -3633,6 +3641,40 @@ document.querySelectorAll('.pos-opt[data-hl]').forEach(btn=>{
   window._getGmailCalItems = () => _gmailItems;
   window._gmailOpenSheet = () => openSheet();
 
+  // ── 自動追加 ──────────────────────────────────────────────
+  async function autoProcess(items){
+    if(!items.length)return;
+    let count=0;
+    for(const item of items){
+      for(const action of (item.actions||[])){ addActionToApp(action); count++; }
+      await dismissEmail(item.emailId);
+    }
+    _gmailItems=[];
+    updateBadge(0);
+    if(count>0) showToast(`📧 Gmail: ${count}件を自動追加しました`);
+  }
+
+  async function fetchAndProcess(){
+    const items = await fetchActions();
+    if(db.settings?.gmailAutoAdd){
+      await autoProcess(items);
+    } else {
+      _gmailItems = items;
+      updateBadge(_gmailItems.length);
+    }
+  }
+
+  // 自動追加トグル初期化・保存
+  const autoToggle = document.getElementById('gmail-auto-add-toggle');
+  if(autoToggle){
+    autoToggle.checked = !!db.settings?.gmailAutoAdd;
+    autoToggle.onchange = ()=>{
+      if(!db.settings) db.settings={};
+      db.settings.gmailAutoAdd = autoToggle.checked;
+      save(db);
+    };
+  }
+
   document.getElementById('hdr-gmail').onclick = openSheet;
   document.getElementById('gmail-close').onclick = closeSheet;
   document.getElementById('gmail-overlay').onclick = closeSheet;
@@ -3654,11 +3696,13 @@ document.querySelectorAll('.pos-opt[data-hl]').forEach(btn=>{
         if(sub)   sub.textContent   = data.email ? data.email : 'Gmailが自動でチェックされます';
         if(ic){ ic.textContent='✓'; ic.style.background='#dcfce7'; ic.style.color='#16a34a'; }
         document.getElementById('st-gmail-connect-arrow').style.display='none';
+        document.getElementById('st-gmail-auto-row').style.display='flex';
         // 機能トグルを自動でON
         const ck=document.getElementById('ft-toggle-gmail');
         if(ck&&!ck.checked){ ck.checked=true; ck.dispatchEvent(new Event('change')); }
       } else {
         if(disconnectRow) disconnectRow.style.display='none';
+        document.getElementById('st-gmail-auto-row').style.display='none';
         if(label) label.textContent = 'Googleアカウントと連携';
         if(sub)   sub.textContent   = 'タップしてGmailを接続する';
         if(ic){ ic.textContent='G'; ic.style.background='#ea4335'; ic.style.color=''; }
@@ -3701,17 +3745,13 @@ document.querySelectorAll('.pos-opt[data-hl]').forEach(btn=>{
       document.getElementById('settings-close')?.click();
     }, 500);
     // 即アクション取得
-    setTimeout(async ()=>{
-      _gmailItems = await fetchActions();
-      updateBadge(_gmailItems.length);
-    }, 1500);
+    setTimeout(()=>fetchAndProcess(), 1500);
   }
 
   // 起動時に非同期でアクション取得（Gmail機能がONの場合のみ）
   setTimeout(async ()=>{
     if(db.settings.features?.gmail===false)return;
-    _gmailItems = await fetchActions();
-    updateBadge(_gmailItems.length);
+    await fetchAndProcess();
   }, 2000);
 })();
 // ── ICSインポート ─────────────────────────────────────────
