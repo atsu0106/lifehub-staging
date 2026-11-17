@@ -1623,7 +1623,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.60.0</p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.61.0</p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -2553,6 +2553,7 @@ function compressImage(file){
         c.getContext('2d').drawImage(img,0,0,c.width,c.height);
         resolve(c.toDataURL('image/jpeg',.7));
       };
+      img.onerror=()=>resolve(null);
       img.src=e.target.result;
     };
     reader.readAsDataURL(file);
@@ -2563,9 +2564,10 @@ async function processFiles(files,onEach){
     if(!f.type.startsWith('image/'))continue;
     try{
       const data=await compressImage(f);
+      if(!data)continue;
       const id=uid();
-      await _photoDB.save(id,data).catch(()=>{});
-      onEach({id,type:'image',name:f.name}); // dataはIDBに保存、dbには入れない
+      const saved=await _photoDB.save(id,data).then(()=>true).catch(()=>false);
+      if(saved)onEach({id,type:'image',name:f.name});
     }catch(err){alert(err.message);}
   }
 }
@@ -4210,6 +4212,7 @@ document.getElementById('mo-settings').onclick=e=>{if(e.target===e.currentTarget
 // 新しいお知らせを追加するときは先頭に追加する（idは一意な文字列）
 const ANNOUNCEMENTS=[
   {id:'ann_013',date:'2026-11-17',title:'アップデート v2.60.0',body:'① 食事記録に「📷 写真で自動入力」を追加。料理の写真を撮るとAIがカロリー・栄養素を自動推定します。② 今日のタスク一覧に完了率（X/Y・Z%）を表示。③ 音声入力が途中で止まるバグを修正。'},
+  {id:'ann_014',date:'2026-11-17',title:'アップデート v2.61.0',body:'バグ修正: ① ひらがなで登録した栄養素（例:「たんぱく質」）に写真AI分析が自動入力されない問題を修正。② 壊れた画像選択時のアプリハングを修正。③ 写真保存失敗時の不正エントリ作成を修正。'},
   {id:'ann_012',date:'2026-11-16',title:'アップデート v2.59.0',body:'タスク完了時にAIコーチとフィードバックチャットができるようになりました。「どうでしたか？」と聞いてくれるので、感想や気づきを話すとAIが次回へのアドバイスをします。スキップして即完了も可能です。'},
   {id:'ann_011',date:'2026-11-16',title:'アップデート v2.58.0',body:'① AIが過去7日間の食事・筋トレ詳細（重量・回数・距離）を参照できるようになりました。② AIチャットが途中で止まるバグを修正。③「その他」タブのトレーニングボタンが表示されないバグを修正。'},
   {id:'ann_010',date:'2026-11-13',title:'アップデート v1.6.0',body:'AIチャットに📎ファイル添付機能を追加。写真やPDFをAIに送れるようになりました。設定⚙️→「AIチャット設定」からONにしてください。'},
@@ -5936,7 +5939,7 @@ async function analyzePhotoMeal(){
     nuts.forEach(n=>{
       const field=document.getElementById('mla-nut-'+n.id);if(!field)return;
       const nm=(n.name||'').toLowerCase();
-      if(nm.includes('タンパク')||nm.includes('protein'))field.value=r.protein!=null?String(r.protein):'';
+      if(nm.includes('タンパク')||nm.includes('たんぱく')||nm.includes('protein'))field.value=r.protein!=null?String(r.protein):'';
       else if(nm.includes('炭水化物')||nm.includes('carb'))field.value=r.carbs!=null?String(r.carbs):'';
       else if(nm.includes('脂質')||nm.includes('fat'))field.value=r.fat!=null?String(r.fat):'';
     });
