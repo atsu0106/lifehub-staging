@@ -1746,7 +1746,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.67.0</p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.68.0</p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -4797,18 +4797,39 @@ function taskIsDoneToday(task){
 }
 function _doToggleTaskDone(id){
   const t=db.tasks.find(t=>t.id===id);if(!t)return;
+  let isNowDone=false;
   if(t.repeat){
     if(!t.completedDates)t.completedDates=[];
     const today=todayStr();
     const idx=t.completedDates.indexOf(today);
     if(idx>=0)t.completedDates.splice(idx,1);
-    else{t.completedDates.push(today);window._missionHook?.('complete_task',{taskId:t.id});}
+    else{t.completedDates.push(today);window._missionHook?.('complete_task',{taskId:t.id});isNowDone=true;}
   } else {
     t.done=!t.done;
     t.completedAt=t.done?TODAY:null;
-    if(t.done)window._missionHook?.('complete_task',{taskId:t.id});
+    if(t.done){window._missionHook?.('complete_task',{taskId:t.id});isNowDone=true;}
   }
   save(db);renderTodayTasks();renderTasks();checkLevelUp();
+  if(isNowDone&&t.goalId)_autoUpdateGoalProgress(t.goalId,t.title);
+}
+async function _autoUpdateGoalProgress(goalId,taskTitle){
+  const g=(db.goals||[]).find(x=>x.id===goalId);
+  if(!g||g.done||(g.type&&g.type!=='manual'))return;
+  const linked=(db.tasks||[]).filter(t=>t.goalId===goalId);
+  if(!linked.length)return;
+  const doneCount=linked.filter(t=>t.done||(t.completedDates||[]).length>0).length;
+  const totalCount=linked.length;
+  g.progress=Math.round(doneCount/totalCount*100);
+  save(db);renderGoals();
+  try{
+    const prompt=`ゴール「${g.text}」の達成進捗を判定してください。\n関連タスク: 全${totalCount}件中${doneCount}件完了\n直前に完了したタスク:「${taskTitle}」\n\n0〜100の整数のみで回答:`;
+    const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:8,system:'ゴール進捗率を0〜100の整数のみで返す。',messages:[{role:'user',content:prompt}]})});
+    if(!res.ok)return;
+    const data=await res.json();
+    const txt=data.content?.find(c=>c.type==='text')?.text?.trim()||'';
+    const pct=parseInt(txt);
+    if(!isNaN(pct)&&pct>=0&&pct<=100){g.progress=pct;save(db);renderGoals();}
+  }catch(e){}
 }
 function toggleTaskDone(id){
   const t=db.tasks.find(t=>t.id===id);if(!t)return;
