@@ -4537,7 +4537,7 @@ const CHANGELOG=[
   {v:'v1.5.0',d:'体験XP・HAPステータス追加。AIが美味しいご飯・旅行・発見にXPを付与'},
   {v:'v1.4.0',d:'目標連動XP倍率・オンボーディングに使用目的の選択を追加'},
   {v:'v1.3.0',d:'ゲームステータス（XP・レベル・STR/INT/VIT・実績）を追加'},
-  {v:'v1.2.0',d:'AIデーリーミッション・ストリーク機能を追加'},
+  {v:'v1.2.0',d:'AIデイリーミッション・ストリーク機能を追加'},
   {v:'v1.1.0',d:'AIが毎朝ひとことを自動生成（データ連携強化）'},
   {v:'v1.0.3',d:'キーボード・入力欄重なりバグ修正'},
   {v:'v1.0.2',d:'音声読み上げ・サイズ切替・履歴機能を追加'},
@@ -6990,7 +6990,7 @@ window.updatePcSettingsUI();
     }
   })();
 
-  // ── AIデーリーミッション ──
+  // ── AIデイリーミッション ──
   (function(){
     const MISSION_KEY='lh_daily_missions';
     const STREAK_KEY='lh_mission_streak';
@@ -7028,7 +7028,7 @@ window.updatePcSettingsUI();
       const allDone=doneCount===total;
       card.hidden=false;
       card.className='daily-mission-card'+(data.loading?' loading':'');
-      let html=`<div class="dm-header"><div class="dm-title">🎯 デーリーミッション ${data.loading?'':`<span style="font-size:11px;color:var(--fg3);font-weight:400;">${doneCount}/${total}</span>`}</div>`;
+      let html=`<div class="dm-header"><div class="dm-title">🎯 デイリーミッション ${data.loading?'':`<span style="font-size:11px;color:var(--fg3);font-weight:400;">${doneCount}/${total}</span>`}</div>`;
       if(st.count>1)html+=`<div class="dm-streak">🔥 ${st.count}日連続</div>`;
       html+=`<button class="dm-refresh" title="再生成">↺</button></div>`;
       html+=`<div class="dm-progress-bar"><div class="dm-progress-fill" style="width:${data.loading?0:Math.round(doneCount/total*100)}%"></div></div>`;
