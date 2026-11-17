@@ -1010,6 +1010,13 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
 .dr-item.on{background:var(--accent-bg);color:var(--accent-fg);font-weight:700;}
 .dr-sep{height:1px;background:var(--border);margin:6px 8px;flex-shrink:0;}
 #tab-cal,#tab-tasks,#tab-other{padding-bottom:84px;}
+.health-advice-card{background:linear-gradient(135deg,rgba(16,185,129,.1),rgba(99,102,241,.08));border:1.5px solid rgba(16,185,129,.25);padding:12px 14px;margin-bottom:16px;}
+.health-advice-ic{font-size:20px;flex-shrink:0;}
+.health-advice-body{flex:1;min-width:0;}
+.health-advice-label{font-size:10px;font-weight:800;color:#10b981;letter-spacing:.08em;margin-bottom:4px;}
+.health-advice-text{font-size:13px;line-height:1.6;color:var(--fg);}
+.health-advice-refresh{background:none;border:none;color:var(--fg3);font-size:16px;cursor:pointer;padding:2px 4px;border-radius:6px;flex-shrink:0;line-height:1;}
+.health-advice-refresh:active{background:var(--surface2);}
 .hp-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
 .hp-field{display:flex;flex-direction:column;gap:4px;}
 .hp-label{font-size:11px;color:var(--fg3);font-weight:600;}
@@ -1104,6 +1111,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
     <div id="ai-brief-card" class="ai-brief-card" hidden></div>
     <div id="daily-mission-card" class="daily-mission-card" hidden></div>
     <div id="goal-card" class="goal-card"></div>
+    <div id="health-advice-card" class="card health-advice-card" hidden></div>
     <div id="home-tasks-card" class="card home-tk-card"></div>
     <div id="clarify-view" hidden>
       <div class="clarify-nav">
@@ -1735,7 +1743,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.65.0</p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.66.0</p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -2667,7 +2675,7 @@ function switchToTab(t){
   tabEl.classList.add('on');
   tabEl.scrollTop=0;
   updateNavActive();
-  if(t==='cal'){renderGoals();renderCal();}
+  if(t==='cal'){renderGoals();renderCal();renderHealthAdvice();}
   if(t==='tasks')renderTasks();
   if(t==='other')renderOther();
 }
@@ -4581,7 +4589,7 @@ document.getElementById('import-file').onchange=e=>{
       save(imported);
       Object.assign(db,imported);
       document.getElementById('mo-settings').hidden=true;
-      renderGoals();renderCal();renderTasks();
+      renderGoals();renderCal();renderTasks();renderHealthAdvice();
       alert('インポートが完了しました。');
     }catch(err){alert('ファイルの読み込みに失敗しました。');}
   };
@@ -4593,7 +4601,7 @@ document.getElementById('btn-reset').onclick=()=>{
   const blank={events:[],tasks:[],workouts:{},meals:{},woPhotos:{},mlPhotos:{},evPhotos:{},taskPhotos:{},sleep:{},health:{},goals:[],nutrients:[],calendars:db.calendars,settings:db.settings};
   save(blank);Object.assign(db,blank);
   document.getElementById('mo-settings').hidden=true;
-  renderGoals();renderCal();renderTasks();
+  renderGoals();renderCal();renderTasks();renderHealthAdvice();
 };
 
 // ── Profile Management ─────────────────────────────────────
@@ -4682,6 +4690,39 @@ function taskOccursToday(task){
   if(task.repeat==='weekly') return s.getDay()===t.getDay();
   if(task.repeat==='monthly') return s.getDate()===t.getDate();
   return false;
+}
+function _buildAdviceHtml(text,loading){
+  return `<div style="display:flex;align-items:flex-start;gap:10px;"><span class="health-advice-ic">💪</span><div class="health-advice-body"><div class="health-advice-label">TODAY'S ADVICE</div><div class="health-advice-text">${loading?'<span style="color:var(--fg3);font-size:12px;">生成中…</span>':esc(text)}</div></div>${!loading?'<button class="health-advice-refresh" title="更新">↻</button>':''}</div>`;
+}
+async function renderHealthAdvice(force){
+  const el=document.getElementById('health-advice-card');if(!el)return;
+  const hp=db.settings.healthProfile||{};
+  if(!hp.height&&!hp.weight&&!hp.goal){el.hidden=true;return;}
+  const today=todayStr();
+  const CKEY='lh_hadv_'+(window._LH_PID||'def');
+  if(!force){try{const c=JSON.parse(localStorage.getItem(CKEY)||'null');if(c&&c.date===today){el.hidden=false;el.innerHTML=_buildAdviceHtml(c.text,false);el.querySelector('.health-advice-refresh')?.addEventListener('click',()=>renderHealthAdvice(true));return;}}catch(e){}}
+  el.hidden=false;el.innerHTML=_buildAdviceHtml('',true);
+  const goalMap={bulk:'増量',cut:'減量',maintain:'維持',recomp:'体脂肪減'};
+  const hpParts=[];
+  if(hp.height)hpParts.push(`身長${hp.height}cm`);
+  if(hp.weight)hpParts.push(`体重${hp.weight}kg`);
+  if(hp.age)hpParts.push(`${hp.age}歳`);
+  if(hp.goal)hpParts.push(`目標:${goalMap[hp.goal]||hp.goal}`);
+  if(hp.gymFreq)hpParts.push(`ジム目標:週${hp.gymFreq}回`);
+  const cut7=new Date();cut7.setDate(cut7.getDate()-7);const cut7s=cut7.toISOString().slice(0,10);
+  const thisWeekWo=Object.keys(db.workouts||{}).filter(d=>d<=today&&d>=cut7s).length;
+  const yd=new Date();yd.setDate(yd.getDate()-1);const yds=yd.toISOString().slice(0,10);
+  const sl=db.sleep?.[yds]||{};let sleepInfo='記録なし';
+  if(sl.bedtime&&sl.wakeTime){const[bh,bm]=sl.bedtime.split(':').map(Number);const[wh,wm]=sl.wakeTime.split(':').map(Number);let dur=(wh*60+wm)-(bh*60+bm);if(dur<0)dur+=1440;sleepInfo=`${(dur/60).toFixed(1)}時間`;}
+  const prompt=`ユーザーの健康データ:\nプロフィール: ${hpParts.join(', ')||'未設定'}\n今週のジム: ${thisWeekWo}回${hp.gymFreq?'（目標:週'+hp.gymFreq+'回）':''}\n昨日の睡眠: ${sleepInfo}\n\n今日の健康アドバイスを1文（40字以内）で。励ますトーンで具体的に。`;
+  try{
+    const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:120,system:'あなたはパーソナル健康AIです。ユーザーのデータを元に今日すぐ実行できる具体的なアドバイスを1文（40字以内）で。JSON・マークダウン不要。',messages:[{role:'user',content:prompt}]})});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    const text=data.content?.find(c=>c.type==='text')?.text?.trim()||'';
+    if(text){try{localStorage.setItem(CKEY,JSON.stringify({date:today,text}));}catch(e){}el.innerHTML=_buildAdviceHtml(text,false);el.querySelector('.health-advice-refresh')?.addEventListener('click',()=>renderHealthAdvice(true));}
+    else el.hidden=true;
+  }catch(e){el.hidden=true;}
 }
 function renderHomeTasks(){
   const el=document.getElementById('home-tasks-card');if(!el)return;
@@ -6225,7 +6266,7 @@ document.getElementById('ml-next').onclick=()=>{const d=new Date(st.mlDate);d.se
       ob.hidden=true;
       app.style.display='';
       renderProfHeader();
-      renderGoals();renderCal();renderTasks();
+      renderGoals();renderCal();renderTasks();renderHealthAdvice();
     }
     startBtn.addEventListener('click',finishOnboarding);
     skipBtn.addEventListener('click',finishOnboarding);
