@@ -981,6 +981,42 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
 .st-opts{display:flex;gap:6px;flex-wrap:wrap;}
 .st-opt{padding:6px 14px;border-radius:999px;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:transparent;color:var(--fg2);cursor:pointer;font-family:inherit;white-space:nowrap;}
 .st-opt.on{background:var(--accent-bg);border-color:var(--accent);color:var(--accent-fg);}
+/* === Drawer layout === */
+:root{--nav-h:0px;}
+.nav{display:none!important;}
+.other-subnav{display:none;}
+.fab-float[hidden]{display:none!important;}
+.st-opt[data-pos="center"],.st-row:has(.st-opt[data-hl]){display:none;}
+.hdr .prof-btn,.hdr .hdr-settings-btn{display:none;}
+.hdr-menu-btn{background:none;border:none;color:var(--fg);cursor:pointer;width:40px;height:40px;margin-left:-8px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.hdr-menu-btn:active{background:var(--surface2);}
+.hdr-menu-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;}
+.hdr-logo{flex:1;min-width:0;margin-left:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;}
+body.lefty .hdr-menu-btn{order:9;margin-left:4px;margin-right:-8px;}
+.drawer-ov{position:absolute;inset:0;z-index:60;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .25s;}
+.drawer-ov.open{opacity:1;pointer-events:auto;}
+.drawer{position:absolute;top:0;bottom:0;left:0;width:min(78%,300px);z-index:61;background:var(--surface);display:flex;flex-direction:column;padding-top:var(--safe-top);padding-bottom:var(--safe-bot);overflow-y:auto;visibility:hidden;transform:translateX(-100%);transition:transform .28s cubic-bezier(.32,.72,0,1),visibility 0s .28s;}
+.drawer.open{visibility:visible;transform:translateX(0);box-shadow:4px 0 24px rgba(0,0,0,.18);transition:transform .28s cubic-bezier(.32,.72,0,1),visibility 0s;}
+body.lefty .drawer{left:auto;right:0;transform:translateX(100%);}
+body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,0,.18);}
+.dr-acct{display:flex;align-items:center;gap:12px;padding:16px;border:none;border-bottom:1px solid var(--border);background:none;width:100%;font-family:inherit;cursor:pointer;text-align:left;color:var(--fg);flex-shrink:0;}
+.dr-acct-name{font-size:15px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.dr-acct-sub{font-size:11px;color:var(--fg3);margin-top:1px;}
+.dr-list{padding:8px;display:flex;flex-direction:column;gap:2px;}
+.dr-item{display:flex;align-items:center;gap:14px;padding:13px 12px;border:none;background:none;border-radius:10px;font-size:15px;font-family:inherit;color:var(--fg);cursor:pointer;text-align:left;width:100%;font-weight:500;}
+.dr-item[hidden]{display:none;}
+.dr-item .dr-ic{width:24px;text-align:center;font-size:18px;flex-shrink:0;}
+.dr-item:active{background:var(--surface2);}
+.dr-item.on{background:var(--accent-bg);color:var(--accent-fg);font-weight:700;}
+.dr-sep{height:1px;background:var(--border);margin:6px 8px;flex-shrink:0;}
+#tab-cal{padding-bottom:84px;}
+.home-tk-card{padding:12px 14px;margin-bottom:16px;cursor:pointer;}
+.home-tk-head{display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:700;}
+.home-tk-card .today-pct-bar{margin:8px 0 4px;}
+.home-tk-row{display:flex;align-items:center;gap:10px;padding:5px 0;}
+.home-tk-row .check-btn{width:24px;height:24px;font-size:12px;}
+.home-tk-title{flex:1;min-width:0;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.home-tk-more{font-size:12px;color:var(--fg3);padding-top:4px;}
 .st-action-row{display:flex;align-items:center;gap:12px;padding:11px 14px;min-height:48px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
 .st-action-row+.st-action-row{border-top:1px solid var(--border);}
 .st-action-label{flex:1;font-size:14px;font-weight:500;color:var(--fg);}
@@ -1047,7 +1083,8 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
 
 <div id="app">
   <header class="hdr">
-    <span class="hdr-logo">LifeHub</span>
+    <button class="hdr-menu-btn" id="hdr-menu" aria-label="メニュー"><svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
+    <span class="hdr-logo" id="hdr-title">LifeHub</span>
     <span class="hdr-date" id="hdr-date"></span>
     <button class="hdr-gmail-btn" id="hdr-gmail" hidden title="メールからのアクション">📧<span class="gmail-badge" id="gmail-badge">0</span></button>
     <button class="prof-btn" id="prof-btn" title="プロフィール切り替え">
@@ -1060,6 +1097,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
     <div id="ai-brief-card" class="ai-brief-card" hidden></div>
     <div id="daily-mission-card" class="daily-mission-card" hidden></div>
     <div id="goal-card" class="goal-card"></div>
+    <div id="home-tasks-card" class="card home-tk-card"></div>
     <div id="clarify-view" hidden>
       <div class="clarify-nav">
         <button class="arrow-btn" id="cl-prev">‹</button>
@@ -1306,6 +1344,28 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
       その他
     </button>
   </nav>
+
+  <div class="drawer-ov" id="drawer-ov"></div>
+  <aside class="drawer" id="drawer" aria-label="メニュー">
+    <button class="dr-acct" id="dr-acct">
+      <span class="prof-avatar-lg" id="dr-acct-avatar" style="background:#4F46E5">?</span>
+      <span style="min-width:0;"><div class="dr-acct-name" id="dr-acct-name"></div><div class="dr-acct-sub">アカウント切り替え</div></span>
+    </button>
+    <div class="dr-list">
+      <button class="dr-item" data-go="cal"><span class="dr-ic">🏠</span>ホーム</button>
+      <button class="dr-item" data-act="ai"><span class="dr-ic">✨</span>AI秘書</button>
+      <button class="dr-item" data-act="add"><span class="dr-ic">➕</span>予定追加</button>
+      <div class="dr-sep"></div>
+      <button class="dr-item" data-go="tasks"><span class="dr-ic">✅</span>タスク</button>
+      <button class="dr-item" data-go="wo"><span class="dr-ic">🏋️</span>トレーニング</button>
+      <button class="dr-item" data-go="meals"><span class="dr-ic">🍱</span>食事</button>
+      <button class="dr-item" data-go="sleep"><span class="dr-ic">😴</span>睡眠</button>
+      <button class="dr-item" data-go="health"><span class="dr-ic">❤️</span>健康</button>
+      <button class="dr-item" data-go="mail"><span class="dr-ic">📧</span>メール</button>
+      <div class="dr-sep"></div>
+      <button class="dr-item" data-act="settings"><span class="dr-ic">⚙️</span>設定</button>
+    </div>
+  </aside>
 </div>
 
 <button class="fab-float pos-br" id="fab-float" hidden>＋</button>
@@ -1623,7 +1683,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.61.0</p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.62.0</p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -2481,26 +2541,16 @@ document.getElementById('hdr-date').textContent=
 const fabNav=document.getElementById('fab-nav');
 const fabFloat=document.getElementById('fab-float');
 function applyAddBtnPos(){
-  const pos=db.settings.addBtnPos||'center';
-  const nav=document.getElementById('main-nav');
-  if(pos==='center'){
-    nav.style.gridTemplateColumns='repeat(5,1fr)';
-    fabNav.style.display='';
-    fabFloat.hidden=true;
-    fabFloat.className='fab-float pos-br';
-  } else {
-    nav.style.gridTemplateColumns='repeat(4,1fr)';
-    fabNav.style.display='none';
-    fabFloat.hidden=false;
-    fabFloat.className='fab-float pos-'+(pos==='br'?'br':'bl');
-  }
+  const pos=db.settings.addBtnPos==='bl'?'bl':'br';
+  fabFloat.className='fab-float pos-'+pos;
+  fabFloat.hidden=st.tab!=='cal';
   document.querySelectorAll('.st-opt[data-pos]').forEach(b=>b.classList.toggle('on',b.dataset.pos===pos));
 }
 function applyLeftyMode(){
   const on=db.settings.leftHand===true;
   document.body.classList.toggle('lefty',on);
   // 左利きON時はFABを左下に強制
-  if(on&&(db.settings.addBtnPos||'center')==='br'){
+  if(on&&db.settings.addBtnPos!=='bl'){
     db.settings.addBtnPos='bl';save(db);applyAddBtnPos();
   }
   document.querySelectorAll('.pos-opt[data-lefty]').forEach(b=>b.classList.toggle('on',b.dataset.lefty===(on?'on':'off')));
@@ -2516,7 +2566,40 @@ function updateNavActive(){
     if(b.id==='nav-ai') b.classList.toggle('on',aiOpen);
     else b.classList.toggle('on',!aiOpen&&b.dataset.t===st.tab);
   });
+  const key=st.tab==='other'?st.otherSub:st.tab;
+  document.querySelectorAll('.dr-item[data-go]').forEach(b=>b.classList.toggle('on',b.dataset.go===key));
+  document.getElementById('hdr-title').textContent=st.tab==='cal'?'LifeHub':st.tab==='tasks'?'タスク':(SCREEN_TITLES[st.otherSub]||'LifeHub');
+  fabFloat.hidden=st.tab!=='cal';
 }
+const SCREEN_TITLES={wo:'トレーニング',meals:'食事',sleep:'睡眠',health:'健康',mail:'メール'};
+const drawerEl=document.getElementById('drawer'),drawerOv=document.getElementById('drawer-ov');
+function openDrawer(){
+  const f=db.settings.features||{};
+  const featOf={wo:'workout',meals:'meals',sleep:'sleep',mail:'gmail'};
+  drawerEl.querySelectorAll('.dr-item[data-go]').forEach(b=>{const k=featOf[b.dataset.go];b.hidden=!!k&&f[k]===false;});
+  const profs=getProfs();
+  const active=profs.find(p=>p.id===window._LH_PID)||profs[0]||{name:'?',color:'#4F46E5'};
+  const av=document.getElementById('dr-acct-avatar');
+  av.style.background=active.color;av.textContent=active.name[0]||'?';
+  document.getElementById('dr-acct-name').textContent=active.name;
+  drawerEl.classList.add('open');drawerOv.classList.add('open');fabFloat.hidden=true;
+}
+function closeDrawer(){drawerEl.classList.remove('open');drawerOv.classList.remove('open');fabFloat.hidden=st.tab!=='cal';}
+document.getElementById('hdr-menu').onclick=openDrawer;
+drawerOv.onclick=closeDrawer;
+document.getElementById('hdr-title').onclick=()=>switchToTab('cal');
+document.getElementById('dr-acct').onclick=()=>{closeDrawer();document.getElementById('prof-btn').click();};
+drawerEl.querySelectorAll('.dr-item').forEach(b=>{
+  b.onclick=()=>{
+    closeDrawer();
+    const go=b.dataset.go,act=b.dataset.act;
+    if(act==='add')openEvModalAndSetup();
+    else if(act==='ai')switchToTab('ai');
+    else if(act==='settings')document.getElementById('hdr-settings').click();
+    else if(go==='cal'||go==='tasks')switchToTab(go);
+    else{st.otherSub=go;switchToTab('other');}
+  };
+});
 function switchToTab(t){
   if(t==='ai'){
     const m=document.getElementById('ai-modal'),o=document.getElementById('ai-overlay');
@@ -3531,7 +3614,7 @@ document.getElementById('mo-calendars').onclick=e=>{if(e.target===e.currentTarge
 // ── Settings Modal ─────────────────────────────────────────
 document.getElementById('hdr-settings').onclick=()=>{
   const s=db.settings;
-  document.querySelectorAll('.st-opt[data-pos]').forEach(b=>b.classList.toggle('on',b.dataset.pos===(s.addBtnPos||'center')));
+  document.querySelectorAll('.st-opt[data-pos]').forEach(b=>b.classList.toggle('on',b.dataset.pos===(s.addBtnPos==='bl'?'bl':'br')));
   document.querySelectorAll('.st-opt[data-hl]').forEach(b=>b.classList.toggle('on',b.dataset.hl===(s.highlightTab||'wo')));
   document.querySelectorAll('.st-opt[data-cal]').forEach(b=>b.classList.toggle('on',b.dataset.cal===(s.calLayout||'general')));
   document.querySelectorAll('.st-opt[data-theme-opt]').forEach(b=>b.classList.toggle('on',b.dataset.themeOpt===(s.theme||'system')));
@@ -4211,9 +4294,7 @@ document.getElementById('mo-settings').onclick=e=>{if(e.target===e.currentTarget
 // ===== お知らせ =====
 // 新しいお知らせを追加するときは先頭に追加する（idは一意な文字列）
 const ANNOUNCEMENTS=[
-  {id:'ann_013',date:'2026-11-17',title:'アップデート v2.60.0',body:'① 食事記録に「📷 写真で自動入力」を追加。料理の写真を撮るとAIがカロリー・栄養素を自動推定します。② 今日のタスク一覧に完了率（X/Y・Z%）を表示。③ 音声入力が途中で止まるバグを修正。'},
-  {id:'ann_014',date:'2026-11-17',title:'アップデート v2.61.0',body:'バグ修正: ① ひらがなで登録した栄養素（例:「たんぱく質」）に写真AI分析が自動入力されない問題を修正。② 壊れた画像選択時のアプリハングを修正。③ 写真保存失敗時の不正エントリ作成を修正。'},
-  {id:'ann_012',date:'2026-11-16',title:'アップデート v2.59.0',body:'タスク完了時にAIコーチとフィードバックチャットができるようになりました。「どうでしたか？」と聞いてくれるので、感想や気づきを話すとAIが次回へのアドバイスをします。スキップして即完了も可能です。'},
+  {id:'ann_013',date:'2026-11-17',title:'アップデート v2.60.0',body:'① 食事記録に「📷 写真で自動入力」を追加。料理の写真を撮るとAIがカロリー・栄養素を自動推定します。② 今日のタスク一覧に完了率（X/Y・Z%）を表示。③ 音声入力が途中で止まるバグを修正。'},  {id:'ann_012',date:'2026-11-16',title:'アップデート v2.59.0',body:'タスク完了時にAIコーチとフィードバックチャットができるようになりました。「どうでしたか？」と聞いてくれるので、感想や気づきを話すとAIが次回へのアドバイスをします。スキップして即完了も可能です。'},
   {id:'ann_011',date:'2026-11-16',title:'アップデート v2.58.0',body:'① AIが過去7日間の食事・筋トレ詳細（重量・回数・距離）を参照できるようになりました。② AIチャットが途中で止まるバグを修正。③「その他」タブのトレーニングボタンが表示されないバグを修正。'},
   {id:'ann_010',date:'2026-11-13',title:'アップデート v1.6.0',body:'AIチャットに📎ファイル添付機能を追加。写真やPDFをAIに送れるようになりました。設定⚙️→「AIチャット設定」からONにしてください。'},
   {id:'ann_009',date:'2026-11-13',title:'アップデート v1.5.0',body:'体験XP・HAPステータスを追加！AIと会話で旅行・美味しいご飯・新しい発見などを話すとXPが貯まります。設定のゲームステータスでHAPを確認しよう。'},
@@ -4517,7 +4598,22 @@ function taskOccursToday(task){
   if(task.repeat==='monthly') return s.getDate()===t.getDate();
   return false;
 }
+function renderHomeTasks(){
+  const el=document.getElementById('home-tasks-card');if(!el)return;
+  const today=(db.tasks||[]).filter(t=>t.source!=='gmail').filter(taskOccursToday);
+  const total=today.length,pending=today.filter(t=>!taskIsDoneToday(t)),done=total-pending.length;
+  const pct=total?Math.round(done/total*100):0;
+  const col=pct>=100?'#22c55e':pct>=50?'#f59e0b':'var(--accent)';
+  let body;
+  if(!total)body='<div class="home-tk-more">今日のタスクはありません ›</div>';
+  else if(!pending.length)body='<div class="home-tk-more">🎉 今日のタスクはすべて完了 ›</div>';
+  else body=sortTasksBy(pending,'pri').slice(0,3).map(t=>`<div class="home-tk-row"><button class="check-btn" aria-label="完了" data-id="${t.id}">✓</button><span class="home-tk-title">${esc(t.title)}</span></div>`).join('')+(pending.length>3?`<div class="home-tk-more">ほか${pending.length-3}件 ›</div>`:'');
+  el.innerHTML=`<div class="home-tk-head"><span>✅ 今日のタスク</span>${total?`<span class="today-pct-badge" style="color:${col};">${done}/${total}（${pct}%）</span>`:''}</div>${total?`<div class="today-pct-bar"><div class="today-pct-fill" style="width:${pct}%;background:${col};"></div></div>`:''}${body}`;
+  el.querySelectorAll('.check-btn').forEach(btn=>{btn.onclick=e=>{e.stopPropagation();toggleTaskDone(btn.dataset.id);};});
+  el.onclick=()=>switchToTab('tasks');
+}
 function renderTodayTasks(){
+  renderHomeTasks();
   const sec=document.getElementById('tk-today-section');if(!sec)return;
   const today=(db.tasks||[]).filter(t=>t.source!=='gmail').filter(taskOccursToday);
   if(!today.length){sec.innerHTML='';return;}
@@ -6838,7 +6934,7 @@ window.updatePcSettingsUI();
       const allDone=doneCount===total;
       card.hidden=false;
       card.className='daily-mission-card'+(data.loading?' loading':'');
-      let html=`<div class="dm-header"><div class="dm-title">🎯 デーリーミッション ${data.loading?'':'<span style="font-size:11px;color:var(--fg3);font-weight:400;">${doneCount}/${total}</span>'}</div>`;
+      let html=`<div class="dm-header"><div class="dm-title">🎯 デーリーミッション ${data.loading?'':`<span style="font-size:11px;color:var(--fg3);font-weight:400;">${doneCount}/${total}</span>`}</div>`;
       if(st.count>1)html+=`<div class="dm-streak">🔥 ${st.count}日連続</div>`;
       html+=`<button class="dm-refresh" title="再生成">↺</button></div>`;
       html+=`<div class="dm-progress-bar"><div class="dm-progress-fill" style="width:${data.loading?0:Math.round(doneCount/total*100)}%"></div></div>`;
