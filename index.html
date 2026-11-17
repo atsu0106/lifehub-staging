@@ -1134,8 +1134,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
   </section>
 
   <section id="tab-tasks" class="tab">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-      <span style="font-size:1rem;font-weight:700;color:var(--fg);">タスク</span>
+    <div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:14px;">
       <button id="tk-add-btn" style="width:36px;height:36px;border-radius:50%;border:none;background:var(--accent);color:#fff;font-size:1.4rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;">＋</button>
     </div>
     <div id="tk-progress-wrap"></div>
@@ -1683,7 +1682,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.62.0</p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.63.0</p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -2604,6 +2603,7 @@ function switchToTab(t){
   if(t==='ai'){
     const m=document.getElementById('ai-modal'),o=document.getElementById('ai-overlay');
     if(m&&o){m.style.bottom='';m.style.height='';m.hidden=false;requestAnimationFrame(()=>{m.classList.add('open');o.classList.add('open');updateNavActive();});const inp=document.getElementById('ai-input');if(inp)setTimeout(()=>inp.focus(),50);}
+    window._missionHook?.('open_ai');
     return;
   }
   const tabEl=document.getElementById('tab-'+t);
@@ -3650,6 +3650,7 @@ document.getElementById('hdr-settings').onclick=()=>{
     }
     save(db);
     applyFeatureVisibility();
+    if(!this.checked&&st.tab==='other'){const subMap={workout:'wo',meals:'meals',sleep:'sleep',gmail:'mail'};if(st.otherSub===subMap[key])switchToTab('cal');}
   });
 });
 document.getElementById('toggle-attach').addEventListener('change',function(){
