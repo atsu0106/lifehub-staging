@@ -1010,6 +1010,13 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
 .dr-item.on{background:var(--accent-bg);color:var(--accent-fg);font-weight:700;}
 .dr-sep{height:1px;background:var(--border);margin:6px 8px;flex-shrink:0;}
 #tab-cal,#tab-tasks,#tab-other{padding-bottom:84px;}
+.hp-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
+.hp-field{display:flex;flex-direction:column;gap:4px;}
+.hp-label{font-size:11px;color:var(--fg3);font-weight:600;}
+.hp-input-wrap{display:flex;align-items:center;gap:4px;border:1.5px solid var(--border);border-radius:var(--r-s);padding:6px 10px;background:var(--surface2);}
+.hp-input{background:none;border:none;width:100%;font-size:14px;font-weight:600;color:var(--fg);font-family:inherit;min-width:0;}
+.hp-input:focus{outline:none;}
+.hp-unit{font-size:12px;color:var(--fg3);flex-shrink:0;}
 .home-tk-card{padding:12px 14px;margin-bottom:16px;cursor:pointer;}
 .home-tk-head{display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:700;}
 .home-tk-card .today-pct-bar{margin:8px 0 4px;}
@@ -1454,6 +1461,52 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
     <!-- スクロール本体 -->
     <div class="settings-body">
 
+      <!-- 健康プロフィール -->
+      <div class="st-sec">健康プロフィール</div>
+      <div class="st-card">
+        <div class="st-row" style="align-items:flex-start;gap:10px;">
+          <span class="st-ic" style="background:#ef4444;flex-shrink:0;">❤️</span>
+          <div style="flex:1;min-width:0;">
+            <div class="st-label" style="margin-bottom:6px;">基本情報</div>
+            <div class="hp-grid">
+              <div class="hp-field">
+                <label class="hp-label">身長</label>
+                <div class="hp-input-wrap"><input type="number" id="hp-height" class="hp-input" placeholder="170" min="100" max="250"><span class="hp-unit">cm</span></div>
+              </div>
+              <div class="hp-field">
+                <label class="hp-label">体重</label>
+                <div class="hp-input-wrap"><input type="number" id="hp-weight" class="hp-input" placeholder="65" min="30" max="300"><span class="hp-unit">kg</span></div>
+              </div>
+              <div class="hp-field">
+                <label class="hp-label">年齢</label>
+                <div class="hp-input-wrap"><input type="number" id="hp-age" class="hp-input" placeholder="20" min="10" max="100"><span class="hp-unit">歳</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="st-row st-row-toggle" style="margin-top:4px;">
+          <span class="st-ic" style="background:#f59e0b;">🎯</span>
+          <span class="st-label" style="flex:0 0 auto;margin-right:8px;">目標</span>
+          <div class="st-opts" style="justify-content:flex-end;flex-wrap:wrap;">
+            <button class="st-opt" data-hp-goal="bulk">増量</button>
+            <button class="st-opt" data-hp-goal="cut">減量</button>
+            <button class="st-opt" data-hp-goal="maintain">維持</button>
+            <button class="st-opt" data-hp-goal="recomp">体脂肪減</button>
+          </div>
+        </div>
+        <div class="st-row st-row-toggle" style="margin-top:4px;">
+          <span class="st-ic" style="background:#10b981;">🏋️</span>
+          <span class="st-label" style="flex:0 0 auto;margin-right:8px;">ジム目標</span>
+          <div class="st-opts" style="justify-content:flex-end;">
+            <button class="st-opt" data-hp-gym="1">週1</button>
+            <button class="st-opt" data-hp-gym="2">週2</button>
+            <button class="st-opt" data-hp-gym="3">週3</button>
+            <button class="st-opt" data-hp-gym="4">週4</button>
+            <button class="st-opt" data-hp-gym="5">週5+</button>
+          </div>
+        </div>
+      </div>
+
       <!-- 外観 -->
       <div class="st-sec">外観</div>
       <div class="st-card">
@@ -1682,7 +1735,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.64.0</p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.65.0</p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -2409,6 +2462,7 @@ if(!db.evPhotos)db.evPhotos={};
 if(!db.taskPhotos)db.taskPhotos={};
 if(!db.sleep)db.sleep={};
 if(!db.health)db.health={};
+if(!db.settings.healthProfile)db.settings.healthProfile={};
 if(!db.goals)db.goals=[];
 (db.goals||[]).forEach(g=>{
   if(!g.level)g.level='mid';
@@ -3629,6 +3683,11 @@ document.getElementById('hdr-settings').onclick=()=>{
   attachToggle.checked=enabled;
   attachTrack.style.background=enabled?'var(--accent)':'var(--border)';
   attachThumb.style.left=enabled?'23px':'3px';
+  // 健康プロフィールを反映
+  const hp=s.healthProfile||{};
+  ['height','weight','age'].forEach(k=>{const el=document.getElementById('hp-'+k);if(el)el.value=hp[k]||'';});
+  document.querySelectorAll('.st-opt[data-hp-goal]').forEach(b=>b.classList.toggle('on',b.dataset.hpGoal===hp.goal));
+  document.querySelectorAll('.st-opt[data-hp-gym]').forEach(b=>b.classList.toggle('on',b.dataset.hpGym===String(hp.gymFreq||'')));
   document.getElementById('mo-settings').hidden=false;
   renderGameStats();
 };
@@ -3682,6 +3741,31 @@ document.querySelectorAll('.st-opt[data-hl]').forEach(btn=>{
     document.querySelectorAll('.st-opt[data-hl]').forEach(b=>b.classList.toggle('on',b.dataset.hl===btn.dataset.hl));
     updateHlNav();
     if(st.tab==='other')renderOther();
+  };
+});
+// ── 健康プロフィール ─────────────────────────────────────────
+['height','weight','age'].forEach(k=>{
+  document.getElementById('hp-'+k)?.addEventListener('input',function(){
+    if(!db.settings.healthProfile)db.settings.healthProfile={};
+    const v=parseFloat(this.value);
+    db.settings.healthProfile[k]=isNaN(v)?null:v;
+    save(db);
+  });
+});
+document.querySelectorAll('.st-opt[data-hp-goal]').forEach(btn=>{
+  btn.onclick=()=>{
+    if(!db.settings.healthProfile)db.settings.healthProfile={};
+    db.settings.healthProfile.goal=btn.dataset.hpGoal;
+    save(db);
+    document.querySelectorAll('.st-opt[data-hp-goal]').forEach(b=>b.classList.toggle('on',b.dataset.hpGoal===btn.dataset.hpGoal));
+  };
+});
+document.querySelectorAll('.st-opt[data-hp-gym]').forEach(btn=>{
+  btn.onclick=()=>{
+    if(!db.settings.healthProfile)db.settings.healthProfile={};
+    db.settings.healthProfile.gymFreq=parseInt(btn.dataset.hpGym);
+    save(db);
+    document.querySelectorAll('.st-opt[data-hp-gym]').forEach(b=>b.classList.toggle('on',b.dataset.hpGym===btn.dataset.hpGym));
   };
 });
 // ── Gmail連携 ─────────────────────────────────────────────
@@ -6472,7 +6556,16 @@ window.updatePcSettingsUI();
     const fbLines=[];
     (db.tasks||[]).forEach(t=>{if(t.feedbackLogs?.length){const recent=t.feedbackLogs.slice(-2).map(f=>`${f.date}: ${f.text}`).join(' | ');fbLines.push(`・${t.title}: ${recent}`);}});
     const fbStats=fbLines.length?fbLines.slice(0,10).join('\n'):'記録なし';
-    return `【今日の日付】${today}\n【使用目的】${useCaseStr}\n【今後14日間の予定】\n${evs}\n【未完了タスク】\n${tasks}\n【進行中の目標】\n${goals}\n【カレンダー一覧】\n${cals}\n【タスク達成状況】${taskStats}\n【筋トレ履歴（直近30日/最大90日遡及）】\n${woStats}\n【睡眠記録（直近30日統計）】\n${sleepStats}\n【食事記録（過去7日間）】\n${mealStats}\n【今日の健康データ】${healthStats}\n【タスクフィードバック履歴】\n${fbStats}`;
+    const hp=db.settings.healthProfile||{};
+    const goalMap={bulk:'増量',cut:'減量',maintain:'維持',recomp:'体脂肪減'};
+    const hpParts=[];
+    if(hp.height)hpParts.push(`身長:${hp.height}cm`);
+    if(hp.weight)hpParts.push(`体重:${hp.weight}kg`);
+    if(hp.age)hpParts.push(`年齢:${hp.age}歳`);
+    if(hp.goal)hpParts.push(`目標:${goalMap[hp.goal]||hp.goal}`);
+    if(hp.gymFreq)hpParts.push(`ジム目標:週${hp.gymFreq}回`);
+    const hpStats=hpParts.length?hpParts.join(' / '):'未設定';
+    return `【今日の日付】${today}\n【健康プロフィール】${hpStats}\n【使用目的】${useCaseStr}\n【今後14日間の予定】\n${evs}\n【未完了タスク】\n${tasks}\n【進行中の目標】\n${goals}\n【カレンダー一覧】\n${cals}\n【タスク達成状況】${taskStats}\n【筋トレ履歴（直近30日/最大90日遡及）】\n${woStats}\n【睡眠記録（直近30日統計）】\n${sleepStats}\n【食事記録（過去7日間）】\n${mealStats}\n【今日の健康データ】${healthStats}\n【タスクフィードバック履歴】\n${fbStats}`;
   }
   function executeTool(name,input){
     if(name==='add_event'){
