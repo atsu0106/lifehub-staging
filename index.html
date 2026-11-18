@@ -1405,7 +1405,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
 </div>
 
 <button class="fab-float pos-br" id="fab-float" hidden>＋</button>
-<button class="ai-fab" id="ai-fab">✨ AIトレーナー</button>
+<button class="ai-fab" id="ai-fab"><img src="assets/characters/01_Ran_pointing.png" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;margin-right:4px;" onerror="this.style.display='none'">AIトレーナー</button>
 <div class="ai-overlay" id="ai-overlay"></div>
 <div class="ai-modal" id="ai-modal" hidden>
   <div class="ai-drag-handle"></div>
@@ -1421,7 +1421,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
   <!-- メインチャット -->
   <div class="ai-modal-hdr">
     <button class="ai-hdr-btn" id="ai-hist-open">☰</button>
-    <h2 id="ai-chat-title">AIトレーナー</h2>
+    <h2 id="ai-chat-title"><img src="assets/characters/01_Ran_pointing.png" style="width:24px;height:24px;object-fit:contain;vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'">AIトレーナー</h2>
     <button class="ai-hdr-btn ai-think-toggle" id="ai-think-toggle" title="思考モード（深く考える）">💭</button>
     <button class="ai-hdr-btn" id="ai-size-toggle" title="サイズ切替">⤢</button>
     <button class="ai-close" id="ai-close">✕</button>
@@ -4815,6 +4815,7 @@ const CHARS={
     system:'あなたはコタ（おっとり伴走のクマ）です。ゆっくり丁寧で温かい口調。急かさない。「焦らなくていいよ」「続けることが一番大事」という姿勢。ユーザーのデータを使って自分ごとにする。一人称は「ぼく」。指定フォーマット厳守。日本語のみ。'},
 };
 const CHANGELOG=[
+  {v:'v2.74.0',d:'FAB・チャットタイトルにランアイコン。ひとことカードに伴走キャラアイコン追加。ひとこと文体を「一緒に頑張ろう」2文スタイルに'},
   {v:'v2.73.0',d:'キャラクター刷新: ラン（熱血コーチ/ウマ）追加、カイをクールな伴走に変更。伴走3択（カイ/ピコ/コタ）'},
   {v:'v2.72.0',d:'「AIトレーナー」にリブランド。初回起動時に伴走キャラ（ピコ/コタ）選択画面を表示'},
   {v:'v2.71.0',d:'AIキャラクター選択機能（コーチ共通・伴走キャラ2択）。ブリーフィングにキャラ表示'},
@@ -4972,7 +4973,7 @@ function taskOccursToday(task){
 }
 function _buildAdviceHtml(data,loading){
   const companion=getCharInfo();
-  const charHtml=`<div class="brief-char"><img src="${CHARS.kai.img}" alt="カイ" onerror="this.style.display='none'" style="width:40px;height:40px;object-fit:contain;"><img src="${CHARS.kei.img}" alt="ケイ" onerror="this.style.display='none'" style="width:40px;height:40px;object-fit:contain;margin-left:-8px;"><div style="width:1px;background:var(--border);height:32px;margin:0 8px;flex-shrink:0;"></div><img src="${companion.img}" alt="${companion.name}" onerror="this.style.display='none'" style="width:40px;height:40px;object-fit:contain;"><div class="brief-char-info" style="margin-left:6px;"><div class="brief-char-name">${companion.name}</div><div class="brief-char-role">${companion.emoji} ${companion.role}</div></div></div>`;
+  const charHtml=`<div class="brief-char"><img src="${CHARS.ran.img}" alt="ラン" onerror="this.style.display='none'" style="width:40px;height:40px;object-fit:contain;"><img src="${CHARS.kei.img}" alt="ケイ" onerror="this.style.display='none'" style="width:40px;height:40px;object-fit:contain;margin-left:-8px;"><div style="width:1px;background:var(--border);height:32px;margin:0 8px;flex-shrink:0;"></div><img src="${companion.img}" alt="${companion.name}" onerror="this.style.display='none'" style="width:40px;height:40px;object-fit:contain;"><div class="brief-char-info" style="margin-left:6px;"><div class="brief-char-name">${companion.name}</div><div class="brief-char-role">${companion.emoji} ${companion.role}</div></div></div>`;
   if(loading)return`<div class="health-advice-header"><span class="health-advice-label">🌅 MORNING BRIEFING</span></div>${charHtml}<div class="health-advice-loading">生成中…</div>`;
   const lines=(data||'').split('\n').map(s=>s.trim()).filter(Boolean);
   const summary=lines[0]||'';
@@ -6667,7 +6668,7 @@ window.updatePcSettingsUI();
     aiHistory=[];
     const wrap=document.getElementById('ai-messages');
     wrap.innerHTML='<div class="ai-empty">今日の予定・タスク・目標を把握しています。<br>何でも聞いてください。</div>';
-    document.getElementById('ai-chat-title').textContent='AIトレーナー';
+    document.getElementById('ai-chat-title').innerHTML='<img src="assets/characters/01_Ran_pointing.png" style="width:24px;height:24px;object-fit:contain;vertical-align:middle;margin-right:6px;" onerror="this.style.display=\'none\'">AIトレーナー';
   }
   function loadSession(sess){
     saveSession();
@@ -7324,7 +7325,9 @@ window.updatePcSettingsUI();
     function renderCard(text,loading){
       card.hidden=false;
       card.className='ai-brief-card'+(loading?' loading':'');
-      card.innerHTML='<div class="ai-brief-label">✦ AIからの今日のひとこと</div><div class="ai-brief-text">'+safeHtml(text)+'</div><button class="ai-brief-refresh" title="更新">↺</button>';
+      const companion=getCharInfo();
+      const compIcon=`<img src="${companion.img}" alt="${companion.name}" style="width:36px;height:36px;object-fit:contain;flex-shrink:0;" onerror="this.style.display='none'">`;
+      card.innerHTML=`<div class="ai-brief-label">✦ AIからの今日のひとこと</div><div style="display:flex;align-items:flex-start;gap:10px;margin-top:4px;">${compIcon}<div class="ai-brief-text">${safeHtml(text)}</div></div><button class="ai-brief-refresh" title="更新">↺</button>`;
       card.querySelector('.ai-brief-refresh').onclick=()=>generateBrief(true);
     }
     async function generateBrief(force){
@@ -7339,8 +7342,9 @@ window.updatePcSettingsUI();
       if(window._DEV_MODE){renderCard('[DEVモード] AIブリーフは本番・stagingのみ動作します。');return;}
       try{
         const ctx=getContext();
-        const prompt='以下はユーザーの今日のライフデータです。\n\n'+ctx+'\n\n上記データを踏まえて、今日のユーザーへの「ひとこと」を2〜3文で書いてください。予定・タスク・筋トレ状況を絡めて、具体的かつポジティブに。余計な前置きなしで本文だけ返してください。';
-        const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:200,system:'あなたはLifeHubのAIアシスタントです。ユーザーの生活データを把握しており、日本語で短く的確なコメントをします。',messages:[{role:'user',content:prompt}]})});
+        const companion=getCharInfo();
+        const prompt='以下はユーザーの今日のライフデータです。\n\n'+ctx+'\n\nあなたは'+companion.name+'（'+companion.role+'）として、ユーザーに今日の「ひとこと」を送ってください。ユーザーのデータを踏まえつつ、「一緒に頑張ろう」という気持ちが伝わる2文で。自分ごと感（「ぼくも〜」「今日は〜しようね」など）を入れて。余計な前置きなしで本文だけ返してください。';
+        const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:150,system:companion.system,messages:[{role:'user',content:prompt}]})});
         if(!res.ok)throw new Error('HTTP '+res.status);
         const data=await res.json();
         const text=data.content?.find(c=>c.type==='text')?.text||'今日も頑張ろう！';
