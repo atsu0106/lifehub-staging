@@ -1626,6 +1626,17 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
         </div>
       </div>
 
+      <!-- サプリメント -->
+      <div class="st-sec">サプリメント</div>
+      <div class="st-card">
+        <div id="supp-list"></div>
+        <div class="st-row" id="supp-add-btn" style="cursor:pointer;">
+          <span class="st-ic" style="background:#10b981;">＋</span>
+          <span class="st-label">サプリメントを追加</span>
+          <span class="st-arrow">›</span>
+        </div>
+      </div>
+
       <!-- AI・連携 -->
       <div class="st-sec">AI・連携</div>
       <!-- Gmail OAuth connect card -->
@@ -1752,7 +1763,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.69.0</p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.70.0</p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -1766,6 +1777,45 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
     <button id="btn-export" hidden></button>
     <label id="btn-import-lbl" hidden><input type="file" id="import-file-dup" accept=".json" style="display:none;"></label>
     <button id="btn-reset" hidden></button>
+  </div>
+</div>
+
+<!-- Supplement modal -->
+<div class="overlay" id="mo-supp" hidden>
+  <div class="modal" style="max-height:85vh;overflow-y:auto;">
+    <h3 id="supp-mo-title">サプリメントを追加</h3>
+    <div style="display:flex;flex-direction:column;gap:10px;margin:14px 0;">
+      <div>
+        <label style="font-size:12px;color:var(--fg2);display:block;margin-bottom:4px;">商品名 <span style="color:var(--err);">*</span></label>
+        <input id="supp-name" type="text" placeholder="例: ゴールドスタンダード ホエイ" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;background:var(--surface2);color:var(--fg);font-size:14px;font-family:inherit;">
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--fg2);display:block;margin-bottom:4px;">ブランド</label>
+        <input id="supp-brand" type="text" placeholder="例: ON (Optimum Nutrition)" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;background:var(--surface2);color:var(--fg);font-size:14px;font-family:inherit;">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div>
+          <label style="font-size:12px;color:var(--fg2);display:block;margin-bottom:4px;">タンパク質 (g/serving)</label>
+          <input id="supp-protein" type="number" placeholder="24" min="0" max="100" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;background:var(--surface2);color:var(--fg);font-size:14px;font-family:inherit;">
+        </div>
+        <div>
+          <label style="font-size:12px;color:var(--fg2);display:block;margin-bottom:4px;">1serving (g)</label>
+          <input id="supp-serving" type="number" placeholder="30" min="0" max="500" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;background:var(--surface2);color:var(--fg);font-size:14px;font-family:inherit;">
+        </div>
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--fg2);display:block;margin-bottom:4px;">フレーバー</label>
+        <input id="supp-flavor" type="text" placeholder="例: チョコレート" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;background:var(--surface2);color:var(--fg);font-size:14px;font-family:inherit;">
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--fg2);display:block;margin-bottom:4px;">メモ</label>
+        <input id="supp-memo" type="text" placeholder="例: トレ後30分以内に飲む" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;background:var(--surface2);color:var(--fg);font-size:14px;font-family:inherit;">
+      </div>
+    </div>
+    <div class="m-actions">
+      <button class="btn-cancel" id="supp-cancel">キャンセル</button>
+      <button class="btn-ok" id="supp-save">保存</button>
+    </div>
   </div>
 </div>
 
@@ -2480,6 +2530,7 @@ if(!db.taskPhotos)db.taskPhotos={};
 if(!db.sleep)db.sleep={};
 if(!db.health)db.health={};
 if(!db.settings.healthProfile)db.settings.healthProfile={};
+if(!db.supplements)db.supplements=[];
 if(!db.goals)db.goals=[];
 (db.goals||[]).forEach(g=>{
   if(!g.level)g.level='mid';
@@ -3707,6 +3758,61 @@ document.getElementById('hdr-settings').onclick=()=>{
   document.querySelectorAll('.st-opt[data-hp-gym]').forEach(b=>b.classList.toggle('on',b.dataset.hpGym===String(hp.gymFreq||'')));
   document.getElementById('mo-settings').hidden=false;
   renderGameStats();
+  renderSuppList();
+};
+// ── サプリメント管理 ──
+let _suppEditId=null;
+function renderSuppList(){
+  const el=document.getElementById('supp-list');if(!el)return;
+  const list=db.supplements||[];
+  if(!list.length){el.innerHTML='';return;}
+  el.innerHTML=list.map(s=>`
+    <div class="st-row" style="cursor:default;">
+      <span class="st-ic" style="background:#10b981;">💊</span>
+      <div style="flex:1;">
+        <div class="st-label">${esc(s.name)}</div>
+        <div style="font-size:11px;color:var(--fg3);margin-top:1px;">${[s.brand,s.protein?s.protein+'g protein':null,s.flavor].filter(Boolean).join(' · ')}</div>
+      </div>
+      <button style="background:none;border:none;color:var(--fg3);font-size:14px;cursor:pointer;padding:4px 8px;" data-supp-edit="${s.id}">✎</button>
+      <button style="background:none;border:none;color:var(--err);font-size:16px;cursor:pointer;padding:4px 8px;" data-supp-del="${s.id}">×</button>
+    </div>`).join('');
+  el.querySelectorAll('[data-supp-edit]').forEach(btn=>btn.onclick=()=>openSuppModal(btn.dataset.suppEdit));
+  el.querySelectorAll('[data-supp-del]').forEach(btn=>btn.onclick=()=>{if(!confirm('削除しますか？'))return;db.supplements=(db.supplements||[]).filter(s=>s.id!==btn.dataset.suppDel);save(db);renderSuppList();});
+}
+function openSuppModal(id){
+  _suppEditId=id||null;
+  const s=id?(db.supplements||[]).find(s=>s.id===id):null;
+  document.getElementById('supp-mo-title').textContent=id?'サプリメントを編集':'サプリメントを追加';
+  document.getElementById('supp-name').value=s?.name||'';
+  document.getElementById('supp-brand').value=s?.brand||'';
+  document.getElementById('supp-protein').value=s?.protein||'';
+  document.getElementById('supp-serving').value=s?.serving||'';
+  document.getElementById('supp-flavor').value=s?.flavor||'';
+  document.getElementById('supp-memo').value=s?.memo||'';
+  document.getElementById('mo-supp').hidden=false;
+  setTimeout(()=>document.getElementById('supp-name').focus(),100);
+}
+document.getElementById('supp-add-btn').onclick=()=>openSuppModal(null);
+document.getElementById('supp-cancel').onclick=()=>{document.getElementById('mo-supp').hidden=true;};
+document.getElementById('supp-save').onclick=()=>{
+  const name=document.getElementById('supp-name').value.trim();
+  if(!name){document.getElementById('supp-name').focus();return;}
+  const protein=parseFloat(document.getElementById('supp-protein').value)||null;
+  const serving=parseFloat(document.getElementById('supp-serving').value)||null;
+  const entry={
+    id:_suppEditId||('s'+Date.now()),
+    name,
+    brand:document.getElementById('supp-brand').value.trim()||null,
+    protein,serving,
+    flavor:document.getElementById('supp-flavor').value.trim()||null,
+    memo:document.getElementById('supp-memo').value.trim()||null,
+  };
+  if(!db.supplements)db.supplements=[];
+  if(_suppEditId){const i=db.supplements.findIndex(s=>s.id===_suppEditId);if(i>=0)db.supplements[i]=entry;else db.supplements.push(entry);}
+  else db.supplements.push(entry);
+  save(db);
+  document.getElementById('mo-supp').hidden=true;
+  renderSuppList();
 };
 // 機能トグルハンドラ
 ['workout','meals','sleep','gmail'].forEach(key=>{
@@ -4550,6 +4656,7 @@ if(window._DEV_MODE){
 }
 const WORKER_URL='https://lifehub-ai.y-atsuhisa7234.workers.dev';
 const CHANGELOG=[
+  {v:'v2.70.0',d:'設定画面にサプリメント登録機能追加（商品名・ブランド・タンパク質量・フレーバー）'},
   {v:'v2.69.0',d:'朝のブリーフィングに👍/👎フィードバック機能追加。評価が次回の提案に反映される'},
   {v:'v1.6.0',d:'AIチャットに画像・PDF添付機能を追加（設定からON/OFF）'},
   {v:'v1.5.0',d:'体験XP・HAPステータス追加。AIが美味しいご飯・旅行・発見にXPを付与'},
