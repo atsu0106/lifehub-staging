@@ -1913,7 +1913,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.82.2 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.82.3<span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -2548,7 +2548,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='98a5d0248a'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='98bede6020'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -5226,6 +5226,7 @@ const CHARS={
     system:'あなたはコタ（おっとり伴走のクマ）です。ゆっくり丁寧で温かい口調。急かさない。「焦らなくていいよ」「続けることが一番大事」という姿勢。ユーザーのデータを使って自分ごとにする。一人称は「ぼく」。指定フォーマット厳守。日本語のみ。'},
 };
 const CHANGELOG=[
+  {v:'v2.82.3',d:'ひとことを親しみやすい口調に。AIの文章が途中で切れる不具合を根本修正'},
   {v:'v2.82.2',d:'ひとことが途中で切れる不具合を修正。アプリが古いまま残らないよう自動更新に対応'},
   {v:'v2.82.1',d:'「AIからの今日のひとこと」の生成設定を以前の内容に戻しました'},
   {v:'v2.82.0',d:'内部構成を整理（機能・見た目の変更なし）'},
@@ -5441,7 +5442,7 @@ async function renderHealthAdvice(force){
   try{const fbList=JSON.parse(localStorage.getItem('lh_advice_fb')||'[]');if(fbList.length>0){const good=fbList.filter(e=>e.rating==='good').length;const bad=fbList.filter(e=>e.rating==='bad').length;const rec=fbList.slice(0,7);const recGood=rec.filter(e=>e.rating==='good').length;fbContext=`\n過去の提案評価: 役立った${good}回, 不要${bad}回（計${fbList.length}回）`;if(recGood>=5)fbContext+='\n（最近の提案はよく評価されている。同様のスタイルを継続）';else if(recGood<=2&&rec.length>=5)fbContext+='\n（最近の提案はあまり評価されていない。より具体的で実践的な内容に変える）';}}catch(e){}
   const prompt=`ユーザーの健康データ:\nプロフィール: ${hpParts.join(', ')||'未設定'}\n今週のジム: ${thisWeekWo}回${hp.gymFreq?'（目標:週'+hp.gymFreq+'回、残り'+(Math.max(0,hp.gymFreq-thisWeekWo))+'回）':''}\n昨日の睡眠: ${sleepInfo}\n昨日のトレーニング: ${ydWoInfo}\n${taskInfo}${fbContext}\n\n以下の形式で出力（JSON・マークダウン不要）:\n1行目: 昨日の振り返り1文（30字以内）\n2〜4行目: 今日のアクション（各30字以内、「・」で始める）`;
   try{
-    const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:200,system:getCharSystem(),messages:[{role:'user',content:prompt}]})});
+    const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:200,thinking:{type:'disabled'},system:getCharSystem(),messages:[{role:'user',content:prompt}]})});
     if(!res.ok)throw new Error('HTTP '+res.status);
     const data=await res.json();
     const text=data.content?.find(c=>c.type==='text')?.text?.trim()||'';
@@ -5537,7 +5538,7 @@ async function _autoUpdateGoalProgress(goalId,taskTitle){
   save(db);renderGoals();
   try{
     const prompt=`ゴール「${g.text}」の達成進捗を判定してください。\n関連タスク: 全${totalCount}件中${doneCount}件完了\n直前に完了したタスク:「${taskTitle}」\n\n0〜100の整数のみで回答:`;
-    const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:8,system:'ゴール進捗率を0〜100の整数のみで返す。',messages:[{role:'user',content:prompt}]})});
+    const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:8,thinking:{type:'disabled'},system:'ゴール進捗率を0〜100の整数のみで返す。',messages:[{role:'user',content:prompt}]})});
     if(!res.ok)return;
     const data=await res.json();
     const txt=data.content?.find(c=>c.type==='text')?.text?.trim()||'';
@@ -6889,7 +6890,7 @@ async function analyzePhotoMeal(){
     const mimeType=file.type||'image/jpeg';
     const prompt='この料理・食事の写真を見て、含まれている食品と栄養成分を推定してください。複数の食品が見える場合は全体でまとめて推定してください。\n\n以下のJSON形式のみで返してください（コードブロック不要）:\n{"name":"料理名 (量の目安)","kcal":カロリー数値,"protein":タンパク質g数,"carbs":炭水化物g数,"fat":脂質g数,"note":"推定根拠や注意点（20字以内）"}';
     const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({
-      model:'claude-haiku-5-5',max_tokens:400,
+      model:'claude-haiku-5-5',max_tokens:400,thinking:{type:'disabled'},
       messages:[{role:'user',content:[
         {type:'image',source:{type:'base64',media_type:mimeType,data:base64}},
         {type:'text',text:prompt}
@@ -7876,7 +7877,7 @@ function calcGameStats(){
 
   // ── AIデイリーブリーフ ──
   (function(){
-    const BRIEF_KEY='lh_ai_brief_v3';
+    const BRIEF_KEY='lh_ai_brief_v4';
     const isComplete=t=>typeof t==='string'&&t!=='今日も頑張ろう！'&&/[。！？!?…）」』]$/.test(t.trim());
     const card=document.getElementById('ai-brief-card');
     if(!card)return;
@@ -7900,8 +7901,8 @@ function calcGameStats(){
       if(window._DEV_MODE){renderCard('[DEVモード] AIブリーフは本番・stagingのみ動作します。');return;}
       let ctx='';
       try{ctx=getContext();}catch(e){console.warn('[brief] getContext failed:',e);card.hidden=true;return;}
-      const prompt='以下はユーザーの今日のライフデータです。\n\n'+ctx+'\n\n上記データを踏まえて、今日のユーザーへの「ひとこと」を2〜3文で書いてください。予定・タスク・筋トレ状況を絡めて、具体的かつポジティブに。余計な前置きなしで本文だけ返してください。';
-      const body=JSON.stringify({model:'claude-haiku-5-5',max_tokens:400,system:'あなたはLifeHubのAIアシスタントです。ユーザーの生活データを把握しており、日本語で短く的確なコメントをします。',messages:[{role:'user',content:prompt}]});
+      const prompt='以下はユーザーの今日のライフデータです。\n\n'+ctx+'\n\n上記データを踏まえて、今日のユーザーへの「ひとこと」を2〜3文で書いてください。予定・タスク・筋トレ状況を絡めて、具体的に、明るく親しみやすい言葉で。余計な前置きなしで本文だけ返してください。';
+      const body=JSON.stringify({model:'claude-haiku-5-5',max_tokens:400,thinking:{type:'disabled'},system:'あなたはLifeHubのAIアシスタントです。ユーザーの生活データを把握している、身近な友達のような存在です。です・ます調は使わず、自然でやわらかいタメ口の日本語で短く話します。',messages:[{role:'user',content:prompt}]});
       let lastErr='';
       // Workerは上流のエラー（混雑・回数制限）もHTTP 200で返すため、本文の有無で成否を判定する
       for(let attempt=0;attempt<3;attempt++){
@@ -8040,7 +8041,7 @@ function calcGameStats(){
         const ctx=getContext();
         const goalList=activeGoals.map(g=>`・${g.title}（進捗${g.progress||0}%${g.dueDate?'・期限'+g.dueDate:''}）`).join('\n');
         const prompt=`以下はユーザーの今日のライフデータです。\n\n${ctx}\n\n【現在の目標】\n${goalList}\n\n今日やるべき3つのミッションをJSONで生成してください。\n【重要】ミッションは「現在の目標」に直接つながるアクションを優先してください。目標の進捗を高めるために今日具体的に何をすべきかを考えて設定してください。タスク・筋トレ・予定なども踏まえて具体的に。\n\n返答はJSON配列のみ（説明不要）:\n[\n  {"id":"m1","text":"ミッション説明（20字以内）","type":"complete_task","taskId":"タスクのid（特定する場合のみ）"},\n  {"id":"m2","text":"...","type":"log_workout"},\n  {"id":"m3","text":"...","type":"open_ai"}\n]\n\ntypeは complete_task / log_workout / open_ai / manual のいずれか。`;
-        const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:300,system:'あなたはLifeHubのミッション生成AIです。ユーザーのデータを読んで今日のミッションをJSON配列で返します。JSON以外は一切出力しないでください。',messages:[{role:'user',content:prompt}]})});
+        const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:300,thinking:{type:'disabled'},system:'あなたはLifeHubのミッション生成AIです。ユーザーのデータを読んで今日のミッションをJSON配列で返します。JSON以外は一切出力しないでください。',messages:[{role:'user',content:prompt}]})});
         if(!res.ok)throw new Error('HTTP '+res.status);
         const data=await res.json();
         const raw=data.content?.find(c=>c.type==='text')?.text||'[]';
