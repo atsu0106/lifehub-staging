@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>LifeHub [STAGING]</title>
+<title>LifeHub</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="LifeHub">
@@ -3879,6 +3879,7 @@ function renderCharGrid(){
   });
 }
 document.querySelectorAll('.char-opt').forEach(btn=>{
+  if(btn.closest('#mo-char-intro'))return;
   btn.onclick=()=>{
     db.settings.aiCharacter=btn.dataset.char;
     save(db);
