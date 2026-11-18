@@ -1651,11 +1651,11 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
         </div>
         <div style="display:flex;gap:12px;padding:4px 14px 12px;border-top:1px solid var(--border);">
           <div style="text-align:center;">
-            <img src="assets/characters/kai.png" style="width:52px;height:52px;object-fit:contain;" onerror="this.style.display='none'">
-            <div style="font-size:11px;font-weight:700;color:var(--fg);margin-top:3px;">カイ</div>
+            <img src="assets/characters/01_Ran_pointing.png" style="width:52px;height:52px;object-fit:contain;" onerror="this.style.display='none'">
+            <div style="font-size:11px;font-weight:700;color:var(--fg);margin-top:3px;">ラン</div>
           </div>
           <div style="text-align:center;">
-            <img src="assets/characters/kei.png" style="width:52px;height:52px;object-fit:contain;" onerror="this.style.display='none'">
+            <img src="assets/characters/03_Kei_clipboard_glasses.png" style="width:52px;height:52px;object-fit:contain;" onerror="this.style.display='none'">
             <div style="font-size:11px;font-weight:700;color:var(--fg);margin-top:3px;">ケイ</div>
           </div>
         </div>
@@ -1666,15 +1666,21 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
             <div style="font-size:11px;color:var(--fg3);margin-top:1px;">毎日のブリーフィングを担当</div>
           </div>
         </div>
-        <div class="char-grid" id="char-grid" style="grid-template-columns:1fr 1fr;padding:8px 14px 12px;">
+        <div class="char-grid" id="char-grid" style="grid-template-columns:1fr 1fr 1fr;padding:8px 14px 12px;">
+          <button class="char-opt" data-char="kai">
+            <img src="assets/characters/04_Kai_standing.png" alt="カイ">
+            <div class="char-opt-name">カイ</div>
+            <div class="char-opt-role">🐺 クールな伴走</div>
+            <span class="char-opt-check">✓</span>
+          </button>
           <button class="char-opt" data-char="pico">
-            <img src="assets/characters/pico.png" alt="ピコ">
+            <img src="assets/characters/05_Pico_jumping.png" alt="ピコ">
             <div class="char-opt-name">ピコ</div>
             <div class="char-opt-role">🐰 元気な伴走</div>
             <span class="char-opt-check">✓</span>
           </button>
           <button class="char-opt" data-char="kota">
-            <img src="assets/characters/kota.png" alt="コタ">
+            <img src="assets/characters/06_Kota_waving.png" alt="コタ">
             <div class="char-opt-name">コタ</div>
             <div class="char-opt-role">🐻 おっとり伴走</div>
             <span class="char-opt-check">✓</span>
@@ -1842,19 +1848,26 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
     <div style="font-size:28px;margin-bottom:4px;">🎉</div>
     <h3 style="margin-bottom:6px;">伴走キャラを選ぼう</h3>
     <p style="font-size:13px;color:var(--fg2);margin-bottom:20px;line-height:1.6;">毎日のブリーフィングを担当するキャラを選んでください。<br>設定からいつでも変更できます。</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
-      <button class="char-opt" id="intro-pico" data-char="pico" style="padding:16px 8px;">
-        <img src="assets/characters/pico.png" alt="ピコ" style="width:100px;height:100px;object-fit:contain;display:block;margin:0 auto 8px;" onerror="this.style.display='none'">
-        <div class="char-opt-name" style="font-size:15px;">ピコ</div>
-        <div class="char-opt-role" style="font-size:11px;margin-top:3px;">🐰 元気な伴走</div>
-        <p style="font-size:11px;color:var(--fg3);margin-top:6px;line-height:1.4;">テンション高め。<br>一緒にはしゃいでくれる。</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px;">
+      <button class="char-opt" id="intro-kai" data-char="kai" style="padding:12px 6px;">
+        <img src="assets/characters/04_Kai_standing.png" alt="カイ" style="width:80px;height:80px;object-fit:contain;display:block;margin:0 auto 8px;" onerror="this.style.display='none'">
+        <div class="char-opt-name" style="font-size:14px;">カイ</div>
+        <div class="char-opt-role" style="font-size:10px;margin-top:3px;">🐺 クールな伴走</div>
+        <p style="font-size:10px;color:var(--fg3);margin-top:6px;line-height:1.4;">クール。<br>静かに支える。</p>
         <span class="char-opt-check">✓</span>
       </button>
-      <button class="char-opt" id="intro-kota" data-char="kota" style="padding:16px 8px;">
-        <img src="assets/characters/kota.png" alt="コタ" style="width:100px;height:100px;object-fit:contain;display:block;margin:0 auto 8px;" onerror="this.style.display='none'">
-        <div class="char-opt-name" style="font-size:15px;">コタ</div>
-        <div class="char-opt-role" style="font-size:11px;margin-top:3px;">🐻 おっとり伴走</div>
-        <p style="font-size:11px;color:var(--fg3);margin-top:6px;line-height:1.4;">のんびり温かい。<br>急かさない。</p>
+      <button class="char-opt" id="intro-pico" data-char="pico" style="padding:12px 6px;">
+        <img src="assets/characters/05_Pico_jumping.png" alt="ピコ" style="width:80px;height:80px;object-fit:contain;display:block;margin:0 auto 8px;" onerror="this.style.display='none'">
+        <div class="char-opt-name" style="font-size:14px;">ピコ</div>
+        <div class="char-opt-role" style="font-size:10px;margin-top:3px;">🐰 元気な伴走</div>
+        <p style="font-size:10px;color:var(--fg3);margin-top:6px;line-height:1.4;">テンション高め。<br>一緒にはしゃぐ。</p>
+        <span class="char-opt-check">✓</span>
+      </button>
+      <button class="char-opt" id="intro-kota" data-char="kota" style="padding:12px 6px;">
+        <img src="assets/characters/06_Kota_waving.png" alt="コタ" style="width:80px;height:80px;object-fit:contain;display:block;margin:0 auto 8px;" onerror="this.style.display='none'">
+        <div class="char-opt-name" style="font-size:14px;">コタ</div>
+        <div class="char-opt-role" style="font-size:10px;margin-top:3px;">🐻 おっとり伴走</div>
+        <p style="font-size:10px;color:var(--fg3);margin-top:6px;line-height:1.4;">のんびり温かい。<br>急かさない。</p>
         <span class="char-opt-check">✓</span>
       </button>
     </div>
@@ -3873,7 +3886,7 @@ document.getElementById('hdr-settings').onclick=()=>{
 })();
 // ── キャラクター選択 ──
 function renderCharGrid(){
-  const cur=db.settings.aiCharacter||'kai';
+  const cur=db.settings.aiCharacter||'pico';
   document.querySelectorAll('.char-opt').forEach(btn=>{
     btn.classList.toggle('on',btn.dataset.char===cur);
   });
@@ -3887,13 +3900,12 @@ document.querySelectorAll('.char-opt').forEach(btn=>{
   };
 });
 function getCharSystem(){
-  const c=CHARS[db.settings.aiCharacter||'kai'];
-  return c?c.system:CHARS.kai.system;
+  const c=CHARS[db.settings.aiCharacter||'pico'];
+  return c?c.system:CHARS.pico.system;
 }
 function getCharInfo(){
-  // 伴走キャラのみ選択対象（ピコ or コタ）
   const c=db.settings.aiCharacter;
-  return (c==='kota')?CHARS.kota:CHARS.pico;
+  return CHARS[c]||CHARS.pico;
 }
 // ── サプリメント管理 ──
 let _suppEditId=null;
@@ -4791,16 +4803,19 @@ if(window._DEV_MODE){
 }
 const WORKER_URL='https://lifehub-ai.y-atsuhisa7234.workers.dev';
 const CHARS={
-  kai:{name:'カイ',role:'熱血コーチ',emoji:'🐺',img:'assets/characters/kai.png',
-    system:'あなたはカイ（熱血コーチの狼）です。口調は短く力強い。ストイックで追い込み系。「お前ならできる」という信頼を持ちつつ、言葉は少なく本質をつく。指定フォーマット厳守。日本語のみ。'},
-  kei:{name:'ケイ',role:'分析コーチ',emoji:'🦊',img:'assets/characters/kei.png',
+  ran:{name:'ラン',role:'熱血コーチ',emoji:'🐴',img:'assets/characters/01_Ran_pointing.png',
+    system:'あなたはラン（熱血コーチのウマ）です。口調は短く力強い。ストイックで追い込み系。「お前ならできる」という信頼を持ちつつ、言葉は少なく本質をつく。指定フォーマット厳守。日本語のみ。'},
+  kei:{name:'ケイ',role:'分析コーチ',emoji:'🦊',img:'assets/characters/03_Kei_clipboard_glasses.png',
     system:'あなたはケイ（分析コーチのキツネ）です。口調は冷静で知的。データと根拠で語る。「なぜそうすべきか」を必ず添える。無駄なポジティブ表現は省く。指定フォーマット厳守。日本語のみ。'},
-  pico:{name:'ピコ',role:'元気な伴走',emoji:'🐰',img:'assets/characters/pico.png',
+  kai:{name:'カイ',role:'クールな伴走',emoji:'🐺',img:'assets/characters/04_Kai_standing.png',
+    system:'あなたはカイ（クールな伴走の狼）です。ユーザーと同じ目線で一緒に歩んでいる設定。口調はクールで落ち着いている。感情を表に出さないが、ユーザーのデータを使って「昨日俺もしんどかった」「今日はいい調子だな」など静かに自分ごとにする。一人称は「俺」。指定フォーマット厳守。日本語のみ。'},
+  pico:{name:'ピコ',role:'元気な伴走',emoji:'🐰',img:'assets/characters/05_Pico_jumping.png',
     system:'あなたはピコ（元気な伴走ウサギ）です。ユーザーと同じ目線で一緒に頑張っている設定。口調は明るく親しみやすい。ユーザーのデータを使って「昨日僕も頑張ったよ！」「昨日さぼっちゃった…えへ」など自分ごとにする。一人称は「ぼく」。指定フォーマット厳守。日本語のみ。'},
-  kota:{name:'コタ',role:'おっとり伴走',emoji:'🐻',img:'assets/characters/kota.png',
+  kota:{name:'コタ',role:'おっとり伴走',emoji:'🐻',img:'assets/characters/06_Kota_waving.png',
     system:'あなたはコタ（おっとり伴走のクマ）です。ゆっくり丁寧で温かい口調。急かさない。「焦らなくていいよ」「続けることが一番大事」という姿勢。ユーザーのデータを使って自分ごとにする。一人称は「ぼく」。指定フォーマット厳守。日本語のみ。'},
 };
 const CHANGELOG=[
+  {v:'v2.73.0',d:'キャラクター刷新: ラン（熱血コーチ/ウマ）追加、カイをクールな伴走に変更。伴走3択（カイ/ピコ/コタ）'},
   {v:'v2.72.0',d:'「AIトレーナー」にリブランド。初回起動時に伴走キャラ（ピコ/コタ）選択画面を表示'},
   {v:'v2.71.0',d:'AIキャラクター選択機能（コーチ共通・伴走キャラ2択）。ブリーフィングにキャラ表示'},
   {v:'v2.70.0',d:'設定画面にサプリメント登録機能追加（商品名・ブランド・タンパク質量・フレーバー）'},
