@@ -2548,7 +2548,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='43d4981925'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='98a5d0248a'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -7876,7 +7876,8 @@ function calcGameStats(){
 
   // ── AIデイリーブリーフ ──
   (function(){
-    const BRIEF_KEY='lh_ai_brief_v2';
+    const BRIEF_KEY='lh_ai_brief_v3';
+    const isComplete=t=>typeof t==='string'&&t!=='今日も頑張ろう！'&&/[。！？!?…）」』]$/.test(t.trim());
     const card=document.getElementById('ai-brief-card');
     if(!card)return;
     function renderCard(text,loading){
@@ -7892,7 +7893,7 @@ function calcGameStats(){
       if(!force){
         try{
           const cached=JSON.parse(localStorage.getItem(BRIEF_KEY)||'null');
-          if(cached&&cached.date===today&&cached.text!=='今日も頑張ろう！'){renderCard(cached.text);return;}
+          if(cached&&cached.date===today&&isComplete(cached.text)){renderCard(cached.text);return;}
         }catch{}
       }
       renderCard('分析中…',true);
