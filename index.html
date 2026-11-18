@@ -1389,7 +1389,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
     </button>
     <div class="dr-list">
       <button class="dr-item" data-go="cal"><span class="dr-ic">🏠</span>ホーム</button>
-      <button class="dr-item" data-act="ai"><span class="dr-ic">✨</span>AI秘書</button>
+      <button class="dr-item" data-act="ai"><span class="dr-ic">✨</span>AIトレーナー</button>
       <button class="dr-item" data-act="add"><span class="dr-ic">➕</span>予定追加</button>
       <div class="dr-sep"></div>
       <button class="dr-item" data-go="tasks"><span class="dr-ic">✅</span>タスク</button>
@@ -1405,7 +1405,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
 </div>
 
 <button class="fab-float pos-br" id="fab-float" hidden>＋</button>
-<button class="ai-fab" id="ai-fab">✨ AI秘書</button>
+<button class="ai-fab" id="ai-fab">✨ AIトレーナー</button>
 <div class="ai-overlay" id="ai-overlay"></div>
 <div class="ai-modal" id="ai-modal" hidden>
   <div class="ai-drag-handle"></div>
@@ -1421,7 +1421,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
   <!-- メインチャット -->
   <div class="ai-modal-hdr">
     <button class="ai-hdr-btn" id="ai-hist-open">☰</button>
-    <h2 id="ai-chat-title">AIアシスタント</h2>
+    <h2 id="ai-chat-title">AIトレーナー</h2>
     <button class="ai-hdr-btn ai-think-toggle" id="ai-think-toggle" title="思考モード（深く考える）">💭</button>
     <button class="ai-hdr-btn" id="ai-size-toggle" title="サイズ切替">⤢</button>
     <button class="ai-close" id="ai-close">✕</button>
@@ -1819,7 +1819,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.71.0</p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.72.0</p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -1833,6 +1833,32 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
     <button id="btn-export" hidden></button>
     <label id="btn-import-lbl" hidden><input type="file" id="import-file-dup" accept=".json" style="display:none;"></label>
     <button id="btn-reset" hidden></button>
+  </div>
+</div>
+
+<!-- Character intro modal -->
+<div class="overlay" id="mo-char-intro" hidden style="z-index:200;">
+  <div class="modal" style="max-height:90vh;overflow-y:auto;text-align:center;">
+    <div style="font-size:28px;margin-bottom:4px;">🎉</div>
+    <h3 style="margin-bottom:6px;">伴走キャラを選ぼう</h3>
+    <p style="font-size:13px;color:var(--fg2);margin-bottom:20px;line-height:1.6;">毎日のブリーフィングを担当するキャラを選んでください。<br>設定からいつでも変更できます。</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+      <button class="char-opt" id="intro-pico" data-char="pico" style="padding:16px 8px;">
+        <img src="assets/characters/pico.png" alt="ピコ" style="width:100px;height:100px;object-fit:contain;display:block;margin:0 auto 8px;" onerror="this.style.display='none'">
+        <div class="char-opt-name" style="font-size:15px;">ピコ</div>
+        <div class="char-opt-role" style="font-size:11px;margin-top:3px;">🐰 元気な伴走</div>
+        <p style="font-size:11px;color:var(--fg3);margin-top:6px;line-height:1.4;">テンション高め。<br>一緒にはしゃいでくれる。</p>
+        <span class="char-opt-check">✓</span>
+      </button>
+      <button class="char-opt" id="intro-kota" data-char="kota" style="padding:16px 8px;">
+        <img src="assets/characters/kota.png" alt="コタ" style="width:100px;height:100px;object-fit:contain;display:block;margin:0 auto 8px;" onerror="this.style.display='none'">
+        <div class="char-opt-name" style="font-size:15px;">コタ</div>
+        <div class="char-opt-role" style="font-size:11px;margin-top:3px;">🐻 おっとり伴走</div>
+        <p style="font-size:11px;color:var(--fg3);margin-top:6px;line-height:1.4;">のんびり温かい。<br>急かさない。</p>
+        <span class="char-opt-check">✓</span>
+      </button>
+    </div>
+    <button class="btn-ok" id="char-intro-ok" style="width:100%;opacity:.4;pointer-events:none;">決定</button>
   </div>
 </div>
 
@@ -3817,6 +3843,34 @@ document.getElementById('hdr-settings').onclick=()=>{
   renderSuppList();
   renderCharGrid();
 };
+// ── キャラ初回選択モーダル ──
+(function(){
+  const INTRO_KEY='lh_char_intro_v1';
+  if(localStorage.getItem(INTRO_KEY))return; // 表示済みならスキップ
+  const mo=document.getElementById('mo-char-intro');
+  const okBtn=document.getElementById('char-intro-ok');
+  let selected=null;
+  document.querySelectorAll('#mo-char-intro .char-opt').forEach(btn=>{
+    btn.onclick=()=>{
+      selected=btn.dataset.char;
+      document.querySelectorAll('#mo-char-intro .char-opt').forEach(b=>b.classList.toggle('on',b.dataset.char===selected));
+      okBtn.style.opacity='1';okBtn.style.pointerEvents='auto';
+    };
+  });
+  okBtn.onclick=()=>{
+    if(!selected)return;
+    db.settings.aiCharacter=selected;
+    save(db);
+    localStorage.setItem(INTRO_KEY,'1');
+    mo.hidden=true;
+    renderCharGrid();
+  };
+  // パスコード画面の後に表示（少し遅延）
+  setTimeout(()=>{
+    if(document.getElementById('pc-screen')&&!document.getElementById('pc-screen').hidden)return;
+    mo.hidden=false;
+  },800);
+})();
 // ── キャラクター選択 ──
 function renderCharGrid(){
   const cur=db.settings.aiCharacter||'kai';
@@ -4746,7 +4800,8 @@ const CHARS={
     system:'あなたはコタ（おっとり伴走のクマ）です。ゆっくり丁寧で温かい口調。急かさない。「焦らなくていいよ」「続けることが一番大事」という姿勢。ユーザーのデータを使って自分ごとにする。一人称は「ぼく」。指定フォーマット厳守。日本語のみ。'},
 };
 const CHANGELOG=[
-  {v:'v2.71.0',d:'AIキャラクター選択機能（カイ/ケイ/ピコ/コタ）。キャラごとに口調・personality切り替え'},
+  {v:'v2.72.0',d:'「AIトレーナー」にリブランド。初回起動時に伴走キャラ（ピコ/コタ）選択画面を表示'},
+  {v:'v2.71.0',d:'AIキャラクター選択機能（コーチ共通・伴走キャラ2択）。ブリーフィングにキャラ表示'},
   {v:'v2.70.0',d:'設定画面にサプリメント登録機能追加（商品名・ブランド・タンパク質量・フレーバー）'},
   {v:'v2.69.0',d:'朝のブリーフィングに👍/👎フィードバック機能追加。評価が次回の提案に反映される'},
   {v:'v1.6.0',d:'AIチャットに画像・PDF添付機能を追加（設定からON/OFF）'},
@@ -6596,7 +6651,7 @@ window.updatePcSettingsUI();
     aiHistory=[];
     const wrap=document.getElementById('ai-messages');
     wrap.innerHTML='<div class="ai-empty">今日の予定・タスク・目標を把握しています。<br>何でも聞いてください。</div>';
-    document.getElementById('ai-chat-title').textContent='AIアシスタント';
+    document.getElementById('ai-chat-title').textContent='AIトレーナー';
   }
   function loadSession(sess){
     saveSession();
