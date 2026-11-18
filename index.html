@@ -285,6 +285,13 @@ body.lefty .m-actions{flex-direction:row-reverse;}
 .training-schedule-day.today .training-schedule-dow{color:var(--accent);}
 .training-schedule-num{font-size:16px;font-weight:900;color:var(--fg);}
 .training-schedule-preview{font-size:9px;color:var(--accent);line-height:1.3;text-align:center;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.plan-dots{display:flex;gap:3px;margin-top:2px;justify-content:center;}
+.plan-dot{width:6px;height:6px;border-radius:50%;}
+.plan-dot.training{background:#3b82f6;}
+.plan-dot.meal{background:#22c55e;}
+.plan-dot.sleep{background:#a855f7;}
+.plan-section{display:flex;flex-direction:column;gap:6px;}
+.plan-section-label{font-size:12px;font-weight:700;color:var(--fg2);letter-spacing:.03em;padding-bottom:4px;border-bottom:1px solid var(--border);}
 .hdr-settings-btn{background:none;border:none;color:var(--fg2);cursor:pointer;padding:10px;font-size:17px;line-height:1;border-radius:8px;}
 .hdr-settings-btn:hover{background:var(--surface2);}
 .hdr-gmail-btn{position:relative;background:none;border:none;color:var(--fg2);cursor:pointer;padding:8px;font-size:18px;line-height:1;border-radius:8px;}
@@ -1206,7 +1213,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
       </div>
       <span style="font-size:22px;color:rgba(249,115,22,.8);">›</span>
     </button>
-    <button class="training-schedule-btn" onclick="openTrainingSchedule()">📅 <span>週間トレーニングスケジュール</span><span id="training-schedule-badge" style="margin-left:auto;font-size:11px;color:var(--accent);font-weight:600;"></span>›</button>
+    <button class="training-schedule-btn" onclick="openTrainingSchedule()">📅 <span>週間プランナー</span><span id="training-schedule-badge" style="margin-left:auto;font-size:11px;color:var(--accent);font-weight:600;"></span>›</button>
     <div id="home-tasks-card" class="card home-tk-card"></div>
     <div id="clarify-view" hidden>
       <div class="clarify-nav">
@@ -1902,7 +1909,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.72.0</p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.81.0</p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -1993,14 +2000,32 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
 <!-- Weekly training schedule sheet -->
 <div class="training-sheet" id="mo-training-schedule" hidden>
   <div class="training-sheet-body">
-    <div class="training-sheet-title">📅 週間スケジュール
+    <div class="training-sheet-title">📅 週間プランナー
       <button class="training-sheet-close" onclick="closeTrainingSchedule()">✕</button>
     </div>
     <div id="training-schedule-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;"></div>
-    <div id="training-schedule-detail" hidden style="margin-top:4px;">
-      <div id="training-schedule-detail-title" style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:6px;"></div>
-      <textarea class="training-menu-textarea" id="training-schedule-detail-text" placeholder="メニューを入力…" style="min-height:100px;"></textarea>
-      <button class="training-menu-save" style="margin-top:8px;" onclick="saveDayMenu()">保存</button>
+    <div id="training-schedule-detail" hidden style="margin-top:4px;display:flex;flex-direction:column;gap:12px;">
+      <div id="training-schedule-detail-title" style="font-size:13px;font-weight:700;color:var(--accent);"></div>
+      <div class="plan-section">
+        <div class="plan-section-label">💪 トレーニング</div>
+        <textarea class="training-menu-textarea" id="plan-training-text" placeholder="ベンチプレス 4×10&#10;スクワット 3×8" style="min-height:80px;"></textarea>
+      </div>
+      <div class="plan-section">
+        <div class="plan-section-label">🍱 食事プラン</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div><div class="training-log-label">朝食</div><input type="text" class="training-log-name" id="plan-meal-breakfast" placeholder="例: プロテイン・卵2個"></div>
+          <div><div class="training-log-label">昼食</div><input type="text" class="training-log-name" id="plan-meal-lunch" placeholder="例: 鶏むね肉定食"></div>
+          <div><div class="training-log-label">夕食</div><input type="text" class="training-log-name" id="plan-meal-dinner" placeholder="例: 魚・野菜多め"></div>
+        </div>
+      </div>
+      <div class="plan-section">
+        <div class="plan-section-label">😴 睡眠目標</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div><div class="training-log-label">就寝</div><input type="time" class="training-log-name" id="plan-sleep-bedtime"></div>
+          <div><div class="training-log-label">起床</div><input type="time" class="training-log-name" id="plan-sleep-wake"></div>
+        </div>
+      </div>
+      <button class="training-menu-save" onclick="saveDayPlan()">保存</button>
     </div>
   </div>
 </div>
@@ -4151,34 +4176,59 @@ function renderTrainingSchedule(){
   for(let i=0;i<7;i++){
     const d=new Date(today);d.setDate(d.getDate()+i);
     const ds=d.toISOString().slice(0,10);
-    const menu=db.trainingMenus?.[ds]||'';
+    const hasTraining=!!(db.trainingMenus?.[ds]);
+    const meal=db.mealPlans?.[ds]||{};
+    const hasMeal=!!(meal.breakfast||meal.lunch||meal.dinner);
+    const sleep=db.sleepPlans?.[ds]||{};
+    const hasSleep=!!(sleep.bedtime||sleep.wakeTime);
+    const hasAny=hasTraining||hasMeal||hasSleep;
     const isToday=ds===todayStr2;
     const btn=document.createElement('button');
-    btn.className='training-schedule-day'+(menu?' has-menu':'')+(isToday?' today':'');
-    btn.innerHTML=`<div class="training-schedule-dow">${DOW[d.getDay()]}</div><div class="training-schedule-num">${d.getDate()}</div>${menu?`<div class="training-schedule-preview">${menu.split('\n')[0]}</div>`:''}`;
+    btn.className='training-schedule-day'+(hasAny?' has-menu':'')+(isToday?' today':'');
+    const dots=(hasTraining||hasMeal||hasSleep)?`<div class="plan-dots">${hasTraining?'<span class="plan-dot training"></span>':''}${hasMeal?'<span class="plan-dot meal"></span>':''}${hasSleep?'<span class="plan-dot sleep"></span>':''}</div>`:'';
+    const preview=hasTraining?`<div class="training-schedule-preview">${(db.trainingMenus[ds]).split('\n')[0]}</div>`:'';
+    btn.innerHTML=`<div class="training-schedule-dow">${DOW[d.getDay()]}</div><div class="training-schedule-num">${d.getDate()}</div>${preview}${dots}`;
     btn.onclick=()=>openDayMenu(ds,d);
     grid.appendChild(btn);
   }
-  // badge update
   const badge=document.getElementById('training-schedule-badge');
-  if(badge){const cnt=Object.keys(db.trainingMenus||{}).filter(d=>{const dd=new Date(d+'T00:00:00');const t=new Date(today);t.setHours(0,0,0,0);return dd>=t;}).length;badge.textContent=cnt?`${cnt}件設定済`:'未設定';}
+  if(badge){
+    const t=new Date(today);t.setHours(0,0,0,0);
+    const allDates=new Set([...Object.keys(db.trainingMenus||{}),...Object.keys(db.mealPlans||{}),...Object.keys(db.sleepPlans||{})]);
+    const cnt=[...allDates].filter(d=>new Date(d+'T00:00:00')>=t).length;
+    badge.textContent=cnt?`${cnt}件設定済`:'未設定';
+  }
 }
 function openDayMenu(ds,d){
   _scheduleDaySelected=ds;
   const DOW=['日','月','火','水','木','金','土'];
   const title=document.getElementById('training-schedule-detail-title');
-  const textarea=document.getElementById('training-schedule-detail-text');
   const detail=document.getElementById('training-schedule-detail');
-  if(title)title.textContent=`${d.getMonth()+1}/${d.getDate()}（${DOW[d.getDay()]}）のメニュー`;
-  if(textarea)textarea.value=db.trainingMenus?.[ds]||'';
+  if(title)title.textContent=`${d.getMonth()+1}/${d.getDate()}（${DOW[d.getDay()]}）`;
+  const meal=db.mealPlans?.[ds]||{};
+  const sleep=db.sleepPlans?.[ds]||{};
+  const ge=id=>document.getElementById(id);
+  if(ge('plan-training-text'))ge('plan-training-text').value=db.trainingMenus?.[ds]||'';
+  if(ge('plan-meal-breakfast'))ge('plan-meal-breakfast').value=meal.breakfast||'';
+  if(ge('plan-meal-lunch'))ge('plan-meal-lunch').value=meal.lunch||'';
+  if(ge('plan-meal-dinner'))ge('plan-meal-dinner').value=meal.dinner||'';
+  if(ge('plan-sleep-bedtime'))ge('plan-sleep-bedtime').value=sleep.bedtime||'';
+  if(ge('plan-sleep-wake'))ge('plan-sleep-wake').value=sleep.wakeTime||'';
   if(detail)detail.hidden=false;
 }
-function saveDayMenu(){
+function saveDayPlan(){
   if(!_scheduleDaySelected)return;
+  const ds=_scheduleDaySelected;
+  const ge=id=>document.getElementById(id);
+  const training=(ge('plan-training-text')?.value||'').trim();
   if(!db.trainingMenus)db.trainingMenus={};
-  const text=document.getElementById('training-schedule-detail-text').value.trim();
-  if(text)db.trainingMenus[_scheduleDaySelected]=text;
-  else delete db.trainingMenus[_scheduleDaySelected];
+  if(training)db.trainingMenus[ds]=training;else delete db.trainingMenus[ds];
+  const meal={breakfast:(ge('plan-meal-breakfast')?.value||'').trim(),lunch:(ge('plan-meal-lunch')?.value||'').trim(),dinner:(ge('plan-meal-dinner')?.value||'').trim()};
+  if(!db.mealPlans)db.mealPlans={};
+  if(meal.breakfast||meal.lunch||meal.dinner)db.mealPlans[ds]=meal;else delete db.mealPlans[ds];
+  const sleep={bedtime:(ge('plan-sleep-bedtime')?.value||'').trim(),wakeTime:(ge('plan-sleep-wake')?.value||'').trim()};
+  if(!db.sleepPlans)db.sleepPlans={};
+  if(sleep.bedtime||sleep.wakeTime)db.sleepPlans[ds]=sleep;else delete db.sleepPlans[ds];
   save(db);
   renderTrainingSchedule();
   document.getElementById('training-schedule-detail').hidden=true;
@@ -4989,6 +5039,7 @@ document.getElementById('mo-settings').onclick=e=>{if(e.target===e.currentTarget
 // ===== お知らせ =====
 // 新しいお知らせを追加するときは先頭に追加する（idは一意な文字列）
 const ANNOUNCEMENTS=[
+  {id:'ann_014',date:'2026-11-18',title:'アップデート v2.81.0',body:'週間プランナーに食事プラン・睡眠目標が追加されました。ホーム画面の「📅 週間プランナー」から1週間分のトレーニング・食事・睡眠を事前に設定できます。'},
   {id:'ann_013',date:'2026-11-17',title:'アップデート v2.60.0',body:'① 食事記録に「📷 写真で自動入力」を追加。料理の写真を撮るとAIがカロリー・栄養素を自動推定します。② 今日のタスク一覧に完了率（X/Y・Z%）を表示。③ 音声入力が途中で止まるバグを修正。'},  {id:'ann_012',date:'2026-11-16',title:'アップデート v2.59.0',body:'タスク完了時にAIコーチとフィードバックチャットができるようになりました。「どうでしたか？」と聞いてくれるので、感想や気づきを話すとAIが次回へのアドバイスをします。スキップして即完了も可能です。'},
   {id:'ann_011',date:'2026-11-16',title:'アップデート v2.58.0',body:'① AIが過去7日間の食事・筋トレ詳細（重量・回数・距離）を参照できるようになりました。② AIチャットが途中で止まるバグを修正。③「その他」タブのトレーニングボタンが表示されないバグを修正。'},
   {id:'ann_010',date:'2026-11-13',title:'アップデート v1.6.0',body:'AIチャットに📎ファイル添付機能を追加。写真やPDFをAIに送れるようになりました。設定⚙️→「AIチャット設定」からONにしてください。'},
@@ -5155,6 +5206,7 @@ const CHARS={
     system:'あなたはコタ（おっとり伴走のクマ）です。ゆっくり丁寧で温かい口調。急かさない。「焦らなくていいよ」「続けることが一番大事」という姿勢。ユーザーのデータを使って自分ごとにする。一人称は「ぼく」。指定フォーマット厳守。日本語のみ。'},
 };
 const CHANGELOG=[
+  {v:'v2.81.0',d:'週間プランナー拡張: 食事プラン（朝/昼/夜）・睡眠目標（就寝/起床）を日付別に事前設定可能に'},
   {v:'v2.77.0',d:'YouTube動画検索機能追加。AIチャットで「ベンチプレスの動画見せて」などと言うと動画カードを表示'},
   {v:'v2.76.0',d:'食事記録のAIツール修正: タンパク質・炭水化物・脂質をAIが推定して自動入力できるように'},
   {v:'v2.75.0',d:'ホームにトレーニング開始ボタン追加。トレーニング中のスライド画面・終了後の汗拭きキャラ＋AIひとこと'},
