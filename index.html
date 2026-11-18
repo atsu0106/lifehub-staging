@@ -1026,6 +1026,19 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
 .advice-fb-btn.good.active{background:#d1fae5;border-color:#10b981;color:#065f46;}
 .advice-fb-btn.bad.active{background:#fee2e2;border-color:#ef4444;color:#991b1b;}
 .advice-fb-btn:active{opacity:.7;}
+.char-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 14px;}
+.char-opt{background:var(--surface);border:2px solid var(--border);border-radius:12px;padding:10px 8px;text-align:center;cursor:pointer;transition:all .15s;position:relative;}
+.char-opt.on{border-color:var(--accent);background:var(--accent-bg);}
+.char-opt img{width:80px;height:80px;object-fit:contain;display:block;margin:0 auto 6px;}
+.char-opt-name{font-size:13px;font-weight:700;color:var(--fg);}
+.char-opt-role{font-size:10px;color:var(--fg3);margin-top:2px;}
+.char-opt.on .char-opt-name{color:var(--accent-fg);}
+.char-opt-check{position:absolute;top:6px;right:8px;font-size:14px;display:none;}
+.char-opt.on .char-opt-check{display:block;}
+.brief-char{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.brief-char img{width:52px;height:52px;object-fit:contain;flex-shrink:0;}
+.brief-char-info .brief-char-name{font-size:12px;font-weight:700;color:var(--fg);}
+.brief-char-info .brief-char-role{font-size:10px;color:var(--fg3);margin-top:1px;}
 .hp-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
 .hp-field{display:flex;flex-direction:column;gap:4px;}
 .hp-label{font-size:11px;color:var(--fg3);font-weight:600;}
@@ -1626,6 +1639,37 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
         </div>
       </div>
 
+      <!-- AIキャラクター -->
+      <div class="st-sec">AIキャラクター</div>
+      <div class="st-card">
+        <div class="char-grid" id="char-grid">
+          <button class="char-opt" data-char="kai">
+            <img src="assets/characters/kai.png" alt="カイ">
+            <div class="char-opt-name">カイ</div>
+            <div class="char-opt-role">🐺 熱血コーチ</div>
+            <span class="char-opt-check">✓</span>
+          </button>
+          <button class="char-opt" data-char="kei">
+            <img src="assets/characters/kei.png" alt="ケイ">
+            <div class="char-opt-name">ケイ</div>
+            <div class="char-opt-role">🦊 分析コーチ</div>
+            <span class="char-opt-check">✓</span>
+          </button>
+          <button class="char-opt" data-char="pico">
+            <img src="assets/characters/pico.png" alt="ピコ">
+            <div class="char-opt-name">ピコ</div>
+            <div class="char-opt-role">🐰 元気な伴走</div>
+            <span class="char-opt-check">✓</span>
+          </button>
+          <button class="char-opt" data-char="kota">
+            <img src="assets/characters/kota.png" alt="コタ">
+            <div class="char-opt-name">コタ</div>
+            <div class="char-opt-role">🐻 おっとり伴走</div>
+            <span class="char-opt-check">✓</span>
+          </button>
+        </div>
+      </div>
+
       <!-- サプリメント -->
       <div class="st-sec">サプリメント</div>
       <div class="st-card">
@@ -1763,7 +1807,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.70.0</p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.71.0</p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -3759,7 +3803,29 @@ document.getElementById('hdr-settings').onclick=()=>{
   document.getElementById('mo-settings').hidden=false;
   renderGameStats();
   renderSuppList();
+  renderCharGrid();
 };
+// ── キャラクター選択 ──
+function renderCharGrid(){
+  const cur=db.settings.aiCharacter||'kai';
+  document.querySelectorAll('.char-opt').forEach(btn=>{
+    btn.classList.toggle('on',btn.dataset.char===cur);
+  });
+}
+document.querySelectorAll('.char-opt').forEach(btn=>{
+  btn.onclick=()=>{
+    db.settings.aiCharacter=btn.dataset.char;
+    save(db);
+    renderCharGrid();
+  };
+});
+function getCharSystem(){
+  const c=CHARS[db.settings.aiCharacter||'kai'];
+  return c?c.system:CHARS.kai.system;
+}
+function getCharInfo(){
+  return CHARS[db.settings.aiCharacter||'kai']||CHARS.kai;
+}
 // ── サプリメント管理 ──
 let _suppEditId=null;
 function renderSuppList(){
@@ -4655,7 +4721,18 @@ if(window._DEV_MODE){
   });
 }
 const WORKER_URL='https://lifehub-ai.y-atsuhisa7234.workers.dev';
+const CHARS={
+  kai:{name:'カイ',role:'熱血コーチ',emoji:'🐺',img:'assets/characters/kai.png',
+    system:'あなたはカイ（熱血コーチの狼）です。口調は短く力強い。ストイックで追い込み系。「お前ならできる」という信頼を持ちつつ、言葉は少なく本質をつく。指定フォーマット厳守。日本語のみ。'},
+  kei:{name:'ケイ',role:'分析コーチ',emoji:'🦊',img:'assets/characters/kei.png',
+    system:'あなたはケイ（分析コーチのキツネ）です。口調は冷静で知的。データと根拠で語る。「なぜそうすべきか」を必ず添える。無駄なポジティブ表現は省く。指定フォーマット厳守。日本語のみ。'},
+  pico:{name:'ピコ',role:'元気な伴走',emoji:'🐰',img:'assets/characters/pico.png',
+    system:'あなたはピコ（元気な伴走ウサギ）です。ユーザーと同じ目線で一緒に頑張っている設定。口調は明るく親しみやすい。ユーザーのデータを使って「昨日僕も頑張ったよ！」「昨日さぼっちゃった…えへ」など自分ごとにする。一人称は「ぼく」。指定フォーマット厳守。日本語のみ。'},
+  kota:{name:'コタ',role:'おっとり伴走',emoji:'🐻',img:'assets/characters/kota.png',
+    system:'あなたはコタ（おっとり伴走のクマ）です。ゆっくり丁寧で温かい口調。急かさない。「焦らなくていいよ」「続けることが一番大事」という姿勢。ユーザーのデータを使って自分ごとにする。一人称は「ぼく」。指定フォーマット厳守。日本語のみ。'},
+};
 const CHANGELOG=[
+  {v:'v2.71.0',d:'AIキャラクター選択機能（カイ/ケイ/ピコ/コタ）。キャラごとに口調・personality切り替え'},
   {v:'v2.70.0',d:'設定画面にサプリメント登録機能追加（商品名・ブランド・タンパク質量・フレーバー）'},
   {v:'v2.69.0',d:'朝のブリーフィングに👍/👎フィードバック機能追加。評価が次回の提案に反映される'},
   {v:'v1.6.0',d:'AIチャットに画像・PDF添付機能を追加（設定からON/OFF）'},
@@ -4809,14 +4886,16 @@ function taskOccursToday(task){
   return false;
 }
 function _buildAdviceHtml(data,loading){
-  if(loading)return`<div class="health-advice-header"><span class="health-advice-label">🌅 MORNING BRIEFING</span></div><div class="health-advice-loading">生成中…</div>`;
+  const ch=getCharInfo();
+  const charHtml=`<div class="brief-char"><img src="${ch.img}" alt="${ch.name}" onerror="this.style.display='none'"><div class="brief-char-info"><div class="brief-char-name">${ch.name}</div><div class="brief-char-role">${ch.emoji} ${ch.role}</div></div></div>`;
+  if(loading)return`<div class="health-advice-header"><span class="health-advice-label">🌅 MORNING BRIEFING</span></div>${charHtml}<div class="health-advice-loading">生成中…</div>`;
   const lines=(data||'').split('\n').map(s=>s.trim()).filter(Boolean);
   const summary=lines[0]||'';
   const actions=lines.slice(1).map(s=>s.replace(/^[・•\-]\s*/,'')).filter(Boolean);
   let curFb=null;
   try{const list=JSON.parse(localStorage.getItem('lh_advice_fb')||'[]');const e=list.find(e=>e.date===todayStr());if(e)curFb=e.rating;}catch(e){}
   const fbRow=`<div class="advice-fb-row"><span class="advice-fb-label">この提案は役立ちましたか？</span><button class="advice-fb-btn good${curFb==='good'?' active':''}" data-fb="good">👍</button><button class="advice-fb-btn bad${curFb==='bad'?' active':''}" data-fb="bad">👎</button></div>`;
-  return`<div class="health-advice-header"><span class="health-advice-label">🌅 MORNING BRIEFING</span><button class="health-advice-refresh" title="更新">↻</button></div><div class="health-advice-summary">${esc(summary)}</div>${actions.length?`<div class="health-advice-actions">${actions.map(a=>`<div class="health-advice-action"><span class="health-advice-dot"></span><span>${esc(a)}</span></div>`).join('')}</div>`:''}${fbRow}`;
+  return`<div class="health-advice-header"><span class="health-advice-label">🌅 MORNING BRIEFING</span><button class="health-advice-refresh" title="更新">↻</button></div>${charHtml}<div class="health-advice-summary">${esc(summary)}</div>${actions.length?`<div class="health-advice-actions">${actions.map(a=>`<div class="health-advice-action"><span class="health-advice-dot"></span><span>${esc(a)}</span></div>`).join('')}</div>`:''}${fbRow}`;
 }
 function saveAdviceFeedback(rating){
   try{
@@ -4857,7 +4936,7 @@ async function renderHealthAdvice(force){
   try{const fbList=JSON.parse(localStorage.getItem('lh_advice_fb')||'[]');if(fbList.length>0){const good=fbList.filter(e=>e.rating==='good').length;const bad=fbList.filter(e=>e.rating==='bad').length;const rec=fbList.slice(0,7);const recGood=rec.filter(e=>e.rating==='good').length;fbContext=`\n過去の提案評価: 役立った${good}回, 不要${bad}回（計${fbList.length}回）`;if(recGood>=5)fbContext+='\n（最近の提案はよく評価されている。同様のスタイルを継続）';else if(recGood<=2&&rec.length>=5)fbContext+='\n（最近の提案はあまり評価されていない。より具体的で実践的な内容に変える）';}}catch(e){}
   const prompt=`ユーザーの健康データ:\nプロフィール: ${hpParts.join(', ')||'未設定'}\n今週のジム: ${thisWeekWo}回${hp.gymFreq?'（目標:週'+hp.gymFreq+'回、残り'+(Math.max(0,hp.gymFreq-thisWeekWo))+'回）':''}\n昨日の睡眠: ${sleepInfo}\n昨日のトレーニング: ${ydWoInfo}\n${taskInfo}${fbContext}\n\n以下の形式で出力（JSON・マークダウン不要）:\n1行目: 昨日の振り返り1文（30字以内）\n2〜4行目: 今日のアクション（各30字以内、「・」で始める）`;
   try{
-    const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:200,system:'あなたはパーソナル健康AIです。指定フォーマット厳守。日本語のみ。励ますトーンで具体的に。',messages:[{role:'user',content:prompt}]})});
+    const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:200,system:getCharSystem(),messages:[{role:'user',content:prompt}]})});
     if(!res.ok)throw new Error('HTTP '+res.status);
     const data=await res.json();
     const text=data.content?.find(c=>c.type==='text')?.text?.trim()||'';
