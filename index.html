@@ -1913,7 +1913,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.82.1</p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.82.2 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -2546,18 +2546,28 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
 <div class="lh-toast" id="lh-toast"></div>
 
 <script>
-// ── バージョン管理・キャッシュバスト ─────────────────────────
+// ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const APP_VER='1.6.0';
-  const stored=localStorage.getItem('lh_ver');
-  if(stored&&stored!==APP_VER){
-    localStorage.setItem('lh_ver',APP_VER);
-    // キャッシュバスト: URLに _cb パラメータを付けて強制再取得
-    const base=location.href.replace(/[?&]_cb=[^&]*/,'').replace(/[?&]$/,'');
-    location.replace(base+(base.includes('?')?'&':'?')+'_cb='+APP_VER.replace(/\./g,''));
-    return;
+  const BUILD_ID='43d4981925'; // tools/build.mjs が内容ハッシュに置換する
+  window._LH_BUILD=BUILD_ID;
+  const el=document.getElementById('lh-build');
+  if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
+  if(BUILD_ID.startsWith('__')||window._DEV_MODE||location.protocol==='file:')return;
+  let checking=false;
+  async function check(){
+    if(checking)return;checking=true;
+    try{
+      const r=await fetch(location.pathname+'?bc='+Date.now(),{cache:'no-store'});
+      const m=(await r.text()).match(/const BUILD_ID='([0-9a-f]{8,})'/);
+      if(!m||m[1]===BUILD_ID)return;
+      const K='lh_reloaded_for';
+      if(sessionStorage.getItem(K)===m[1])return; // 同じ版への再読み込みは1回まで（ループ防止）
+      sessionStorage.setItem(K,m[1]);
+      location.replace(location.pathname+'?v='+m[1]);
+    }catch{}finally{checking=false;}
   }
-  localStorage.setItem('lh_ver',APP_VER);
+  setTimeout(check,2000);
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')check();});
 })();
 // ── Passcode ──────────────────────────────────────────────
 (function(){
@@ -5216,6 +5226,7 @@ const CHARS={
     system:'あなたはコタ（おっとり伴走のクマ）です。ゆっくり丁寧で温かい口調。急かさない。「焦らなくていいよ」「続けることが一番大事」という姿勢。ユーザーのデータを使って自分ごとにする。一人称は「ぼく」。指定フォーマット厳守。日本語のみ。'},
 };
 const CHANGELOG=[
+  {v:'v2.82.2',d:'ひとことが途中で切れる不具合を修正。アプリが古いまま残らないよう自動更新に対応'},
   {v:'v2.82.1',d:'「AIからの今日のひとこと」の生成設定を以前の内容に戻しました'},
   {v:'v2.82.0',d:'内部構成を整理（機能・見た目の変更なし）'},
   {v:'v2.81.1',d:'新規ユーザーが起動直後にフリーズする不具合を修正。チャット入力欄・プランナーの表示崩れ、終了画面のキャラ画像を修正'},
@@ -7889,7 +7900,7 @@ function calcGameStats(){
       let ctx='';
       try{ctx=getContext();}catch(e){console.warn('[brief] getContext failed:',e);card.hidden=true;return;}
       const prompt='以下はユーザーの今日のライフデータです。\n\n'+ctx+'\n\n上記データを踏まえて、今日のユーザーへの「ひとこと」を2〜3文で書いてください。予定・タスク・筋トレ状況を絡めて、具体的かつポジティブに。余計な前置きなしで本文だけ返してください。';
-      const body=JSON.stringify({model:'claude-haiku-5-5',max_tokens:200,system:'あなたはLifeHubのAIアシスタントです。ユーザーの生活データを把握しており、日本語で短く的確なコメントをします。',messages:[{role:'user',content:prompt}]});
+      const body=JSON.stringify({model:'claude-haiku-5-5',max_tokens:400,system:'あなたはLifeHubのAIアシスタントです。ユーザーの生活データを把握しており、日本語で短く的確なコメントをします。',messages:[{role:'user',content:prompt}]});
       let lastErr='';
       // Workerは上流のエラー（混雑・回数制限）もHTTP 200で返すため、本文の有無で成否を判定する
       for(let attempt=0;attempt<3;attempt++){
@@ -7897,7 +7908,11 @@ function calcGameStats(){
         try{
           const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body});
           const data=await res.json().catch(()=>({}));
-          const text=data.content?.find(c=>c.type==='text')?.text?.trim();
+          let text=data.content?.find(c=>c.type==='text')?.text?.trim();
+          if(text&&data.stop_reason==='max_tokens'){
+            const end=Math.max(text.lastIndexOf('。'),text.lastIndexOf('！'),text.lastIndexOf('？'));
+            text=end>0?text.slice(0,end+1):text+'…';
+          }
           if(res.ok&&text){
             try{localStorage.setItem(BRIEF_KEY,JSON.stringify({date:today,text}));}catch{}
             renderCard(text);
