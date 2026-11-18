@@ -1035,6 +1035,31 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
 .char-opt.on .char-opt-name{color:var(--accent-fg);}
 .char-opt-check{position:absolute;top:6px;right:8px;font-size:14px;display:none;}
 .char-opt.on .char-opt-check{display:block;}
+.training-start-btn{margin:10px 12px;background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:16px;cursor:pointer;display:flex;align-items:center;padding:0 16px 0 0;border:1.5px solid rgba(249,115,22,.4);overflow:hidden;box-shadow:0 4px 20px rgba(249,115,22,.12);transition:transform .15s;width:calc(100% - 24px);}
+.training-start-btn:active{transform:scale(.97);}
+.training-start-btn-img{width:100px;height:100px;object-fit:contain;flex-shrink:0;}
+.training-start-btn-body{flex:1;padding:14px 0 14px 4px;}
+.training-start-btn-label{font-size:10px;color:#f97316;font-weight:800;letter-spacing:.1em;}
+.training-start-btn-title{font-size:20px;font-weight:900;color:#fff;margin-top:2px;}
+.training-start-btn-sub{font-size:11px;color:rgba(255,255,255,.5);margin-top:4px;}
+#mo-training{position:fixed;inset:0;background:#0d0d1a;z-index:500;display:flex;flex-direction:column;}
+.training-hdr{padding:52px 20px 8px;display:flex;align-items:flex-end;justify-content:space-between;}
+.training-timer-label{font-size:11px;color:rgba(255,255,255,.4);font-weight:700;letter-spacing:.1em;}
+.training-timer{font-size:52px;font-weight:900;color:#fff;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1;}
+.training-slide-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 16px;gap:12px;overflow:hidden;}
+.training-slide-wrap img{width:100%;max-height:260px;object-fit:contain;border-radius:12px;}
+.training-dots{display:flex;gap:7px;}
+.training-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.2);transition:background .3s;}
+.training-dot.on{background:#f97316;}
+.training-btns{display:flex;gap:10px;padding:10px 16px;}
+.training-sub-btn{flex:1;padding:13px;border-radius:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#fff;font-size:13px;font-weight:600;cursor:pointer;}
+.training-end-btn{margin:4px 16px 40px;padding:16px;border-radius:14px;background:#f97316;border:none;color:#fff;font-size:16px;font-weight:800;cursor:pointer;letter-spacing:.02em;}
+#mo-training-end{position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center;}
+.training-end-char{width:160px;height:160px;object-fit:contain;margin-bottom:12px;}
+.training-end-title{font-size:26px;font-weight:900;margin-bottom:6px;}
+.training-end-duration{font-size:13px;color:var(--fg2);margin-bottom:16px;}
+.training-end-msg{font-size:15px;color:var(--fg);line-height:1.75;background:var(--surface);border-radius:12px;padding:14px 16px;margin-bottom:24px;border-left:3px solid var(--accent);text-align:left;width:100%;}
+.training-end-close{width:100%;padding:16px;border-radius:14px;background:var(--accent);border:none;color:#fff;font-size:16px;font-weight:700;cursor:pointer;}
 .brief-char{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
 .brief-char img{width:52px;height:52px;object-fit:contain;flex-shrink:0;}
 .brief-char-info .brief-char-name{font-size:12px;font-weight:700;color:var(--fg);}
@@ -1134,6 +1159,15 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
     <div id="daily-mission-card" class="daily-mission-card" hidden></div>
     <div id="goal-card" class="goal-card"></div>
     <div id="health-advice-card" class="card health-advice-card" hidden></div>
+    <button class="training-start-btn" id="training-start-btn" onclick="startTraining()">
+      <img class="training-start-btn-img" src="assets/characters/01_Ran_pointing.png" alt="ラン" onerror="this.style.display='none'">
+      <div class="training-start-btn-body">
+        <div class="training-start-btn-label">LET'S GO</div>
+        <div class="training-start-btn-title">トレーニング開始</div>
+        <div class="training-start-btn-sub">今日も一緒に頑張ろう</div>
+      </div>
+      <span style="font-size:22px;color:rgba(249,115,22,.8);">›</span>
+    </button>
     <div id="home-tasks-card" class="card home-tk-card"></div>
     <div id="clarify-view" hidden>
       <div class="clarify-nav">
@@ -1840,6 +1874,34 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
     <label id="btn-import-lbl" hidden><input type="file" id="import-file-dup" accept=".json" style="display:none;"></label>
     <button id="btn-reset" hidden></button>
   </div>
+</div>
+
+<!-- Training modal -->
+<div id="mo-training" hidden>
+  <div class="training-hdr">
+    <div>
+      <div class="training-timer-label">TRAINING</div>
+      <div class="training-timer" id="training-timer">00:00</div>
+    </div>
+  </div>
+  <div class="training-slide-wrap">
+    <img id="training-slide-img" src="" alt="" style="transition:opacity .4s;">
+    <div class="training-dots" id="training-dots"></div>
+  </div>
+  <div class="training-btns">
+    <button class="training-sub-btn" onclick="openTrainingMenu()">📋 メニュー確認</button>
+    <button class="training-sub-btn" onclick="openTrainingLog()">✏️ 種目を記録</button>
+  </div>
+  <button class="training-end-btn" onclick="endTraining()">トレーニング終了</button>
+</div>
+
+<!-- Training end modal -->
+<div id="mo-training-end" hidden>
+  <img class="training-end-char" id="training-end-char" src="" alt="" onerror="this.style.display='none'">
+  <div class="training-end-title">お疲れ様！🎉</div>
+  <div class="training-end-duration" id="training-end-duration"></div>
+  <div class="training-end-msg" id="training-end-msg">生成中…</div>
+  <button class="training-end-close" onclick="closeTrainingEnd()">ホームに戻る</button>
 </div>
 
 <!-- Character intro modal -->
@@ -3907,6 +3969,76 @@ function getCharInfo(){
   const c=db.settings.aiCharacter;
   return CHARS[c]||CHARS.pico;
 }
+// ── トレーニング ──
+const TRAINING_SLIDES={
+  kai:['assets/characters/07_Kai_Ran_deadlift.png','assets/characters/08_Kai_Kei_shadowboxing.png'],
+  pico:['assets/characters/09_Pico_Ran_jump_squat.png','assets/characters/10_Pico_Kei_jump_rope.png'],
+  kota:['assets/characters/11_Kota_Ran_squat.png','assets/characters/12_Kota_Kei_curls.png'],
+};
+const SWEAT_IMG={
+  kai:'assets/characters/13_Kai_wiping_sweat.png',
+  pico:'assets/characters/14_Pico_wiping_sweat.png',
+  kota:'assets/characters/15_Kota_wiping_sweat.png',
+};
+let _trainingStart=null,_trainingTimerInt=null,_trainingSlideInt=null,_trainingSlideCur=0;
+function startTraining(){
+  const mo=document.getElementById('mo-training');if(!mo)return;
+  _trainingStart=Date.now();_trainingSlideCur=0;
+  mo.hidden=false;
+  _trainingTimerInt=setInterval(()=>{
+    const e=Math.floor((Date.now()-_trainingStart)/1000);
+    const el=document.getElementById('training-timer');
+    if(el)el.textContent=String(Math.floor(e/60)).padStart(2,'0')+':'+String(e%60).padStart(2,'0');
+  },1000);
+  const char=db.settings.aiCharacter||'pico';
+  const slides=TRAINING_SLIDES[char]||TRAINING_SLIDES.pico;
+  const imgEl=document.getElementById('training-slide-img');
+  const dotsEl=document.getElementById('training-dots');
+  function showSlide(i){
+    if(imgEl){imgEl.style.opacity='0';setTimeout(()=>{imgEl.src=slides[i];imgEl.style.opacity='1';},200);}
+    if(dotsEl)dotsEl.innerHTML=slides.map((_,j)=>`<div class="training-dot${j===i?' on':''}"></div>`).join('');
+  }
+  showSlide(0);
+  _trainingSlideInt=setInterval(()=>{_trainingSlideCur=(_trainingSlideCur+1)%slides.length;showSlide(_trainingSlideCur);},4000);
+}
+async function endTraining(){
+  clearInterval(_trainingTimerInt);clearInterval(_trainingSlideInt);
+  const dur=_trainingStart?Math.floor((Date.now()-_trainingStart)/1000):0;
+  const m=Math.floor(dur/60),s=dur%60;
+  if(!db.trainingSessions)db.trainingSessions=[];
+  db.trainingSessions.unshift({date:todayStr(),start:_trainingStart,duration:dur});
+  save(db);
+  document.getElementById('mo-training').hidden=true;
+  const endMo=document.getElementById('mo-training-end');endMo.hidden=false;
+  const char=db.settings.aiCharacter||'pico';
+  const companion=getCharInfo();
+  const charImgEl=document.getElementById('training-end-char');
+  const durEl=document.getElementById('training-end-duration');
+  const msgEl=document.getElementById('training-end-msg');
+  if(charImgEl)charImgEl.src=SWEAT_IMG[char]||SWEAT_IMG.pico;
+  if(durEl)durEl.textContent=`${m}分${s}秒 — よく頑張った！`;
+  if(msgEl)msgEl.textContent='生成中…';
+  if(!window._DEV_MODE){
+    try{
+      const prompt=`ユーザーが${m}分間のトレーニングを終えました。あなたは${companion.name}として「お疲れ様」のひとことを2文で送ってください。達成感を称えつつ「一緒に頑張れた」という感じで。余計な前置きなしで本文だけ返してください。`;
+      const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:150,system:companion.system,messages:[{role:'user',content:prompt}]})});
+      if(!res.ok)throw new Error();
+      const data=await res.json();
+      const text=data.content?.find(c=>c.type==='text')?.text||'お疲れ様！今日もよく頑張ったね。';
+      if(msgEl)msgEl.textContent=text;
+    }catch(e){if(msgEl)msgEl.textContent='お疲れ様！今日もよく頑張ったね。';}
+  }else{if(msgEl)msgEl.textContent='[DEVモード] お疲れ様！';}
+}
+function closeTrainingEnd(){
+  document.getElementById('mo-training-end').hidden=true;
+  _trainingStart=null;
+}
+function openTrainingMenu(){
+  // TODO: ワークアウトメニュー確認シート
+}
+function openTrainingLog(){
+  // TODO: 既存のワークアウト記録へ
+}
 // ── サプリメント管理 ──
 let _suppEditId=null;
 function renderSuppList(){
@@ -4815,6 +4947,7 @@ const CHARS={
     system:'あなたはコタ（おっとり伴走のクマ）です。ゆっくり丁寧で温かい口調。急かさない。「焦らなくていいよ」「続けることが一番大事」という姿勢。ユーザーのデータを使って自分ごとにする。一人称は「ぼく」。指定フォーマット厳守。日本語のみ。'},
 };
 const CHANGELOG=[
+  {v:'v2.75.0',d:'ホームにトレーニング開始ボタン追加。トレーニング中のスライド画面・終了後の汗拭きキャラ＋AIひとこと'},
   {v:'v2.74.0',d:'FAB・チャットタイトルにランアイコン。ひとことカードに伴走キャラアイコン追加。ひとこと文体を「一緒に頑張ろう」2文スタイルに'},
   {v:'v2.73.0',d:'キャラクター刷新: ラン（熱血コーチ/ウマ）追加、カイをクールな伴走に変更。伴走3択（カイ/ピコ/コタ）'},
   {v:'v2.72.0',d:'「AIトレーナー」にリブランド。初回起動時に伴走キャラ（ピコ/コタ）選択画面を表示'},
