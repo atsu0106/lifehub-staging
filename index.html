@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>LifeHub</title>
+<title>LifeHub [STAGING]</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="LifeHub">
@@ -1020,6 +1020,12 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
 .health-advice-action{display:flex;align-items:flex-start;gap:6px;font-size:12px;color:var(--fg2);line-height:1.5;}
 .health-advice-dot{width:5px;height:5px;border-radius:50%;background:#10b981;flex-shrink:0;margin-top:5px;}
 .health-advice-loading{font-size:12px;color:var(--fg3);}
+.advice-fb-row{display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(16,185,129,.15);}
+.advice-fb-label{font-size:11px;color:var(--fg3);flex:1;}
+.advice-fb-btn{background:none;border:1.5px solid var(--border);border-radius:20px;font-size:13px;padding:3px 10px;cursor:pointer;color:var(--fg2);line-height:1.6;transition:background .15s,border-color .15s;}
+.advice-fb-btn.good.active{background:#d1fae5;border-color:#10b981;color:#065f46;}
+.advice-fb-btn.bad.active{background:#fee2e2;border-color:#ef4444;color:#991b1b;}
+.advice-fb-btn:active{opacity:.7;}
 .hp-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
 .hp-field{display:flex;flex-direction:column;gap:4px;}
 .hp-label{font-size:11px;color:var(--fg3);font-weight:600;}
@@ -1746,7 +1752,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.68.0</p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.69.0</p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -4544,6 +4550,7 @@ if(window._DEV_MODE){
 }
 const WORKER_URL='https://lifehub-ai.y-atsuhisa7234.workers.dev';
 const CHANGELOG=[
+  {v:'v2.69.0',d:'朝のブリーフィングに👍/👎フィードバック機能追加。評価が次回の提案に反映される'},
   {v:'v1.6.0',d:'AIチャットに画像・PDF添付機能を追加（設定からON/OFF）'},
   {v:'v1.5.0',d:'体験XP・HAPステータス追加。AIが美味しいご飯・旅行・発見にXPを付与'},
   {v:'v1.4.0',d:'目標連動XP倍率・オンボーディングに使用目的の選択を追加'},
@@ -4699,7 +4706,20 @@ function _buildAdviceHtml(data,loading){
   const lines=(data||'').split('\n').map(s=>s.trim()).filter(Boolean);
   const summary=lines[0]||'';
   const actions=lines.slice(1).map(s=>s.replace(/^[・•\-]\s*/,'')).filter(Boolean);
-  return`<div class="health-advice-header"><span class="health-advice-label">🌅 MORNING BRIEFING</span><button class="health-advice-refresh" title="更新">↻</button></div><div class="health-advice-summary">${esc(summary)}</div>${actions.length?`<div class="health-advice-actions">${actions.map(a=>`<div class="health-advice-action"><span class="health-advice-dot"></span><span>${esc(a)}</span></div>`).join('')}</div>`:''}`;
+  let curFb=null;
+  try{const list=JSON.parse(localStorage.getItem('lh_advice_fb')||'[]');const e=list.find(e=>e.date===todayStr());if(e)curFb=e.rating;}catch(e){}
+  const fbRow=`<div class="advice-fb-row"><span class="advice-fb-label">この提案は役立ちましたか？</span><button class="advice-fb-btn good${curFb==='good'?' active':''}" data-fb="good">👍</button><button class="advice-fb-btn bad${curFb==='bad'?' active':''}" data-fb="bad">👎</button></div>`;
+  return`<div class="health-advice-header"><span class="health-advice-label">🌅 MORNING BRIEFING</span><button class="health-advice-refresh" title="更新">↻</button></div><div class="health-advice-summary">${esc(summary)}</div>${actions.length?`<div class="health-advice-actions">${actions.map(a=>`<div class="health-advice-action"><span class="health-advice-dot"></span><span>${esc(a)}</span></div>`).join('')}</div>`:''}${fbRow}`;
+}
+function saveAdviceFeedback(rating){
+  try{
+    const FB_KEY='lh_advice_fb';
+    let list=JSON.parse(localStorage.getItem(FB_KEY)||'[]');
+    list=list.filter(e=>e.date!==todayStr());
+    list.unshift({date:todayStr(),rating});
+    if(list.length>30)list=list.slice(0,30);
+    localStorage.setItem(FB_KEY,JSON.stringify(list));
+  }catch(e){}
 }
 async function renderHealthAdvice(force){
   const el=document.getElementById('health-advice-card');if(!el)return;
@@ -4707,7 +4727,8 @@ async function renderHealthAdvice(force){
   if(!hp.height&&!hp.weight&&!hp.goal){el.hidden=true;return;}
   const today=todayStr();
   const CKEY='lh_hadv_'+(window._LH_PID||'def');
-  if(!force){try{const c=JSON.parse(localStorage.getItem(CKEY)||'null');if(c&&c.date===today){el.hidden=false;el.innerHTML=_buildAdviceHtml(c.text,false);el.querySelector('.health-advice-refresh')?.addEventListener('click',()=>renderHealthAdvice(true));return;}}catch(e){}}
+  function _attachAdviceEvents(){el.querySelector('.health-advice-refresh')?.addEventListener('click',()=>renderHealthAdvice(true));el.querySelectorAll('.advice-fb-btn').forEach(btn=>btn.addEventListener('click',e=>{e.stopPropagation();saveAdviceFeedback(btn.dataset.fb);el.querySelectorAll('.advice-fb-btn').forEach(b=>{b.classList.toggle('active',b.dataset.fb===btn.dataset.fb);b.classList.toggle('good',b.dataset.fb==='good');b.classList.toggle('bad',b.dataset.fb==='bad');});}));}
+  if(!force){try{const c=JSON.parse(localStorage.getItem(CKEY)||'null');if(c&&c.date===today){el.hidden=false;el.innerHTML=_buildAdviceHtml(c.text,false);_attachAdviceEvents();return;}}catch(e){}}
   el.hidden=false;el.innerHTML=_buildAdviceHtml('',true);
   const goalMap={bulk:'増量',cut:'減量',maintain:'維持',recomp:'体脂肪減'};
   const hpParts=[];
@@ -4725,13 +4746,15 @@ async function renderHealthAdvice(force){
   const ydWoInfo=ydWo.length?ydWo.slice(0,3).join('・')+'など':'記録なし';
   const todayTasks=(db.tasks||[]).filter(t=>t.source!=='gmail').filter(taskOccursToday);
   const taskInfo=todayTasks.length?`今日のタスク${todayTasks.length}件`:'今日のタスクなし';
-  const prompt=`ユーザーの健康データ:\nプロフィール: ${hpParts.join(', ')||'未設定'}\n今週のジム: ${thisWeekWo}回${hp.gymFreq?'（目標:週'+hp.gymFreq+'回、残り'+(Math.max(0,hp.gymFreq-thisWeekWo))+'回）':''}\n昨日の睡眠: ${sleepInfo}\n昨日のトレーニング: ${ydWoInfo}\n${taskInfo}\n\n以下の形式で出力（JSON・マークダウン不要）:\n1行目: 昨日の振り返り1文（30字以内）\n2〜4行目: 今日のアクション（各30字以内、「・」で始める）`;
+  let fbContext='';
+  try{const fbList=JSON.parse(localStorage.getItem('lh_advice_fb')||'[]');if(fbList.length>0){const good=fbList.filter(e=>e.rating==='good').length;const bad=fbList.filter(e=>e.rating==='bad').length;const rec=fbList.slice(0,7);const recGood=rec.filter(e=>e.rating==='good').length;fbContext=`\n過去の提案評価: 役立った${good}回, 不要${bad}回（計${fbList.length}回）`;if(recGood>=5)fbContext+='\n（最近の提案はよく評価されている。同様のスタイルを継続）';else if(recGood<=2&&rec.length>=5)fbContext+='\n（最近の提案はあまり評価されていない。より具体的で実践的な内容に変える）';}}catch(e){}
+  const prompt=`ユーザーの健康データ:\nプロフィール: ${hpParts.join(', ')||'未設定'}\n今週のジム: ${thisWeekWo}回${hp.gymFreq?'（目標:週'+hp.gymFreq+'回、残り'+(Math.max(0,hp.gymFreq-thisWeekWo))+'回）':''}\n昨日の睡眠: ${sleepInfo}\n昨日のトレーニング: ${ydWoInfo}\n${taskInfo}${fbContext}\n\n以下の形式で出力（JSON・マークダウン不要）:\n1行目: 昨日の振り返り1文（30字以内）\n2〜4行目: 今日のアクション（各30字以内、「・」で始める）`;
   try{
     const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:200,system:'あなたはパーソナル健康AIです。指定フォーマット厳守。日本語のみ。励ますトーンで具体的に。',messages:[{role:'user',content:prompt}]})});
     if(!res.ok)throw new Error('HTTP '+res.status);
     const data=await res.json();
     const text=data.content?.find(c=>c.type==='text')?.text?.trim()||'';
-    if(text){try{localStorage.setItem(CKEY,JSON.stringify({date:today,text}));}catch(e){}el.innerHTML=_buildAdviceHtml(text,false);el.querySelector('.health-advice-refresh')?.addEventListener('click',()=>renderHealthAdvice(true));}
+    if(text){try{localStorage.setItem(CKEY,JSON.stringify({date:today,text}));}catch(e){}el.innerHTML=_buildAdviceHtml(text,false);_attachAdviceEvents();}
     else el.hidden=true;
   }catch(e){el.hidden=true;}
 }
