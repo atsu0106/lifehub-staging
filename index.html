@@ -1074,6 +1074,13 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
 .training-log-item{background:var(--surface);border-radius:10px;padding:10px 12px;font-size:13px;display:flex;justify-content:space-between;align-items:center;}
 .training-menu-textarea{background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:12px;font-size:14px;color:var(--fg);min-height:140px;resize:vertical;width:100%;box-sizing:border-box;line-height:1.6;font-family:inherit;outline:none;}
 .training-menu-textarea:focus{border-color:var(--accent);}
+.training-end-bubble{position:relative;background:var(--surface);border-radius:16px;padding:16px 18px;width:100%;font-size:15px;color:var(--fg);line-height:1.75;text-align:left;margin-top:4px;margin-bottom:24px;border:1.5px solid var(--border);}
+.training-end-bubble::before{content:'';position:absolute;top:-16px;left:50%;transform:translateX(-50%);border:8px solid transparent;border-bottom-color:var(--border);}
+.training-end-bubble::after{content:'';position:absolute;top:-13px;left:50%;transform:translateX(-50%);border:7px solid transparent;border-bottom-color:var(--surface);}
+.menu-video-item{background:var(--surface2);border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--fg);border:1px solid var(--border);}
+.menu-video-ex{font-size:10px;color:var(--accent);font-weight:700;margin-bottom:1px;letter-spacing:.03em;}
+.menu-video-title{font-size:11px;line-height:1.4;color:var(--fg2);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.menu-video-thumb{width:64px;height:48px;border-radius:6px;object-fit:cover;flex-shrink:0;background:var(--border);}
 #ran-chat-status{display:flex;align-items:center;gap:10px;padding:6px 16px;background:var(--surface);border-top:1px solid var(--border);flex-shrink:0;}
 #ran-chat-status[hidden]{display:none!important;}
 #ran-status-img{width:48px;height:48px;object-fit:contain;flex-shrink:0;}
@@ -1922,7 +1929,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
   <img class="training-end-char" id="training-end-char" src="" alt="" onerror="this.style.display='none'">
   <div class="training-end-title">お疲れ様！🎉</div>
   <div class="training-end-duration" id="training-end-duration"></div>
-  <div class="training-end-msg" id="training-end-msg">生成中…</div>
+  <div class="training-end-bubble" id="training-end-msg"></div>
   <button class="training-end-close" onclick="closeTrainingEnd()">ホームに戻る</button>
 </div>
 
@@ -1962,6 +1969,10 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
     </div>
     <textarea class="training-menu-textarea" id="training-menu-text" placeholder="今日のメニューを入力…&#10;例:&#10;ベンチプレス 4×10&#10;インクラインDB 3×12&#10;ケーブルフライ 3×15"></textarea>
     <button class="training-menu-save" onclick="saveTrainingMenu()">保存</button>
+    <div id="training-menu-videos" hidden>
+      <div style="font-size:11px;font-weight:700;color:var(--fg3);letter-spacing:.05em;margin-bottom:6px;">▶ 解説動画</div>
+      <div id="training-menu-videos-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+    </div>
   </div>
 </div>
 
@@ -4078,17 +4089,17 @@ async function endTraining(){
   const msgEl=document.getElementById('training-end-msg');
   if(charImgEl)charImgEl.src=SWEAT_IMG[char]||SWEAT_IMG.pico;
   if(durEl)durEl.textContent=`${m}分${s}秒 — よく頑張った！`;
-  if(msgEl)msgEl.textContent='生成中…';
-  if(!window._DEV_MODE){
-    try{
-      const prompt=`ユーザーが${m}分間のトレーニングを終えました。あなたは${companion.name}として「お疲れ様」のひとことを2文で送ってください。達成感を称えつつ「一緒に頑張れた」という感じで。余計な前置きなしで本文だけ返してください。`;
-      const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:150,system:companion.system,messages:[{role:'user',content:prompt}]})});
-      if(!res.ok)throw new Error();
-      const data=await res.json();
-      const text=data.content?.find(c=>c.type==='text')?.text||'お疲れ様！今日もよく頑張ったね。';
-      if(msgEl)msgEl.textContent=text;
-    }catch(e){if(msgEl)msgEl.textContent='お疲れ様！今日もよく頑張ったね。';}
-  }else{if(msgEl)msgEl.textContent='[DEVモード] お疲れ様！';}
+  const pronoun=char==='kai'?'俺':'ぼく';
+  const todayExs=db.workoutLogs?.find(l=>l.date===todayStr())?.exercises||[];
+  let endMsg='今日もお疲れ様！';
+  if(todayExs.length){
+    const names=[...new Set(todayExs.map(e=>e.name))];
+    const exStr=names.length===1?names[0]:names.slice(0,-1).join('と')+'と'+names[names.length-1];
+    endMsg+=`${pronoun}は今日は${exStr}の種目を頑張ったよ`;
+  }else{
+    endMsg+=`${pronoun}も一緒に頑張れたね！`;
+  }
+  if(msgEl)msgEl.textContent=endMsg;
 }
 function closeTrainingEnd(){
   document.getElementById('mo-training-end').hidden=true;
@@ -4098,6 +4109,31 @@ function openTrainingMenu(){
   const sheet=document.getElementById('mo-training-menu-sheet');if(!sheet)return;
   document.getElementById('training-menu-text').value=db.trainingMenus?.[todayStr()]||'';
   sheet.hidden=false;
+  fetchMenuVideos();
+}
+async function fetchMenuVideos(){
+  const textarea=document.getElementById('training-menu-text');
+  const container=document.getElementById('training-menu-videos');
+  const list=document.getElementById('training-menu-videos-list');
+  if(!textarea||!container||!list)return;
+  const lines=textarea.value.split('\n').map(l=>l.replace(/^[・\-\d\.\s]+/,'').replace(/[\s　][\dx×\/\s\d]+.*/,'').trim()).filter(l=>l.length>1);
+  if(!lines.length){container.hidden=true;return;}
+  container.hidden=false;
+  list.innerHTML='<div style="color:var(--fg3);font-size:12px;">動画を検索中…</div>';
+  if(window._DEV_MODE){list.innerHTML='<div style="color:var(--fg3);font-size:12px;">[DEVモード] 動画検索は本番のみ</div>';return;}
+  try{
+    const BASE=WORKER_URL.replace(/\/?$/,'');
+    const results=await Promise.all(lines.slice(0,6).map(async ex=>{
+      try{
+        const res=await fetch(`${BASE}/youtube/search?q=${encodeURIComponent(ex+' やり方 フォーム')}&n=1`);
+        if(!res.ok)return{ex,video:null};
+        const videos=await res.json();
+        return{ex,video:videos[0]||null};
+      }catch{return{ex,video:null};}
+    }));
+    const html=results.filter(r=>r.video).map(({ex,video})=>`<a href="${video.url}" target="_blank" rel="noopener" class="menu-video-item"><img class="menu-video-thumb" src="${video.thumbnail}" alt="" onerror="this.style.display='none'"><div><div class="menu-video-ex">${ex}</div><div class="menu-video-title">${video.title}</div></div></a>`).join('');
+    list.innerHTML=html||'<div style="color:var(--fg3);font-size:12px;">動画が見つかりませんでした</div>';
+  }catch(e){list.innerHTML='<div style="color:var(--fg3);font-size:12px;">動画の取得に失敗しました</div>';}
 }
 function closeTrainingMenu(){document.getElementById('mo-training-menu-sheet').hidden=true;}
 function saveTrainingMenu(){
@@ -6879,6 +6915,7 @@ window.updatePcSettingsUI();
     {name:'log_meal',description:'食事を記録する。朝食・昼食・夕食・間食を記録できる。ユーザーが食べたものを教えてくれた時に使う。カロリーや栄養素は推定値でOK',input_schema:{type:'object',properties:{date:{type:'string',description:'日付（YYYY-MM-DD）省略時は今日'},meal_type:{type:'string',enum:['breakfast','lunch','dinner','snack'],description:'朝食=breakfast, 昼食=lunch, 夕食=dinner, 間食=snack'},items:{type:'array',description:'食事アイテムの配列',items:{type:'object',properties:{name:{type:'string',description:'食べたものの名前'},kcal:{type:'number',description:'カロリー（kcal）推定値でOK'},protein:{type:'number',description:'タンパク質（g）推定値でOK'},carbs:{type:'number',description:'炭水化物（g）推定値でOK'},fat:{type:'number',description:'脂質（g）推定値でOK'}}}}},required:['meal_type','items']}},
     {name:'log_health',description:'健康データを記録する。体重・体脂肪率・歩数・心拍数・水分摂取量など。ユーザーが測定値を話してくれた時に使う',input_schema:{type:'object',properties:{date:{type:'string',description:'日付（YYYY-MM-DD）省略時は今日'},weight:{type:'number',description:'体重(kg)'},body_fat:{type:'number',description:'体脂肪率(%)'},steps:{type:'number',description:'歩数'},heart_rate:{type:'number',description:'心拍数(bpm)'},systolic:{type:'number',description:'血圧 収縮期(mmHg)'},diastolic:{type:'number',description:'血圧 拡張期(mmHg)'},water:{type:'number',description:'水分摂取量(ml)'}},required:['date']}},
     {name:'search_videos',description:'筋トレ・トレーニング関連のYouTube動画を検索する。ユーザーが種目のやり方・フォーム・メニューを知りたい時や、動画を見たい時に使う',input_schema:{type:'object',properties:{query:{type:'string',description:'検索キーワード（例: "ベンチプレス フォーム", "スクワット 初心者"）'},max_results:{type:'number',description:'取得件数（1〜5、デフォルト3）'}},required:['query']}},
+    {name:'save_training_plan',description:'ユーザーの今日のトレーニングメニューを保存する。AIがメニューを提案・作成した後は必ずこのツールを呼んでメニューを保存すること',input_schema:{type:'object',properties:{plan:{type:'string',description:'今日のトレーニングメニュー（各種目を改行で区切る。例: "ベンチプレス 4×10\\nインクラインDB 3×12"）'}},required:['plan']}},
   ];
 
   // ── セッション管理 ──
@@ -7346,10 +7383,16 @@ window.updatePcSettingsUI();
         return `YouTube動画を${videos.length}件表示しました。`;
       }catch(e){return `動画の検索に失敗しました: ${e.message}`;}
     }
+    if(name==='save_training_plan'){
+      if(!db.trainingMenus)db.trainingMenus={};
+      db.trainingMenus[todayStr()]=input.plan||'';
+      save(db);
+      return `今日のトレーニングメニューを保存しました。`;
+    }
     return `不明なツール: ${name}`;
   }
   function showToolConfirm(toolUseBlocks){
-    const TLABEL={add_event:'📅 予定を追加',add_task:'✅ タスクを追加',complete_task:'☑ タスクを完了',add_goal:'🎯 目標を追加',award_event_xp:'⭐ 予定にXPを付与',award_xp:'🌟 体験にXPを付与',edit_event:'✏️ 予定を編集',delete_event:'🗑 予定を削除',edit_task:'✏️ タスクを編集',delete_task:'🗑 タスクを削除',log_workout:'💪 筋トレを記録',update_goal_progress:'📊 目標進捗を更新',achieve_goal:'🏆 目標を達成済みに',edit_goal:'✏️ 目標を編集',log_sleep:'💤 睡眠を記録',log_meal:'🍱 食事を記録',log_health:'❤️ 健康データを記録',search_videos:'🎬 動画を検索'};
+    const TLABEL={add_event:'📅 予定を追加',add_task:'✅ タスクを追加',complete_task:'☑ タスクを完了',add_goal:'🎯 目標を追加',award_event_xp:'⭐ 予定にXPを付与',award_xp:'🌟 体験にXPを付与',edit_event:'✏️ 予定を編集',delete_event:'🗑 予定を削除',edit_task:'✏️ タスクを編集',delete_task:'🗑 タスクを削除',log_workout:'💪 筋トレを記録',update_goal_progress:'📊 目標進捗を更新',achieve_goal:'🏆 目標を達成済みに',edit_goal:'✏️ 目標を編集',log_sleep:'💤 睡眠を記録',log_meal:'🍱 食事を記録',log_health:'❤️ 健康データを記録',search_videos:'🎬 動画を検索',save_training_plan:'📋 トレーニングメニューを保存'};
     return new Promise(resolve=>{
       const wrap=document.getElementById('ai-messages');
       const div=document.createElement('div');div.className='ai-msg ai';
