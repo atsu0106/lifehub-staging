@@ -68,6 +68,7 @@ button,a,[role="button"]{touch-action:manipulation;}
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0;}
 input[type=number]{-moz-appearance:textfield;}
+:root{--safe-bot:env(safe-area-inset-bottom,0px);}
 #app{
   position:fixed;inset:0;
   max-width:480px;margin:0 auto;
@@ -290,6 +291,9 @@ body.lefty .m-actions{flex-direction:row-reverse;}
 .plan-dot.training{background:#3b82f6;}
 .plan-dot.meal{background:#22c55e;}
 .plan-dot.sleep{background:#a855f7;}
+.plan-detail{margin-top:4px;display:flex;flex-direction:column;gap:12px;}
+.plan-detail[hidden]{display:none!important;}
+.training-schedule-day{min-width:0;padding:8px 2px;}
 .plan-section{display:flex;flex-direction:column;gap:6px;}
 .plan-section-label{font-size:12px;font-weight:700;color:var(--fg2);letter-spacing:.03em;padding-bottom:4px;border-bottom:1px solid var(--border);}
 .hdr-settings-btn{background:none;border:none;color:var(--fg2);cursor:pointer;padding:10px;font-size:17px;line-height:1;border-radius:8px;}
@@ -1909,7 +1913,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.81.0</p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.81.1</p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -2003,8 +2007,8 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
     <div class="training-sheet-title">📅 週間プランナー
       <button class="training-sheet-close" onclick="closeTrainingSchedule()">✕</button>
     </div>
-    <div id="training-schedule-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;"></div>
-    <div id="training-schedule-detail" hidden style="margin-top:4px;display:flex;flex-direction:column;gap:12px;">
+    <div id="training-schedule-grid" style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;"></div>
+    <div id="training-schedule-detail" class="plan-detail" hidden>
       <div id="training-schedule-detail-title" style="font-size:13px;font-weight:700;color:var(--accent);"></div>
       <div class="plan-section">
         <div class="plan-section-label">💪 トレーニング</div>
@@ -2812,7 +2816,6 @@ if(!db.evPhotos)db.evPhotos={};
 if(!db.taskPhotos)db.taskPhotos={};
 if(!db.sleep)db.sleep={};
 if(!db.health)db.health={};
-if(!db.settings.healthProfile)db.settings.healthProfile={};
 if(!db.supplements)db.supplements=[];
 if(!db.goals)db.goals=[];
 (db.goals||[]).forEach(g=>{
@@ -2852,6 +2855,7 @@ if(!db.lifeXp)db.lifeXp=[];
 if(!db.settings)db.settings={addBtnPos:'center',highlightTab:'wo',calLayout:'general'};
 if(!db.settings.highlightTab)db.settings.highlightTab='wo';
 if(!db.settings.calLayout)db.settings.calLayout='general';
+if(!db.settings.healthProfile)db.settings.healthProfile={};
 if(!db.settings.features)db.settings.features={workout:true,meals:true,sleep:true,gmail:false};
 
 // 既存の写真データをlocalStorage→IndexedDBに移行
@@ -4066,7 +4070,9 @@ document.getElementById('hdr-settings').onclick=()=>{
     mo.hidden=true;
     renderCharGrid();
   };
-  // パスコード画面の後に表示（少し遅延）
+  window._showCharIntro=()=>setTimeout(()=>{mo.hidden=false;},400);
+  // 新規ユーザーはオンボーディング完了時に表示する（重なってタップ不能になるため）
+  if(window._LH_IS_NEW)return;
   setTimeout(()=>{
     if(document.getElementById('pc-screen')&&!document.getElementById('pc-screen').hidden)return;
     mo.hidden=false;
@@ -4141,7 +4147,7 @@ async function endTraining(){
   const charImgEl=document.getElementById('training-end-char');
   const durEl=document.getElementById('training-end-duration');
   const msgEl=document.getElementById('training-end-msg');
-  if(charImgEl)charImgEl.src=SWEAT_IMG[char]||SWEAT_IMG.pico;
+  if(charImgEl){charImgEl.style.display='';charImgEl.src=SWEAT_IMG[char]||SWEAT_IMG.pico;}
   if(durEl)durEl.textContent=`${m}分${s}秒 — よく頑張った！`;
   const pronoun=char==='kai'?'俺':'ぼく';
   const todayExs=db.workoutLogs?.find(l=>l.date===todayStr())?.exercises||[];
@@ -5056,6 +5062,10 @@ const ANNOUNCEMENTS=[
 (()=>{
   let seen;
   try{seen=JSON.parse(localStorage.getItem('lh_seen_anns')||'[]');}catch{seen=[];}
+  if(window._LH_IS_NEW){
+    try{localStorage.setItem('lh_seen_anns',JSON.stringify(ANNOUNCEMENTS.map(a=>a.id)));}catch{}
+    return;
+  }
   const latest=ANNOUNCEMENTS[0];
   if(!latest||seen.includes(latest.id))return;
   const body=document.getElementById('ann-body');
@@ -5206,6 +5216,7 @@ const CHARS={
     system:'あなたはコタ（おっとり伴走のクマ）です。ゆっくり丁寧で温かい口調。急かさない。「焦らなくていいよ」「続けることが一番大事」という姿勢。ユーザーのデータを使って自分ごとにする。一人称は「ぼく」。指定フォーマット厳守。日本語のみ。'},
 };
 const CHANGELOG=[
+  {v:'v2.81.1',d:'新規ユーザーが起動直後にフリーズする不具合を修正。チャット入力欄・プランナーの表示崩れ、終了画面のキャラ画像を修正'},
   {v:'v2.81.0',d:'週間プランナー拡張: 食事プラン（朝/昼/夜）・睡眠目標（就寝/起床）を日付別に事前設定可能に'},
   {v:'v2.77.0',d:'YouTube動画検索機能追加。AIチャットで「ベンチプレスの動画見せて」などと言うと動画カードを表示'},
   {v:'v2.76.0',d:'食事記録のAIツール修正: タンパク質・炭水化物・脂質をAIが推定して自動入力できるように'},
@@ -6989,6 +7000,7 @@ document.getElementById('ml-next').onclick=()=>{const d=new Date(st.mlDate);d.se
       app.style.display='';
       renderProfHeader();
       renderGoals();renderCal();renderTasks();renderHealthAdvice();
+      if(window._showCharIntro)window._showCharIntro();
     }
     startBtn.addEventListener('click',finishOnboarding);
     skipBtn.addEventListener('click',finishOnboarding);
