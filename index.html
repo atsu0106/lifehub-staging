@@ -1642,19 +1642,31 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
       <!-- AIキャラクター -->
       <div class="st-sec">AIキャラクター</div>
       <div class="st-card">
-        <div class="char-grid" id="char-grid">
-          <button class="char-opt" data-char="kai">
-            <img src="assets/characters/kai.png" alt="カイ">
-            <div class="char-opt-name">カイ</div>
-            <div class="char-opt-role">🐺 熱血コーチ</div>
-            <span class="char-opt-check">✓</span>
-          </button>
-          <button class="char-opt" data-char="kei">
-            <img src="assets/characters/kei.png" alt="ケイ">
-            <div class="char-opt-name">ケイ</div>
-            <div class="char-opt-role">🦊 分析コーチ</div>
-            <span class="char-opt-check">✓</span>
-          </button>
+        <div class="st-row" style="cursor:default;padding-bottom:6px;">
+          <span class="st-ic" style="background:#4f46e5;">🏅</span>
+          <div style="flex:1;">
+            <div class="st-label">コーチ（全員共通）</div>
+            <div style="font-size:11px;color:var(--fg3);margin-top:1px;">カイ・ケイがチームであなたをサポート</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;padding:4px 14px 12px;border-top:1px solid var(--border);">
+          <div style="text-align:center;">
+            <img src="assets/characters/kai.png" style="width:52px;height:52px;object-fit:contain;" onerror="this.style.display='none'">
+            <div style="font-size:11px;font-weight:700;color:var(--fg);margin-top:3px;">カイ</div>
+          </div>
+          <div style="text-align:center;">
+            <img src="assets/characters/kei.png" style="width:52px;height:52px;object-fit:contain;" onerror="this.style.display='none'">
+            <div style="font-size:11px;font-weight:700;color:var(--fg);margin-top:3px;">ケイ</div>
+          </div>
+        </div>
+        <div class="st-row" style="cursor:default;padding-bottom:6px;border-top:1px solid var(--border);">
+          <span class="st-ic" style="background:#10b981;">🤝</span>
+          <div style="flex:1;">
+            <div class="st-label">伴走キャラを選ぶ</div>
+            <div style="font-size:11px;color:var(--fg3);margin-top:1px;">毎日のブリーフィングを担当</div>
+          </div>
+        </div>
+        <div class="char-grid" id="char-grid" style="grid-template-columns:1fr 1fr;padding:8px 14px 12px;">
           <button class="char-opt" data-char="pico">
             <img src="assets/characters/pico.png" alt="ピコ">
             <div class="char-opt-name">ピコ</div>
@@ -3824,7 +3836,9 @@ function getCharSystem(){
   return c?c.system:CHARS.kai.system;
 }
 function getCharInfo(){
-  return CHARS[db.settings.aiCharacter||'kai']||CHARS.kai;
+  // 伴走キャラのみ選択対象（ピコ or コタ）
+  const c=db.settings.aiCharacter;
+  return (c==='kota')?CHARS.kota:CHARS.pico;
 }
 // ── サプリメント管理 ──
 let _suppEditId=null;
@@ -4886,8 +4900,8 @@ function taskOccursToday(task){
   return false;
 }
 function _buildAdviceHtml(data,loading){
-  const ch=getCharInfo();
-  const charHtml=`<div class="brief-char"><img src="${ch.img}" alt="${ch.name}" onerror="this.style.display='none'"><div class="brief-char-info"><div class="brief-char-name">${ch.name}</div><div class="brief-char-role">${ch.emoji} ${ch.role}</div></div></div>`;
+  const companion=getCharInfo();
+  const charHtml=`<div class="brief-char"><img src="${CHARS.kai.img}" alt="カイ" onerror="this.style.display='none'" style="width:40px;height:40px;object-fit:contain;"><img src="${CHARS.kei.img}" alt="ケイ" onerror="this.style.display='none'" style="width:40px;height:40px;object-fit:contain;margin-left:-8px;"><div style="width:1px;background:var(--border);height:32px;margin:0 8px;flex-shrink:0;"></div><img src="${companion.img}" alt="${companion.name}" onerror="this.style.display='none'" style="width:40px;height:40px;object-fit:contain;"><div class="brief-char-info" style="margin-left:6px;"><div class="brief-char-name">${companion.name}</div><div class="brief-char-role">${companion.emoji} ${companion.role}</div></div></div>`;
   if(loading)return`<div class="health-advice-header"><span class="health-advice-label">🌅 MORNING BRIEFING</span></div>${charHtml}<div class="health-advice-loading">生成中…</div>`;
   const lines=(data||'').split('\n').map(s=>s.trim()).filter(Boolean);
   const summary=lines[0]||'';
