@@ -1060,6 +1060,24 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
 .training-end-duration{font-size:13px;color:var(--fg2);margin-bottom:16px;}
 .training-end-msg{font-size:15px;color:var(--fg);line-height:1.75;background:var(--surface);border-radius:12px;padding:14px 16px;margin-bottom:24px;border-left:3px solid var(--accent);text-align:left;width:100%;}
 .training-end-close{width:100%;padding:16px;border-radius:14px;background:var(--accent);border:none;color:#fff;font-size:16px;font-weight:700;cursor:pointer;}
+.training-sheet{position:fixed;inset:0;z-index:600;display:flex;flex-direction:column;justify-content:flex-end;background:rgba(0,0,0,.55);}
+.training-sheet[hidden]{display:none!important;}
+.training-sheet-body{background:var(--bg);border-radius:20px 20px 0 0;padding:20px 20px calc(20px + var(--safe-bot));max-height:80vh;overflow-y:auto;display:flex;flex-direction:column;gap:12px;}
+.training-sheet-title{font-size:17px;font-weight:800;display:flex;justify-content:space-between;align-items:center;}
+.training-sheet-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--fg2);line-height:1;padding:0;}
+.training-log-label{font-size:11px;color:var(--fg3);margin-bottom:4px;font-weight:600;}
+.training-log-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.training-log-input,.training-log-name{background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:10px;font-size:15px;color:var(--fg);outline:none;width:100%;box-sizing:border-box;font-family:inherit;}
+.training-log-input:focus,.training-log-name:focus{border-color:var(--accent);}
+.training-log-add,.training-menu-save{width:100%;padding:14px;border-radius:12px;background:var(--accent);border:none;color:#fff;font-size:15px;font-weight:700;cursor:pointer;}
+.training-log-list{display:flex;flex-direction:column;gap:6px;}
+.training-log-item{background:var(--surface);border-radius:10px;padding:10px 12px;font-size:13px;display:flex;justify-content:space-between;align-items:center;}
+.training-menu-textarea{background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:12px;font-size:14px;color:var(--fg);min-height:140px;resize:vertical;width:100%;box-sizing:border-box;line-height:1.6;font-family:inherit;outline:none;}
+.training-menu-textarea:focus{border-color:var(--accent);}
+#ran-chat-status{display:flex;align-items:center;gap:10px;padding:6px 16px;background:var(--surface);border-top:1px solid var(--border);flex-shrink:0;}
+#ran-chat-status[hidden]{display:none!important;}
+#ran-status-img{width:48px;height:48px;object-fit:contain;flex-shrink:0;}
+#ran-status-text{font-size:13px;color:var(--accent);font-weight:600;}
 .brief-char{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
 .brief-char img{width:52px;height:52px;object-fit:contain;flex-shrink:0;}
 .brief-char-info .brief-char-name{font-size:12px;font-weight:700;color:var(--fg);}
@@ -1464,6 +1482,10 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
     <div class="ai-empty">今日の予定・タスク・目標を把握しています。<br>何でも聞いてください。</div>
   </div>
   <div id="ai-attach-preview" class="ai-attach-preview" style="display:none;"></div>
+  <div id="ran-chat-status" hidden>
+    <img id="ran-status-img" src="" alt="" onerror="this.style.display='none'">
+    <div id="ran-status-text"></div>
+  </div>
   <div class="ai-input-row">
     <button class="ai-mic" id="ai-mic" title="音声入力">🎤</button>
     <button class="ai-attach" id="ai-attach" title="ファイルを添付" style="display:none;">📎</button>
@@ -1902,6 +1924,45 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
   <div class="training-end-duration" id="training-end-duration"></div>
   <div class="training-end-msg" id="training-end-msg">生成中…</div>
   <button class="training-end-close" onclick="closeTrainingEnd()">ホームに戻る</button>
+</div>
+
+<!-- Training sub sheets -->
+<div class="training-sheet" id="mo-training-log-sheet" hidden>
+  <div class="training-sheet-body">
+    <div class="training-sheet-title">✏️ 種目を記録
+      <button class="training-sheet-close" onclick="closeTrainingLog()">✕</button>
+    </div>
+    <div>
+      <div class="training-log-label">種目名</div>
+      <input type="text" class="training-log-name" id="log-exercise-name" placeholder="例: ベンチプレス">
+    </div>
+    <div class="training-log-row">
+      <div>
+        <div class="training-log-label">セット数</div>
+        <input type="number" class="training-log-input" id="log-sets" placeholder="3" min="1">
+      </div>
+      <div>
+        <div class="training-log-label">レップ数</div>
+        <input type="number" class="training-log-input" id="log-reps" placeholder="10" min="1">
+      </div>
+      <div>
+        <div class="training-log-label">重量 (kg)</div>
+        <input type="number" class="training-log-input" id="log-weight" placeholder="60" min="0" step="0.5">
+      </div>
+    </div>
+    <button class="training-log-add" onclick="saveExerciseLog()">追加する</button>
+    <div class="training-log-list" id="training-log-list"></div>
+  </div>
+</div>
+
+<div class="training-sheet" id="mo-training-menu-sheet" hidden>
+  <div class="training-sheet-body">
+    <div class="training-sheet-title">📋 今日のメニュー
+      <button class="training-sheet-close" onclick="closeTrainingMenu()">✕</button>
+    </div>
+    <textarea class="training-menu-textarea" id="training-menu-text" placeholder="今日のメニューを入力…&#10;例:&#10;ベンチプレス 4×10&#10;インクラインDB 3×12&#10;ケーブルフライ 3×15"></textarea>
+    <button class="training-menu-save" onclick="saveTrainingMenu()">保存</button>
+  </div>
 </div>
 
 <!-- Character intro modal -->
@@ -4034,10 +4095,43 @@ function closeTrainingEnd(){
   _trainingStart=null;
 }
 function openTrainingMenu(){
-  // TODO: ワークアウトメニュー確認シート
+  const sheet=document.getElementById('mo-training-menu-sheet');if(!sheet)return;
+  document.getElementById('training-menu-text').value=db.trainingMenus?.[todayStr()]||'';
+  sheet.hidden=false;
+}
+function closeTrainingMenu(){document.getElementById('mo-training-menu-sheet').hidden=true;}
+function saveTrainingMenu(){
+  if(!db.trainingMenus)db.trainingMenus={};
+  db.trainingMenus[todayStr()]=document.getElementById('training-menu-text').value.trim();
+  save(db);closeTrainingMenu();
 }
 function openTrainingLog(){
-  // TODO: 既存のワークアウト記録へ
+  const sheet=document.getElementById('mo-training-log-sheet');if(!sheet)return;
+  sheet.hidden=false;renderExerciseLogs();
+}
+function closeTrainingLog(){document.getElementById('mo-training-log-sheet').hidden=true;}
+function saveExerciseLog(){
+  const name=document.getElementById('log-exercise-name').value.trim();if(!name)return;
+  const sets=parseInt(document.getElementById('log-sets').value)||0;
+  const reps=parseInt(document.getElementById('log-reps').value)||0;
+  const weight=parseFloat(document.getElementById('log-weight').value)||0;
+  const today=todayStr();
+  if(!db.workoutLogs)db.workoutLogs=[];
+  let todayLog=db.workoutLogs.find(l=>l.date===today);
+  if(!todayLog){todayLog={date:today,exercises:[]};db.workoutLogs.unshift(todayLog);}
+  todayLog.exercises.push({name,sets,reps,weight,ts:Date.now()});
+  save(db);
+  ['log-exercise-name','log-sets','log-reps','log-weight'].forEach(id=>{document.getElementById(id).value='';});
+  renderExerciseLogs();
+}
+function renderExerciseLogs(){
+  const list=document.getElementById('training-log-list');if(!list)return;
+  const todayLog=db.workoutLogs?.find(l=>l.date===todayStr());
+  if(!todayLog||!todayLog.exercises.length){list.innerHTML='<div style="color:var(--fg3);font-size:13px;text-align:center;padding:8px 0;">まだ記録がありません</div>';return;}
+  list.innerHTML=todayLog.exercises.map(e=>{
+    const d=[e.sets?`${e.sets}セット`:'',e.reps?`${e.reps}レップ`:'',e.weight?`${e.weight}kg`:''].filter(Boolean).join(' × ');
+    return `<div class="training-log-item"><span style="font-weight:700;">${e.name}</span><span style="color:var(--fg2);">${d}</span></div>`;
+  }).join('');
 }
 // ── サプリメント管理 ──
 let _suppEditId=null;
@@ -7304,6 +7398,23 @@ window.updatePcSettingsUI();
     });
   }
 
+  // ── Ranステータス表示 ──
+  function setRanState(state){
+    const el=document.getElementById('ran-chat-status');
+    const img=document.getElementById('ran-status-img');
+    const txt=document.getElementById('ran-status-text');
+    if(!el)return;
+    if(!state){el.hidden=true;return;}
+    el.hidden=false;
+    if(state==='thinking'){
+      img.src='assets/characters/Ran_thinking.png';img.style.display='';
+      txt.innerHTML='<div class="ai-thinking-anim">考え中<span></span><span></span><span></span></div>';
+    }else{
+      img.src='assets/characters/Ran_responding.png';img.style.display='';
+      txt.textContent='返答中！';
+    }
+  }
+
   // ── 送信 ──
   async function sendMsg(){
     const input=document.getElementById('ai-input');
@@ -7316,6 +7427,7 @@ window.updatePcSettingsUI();
     if(!currentSessionId)currentSessionId=UID();
     addMsg('user',{text,attachments});
     addMsg('ai','考え中…',true);
+    setRanState('thinking');
     const thinkingEl=document.getElementById('ai-messages').lastChild;
     try{
       let reply;
@@ -7370,11 +7482,13 @@ window.updatePcSettingsUI();
       }
       thinkingEl.innerHTML=safeHtml(reply);
       thinkingEl.className='ai-msg ai';
+      setRanState('responding');setTimeout(()=>setRanState(null),900);
       aiHistory[aiHistory.length-1]={role:'assistant',content:reply};
       saveSession();
     }catch(e){
       thinkingEl.textContent='エラーが発生しました: '+e.message;
       thinkingEl.className='ai-msg ai';
+      setRanState(null);
     }
     btn.disabled=false;
   }
@@ -7505,7 +7619,7 @@ window.updatePcSettingsUI();
       try{
         const ctx=getContext();
         const companion=getCharInfo();
-        const prompt='以下はユーザーの今日のライフデータです。\n\n'+ctx+'\n\nあなたは'+companion.name+'（'+companion.role+'）として、ユーザーに今日の「ひとこと」を送ってください。ユーザーのデータを踏まえつつ、「一緒に頑張ろう」という気持ちが伝わる2文で。自分ごと感（「ぼくも〜」「今日は〜しようね」など）を入れて。余計な前置きなしで本文だけ返してください。';
+        const prompt=`以下はユーザーの今日のライフデータです。\n\n${ctx}\n\nあなたは${companion.name}（${companion.role}）として、ユーザーに今日の「ひとこと」を送ってください。\n\n条件:\n- 未完了タスク数・今週のジム回数・目標進捗・予定など、上記データの具体的な内容を必ず1つ以上盛り込む（「今日は〇件タスクがあるね」「今週すでに〇回ジム行ってるじゃん」など、ユーザーが「ちゃんと自分のことを見てくれている」と感じる言葉にする）\n- 「一緒に頑張ろう」という温かい気持ちが伝わる2文で\n- 余計な前置きなしで本文だけ返してください`;
         const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:150,system:companion.system,messages:[{role:'user',content:prompt}]})});
         if(!res.ok)throw new Error('HTTP '+res.status);
         const data=await res.json();
