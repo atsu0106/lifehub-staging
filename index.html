@@ -7071,7 +7071,7 @@ window.updatePcSettingsUI();
     const hpStats=hpParts.length?hpParts.join(' / '):'未設定';
     return `【今日の日付】${today}\n【健康プロフィール】${hpStats}\n【使用目的】${useCaseStr}\n【今後14日間の予定】\n${evs}\n【未完了タスク】\n${tasks}\n【進行中の目標】\n${goals}\n【カレンダー一覧】\n${cals}\n【タスク達成状況】${taskStats}\n【筋トレ履歴（直近30日/最大90日遡及）】\n${woStats}\n【睡眠記録（直近30日統計）】\n${sleepStats}\n【食事記録（過去7日間）】\n${mealStats}\n【今日の健康データ】${healthStats}\n【タスクフィードバック履歴】\n${fbStats}`;
   }
-  function executeTool(name,input){
+  async function executeTool(name,input){
     if(name==='add_event'){
       const ev={id:UID(),date:input.date,title:input.title,time:input.time||'',timeEnd:input.time_end||'',allDay:!input.time,color:'',calendarId:(db.calendars[0]||{}).id||'',location:input.location||'',memo:input.memo||'',repeat:'none',repeatEnd:null,exceptions:[]};
       db.events.push(ev);save(db);return `「${ev.title}」を${ev.date}に追加しました。`;
@@ -7359,7 +7359,7 @@ window.updatePcSettingsUI();
             thinkingEl.textContent='確認が必要です';thinkingEl.className='ai-msg ai';
             const confirmed=await showToolConfirm(toolUseBlocks);
             thinkingEl.textContent='考え中…';thinkingEl.className='ai-msg ai thinking';
-            const toolResults=toolUseBlocks.map(tool=>({type:'tool_result',tool_use_id:tool.id,content:confirmed?executeTool(tool.name,tool.input):'ユーザーがキャンセルしました'}));
+            const toolResults=await Promise.all(toolUseBlocks.map(async tool=>({type:'tool_result',tool_use_id:tool.id,content:confirmed?await executeTool(tool.name,tool.input):'ユーザーがキャンセルしました'})));
             apiMessages.push({role:'user',content:toolResults});
             reqBody.messages=apiMessages;
           } else {
