@@ -1913,7 +1913,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.82.0</p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.82.1</p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -5216,6 +5216,7 @@ const CHARS={
     system:'あなたはコタ（おっとり伴走のクマ）です。ゆっくり丁寧で温かい口調。急かさない。「焦らなくていいよ」「続けることが一番大事」という姿勢。ユーザーのデータを使って自分ごとにする。一人称は「ぼく」。指定フォーマット厳守。日本語のみ。'},
 };
 const CHANGELOG=[
+  {v:'v2.82.1',d:'「AIからの今日のひとこと」の生成設定を以前の内容に戻しました'},
   {v:'v2.82.0',d:'内部構成を整理（機能・見た目の変更なし）'},
   {v:'v2.81.1',d:'新規ユーザーが起動直後にフリーズする不具合を修正。チャット入力欄・プランナーの表示崩れ、終了画面のキャラ画像を修正'},
   {v:'v2.81.0',d:'週間プランナー拡張: 食事プラン（朝/昼/夜）・睡眠目標（就寝/起床）を日付別に事前設定可能に'},
@@ -7864,7 +7865,7 @@ function calcGameStats(){
 
   // ── AIデイリーブリーフ ──
   (function(){
-    const BRIEF_KEY='lh_ai_brief';
+    const BRIEF_KEY='lh_ai_brief_v2';
     const card=document.getElementById('ai-brief-card');
     if(!card)return;
     function renderCard(text,loading){
@@ -7887,9 +7888,8 @@ function calcGameStats(){
       if(window._DEV_MODE){renderCard('[DEVモード] AIブリーフは本番・stagingのみ動作します。');return;}
       try{
         const ctx=getContext();
-        const companion=getCharInfo();
-        const prompt=`以下はユーザーの今日のライフデータです。\n\n${ctx}\n\nあなたは${companion.name}（${companion.role}）として、ユーザーに今日の「ひとこと」を送ってください。\n\n条件:\n- 未完了タスク数・今週のジム回数・目標進捗・予定など、上記データの具体的な内容を必ず1つ以上盛り込む（ユーザーが「ちゃんと自分のことを見てくれている」と感じる言葉にする）\n- 自分（キャラクター）も一緒に取り組むというニュアンスを入れる（「ぼくも今日一緒に頑張るよ」「俺も隣で走ってるぜ」「今日は一緒に乗り越えよう」など、傍観者ではなく当事者として）\n- 2文で、余計な前置きなしで本文だけ返してください`;
-        const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:150,system:companion.system,messages:[{role:'user',content:prompt}]})});
+        const prompt='以下はユーザーの今日のライフデータです。\n\n'+ctx+'\n\n上記データを踏まえて、今日のユーザーへの「ひとこと」を2〜3文で書いてください。予定・タスク・筋トレ状況を絡めて、具体的かつポジティブに。余計な前置きなしで本文だけ返してください。';
+        const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:200,system:'あなたはLifeHubのAIアシスタントです。ユーザーの生活データを把握しており、日本語で短く的確なコメントをします。',messages:[{role:'user',content:prompt}]})});
         if(!res.ok)throw new Error('HTTP '+res.status);
         const data=await res.json();
         const text=data.content?.find(c=>c.type==='text')?.text||'今日も頑張ろう！';
