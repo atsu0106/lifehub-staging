@@ -7619,7 +7619,7 @@ window.updatePcSettingsUI();
       try{
         const ctx=getContext();
         const companion=getCharInfo();
-        const prompt=`以下はユーザーの今日のライフデータです。\n\n${ctx}\n\nあなたは${companion.name}（${companion.role}）として、ユーザーに今日の「ひとこと」を送ってください。\n\n条件:\n- 未完了タスク数・今週のジム回数・目標進捗・予定など、上記データの具体的な内容を必ず1つ以上盛り込む（「今日は〇件タスクがあるね」「今週すでに〇回ジム行ってるじゃん」など、ユーザーが「ちゃんと自分のことを見てくれている」と感じる言葉にする）\n- 「一緒に頑張ろう」という温かい気持ちが伝わる2文で\n- 余計な前置きなしで本文だけ返してください`;
+        const prompt=`以下はユーザーの今日のライフデータです。\n\n${ctx}\n\nあなたは${companion.name}（${companion.role}）として、ユーザーに今日の「ひとこと」を送ってください。\n\n条件:\n- 未完了タスク数・今週のジム回数・目標進捗・予定など、上記データの具体的な内容を必ず1つ以上盛り込む（ユーザーが「ちゃんと自分のことを見てくれている」と感じる言葉にする）\n- 自分（キャラクター）も一緒に取り組むというニュアンスを入れる（「ぼくも今日一緒に頑張るよ」「俺も隣で走ってるぜ」「今日は一緒に乗り越えよう」など、傍観者ではなく当事者として）\n- 2文で、余計な前置きなしで本文だけ返してください`;
         const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:150,system:companion.system,messages:[{role:'user',content:prompt}]})});
         if(!res.ok)throw new Error('HTTP '+res.status);
         const data=await res.json();
