@@ -7881,23 +7881,35 @@ function calcGameStats(){
       if(!force){
         try{
           const cached=JSON.parse(localStorage.getItem(BRIEF_KEY)||'null');
-          if(cached&&cached.date===today){renderCard(cached.text);return;}
+          if(cached&&cached.date===today&&cached.text!=='今日も頑張ろう！'){renderCard(cached.text);return;}
         }catch{}
       }
       renderCard('分析中…',true);
       if(window._DEV_MODE){renderCard('[DEVモード] AIブリーフは本番・stagingのみ動作します。');return;}
-      try{
-        const ctx=getContext();
-        const prompt='以下はユーザーの今日のライフデータです。\n\n'+ctx+'\n\n上記データを踏まえて、今日のユーザーへの「ひとこと」を2〜3文で書いてください。予定・タスク・筋トレ状況を絡めて、具体的かつポジティブに。余計な前置きなしで本文だけ返してください。';
-        const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:200,system:'あなたはLifeHubのAIアシスタントです。ユーザーの生活データを把握しており、日本語で短く的確なコメントをします。',messages:[{role:'user',content:prompt}]})});
-        if(!res.ok)throw new Error('HTTP '+res.status);
-        const data=await res.json();
-        const text=data.content?.find(c=>c.type==='text')?.text||'今日も頑張ろう！';
-        try{localStorage.setItem(BRIEF_KEY,JSON.stringify({date:today,text}));}catch{}
-        renderCard(text);
-      }catch(e){
-        card.hidden=true;
+      let ctx='';
+      try{ctx=getContext();}catch(e){console.warn('[brief] getContext failed:',e);card.hidden=true;return;}
+      const prompt='以下はユーザーの今日のライフデータです。\n\n'+ctx+'\n\n上記データを踏まえて、今日のユーザーへの「ひとこと」を2〜3文で書いてください。予定・タスク・筋トレ状況を絡めて、具体的かつポジティブに。余計な前置きなしで本文だけ返してください。';
+      const body=JSON.stringify({model:'claude-haiku-5-5',max_tokens:200,system:'あなたはLifeHubのAIアシスタントです。ユーザーの生活データを把握しており、日本語で短く的確なコメントをします。',messages:[{role:'user',content:prompt}]});
+      let lastErr='';
+      // Workerは上流のエラー（混雑・回数制限）もHTTP 200で返すため、本文の有無で成否を判定する
+      for(let attempt=0;attempt<3;attempt++){
+        if(attempt)await new Promise(r=>setTimeout(r,attempt*3000));
+        try{
+          const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body});
+          const data=await res.json().catch(()=>({}));
+          const text=data.content?.find(c=>c.type==='text')?.text?.trim();
+          if(res.ok&&text){
+            try{localStorage.setItem(BRIEF_KEY,JSON.stringify({date:today,text}));}catch{}
+            renderCard(text);
+            return;
+          }
+          lastErr=data.error?.type||data.error?.message||(typeof data.error==='string'?data.error:'')||('HTTP '+res.status);
+        }catch(e){lastErr=e.message||'network';}
       }
+      console.warn('[brief] failed:',lastErr);
+      renderCard('ひとことを取得できませんでした。↺ で再試行できます。');
+      const t=card.querySelector('.ai-brief-text');
+      if(t)t.insertAdjacentHTML('beforeend',`<div style="font-size:10px;color:var(--fg3);margin-top:4px;">(${esc(String(lastErr))})</div>`);
     }
     setTimeout(generateBrief,1500);
     // lh_last_levelが未設定なら現在レベルを黙って保存（初回起動・演出なし）
