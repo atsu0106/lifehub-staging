@@ -4947,6 +4947,7 @@ const CHARS={
     system:'あなたはコタ（おっとり伴走のクマ）です。ゆっくり丁寧で温かい口調。急かさない。「焦らなくていいよ」「続けることが一番大事」という姿勢。ユーザーのデータを使って自分ごとにする。一人称は「ぼく」。指定フォーマット厳守。日本語のみ。'},
 };
 const CHANGELOG=[
+  {v:'v2.77.0',d:'YouTube動画検索機能追加。AIチャットで「ベンチプレスの動画見せて」などと言うと動画カードを表示'},
   {v:'v2.76.0',d:'食事記録のAIツール修正: タンパク質・炭水化物・脂質をAIが推定して自動入力できるように'},
   {v:'v2.75.0',d:'ホームにトレーニング開始ボタン追加。トレーニング中のスライド画面・終了後の汗拭きキャラ＋AIひとこと'},
   {v:'v2.74.0',d:'FAB・チャットタイトルにランアイコン。ひとことカードに伴走キャラアイコン追加。ひとこと文体を「一緒に頑張ろう」2文スタイルに'},
@@ -6783,6 +6784,7 @@ window.updatePcSettingsUI();
     {name:'log_sleep',description:'睡眠を記録する。ユーザーが昨夜の就寝・今日の起床時刻を話した時に記録する',input_schema:{type:'object',properties:{date:{type:'string',description:'対象日（YYYY-MM-DD）'},bedtime:{type:'string',description:'就寝時刻（HH:MM）省略可'},wake_time:{type:'string',description:'起床時刻（HH:MM）省略可'}},required:['date']}},
     {name:'log_meal',description:'食事を記録する。朝食・昼食・夕食・間食を記録できる。ユーザーが食べたものを教えてくれた時に使う。カロリーや栄養素は推定値でOK',input_schema:{type:'object',properties:{date:{type:'string',description:'日付（YYYY-MM-DD）省略時は今日'},meal_type:{type:'string',enum:['breakfast','lunch','dinner','snack'],description:'朝食=breakfast, 昼食=lunch, 夕食=dinner, 間食=snack'},items:{type:'array',description:'食事アイテムの配列',items:{type:'object',properties:{name:{type:'string',description:'食べたものの名前'},kcal:{type:'number',description:'カロリー（kcal）推定値でOK'},protein:{type:'number',description:'タンパク質（g）推定値でOK'},carbs:{type:'number',description:'炭水化物（g）推定値でOK'},fat:{type:'number',description:'脂質（g）推定値でOK'}}}}},required:['meal_type','items']}},
     {name:'log_health',description:'健康データを記録する。体重・体脂肪率・歩数・心拍数・水分摂取量など。ユーザーが測定値を話してくれた時に使う',input_schema:{type:'object',properties:{date:{type:'string',description:'日付（YYYY-MM-DD）省略時は今日'},weight:{type:'number',description:'体重(kg)'},body_fat:{type:'number',description:'体脂肪率(%)'},steps:{type:'number',description:'歩数'},heart_rate:{type:'number',description:'心拍数(bpm)'},systolic:{type:'number',description:'血圧 収縮期(mmHg)'},diastolic:{type:'number',description:'血圧 拡張期(mmHg)'},water:{type:'number',description:'水分摂取量(ml)'}},required:['date']}},
+    {name:'search_videos',description:'筋トレ・トレーニング関連のYouTube動画を検索する。ユーザーが種目のやり方・フォーム・メニューを知りたい時や、動画を見たい時に使う',input_schema:{type:'object',properties:{query:{type:'string',description:'検索キーワード（例: "ベンチプレス フォーム", "スクワット 初心者"）'},max_results:{type:'number',description:'取得件数（1〜5、デフォルト3）'}},required:['query']}},
   ];
 
   // ── セッション管理 ──
@@ -7233,10 +7235,27 @@ window.updatePcSettingsUI();
       if(input.water!=null)parts.push(`水分:${input.water}ml`);
       return `健康データを記録しました（${date}）: ${parts.join(' ')}`;
     }
+    if(name==='search_videos'){
+      const q=input.query||'';
+      const n=Math.min(input.max_results||3,5);
+      if(!q)return '検索キーワードが空です。';
+      try{
+        const res=await fetch(`${WORKER_URL.replace(/\/?$/,'')}/youtube/search?q=${encodeURIComponent(q)}&n=${n}`);
+        if(!res.ok)throw new Error('HTTP '+res.status);
+        const videos=await res.json();
+        if(!videos.length)return `「${q}」の動画が見つかりませんでした。`;
+        const cards=videos.map(v=>`<div style="display:flex;gap:10px;align-items:flex-start;margin:8px 0;"><a href="${v.url}" target="_blank" rel="noopener" style="flex-shrink:0;"><img src="${v.thumbnail}" style="width:120px;height:68px;object-fit:cover;border-radius:6px;display:block;"></a><div style="flex:1;min-width:0;"><a href="${v.url}" target="_blank" rel="noopener" style="font-size:13px;font-weight:600;color:var(--accent);text-decoration:none;line-height:1.4;display:block;">${esc(v.title)}</a><div style="font-size:11px;color:var(--fg3);margin-top:3px;">${esc(v.channel)}</div></div></div>`).join('');
+        const wrap=document.getElementById('ai-messages');
+        const div=document.createElement('div');div.className='ai-msg ai';
+        div.innerHTML=`<div style="font-size:13px;margin-bottom:8px;">「<strong>${esc(q)}</strong>」の動画 ${videos.length}件</div>${cards}`;
+        wrap.appendChild(div);wrap.scrollTop=wrap.scrollHeight;
+        return `YouTube動画を${videos.length}件表示しました。`;
+      }catch(e){return `動画の検索に失敗しました: ${e.message}`;}
+    }
     return `不明なツール: ${name}`;
   }
   function showToolConfirm(toolUseBlocks){
-    const TLABEL={add_event:'📅 予定を追加',add_task:'✅ タスクを追加',complete_task:'☑ タスクを完了',add_goal:'🎯 目標を追加',award_event_xp:'⭐ 予定にXPを付与',award_xp:'🌟 体験にXPを付与',edit_event:'✏️ 予定を編集',delete_event:'🗑 予定を削除',edit_task:'✏️ タスクを編集',delete_task:'🗑 タスクを削除',log_workout:'💪 筋トレを記録',update_goal_progress:'📊 目標進捗を更新',achieve_goal:'🏆 目標を達成済みに',edit_goal:'✏️ 目標を編集',log_sleep:'💤 睡眠を記録',log_meal:'🍱 食事を記録',log_health:'❤️ 健康データを記録'};
+    const TLABEL={add_event:'📅 予定を追加',add_task:'✅ タスクを追加',complete_task:'☑ タスクを完了',add_goal:'🎯 目標を追加',award_event_xp:'⭐ 予定にXPを付与',award_xp:'🌟 体験にXPを付与',edit_event:'✏️ 予定を編集',delete_event:'🗑 予定を削除',edit_task:'✏️ タスクを編集',delete_task:'🗑 タスクを削除',log_workout:'💪 筋トレを記録',update_goal_progress:'📊 目標進捗を更新',achieve_goal:'🏆 目標を達成済みに',edit_goal:'✏️ 目標を編集',log_sleep:'💤 睡眠を記録',log_meal:'🍱 食事を記録',log_health:'❤️ 健康データを記録',search_videos:'🎬 動画を検索'};
     return new Promise(resolve=>{
       const wrap=document.getElementById('ai-messages');
       const div=document.createElement('div');div.className='ai-msg ai';
