@@ -1458,10 +1458,6 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
   </section>
 
   <nav class="nav" id="main-nav">
-    <button class="nb" data-t="other" data-sub="wo" id="nav-wo">
-      <svg viewBox="0 0 24 24"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/></svg>
-      筋トレ
-    </button>
     <button class="nb on" data-t="cal">
       <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
       カレンダー
@@ -1469,6 +1465,10 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
     <button class="nb" data-t="tasks">
       <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
       タスク
+    </button>
+    <button class="nb" data-t="other" data-sub="wo" id="nav-wo">
+      <svg viewBox="0 0 24 24"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/></svg>
+      筋トレ
     </button>
     <button class="nb-add" id="fab-nav" hidden></button>
   </nav>
@@ -2556,7 +2556,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='999eb8f0bd'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='079d6d23c8'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
