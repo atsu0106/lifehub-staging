@@ -1162,6 +1162,11 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
 .ai-plus-menu button{display:flex;align-items:center;gap:10px;padding:11px 12px;border:none;background:none;border-radius:10px;font-size:15px;font-family:inherit;color:var(--fg);text-align:left;cursor:pointer;}
 .ai-plus-menu button:active{background:var(--surface2);}
 .ai-plus-menu button span{font-size:18px;width:22px;text-align:center;}
+
+/* === トレーニング中のAI記録（v2.86.0） === */
+body.in-training .ai-overlay{z-index:699;}
+body.in-training .ai-modal{z-index:700;}
+.training-ai-log-btn{display:block;width:calc(100% - 32px);margin:0 auto 12px;background:linear-gradient(135deg,#6366f1,#8b5cf6)!important;color:#fff!important;border:none!important;}
 </style>
 </head>
 <body>
@@ -1879,7 +1884,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.85.1 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.86.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -1912,6 +1917,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
     <button class="training-sub-btn" onclick="openTrainingMenu()">📋 メニュー確認</button>
     <button class="training-sub-btn" onclick="openTrainingLog()">✏️ 種目を記録</button>
   </div>
+  <button class="training-sub-btn training-ai-log-btn" id="training-ai-log" onclick="talkToLogWorkout()">💬 AIに話して記録</button>
   <button class="training-end-btn" onclick="endTraining()">トレーニング終了</button>
 </div>
 
@@ -2470,7 +2476,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='be0a439fbd'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='42e0af0c05'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -2743,6 +2749,25 @@ if(!db.goals)db.goals=[];
   if(g.achievedAt===undefined)g.achievedAt=null;
   if(g.dueDate===undefined)g.dueDate=null;
 });
+// 筋トレ記録の追加（保存先は db.workouts に統一）。同じ日・同じ種目ならセットを追記
+function addWorkoutSets(date,name,category,sets){
+  if(!db.workouts)db.workouts={};
+  if(!db.workouts[date])db.workouts[date]=[];
+  let ex=db.workouts[date].find(e=>e.name===name);
+  if(!ex){ex={id:uid(),name,category:category||'weight',sets:[]};db.workouts[date].push(ex);}
+  ex.sets.push(...sets);
+  return ex;
+}
+// v2.86.0: トレーニング画面の旧保存先 db.workoutLogs → db.workouts へ一度だけ移行
+if(!db.workouts)db.workouts={};
+if(Array.isArray(db.workoutLogs)&&!db._migWorkoutLogs){
+  db.workoutLogs.forEach(l=>(l.exercises||[]).forEach(e=>{
+    if(!e||!e.name||!l.date)return;
+    const n=Math.max(1,parseInt(e.sets)||1);
+    addWorkoutSets(l.date,e.name,'weight',Array.from({length:n},()=>({w:+e.weight||0,r:+e.reps||0})));
+  }));
+  db._migWorkoutLogs=true;save(db);
+}
 // migrate existing exercises: add category field
 Object.values(db.workouts||{}).forEach(exs=>{
   (exs||[]).forEach(ex=>{if(!ex.category)ex.category='weight';});
@@ -4019,6 +4044,7 @@ function startTraining(){
   const mo=document.getElementById('mo-training');if(!mo)return;
   _trainingStart=Date.now();_trainingSlideCur=0;
   mo.hidden=false;
+  document.body.classList.add('in-training');
   _trainingTimerInt=setInterval(()=>{
     const e=Math.floor((Date.now()-_trainingStart)/1000);
     const el=document.getElementById('training-timer');
@@ -4037,6 +4063,8 @@ function startTraining(){
 }
 async function endTraining(){
   clearInterval(_trainingTimerInt);clearInterval(_trainingSlideInt);
+  document.body.classList.remove('in-training');
+  const _aiIn=document.getElementById('ai-input');if(_aiIn&&_aiIn.dataset.ph0){_aiIn.placeholder=_aiIn.dataset.ph0;delete _aiIn.dataset.ph0;}
   const dur=_trainingStart?Math.floor((Date.now()-_trainingStart)/1000):0;
   const m=Math.floor(dur/60),s=dur%60;
   if(!db.trainingSessions)db.trainingSessions=[];
@@ -4052,7 +4080,7 @@ async function endTraining(){
   if(charImgEl){charImgEl.style.display='';charImgEl.src=SWEAT_IMG[char]||SWEAT_IMG.pico;}
   if(durEl)durEl.textContent=`${m}分${s}秒 — よく頑張った！`;
   const pronoun=char==='kai'?'俺':'ぼく';
-  const todayExs=db.workoutLogs?.find(l=>l.date===todayStr())?.exercises||[];
+  const todayExs=db.workouts?.[todayStr()]||[];
   let endMsg='今日もお疲れ様！';
   if(todayExs.length){
     const names=[...new Set(todayExs.map(e=>e.name))];
@@ -4187,24 +4215,35 @@ function saveExerciseLog(){
   const sets=parseInt(document.getElementById('log-sets').value)||0;
   const reps=parseInt(document.getElementById('log-reps').value)||0;
   const weight=parseFloat(document.getElementById('log-weight').value)||0;
-  const today=todayStr();
-  if(!db.workoutLogs)db.workoutLogs=[];
-  let todayLog=db.workoutLogs.find(l=>l.date===today);
-  if(!todayLog){todayLog={date:today,exercises:[]};db.workoutLogs.unshift(todayLog);}
-  todayLog.exercises.push({name,sets,reps,weight,ts:Date.now()});
+  const n=Math.max(1,sets);
+  addWorkoutSets(todayStr(),name,'weight',Array.from({length:n},()=>({w:weight,r:reps})));
   save(db);
+  if(typeof checkLevelUp==='function')checkLevelUp();
+  if(st.tab==='other'&&st.otherSub==='wo'&&typeof renderWo==='function')renderWo();
   ['log-exercise-name','log-sets','log-reps','log-weight'].forEach(id=>{document.getElementById(id).value='';});
   renderExerciseLogs();
 }
 function renderExerciseLogs(){
   const list=document.getElementById('training-log-list');if(!list)return;
-  const todayLog=db.workoutLogs?.find(l=>l.date===todayStr());
-  if(!todayLog||!todayLog.exercises.length){list.innerHTML='<div style="color:var(--fg3);font-size:13px;text-align:center;padding:8px 0;">まだ記録がありません</div>';return;}
-  list.innerHTML=todayLog.exercises.map(e=>{
-    const d=[e.sets?`${e.sets}セット`:'',e.reps?`${e.reps}レップ`:'',e.weight?`${e.weight}kg`:''].filter(Boolean).join(' × ');
-    return `<div class="training-log-item"><span style="font-weight:700;">${e.name}</span><span style="color:var(--fg2);">${d}</span></div>`;
+  const exs=db.workouts?.[todayStr()]||[];
+  if(!exs.length){list.innerHTML='<div style="color:var(--fg3);font-size:13px;text-align:center;padding:8px 0;">まだ記録がありません</div>';return;}
+  const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  list.innerHTML=exs.map(e=>{
+    const ss=e.sets||[];
+    const d=ss.length?ss.map(s=>s.time!=null&&s.r==null?`${Math.round(s.time/60)||s.time}分`:[s.w?s.w+'kg':'',s.r?s.r+'回':''].filter(Boolean).join('×')||'—').join(' / '):'';
+    return `<div class="training-log-item"><span style="font-weight:700;">${esc(e.name)}</span><span style="color:var(--fg2);">${ss.length}セット ${esc(d)}</span></div>`;
   }).join('');
 }
+// トレーニング中にAIへ話して記録（チャットをトレーニング画面の上に開く）
+function talkToLogWorkout(){
+  switchToTab('ai');
+  const inp=document.getElementById('ai-input');
+  if(inp){if(!inp.dataset.ph0)inp.dataset.ph0=inp.placeholder;inp.placeholder='例: ベンチプレス 60kg×10回を3セット';}
+}
+window._afterWorkoutLogged=()=>{
+  if(!document.getElementById('mo-training-log-sheet')?.hidden)renderExerciseLogs();
+  if(st.tab==='other'&&st.otherSub==='wo'&&typeof renderWo==='function')renderWo();
+};
 // ── サプリメント管理 ──
 let _suppEditId=null;
 function renderSuppList(){
@@ -4714,6 +4753,7 @@ const CHARS={
     system:'あなたはコタ（おっとり伴走のクマ）です。ゆっくり丁寧で温かい口調。急かさない。「焦らなくていいよ」「続けることが一番大事」という姿勢。ユーザーのデータを使って自分ごとにする。一人称は「ぼく」。指定フォーマット厳守。日本語のみ。'},
 };
 const CHANGELOG=[
+  {v:'v2.86.0',d:'トレーニング中の種目記録が筋トレ記録に出ない不具合を修正。トレーニング中に「💬 AIに話して記録」で話すだけで記録できるように'},
   {v:'v2.85.1',d:'AIチャットの＋ボタンから カメラ・写真・ファイル を送れるように。メール連携は終了しました'},
   {v:'v2.84.0',d:'画面下の3つ目のタブを 筋トレ・食事・睡眠・健康 から選べるように（設定→下のタブ）'},
   {v:'v2.83.0',d:'画面下部に筋トレ・カレンダー・タスクのタブを追加'},
@@ -6947,7 +6987,6 @@ function calcGameStats(){
     }
     if(name==='log_workout'){
       const date=input.date||todayStr();
-      if(!db.workouts[date])db.workouts[date]=[];
       const sets=(input.sets||[]).map(s=>{
         const set={};
         if(s.w!=null)set.w=s.w;
@@ -6957,8 +6996,9 @@ function calcGameStats(){
         if(s.speed!=null)set.speed=s.speed;
         return set;
       });
-      db.workouts[date].push({id:UID(),name:input.name,category:input.category||'weight',sets});
+      addWorkoutSets(date,input.name,input.category||'weight',sets);
       save(db);checkLevelUp();
+      window._afterWorkoutLogged?.();
       const setDesc=sets.map((s,i)=>`${i+1}セット:${s.w!=null?s.w+'kg×':''}${s.r!=null?s.r+'回':''}${s.time!=null?s.time+'分':''}${s.distance!=null?s.distance+'km':''}`).join(' / ');
       return `「${input.name}」を記録しました（${date}）。${setDesc}`;
     }
