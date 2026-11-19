@@ -1167,6 +1167,31 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
 body.in-training .ai-overlay{z-index:699;}
 body.in-training .ai-modal{z-index:700;}
 .training-ai-log-btn{display:block;flex:0 0 auto;width:calc(100% - 32px);font-size:14px!important;margin:0 auto 12px;background:linear-gradient(135deg,#6366f1,#8b5cf6)!important;color:#fff!important;border:none!important;}
+
+/* === 連続記録（v2.87.0） === */
+.streak-card{padding:12px 14px;}
+.stk-head{display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:800;color:var(--fg);margin-bottom:6px;}
+.stk-edit,.stk-done{border:1px solid var(--border);background:var(--surface2);color:var(--fg2);font-size:11px;font-weight:700;border-radius:999px;padding:4px 10px;cursor:pointer;font-family:inherit;}
+.stk-done{margin-top:8px;background:var(--accent);color:#fff;border-color:var(--accent);}
+.stk-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--border);cursor:pointer;}
+.stk-row:first-of-type{border-top:none;}
+.stk-setup{cursor:default;align-items:flex-start;}
+.stk-ic{font-size:22px;width:28px;text-align:center;flex-shrink:0;}
+.stk-body{flex:1;min-width:0;}
+.stk-title{font-size:13px;color:var(--fg2);font-weight:600;}
+.stk-title b{color:var(--fg);font-size:15px;margin-left:4px;}
+.stk-sub{font-size:11px;color:var(--fg3);margin-top:2px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
+.stk-ok{color:#10b981;font-weight:700;}
+.stk-dots{display:inline-flex;gap:3px;margin-left:2px;}
+.stk-dot{width:8px;height:8px;border-radius:50%;background:var(--border);}
+.stk-dot.on{background:#f97316;}
+.stk-adj{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--fg2);font-weight:700;flex-shrink:0;}
+.stk-adj button{width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:var(--surface2);color:var(--fg);font-size:14px;line-height:1;cursor:pointer;}
+.stk-arrow{color:var(--fg3);font-size:18px;}
+.stk-goals{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;}
+.stk-goal{display:flex;flex-direction:column;align-items:center;gap:1px;padding:8px 6px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface);color:var(--fg);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+.stk-goal small{font-size:10px;color:var(--fg3);font-weight:600;}
+.stk-goal.on{border-color:var(--accent);background:var(--accent-bg);color:var(--accent);}
 </style>
 </head>
 <body>
@@ -1249,6 +1274,7 @@ body.in-training .ai-modal{z-index:700;}
   <section id="tab-cal" class="tab on">
     <div id="ai-brief-card" class="ai-brief-card" hidden></div>
     <div id="daily-mission-card" class="daily-mission-card" hidden></div>
+    <div id="streak-card" class="card streak-card" hidden></div>
     <div id="goal-card" class="goal-card"></div>
     <div id="health-advice-card" class="card health-advice-card" hidden></div>
     <button class="training-start-btn" id="training-start-btn" onclick="startTraining()">
@@ -1884,7 +1910,7 @@ body.in-training .ai-modal{z-index:700;}
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.86.1 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.87.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -2476,7 +2502,7 @@ body.in-training .ai-modal{z-index:700;}
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='e29aee25e7'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='7dd381e21c'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -3148,6 +3174,7 @@ function calcAutoProgress(g){
 }
 
 function renderGoals(){
+  if(typeof renderStreaks==='function')renderStreaks();
   const card=document.getElementById('goal-card');
   card.innerHTML='';
   const active=(db.goals||[]).filter(g=>!g.done);
@@ -3436,6 +3463,138 @@ document.getElementById('ga-ok').onclick=()=>{
   window._missionHook?.('add_goal');
 };
 
+// ── 連続記録（v2.87.0） ─────────────────────────────────────
+// 筋トレ: 週単位（目標の週回数を達成した週の連続数）/ 食事・睡眠: 日単位の連続数
+// ※ビルドで1つのscriptに連結されるため、トップレベルに const/let を置かない（TDZ回避）
+
+function streakGoalPresets(){
+  return [
+    {k:'maintain',label:'健康維持',freq:2},
+    {k:'cut',label:'減量',freq:3},
+    {k:'recomp',label:'体脂肪を減らす',freq:3},
+    {k:'bulk',label:'筋肉を増やす',freq:4},
+  ];
+}
+function streakRecommendedFreq(goal){
+  return (streakGoalPresets().find(p=>p.k===goal)||{}).freq||null;
+}
+function _stDs(d){return fmt(d);}
+function _stAddDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x;}
+function _stMonday(d){const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());const w=(x.getDay()+6)%7;x.setDate(x.getDate()-w);return x;}
+function _stToday(){const [y,m,d]=todayStr().split('-').map(Number);return new Date(y,m-1,d);}
+
+function streakGymDays(){
+  const set=new Set();
+  Object.entries(db.workouts||{}).forEach(([ds,exs])=>{if((exs||[]).length)set.add(ds);});
+  (db.trainingSessions||[]).forEach(s=>{if(s&&s.date&&(s.duration||0)>=60)set.add(s.date);});
+  return set;
+}
+function streakHasMeal(ds){const dm=db.meals?.[ds];return !!dm&&['breakfast','lunch','dinner','snack'].some(k=>(dm[k]||[]).length>0);}
+function streakHasSleep(ds){const s=db.sleep?.[ds];return !!s&&!!(s.bedtime||s.wakeTime);}
+
+// 日単位: 今日記録済みなら今日から、未記録なら昨日から遡って数える（今日は途切れ扱いにしない）
+function streakDaily(has){
+  const today=_stToday();
+  const doneToday=has(_stDs(today));
+  let d=doneToday?today:_stAddDays(today,-1),n=0;
+  while(n<1000&&has(_stDs(d))){n++;d=_stAddDays(d,-1);}
+  return {count:n,doneToday};
+}
+// 週単位: 今週が達成済みなら今週から、未達なら先週から遡って数える（今週は終わるまで途切れない）
+function streakWeekly(freq){
+  const days=streakGymDays();
+  const countWeek=mon=>{let c=0;for(let i=0;i<7;i++)if(days.has(_stDs(_stAddDays(mon,i))))c++;return c;};
+  const thisMon=_stMonday(_stToday());
+  const thisWeek=countWeek(thisMon);
+  const metThis=thisWeek>=freq;
+  let mon=metThis?thisMon:_stAddDays(thisMon,-7),n=0;
+  while(n<200&&countWeek(mon)>=freq){n++;mon=_stAddDays(mon,-7);}
+  return {count:n,thisWeek,freq,metThis};
+}
+function getStreaks(){
+  const f=db.settings.features||{};
+  const hp=db.settings.healthProfile||{};
+  const out={};
+  if(f.workout!==false){
+    const freq=hp.gymFreq||null;
+    out.workout=freq?{...streakWeekly(freq),goal:hp.goal||null}:{unset:true};
+  }
+  if(f.meals!==false)out.meals=streakDaily(streakHasMeal);
+  if(f.sleep!==false)out.sleep=streakDaily(streakHasSleep);
+  return out;
+}
+// AIに渡す要約
+function streakSummaryText(){
+  const s=getStreaks(),parts=[];
+  if(s.workout)parts.push(s.workout.unset?'筋トレ: 週の目標回数が未設定':`筋トレ: 週${s.workout.freq}回目標を${s.workout.count}週連続達成中（今週${s.workout.thisWeek}/${s.workout.freq}回${s.workout.metThis?'・今週達成済み':''}）`);
+  if(s.meals)parts.push(`食事記録: ${s.meals.count}日連続${s.meals.doneToday?'':'（今日はまだ）'}`);
+  if(s.sleep)parts.push(`睡眠記録: ${s.sleep.count}日連続${s.sleep.doneToday?'':'（今日はまだ）'}`);
+  return parts.join(' / ')||'なし';
+}
+
+function setWorkoutGoal(goal){
+  if(!db.settings.healthProfile)db.settings.healthProfile={};
+  const hp=db.settings.healthProfile;
+  hp.goal=goal;
+  hp.gymFreq=streakRecommendedFreq(goal)||hp.gymFreq||3;
+  save(db);
+  renderStreaks();
+  if(typeof loadSettingsUI==='function')try{loadSettingsUI();}catch(e){}
+}
+function adjustGymFreq(delta){
+  if(!db.settings.healthProfile)db.settings.healthProfile={};
+  const hp=db.settings.healthProfile;
+  hp.gymFreq=Math.min(7,Math.max(1,(hp.gymFreq||3)+delta));
+  save(db);renderStreaks();
+}
+
+function renderStreaks(){
+  const el=document.getElementById('streak-card');if(!el)return;
+  const s=getStreaks();
+  if(!s.workout&&!s.meals&&!s.sleep){el.hidden=true;return;}
+  el.hidden=false;
+  const flame=n=>n>0?'🔥':'・';
+  const rows=[];
+  if(s.workout){
+    if(s.workout.unset||el.dataset.editing==='1'){
+      const hp=db.settings.healthProfile||{};
+      rows.push(`<div class="stk-row stk-setup">
+        <div class="stk-ic">🏋️</div>
+        <div class="stk-body">
+          <div class="stk-title">筋トレの目標は？</div>
+          <div class="stk-sub">目標に合わせて、週に何回行けばOKかを決めます</div>
+          <div class="stk-goals">${streakGoalPresets().map(p=>`<button class="stk-goal${hp.goal===p.k&&!s.workout.unset?' on':''}" data-goal="${p.k}">${p.label}<small>週${p.freq}回</small></button>`).join('')}</div>
+          ${s.workout.unset?'':'<button class="stk-done" data-act="done">完了</button>'}
+        </div></div>`);
+    }else{
+      const w=s.workout;
+      const dots=Array.from({length:w.freq},(_,i)=>`<span class="stk-dot${i<w.thisWeek?' on':''}"></span>`).join('');
+      rows.push(`<div class="stk-row" data-go="wo">
+        <div class="stk-ic">🏋️</div>
+        <div class="stk-body">
+          <div class="stk-title">筋トレ <b>${flame(w.count)} ${w.count}週連続</b></div>
+          <div class="stk-sub">今週 ${w.thisWeek}/${w.freq}回 <span class="stk-dots">${dots}</span>${w.metThis?' <span class="stk-ok">今週クリア！</span>':''}</div>
+        </div>
+        <div class="stk-adj"><button data-adj="-1" aria-label="回数を減らす">−</button><span>週${w.freq}</span><button data-adj="1" aria-label="回数を増やす">＋</button></div>
+      </div>`);
+    }
+  }
+  const daily=(key,ic,label,go)=>{const v=s[key];if(!v)return;
+    rows.push(`<div class="stk-row" data-go="${go}">
+      <div class="stk-ic">${ic}</div>
+      <div class="stk-body">
+        <div class="stk-title">${label} <b>${flame(v.count)} ${v.count}日連続</b></div>
+        <div class="stk-sub">${v.doneToday?'<span class="stk-ok">今日の記録OK</span>':'今日はまだ記録していません'}</div>
+      </div><div class="stk-arrow">›</div></div>`);};
+  daily('meals','🍱','食事','meals');
+  daily('sleep','😴','睡眠','sleep');
+  el.innerHTML=`<div class="stk-head"><span>🔥 連続記録</span>${s.workout&&!s.workout.unset&&el.dataset.editing!=='1'?'<button class="stk-edit" data-act="edit">目標を変更</button>':''}</div>${rows.join('')}`;
+  el.querySelectorAll('[data-goal]').forEach(b=>b.onclick=e=>{e.stopPropagation();setWorkoutGoal(b.dataset.goal);});
+  el.querySelectorAll('[data-adj]').forEach(b=>b.onclick=e=>{e.stopPropagation();adjustGymFreq(+b.dataset.adj);});
+  el.querySelectorAll('[data-act="edit"]').forEach(b=>b.onclick=()=>{el.dataset.editing='1';renderStreaks();});
+  el.querySelectorAll('[data-act="done"]').forEach(b=>b.onclick=()=>{el.dataset.editing='';renderStreaks();});
+  el.querySelectorAll('.stk-row[data-go]').forEach(r=>r.onclick=()=>{st.otherSub=r.dataset.go;switchToTab('other');});
+}
 // ── Calendar ──────────────────────────────────────────────
 function renderCalFilters(){
   const row=document.getElementById('cal-filter-row');
@@ -4344,6 +4503,11 @@ document.querySelectorAll('.st-opt[data-hp-goal]').forEach(btn=>{
   btn.onclick=()=>{
     if(!db.settings.healthProfile)db.settings.healthProfile={};
     db.settings.healthProfile.goal=btn.dataset.hpGoal;
+    // ジム目標が未設定なら、目標に合ったおすすめ頻度を入れる（連続記録で使用）
+    if(!db.settings.healthProfile.gymFreq&&typeof streakRecommendedFreq==='function'){
+      const rf=streakRecommendedFreq(btn.dataset.hpGoal);
+      if(rf){db.settings.healthProfile.gymFreq=rf;document.querySelectorAll('.st-opt[data-hp-gym]').forEach(b=>b.classList.toggle('on',b.dataset.hpGym===String(rf)));}
+    }
     save(db);
     document.querySelectorAll('.st-opt[data-hp-goal]').forEach(b=>b.classList.toggle('on',b.dataset.hpGoal===btn.dataset.hpGoal));
   };
@@ -4753,6 +4917,7 @@ const CHARS={
     system:'あなたはコタ（おっとり伴走のクマ）です。ゆっくり丁寧で温かい口調。急かさない。「焦らなくていいよ」「続けることが一番大事」という姿勢。ユーザーのデータを使って自分ごとにする。一人称は「ぼく」。指定フォーマット厳守。日本語のみ。'},
 };
 const CHANGELOG=[
+  {v:'v2.87.0',d:'ホームに「🔥 連続記録」。筋トレは目標に合わせた週の回数で、食事・睡眠は毎日の記録で連続日数を数えます'},
   {v:'v2.86.1',d:'チャットの思考モード（💭）がエラーになる不具合を修正'},
   {v:'v2.86.0',d:'トレーニング中の種目記録が筋トレ記録に出ない不具合を修正。トレーニング中に「💬 AIに話して記録」で話すだけで記録できるように'},
   {v:'v2.85.1',d:'AIチャットの＋ボタンから カメラ・写真・ファイル を送れるように。メール連携は終了しました'},
@@ -6914,7 +7079,8 @@ function calcGameStats(){
     if(hp.goal)hpParts.push(`目標:${goalMap[hp.goal]||hp.goal}`);
     if(hp.gymFreq)hpParts.push(`ジム目標:週${hp.gymFreq}回`);
     const hpStats=hpParts.length?hpParts.join(' / '):'未設定';
-    return `【今日の日付】${today}\n【健康プロフィール】${hpStats}\n【使用目的】${useCaseStr}\n【今後14日間の予定】\n${evs}\n【未完了タスク】\n${tasks}\n【進行中の目標】\n${goals}\n【カレンダー一覧】\n${cals}\n【タスク達成状況】${taskStats}\n【筋トレ履歴（直近30日/最大90日遡及）】\n${woStats}\n【睡眠記録（直近30日統計）】\n${sleepStats}\n【食事記録（過去7日間）】\n${mealStats}\n【今日の健康データ】${healthStats}\n【タスクフィードバック履歴】\n${fbStats}`;
+    const streakStats=typeof streakSummaryText==='function'?streakSummaryText():'なし';
+    return `【今日の日付】${today}\n【連続記録】${streakStats}\n【健康プロフィール】${hpStats}\n【使用目的】${useCaseStr}\n【今後14日間の予定】\n${evs}\n【未完了タスク】\n${tasks}\n【進行中の目標】\n${goals}\n【カレンダー一覧】\n${cals}\n【タスク達成状況】${taskStats}\n【筋トレ履歴（直近30日/最大90日遡及）】\n${woStats}\n【睡眠記録（直近30日統計）】\n${sleepStats}\n【食事記録（過去7日間）】\n${mealStats}\n【今日の健康データ】${healthStats}\n【タスクフィードバック履歴】\n${fbStats}`;
   }
   async function executeTool(name,input){
     if(name==='add_event'){
