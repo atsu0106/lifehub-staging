@@ -1192,6 +1192,7 @@ body.in-training .ai-modal{z-index:700;}
 .stk-goal{display:flex;flex-direction:column;align-items:center;gap:1px;padding:8px 6px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface);color:var(--fg);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
 .stk-goal small{font-size:10px;color:var(--fg3);font-weight:600;}
 .stk-goal.on{border-color:var(--accent);background:var(--accent-bg);color:var(--accent);}
+.stk-warn{color:#ef4444;font-weight:700;}
 </style>
 </head>
 <body>
@@ -2502,7 +2503,7 @@ body.in-training .ai-modal{z-index:700;}
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='ee0283e78f'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='2596b75829'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -3500,16 +3501,28 @@ function streakDaily(has){
   while(n<1000&&has(_stDs(d))){n++;d=_stAddDays(d,-1);}
   return {count:n,doneToday};
 }
-// 週単位: 今週が達成済みなら今週から、未達なら先週から遡って数える（今週は終わるまで途切れない）
+// 筋トレ: 判定は週単位（先週以前は各週で目標回数を達成している必要あり。今週は週が終わるまで途切れない）
+// 表示は日数: 連続している最初の週で最初にジムに行った日 〜 今日 の日数
 function streakWeekly(freq){
   const days=streakGymDays();
   const countWeek=mon=>{let c=0;for(let i=0;i<7;i++)if(days.has(_stDs(_stAddDays(mon,i))))c++;return c;};
-  const thisMon=_stMonday(_stToday());
+  const firstGymDay=(mon,upto)=>{for(let i=0;i<7;i++){const d=_stAddDays(mon,i);if(upto&&d>upto)break;if(days.has(_stDs(d)))return d;}return null;};
+  const today=_stToday();
+  const thisMon=_stMonday(today);
   const thisWeek=countWeek(thisMon);
   const metThis=thisWeek>=freq;
-  let mon=metThis?thisMon:_stAddDays(thisMon,-7),n=0;
-  while(n<200&&countWeek(mon)>=freq){n++;mon=_stAddDays(mon,-7);}
-  return {count:n,thisWeek,freq,metThis};
+  // 先週から遡って、目標達成した週が何週続いているか
+  let mon=_stAddDays(thisMon,-7),weeks=0;
+  while(weeks<200&&countWeek(mon)>=freq){weeks++;mon=_stAddDays(mon,-7);}
+  const start=weeks>0?firstGymDay(_stAddDays(thisMon,-7*weeks)):firstGymDay(thisMon,today);
+  const count=start?Math.round((today-start)/86400000)+1:0;
+  // 今週の残り日数で目標に届くか（今日まだ行っていなければ今日も残りに含める）
+  const idx=Math.round((today-thisMon)/86400000);
+  const gymToday=days.has(_stDs(today));
+  const daysLeft=6-idx+(gymToday?0:1);
+  const need=Math.max(0,freq-thisWeek);
+  const atRisk=count>0&&need>daysLeft;
+  return {count,weeks:weeks+(metThis?1:0),thisWeek,freq,metThis,need,daysLeft,atRisk};
 }
 function getStreaks(){
   const f=db.settings.features||{};
@@ -3526,7 +3539,7 @@ function getStreaks(){
 // AIに渡す要約
 function streakSummaryText(){
   const s=getStreaks(),parts=[];
-  if(s.workout)parts.push(s.workout.unset?'筋トレ: 週の目標回数が未設定':`筋トレ: 週${s.workout.freq}回目標を${s.workout.count}週連続達成中（今週${s.workout.thisWeek}/${s.workout.freq}回${s.workout.metThis?'・今週達成済み':''}）`);
+  if(s.workout){const w=s.workout;parts.push(w.unset?'筋トレ: 週の目標回数が未設定':`筋トレ: 週${w.freq}回ペースで${w.count}日連続（今週${w.thisWeek}/${w.freq}回${w.metThis?'・今週達成済み':`・あと${w.need}回、今週の残り${w.daysLeft}日`}${w.atRisk?'・このままだと今週で途切れる':''}）`);}
   if(s.meals)parts.push(`食事記録: ${s.meals.count}日連続${s.meals.doneToday?'':'（今日はまだ）'}`);
   if(s.sleep)parts.push(`睡眠記録: ${s.sleep.count}日連続${s.sleep.doneToday?'':'（今日はまだ）'}`);
   return parts.join(' / ')||'なし';
@@ -3572,8 +3585,8 @@ function renderStreaks(){
       rows.push(`<div class="stk-row" data-go="wo">
         <div class="stk-ic">🏋️</div>
         <div class="stk-body">
-          <div class="stk-title">筋トレ <b>${flame(w.count)} ${w.count}週連続</b></div>
-          <div class="stk-sub">今週 ${w.thisWeek}/${w.freq}回 <span class="stk-dots">${dots}</span>${w.metThis?' <span class="stk-ok">今週クリア！</span>':''}</div>
+          <div class="stk-title">筋トレ <b>${flame(w.count)} ${w.count}日連続</b></div>
+          <div class="stk-sub">今週 ${w.thisWeek}/${w.freq}回 <span class="stk-dots">${dots}</span>${w.metThis?' <span class="stk-ok">今週クリア！</span>':w.atRisk?' <span class="stk-warn">⚠ このままだと今週で途切れます</span>':` あと${w.need}回（残り${w.daysLeft}日）`}</div>
         </div>
         <div class="stk-adj"><button data-adj="-1" aria-label="回数を減らす">−</button><span>週${w.freq}</span><button data-adj="1" aria-label="回数を増やす">＋</button></div>
       </div>`);
