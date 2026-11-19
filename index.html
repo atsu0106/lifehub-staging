@@ -1884,7 +1884,7 @@ body.in-training .ai-modal{z-index:700;}
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.86.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.86.1 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -2476,7 +2476,7 @@ body.in-training .ai-modal{z-index:700;}
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='b736e26c29'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='e29aee25e7'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -4753,6 +4753,7 @@ const CHARS={
     system:'あなたはコタ（おっとり伴走のクマ）です。ゆっくり丁寧で温かい口調。急かさない。「焦らなくていいよ」「続けることが一番大事」という姿勢。ユーザーのデータを使って自分ごとにする。一人称は「ぼく」。指定フォーマット厳守。日本語のみ。'},
 };
 const CHANGELOG=[
+  {v:'v2.86.1',d:'チャットの思考モード（💭）がエラーになる不具合を修正'},
   {v:'v2.86.0',d:'トレーニング中の種目記録が筋トレ記録に出ない不具合を修正。トレーニング中に「💬 AIに話して記録」で話すだけで記録できるように'},
   {v:'v2.85.1',d:'AIチャットの＋ボタンから カメラ・写真・ファイル を送れるように。メール連携は終了しました'},
   {v:'v2.84.0',d:'画面下の3つ目のタブを 筋トレ・食事・睡眠・健康 から選べるように（設定→下のタブ）'},
@@ -7196,10 +7197,9 @@ function calcGameStats(){
         const apiMessages=aiHistory.slice(0,-2).filter(m=>m.role==='user'||m.role==='assistant').map(m=>({role:m.role,content:m.content}));
         const userContent=buildApiContent(text,attachments);
         apiMessages.push({role:'user',content:userContent});
-        // 思考モード時はthinkingパラメータ追加・max_tokens拡張
-        const THINK_BUDGET=3000;
-        const reqBody={model:'claude-sonnet-5-5',max_tokens:useThinking?THINK_BUDGET+4096:4096,system,messages:apiMessages,tools:AI_TOOLS};
-        if(useThinking)reqBody.thinking={type:'enabled',budget_tokens:THINK_BUDGET};
+        // 思考モード: Sonnet 5.5 は adaptive thinking＋effort で深さを指定（budget_tokens は400）。display:'summarized'で思考の要約を返す
+        const reqBody={model:'claude-sonnet-5-5',max_tokens:useThinking?16000:4096,system,messages:apiMessages,tools:AI_TOOLS};
+        if(useThinking){reqBody.thinking={type:'adaptive',display:'summarized'};reqBody.output_config={effort:'xhigh'};}
         if(useThinking){
           thinkingEl.innerHTML='<div class="ran-inline-state"><img class="ran-inline-img" src="assets/characters/Ran_thinking.png" onerror="this.style.display=\'none\'"><div class="ai-thinking-anim">深く考え中<span></span><span></span><span></span></div></div>';
           thinkingEl.className='ai-msg ai';
