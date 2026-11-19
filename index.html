@@ -1153,6 +1153,15 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
 /* === マイタブ（v2.84.0） === */
 .ob-hint{font-size:.85rem;color:var(--fg3);margin:-6px 0 0;text-align:center;}
 .st-opt[data-hl]{min-width:0;padding-left:8px;padding-right:8px;}
+
+/* === チャット＋メニュー（v2.85.1） === */
+.ai-plus-wrap{position:relative;flex-shrink:0;}
+.ai-plus-wrap .ai-attach{font-size:24px;font-weight:300;color:var(--fg2);}
+.ai-plus-menu{position:absolute;left:0;bottom:calc(100% + 8px);min-width:160px;background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.18);padding:6px;z-index:20;display:flex;flex-direction:column;}
+.ai-plus-menu[hidden]{display:none;}
+.ai-plus-menu button{display:flex;align-items:center;gap:10px;padding:11px 12px;border:none;background:none;border-radius:10px;font-size:15px;font-family:inherit;color:var(--fg);text-align:left;cursor:pointer;}
+.ai-plus-menu button:active{background:var(--surface2);}
+.ai-plus-menu button span{font-size:18px;width:22px;text-align:center;}
 </style>
 </head>
 <body>
@@ -1537,10 +1546,17 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
   </div>
   <div class="ai-input-row">
     <button class="ai-mic" id="ai-mic" title="音声入力">🎤</button>
-    <button class="ai-attach" id="ai-camera" title="その場で撮影" style="display:none;">📷</button>
+    <div class="ai-plus-wrap">
+      <button class="ai-attach" id="ai-attach" title="写真・ファイルを追加" aria-haspopup="menu">＋</button>
+      <div class="ai-plus-menu" id="ai-plus-menu" role="menu" hidden>
+        <button role="menuitem" id="ai-camera"><span>📷</span>カメラ</button>
+        <button role="menuitem" id="ai-photo"><span>🖼️</span>写真</button>
+        <button role="menuitem" id="ai-file"><span>📎</span>ファイル</button>
+      </div>
+    </div>
     <input type="file" id="ai-camera-input" accept="image/*" capture="environment" style="display:none;">
-    <button class="ai-attach" id="ai-attach" title="ファイルを添付" style="display:none;">📎</button>
-    <input type="file" id="ai-file-input" accept="image/*,.pdf" multiple style="display:none;">
+    <input type="file" id="ai-photo-input" accept="image/*" multiple style="display:none;">
+    <input type="file" id="ai-file-input" accept="image/*,.pdf,.txt,.md,.csv,.json,text/plain,text/csv,application/json" multiple style="display:none;">
     <textarea class="ai-input" id="ai-input" placeholder="メッセージを入力..." autocomplete="off" rows="1"></textarea>
     <button class="ai-send" id="ai-send">▶</button>
   </div>
@@ -1797,18 +1813,6 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
       <!-- AI・連携 -->
       <div class="st-sec">AI・連携</div>
       <div class="st-card">
-        <div class="st-row st-row-toggle">
-          <span class="st-ic" style="background:#8b5cf6;">📎</span>
-          <div style="flex:1;">
-            <div class="st-label">ファイル添付（チャット）</div>
-            <div style="font-size:11px;color:var(--fg3);margin-top:1px;">画像・PDFをAIに送れる</div>
-          </div>
-          <label class="st-toggle">
-            <input type="checkbox" id="toggle-attach" style="opacity:0;width:0;height:0;">
-            <span id="toggle-attach-track" class="st-toggle-track" style="background:var(--border);"></span>
-            <span id="toggle-attach-thumb" class="st-toggle-thumb"></span>
-          </label>
-        </div>
         <div class="st-row" id="st-ics-row" style="cursor:pointer;">
           <span class="st-ic" style="background:#10b981;">📥</span>
           <div style="flex:1;">
@@ -1875,7 +1879,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.85.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.85.1 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -2466,7 +2470,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='7ba13c122a'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='be0a439fbd'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -2817,7 +2821,6 @@ function applyFeatureVisibility(){
 }
 if(!db.settings.theme)db.settings.theme='system';
 if(!db.settings.workerUrl)db.settings.workerUrl=''; // legacy compat
-if(db.settings.enableAttach===undefined)db.settings.enableAttach=false;
 if(!db.calendars||!db.calendars.length){
   db.calendars=[
     {id:uid(),name:'マイカレンダー',color:'#4F46E5'}
@@ -3937,14 +3940,6 @@ document.getElementById('hdr-settings').onclick=()=>{
   document.querySelectorAll('.pos-opt[data-lefty]').forEach(b=>b.classList.toggle('on',b.dataset.lefty===(s.leftHand?'on':'off')));
   // 機能トグル状態を反映
   applyFeatureVisibility();
-  // 添付トグル状態を反映
-  const attachToggle=document.getElementById('toggle-attach');
-  const attachTrack=document.getElementById('toggle-attach-track');
-  const attachThumb=document.getElementById('toggle-attach-thumb');
-  const enabled=db.settings.enableAttach||false;
-  attachToggle.checked=enabled;
-  attachTrack.style.background=enabled?'var(--accent)':'var(--border)';
-  attachThumb.style.left=enabled?'23px':'3px';
   // 健康プロフィールを反映
   const hp=s.healthProfile||{};
   ['height','weight','age'].forEach(k=>{const el=document.getElementById('hp-'+k);if(el)el.value=hp[k]||'';});
@@ -4273,14 +4268,6 @@ document.getElementById('supp-save').onclick=()=>{
     applyFeatureVisibility();
     if(!this.checked&&st.tab==='other'){const subMap={workout:'wo',meals:'meals',sleep:'sleep'};if(st.otherSub===subMap[key])switchToTab('cal');}
   });
-});
-document.getElementById('toggle-attach').addEventListener('change',function(){
-  const on=this.checked;
-  db.settings.enableAttach=on;
-  save(db);
-  document.getElementById('toggle-attach-track').style.background=on?'var(--accent)':'var(--border)';
-  document.getElementById('toggle-attach-thumb').style.left=on?'23px':'3px';
-  document.getElementById('ai-attach').style.display=on?'flex':'none';
 });
 document.querySelectorAll('.st-opt[data-pos]').forEach(btn=>{
   btn.onclick=()=>{
@@ -4727,7 +4714,7 @@ const CHARS={
     system:'あなたはコタ（おっとり伴走のクマ）です。ゆっくり丁寧で温かい口調。急かさない。「焦らなくていいよ」「続けることが一番大事」という姿勢。ユーザーのデータを使って自分ごとにする。一人称は「ぼく」。指定フォーマット厳守。日本語のみ。'},
 };
 const CHANGELOG=[
-  {v:'v2.85.0',d:'AIチャットで📷その場で撮影して送れるように。メール連携は終了しました'},
+  {v:'v2.85.1',d:'AIチャットの＋ボタンから カメラ・写真・ファイル を送れるように。メール連携は終了しました'},
   {v:'v2.84.0',d:'画面下の3つ目のタブを 筋トレ・食事・睡眠・健康 から選べるように（設定→下のタブ）'},
   {v:'v2.83.0',d:'画面下部に筋トレ・カレンダー・タスクのタブを追加'},
   {v:'v2.82.3',d:'ひとことを親しみやすい口調に。AIの文章が途中で切れる不具合を根本修正'},
@@ -6685,21 +6672,29 @@ function calcGameStats(){
     });
   }
   const fileInput=document.getElementById('ai-file-input');
+  // ＋メニュー（カメラ / 写真 / ファイル）— ChatGPT同様、常に表示
   const attachBtn=document.getElementById('ai-attach');
-  if(attachBtn){
-    // 初期表示（設定に応じて）
-    if(db.settings.enableAttach)attachBtn.style.display='flex';
-    attachBtn.onclick=()=>fileInput.click();
+  const plusMenu=document.getElementById('ai-plus-menu');
+  if(attachBtn&&plusMenu){
+    const closeMenu=()=>{plusMenu.hidden=true;};
+    attachBtn.onclick=e=>{e.stopPropagation();plusMenu.hidden=!plusMenu.hidden;};
+    document.addEventListener('click',e=>{if(!plusMenu.hidden&&!plusMenu.contains(e.target))closeMenu();});
+    [['ai-camera','ai-camera-input'],['ai-photo','ai-photo-input'],['ai-file','ai-file-input']].forEach(([b,i])=>{
+      const btn=document.getElementById(b),inp=document.getElementById(i);
+      btn.onclick=()=>{closeMenu();inp.click();};
+      if(i!=='ai-file-input')inp.addEventListener('change',async()=>{for(const f of inp.files)await addFile(f);inp.value='';});
+    });
   }
-  // 📷 その場で撮影（常に表示。📎は設定でON/OFF）
-  const camBtn=document.getElementById('ai-camera'),camInput=document.getElementById('ai-camera-input');
-  if(camBtn&&camInput){
-    camBtn.style.display='flex';
-    camBtn.onclick=()=>camInput.click();
-    camInput.addEventListener('change',async()=>{for(const f of camInput.files)await addFile(f);camInput.value='';});
-  }
+  const TEXT_EXT=/\.(txt|md|csv|json)$/i;
   async function addFile(file){
     if(!file)return;
+    const isText=(file.type||'').startsWith('text/')||file.type==='application/json'||TEXT_EXT.test(file.name||'');
+    if(isText){
+      if(file.size>500000){alert('テキストファイルは500KBまでです');return;}
+      pendingAttachments.push({name:file.name||'text',mediaType:'text/plain',text:await file.text()});
+      renderAttachPreview();return;
+    }
+    if(!(file.type||'').startsWith('image/')&&file.type!=='application/pdf'){alert('画像・PDF・テキストファイルに対応しています');return;}
     const {data,mediaType}=await fileToAIImage(file);
     pendingAttachments.push({name:file.name||(mediaType.startsWith('image/')?'写真':'file'),mediaType,data});
     renderAttachPreview();
@@ -6781,6 +6776,9 @@ function calcGameStats(){
   function buildApiContent(text,attachments){
     if(!attachments||!attachments.length)return text;
     const parts=attachments.map(a=>{
+      if(a.mediaType==='text/plain'){
+        return {type:'document',source:{type:'text',media_type:'text/plain',data:a.text},title:a.name};
+      }
       if(a.mediaType==='application/pdf'){
         return {type:'document',source:{type:'base64',media_type:'application/pdf',data:a.data}};
       }
