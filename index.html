@@ -1010,7 +1010,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
 .nav{display:none!important;}
 .other-subnav{display:none;}
 .fab-float[hidden]{display:none!important;}
-.st-opt[data-pos="center"],.st-row:has(.st-opt[data-hl]){display:none;}
+.st-opt[data-pos="center"]{display:none;}
 .hdr .prof-btn,.hdr .hdr-settings-btn{display:none;}
 .hdr-menu-btn{background:none;border:none;color:var(--fg);cursor:pointer;width:40px;height:40px;margin-left:-8px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .hdr-menu-btn:active{background:var(--surface2);}
@@ -1149,6 +1149,10 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
 .ai-fab{bottom:calc(var(--nav-h) + var(--nav-off) + 12px);}
 .fab-float{bottom:calc(var(--nav-h) + var(--nav-off) + 12px);}
 .lh-toast{bottom:calc(var(--nav-h) + var(--nav-off) + 64px);}
+
+/* === マイタブ（v2.84.0） === */
+.ob-hint{font-size:.85rem;color:var(--fg3);margin:-6px 0 0;text-align:center;}
+.st-opt[data-hl]{min-width:0;padding-left:8px;padding-right:8px;}
 </style>
 </head>
 <body>
@@ -1202,6 +1206,17 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
       </div>
       <button id="ob-start" class="ob-btn" style="margin-top:8px;">はじめる →</button>
       <button id="ob-skip" class="ob-skip-btn">スキップ</button>
+    </div>
+    <div class="ob-form" id="ob-step3" hidden>
+      <label class="ob-label">いちばんよく使いそうなのはどれ？</label>
+      <p class="ob-hint">画面下のタブに置きます（あとで設定から変更できます）</p>
+      <div class="ob-chips">
+        <button class="ob-chip" data-hl="wo">🏋️ 筋トレ</button>
+        <button class="ob-chip" data-hl="meals">🍱 食事</button>
+        <button class="ob-chip" data-hl="sleep">😴 睡眠</button>
+        <button class="ob-chip" data-hl="health">❤️ 健康</button>
+      </div>
+      <button id="ob-skip3" class="ob-skip-btn">あとで決める</button>
     </div>
   </div>
 </div>
@@ -1466,9 +1481,9 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
       <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
       タスク
     </button>
-    <button class="nb" data-t="other" data-sub="wo" id="nav-wo">
-      <svg viewBox="0 0 24 24"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/></svg>
-      筋トレ
+    <button class="nb" data-t="other" data-sub="wo" id="nav-hl">
+      <svg viewBox="0 0 24 24" id="nav-hl-svg"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/></svg>
+      <span id="nav-hl-label">筋トレ</span>
     </button>
     <button class="nb-add" id="fab-nav" hidden></button>
   </nav>
@@ -1673,12 +1688,12 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
         </div>
         <div class="st-row st-row-toggle">
           <span class="st-ic" style="background:#f59e0b;">⭐</span>
-          <span class="st-label" style="flex:0 0 auto;margin-right:8px;">ハイライトタブ</span>
+          <span class="st-label" style="flex:0 0 auto;margin-right:8px;">下のタブ</span>
           <div class="st-opts" style="justify-content:flex-end;">
-            <button class="st-opt" data-hl="wo">🏋️</button>
-            <button class="st-opt" data-hl="meals">🍱</button>
-            <button class="st-opt" data-hl="sleep">😴</button>
-            <button class="st-opt" data-hl="health">❤️</button>
+            <button class="st-opt" data-hl="wo">筋トレ</button>
+            <button class="st-opt" data-hl="meals">食事</button>
+            <button class="st-opt" data-hl="sleep">睡眠</button>
+            <button class="st-opt" data-hl="health">健康</button>
           </div>
         </div>
         <div class="st-row st-row-toggle">
@@ -1921,7 +1936,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.83.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.84.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -2556,7 +2571,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='079d6d23c8'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='46082ecd3d'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -2900,27 +2915,13 @@ function autoConfigFeatures(useCases){
     f.workout=true;f.meals=true;f.sleep=true;
   }
   // fitnessもdietも選ばなかった場合は食事・筋トレを任意OFFにしない（デフォルトON維持）
-  // ハイライトタブを有効な機能に自動設定
-  const hl=db.settings.highlightTab;
-  const hlFeature={wo:'workout',meals:'meals',sleep:'sleep',health:'workout'};
-  if(hlFeature[hl]&&!f[hlFeature[hl]]){
-    if(f.workout)db.settings.highlightTab='wo';
-    else if(f.meals)db.settings.highlightTab='meals';
-    else if(f.sleep)db.settings.highlightTab='sleep';
-  }
   save(db);
   applyFeatureVisibility();
 }
 
 function applyFeatureVisibility(){
   const f=db.settings.features||{workout:true,meals:true,sleep:true,gmail:false};
-  // ハイライトタブ選択肢を更新
-  document.querySelector('.st-opt[data-hl="wo"]')?.parentElement && (() => {
-    document.querySelectorAll('.st-opt[data-hl]').forEach(b=>{
-      const featureMap={wo:'workout',meals:'meals',sleep:'sleep',health:'workout'};
-      b.style.display=f[featureMap[b.dataset.hl]!==undefined?featureMap[b.dataset.hl]:'workout']?'':'none';
-    });
-  })();
+  if(window._hlReady)updateHlNav(); // calendar.js 読込前は呼ばない（HL_NAVの初期化前）
   // 機能トグルのUI状態を更新
   ['workout','meals','sleep','gmail'].forEach(key=>{
     const track=document.getElementById(`ft-track-${key}`);
@@ -2992,8 +2993,6 @@ function updateNavActive(){
     const match=b.dataset.t===st.tab&&(!b.dataset.sub||b.dataset.sub===st.otherSub);
     b.classList.toggle('on',!aiOpen&&match);
   });
-  const navWo=document.getElementById('nav-wo');
-  if(navWo)navWo.hidden=(db.settings.features||{}).workout===false;
   const key=st.tab==='other'?st.otherSub:st.tab;
   document.querySelectorAll('.dr-item[data-go]').forEach(b=>b.classList.toggle('on',b.dataset.go===key));
   document.getElementById('hdr-title').textContent=st.tab==='cal'?'LifeHub':st.tab==='tasks'?'タスク':(SCREEN_TITLES[st.otherSub]||'LifeHub');
@@ -3934,20 +3933,32 @@ function openEvModal(ev=null){
 }
 applyAddBtnPos();
 const HL_NAV={
-  wo:{svg:'<path d="M6 4v16M18 4v16M3 8h4M17 8h4M3 16h4M17 16h4"/>',label:'トレーニング'},
+  wo:{svg:'<path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/>',label:'筋トレ'},
   meals:{svg:'<path d="M3 2v7c0 1.1.9 2 2 2h4v13h2V11h4a2 2 0 0 0 2-2V2h-2v7H9V2H7v7H5V2H3z"/>',label:'食事'},
   sleep:{svg:'<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',label:'睡眠'},
   health:{svg:'<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>',label:'健康'}
 };
+// マイタブ（下部タブ3つ目）: 機能がオフなら有効な別の機能へ（健康は常に有効）
+const HL_FEAT={wo:'workout',meals:'meals',sleep:'sleep'};
+function hlAvailable(k){const f=db.settings.features||{};return !!HL_NAV[k]&&(!HL_FEAT[k]||f[HL_FEAT[k]]!==false);}
+function fixHighlightTab(){
+  let hl=db.settings.highlightTab;
+  if(!hlAvailable(hl)){hl=['wo','meals','sleep','health'].find(hlAvailable);if(db.settings.highlightTab!==hl){db.settings.highlightTab=hl;save(db);}}
+  return hl;
+}
 function updateHlNav(){
-  const hl=db.settings?.highlightTab||'wo';
+  const hl=fixHighlightTab();
   const c=HL_NAV[hl];
+  const btn=document.getElementById('nav-hl');
   const svgEl=document.getElementById('nav-hl-svg');
   const labelEl=document.getElementById('nav-hl-label');
+  if(btn)btn.dataset.sub=hl;
   if(svgEl)svgEl.innerHTML=c.svg;
   if(labelEl)labelEl.textContent=c.label;
+  document.querySelectorAll('.st-opt[data-hl]').forEach(b=>{b.hidden=!hlAvailable(b.dataset.hl);b.classList.toggle('on',b.dataset.hl===hl);});
   updateNavActive();
 }
+window._hlReady=true;
 updateHlNav();
 document.querySelectorAll('.ev-time-toggle').forEach(btn=>{
   btn.onclick=()=>_evSetTimeMode(btn.dataset.t);
@@ -4385,17 +4396,6 @@ document.getElementById('supp-save').onclick=()=>{
   document.getElementById(`ft-toggle-${key}`)?.addEventListener('change',function(){
     if(!db.settings.features)db.settings.features={workout:true,meals:true,sleep:true,gmail:false};
     db.settings.features[key]=this.checked;
-    // OFFにした機能がハイライトタブに設定されていたら次の有効な機能に切り替え
-    if(!this.checked){
-      const hlMap={workout:'wo',meals:'meals',sleep:'sleep'};
-      if(hlMap[key]===db.settings.highlightTab){
-        const f=db.settings.features;
-        if(f.workout&&key!=='workout')db.settings.highlightTab='wo';
-        else if(f.meals&&key!=='meals')db.settings.highlightTab='meals';
-        else if(f.sleep&&key!=='sleep')db.settings.highlightTab='sleep';
-        updateHlNav();
-      }
-    }
     save(db);
     applyFeatureVisibility();
     if(!this.checked&&st.tab==='other'){const subMap={workout:'wo',meals:'meals',sleep:'sleep',gmail:'mail'};if(st.otherSub===subMap[key])switchToTab('cal');}
@@ -5239,6 +5239,7 @@ const CHARS={
     system:'あなたはコタ（おっとり伴走のクマ）です。ゆっくり丁寧で温かい口調。急かさない。「焦らなくていいよ」「続けることが一番大事」という姿勢。ユーザーのデータを使って自分ごとにする。一人称は「ぼく」。指定フォーマット厳守。日本語のみ。'},
 };
 const CHANGELOG=[
+  {v:'v2.84.0',d:'画面下の3つ目のタブを 筋トレ・食事・睡眠・健康 から選べるように（設定→下のタブ）'},
   {v:'v2.83.0',d:'画面下部に筋トレ・カレンダー・タスクのタブを追加'},
   {v:'v2.82.3',d:'ひとことを親しみやすい口調に。AIの文章が途中で切れる不具合を根本修正'},
   {v:'v2.82.2',d:'ひとことが途中で切れる不具合を修正。アプリが古いまま残らないよう自動更新に対応'},
@@ -7005,6 +7006,7 @@ document.getElementById('ml-next').onclick=()=>{const d=new Date(st.mlDate);d.se
     const skipBtn=document.getElementById('ob-skip');
     const step1=document.getElementById('ob-step1');
     const step2=document.getElementById('ob-step2');
+    const step3=document.getElementById('ob-step3');
     function goToStep2(){
       const name=inp.value.trim()||'マイデータ';
       const profs=getProfs();
@@ -7018,8 +7020,12 @@ document.getElementById('ml-next').onclick=()=>{const d=new Date(st.mlDate);d.se
     step2.querySelectorAll('.ob-chip').forEach(chip=>{
       chip.addEventListener('click',()=>chip.classList.toggle('active'));
     });
-    function finishOnboarding(){
+    // 用途選択 → マイタブ（下部タブ3つ目）の選択へ
+    function goToStep3(){step2.hidden=true;step3.hidden=false;}
+    function finishOnboarding(hlChoice){
       const selected=[...step2.querySelectorAll('.ob-chip.active')].map(c=>c.dataset.val);
+      // マイタブ: 明示選択 > 用途からの推定（食事系のみなら食事、それ以外は筋トレ）
+      db.settings.highlightTab=hlChoice||(selected.includes('diet')&&!selected.includes('fitness')?'meals':'wo');
       const savedName=inp.value.trim()||'マイデータ';
       db.userProfile={useCase:selected,setupAt:todayStr(),name:savedName};
       if(selected.length>0)autoConfigFeatures(selected);
@@ -7027,11 +7033,16 @@ document.getElementById('ml-next').onclick=()=>{const d=new Date(st.mlDate);d.se
       ob.hidden=true;
       app.style.display='';
       renderProfHeader();
+      updateHlNav();
       renderGoals();renderCal();renderTasks();renderHealthAdvice();
       if(window._showCharIntro)window._showCharIntro();
     }
-    startBtn.addEventListener('click',finishOnboarding);
-    skipBtn.addEventListener('click',finishOnboarding);
+    startBtn.addEventListener('click',goToStep3);
+    skipBtn.addEventListener('click',goToStep3);
+    step3.querySelectorAll('.ob-chip[data-hl]').forEach(chip=>{
+      chip.addEventListener('click',()=>finishOnboarding(chip.dataset.hl));
+    });
+    document.getElementById('ob-skip3').addEventListener('click',()=>finishOnboarding());
     setTimeout(()=>inp.focus(),100);
   }
 })();
