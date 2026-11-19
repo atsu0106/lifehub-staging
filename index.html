@@ -1227,6 +1227,8 @@ body.in-training .ai-modal{z-index:700;}
 .ex-head{flex-wrap:wrap;row-gap:6px;}
 .ex-name{flex:1 1 120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .ex-acts{flex-shrink:0;margin-left:auto;}
+.rest-pill{top:calc(env(safe-area-inset-top,0px) + 92px);white-space:nowrap;}
+.rest-pill *{white-space:nowrap;flex-shrink:0;}
 </style>
 </head>
 <body>
@@ -2556,7 +2558,7 @@ body.in-training .ai-modal{z-index:700;}
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='8bd1b290eb'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='4d0587be83'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
