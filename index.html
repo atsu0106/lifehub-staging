@@ -1226,7 +1226,6 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
     <button class="hdr-menu-btn" id="hdr-menu" aria-label="メニュー"><svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
     <span class="hdr-logo" id="hdr-title">LifeHub</span>
     <span class="hdr-date" id="hdr-date"></span>
-    <button class="hdr-gmail-btn" id="hdr-gmail" hidden title="メールからのアクション">📧<span class="gmail-badge" id="gmail-badge">0</span></button>
     <button class="prof-btn" id="prof-btn" title="プロフィール切り替え">
       <span class="prof-avatar" id="prof-avatar" style="background:#4F46E5">?</span>
     </button>
@@ -1281,7 +1280,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
     <p class="section-label" id="day-lbl"></p>
     <div id="ev-list"></div>
     <div id="clarify-tasks" class="clarify-tasks-section" hidden></div>
-    <div id="clarify-gmail" class="clarify-tasks-section" hidden></div>
+    
   </section>
 
   <section id="tab-tasks" class="tab">
@@ -1309,10 +1308,6 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
       <button class="other-sub-btn on" data-s="meals"><span class="osb-icon">🍱</span>食事</button>
       <button class="other-sub-btn" data-s="sleep"><span class="osb-icon">😴</span>睡眠</button>
       <button class="other-sub-btn" data-s="health"><span class="osb-icon">❤️</span>健康</button>
-      <button class="other-sub-btn" data-s="mail" id="other-mail-btn" style="display:none;"><span class="osb-icon">📧</span>メール</button>
-    </div>
-    <div id="other-mail" hidden>
-      <div id="other-mail-list"></div>
     </div>
     <div id="other-wo" hidden>
       <div class="card date-bar" id="wo-datebar">
@@ -1504,7 +1499,6 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
       <button class="dr-item" data-go="meals"><span class="dr-ic">🍱</span>食事</button>
       <button class="dr-item" data-go="sleep"><span class="dr-ic">😴</span>睡眠</button>
       <button class="dr-item" data-go="health"><span class="dr-ic">❤️</span>健康</button>
-      <button class="dr-item" data-go="mail"><span class="dr-ic">📧</span>メール</button>
       <div class="dr-sep"></div>
       <button class="dr-item" data-act="settings"><span class="dr-ic">⚙️</span>設定</button>
     </div>
@@ -1543,6 +1537,8 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
   </div>
   <div class="ai-input-row">
     <button class="ai-mic" id="ai-mic" title="音声入力">🎤</button>
+    <button class="ai-attach" id="ai-camera" title="その場で撮影" style="display:none;">📷</button>
+    <input type="file" id="ai-camera-input" accept="image/*" capture="environment" style="display:none;">
     <button class="ai-attach" id="ai-attach" title="ファイルを添付" style="display:none;">📎</button>
     <input type="file" id="ai-file-input" accept="image/*,.pdf" multiple style="display:none;">
     <textarea class="ai-input" id="ai-input" placeholder="メッセージを入力..." autocomplete="off" rows="1"></textarea>
@@ -1736,18 +1732,6 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
             <span id="ft-thumb-sleep" class="st-toggle-thumb" style="left:23px;"></span>
           </label>
         </div>
-        <div class="st-row st-row-toggle" id="st-gmail-feat-row">
-          <span class="st-ic" style="background:#0ea5e9;">📧</span>
-          <div style="flex:1;">
-            <div class="st-label">Gmailアクション</div>
-            <div style="font-size:11px;color:var(--fg3);margin-top:1px;" id="st-gmail-feat-sub">メールをAIが解析してタスク・予定を提案</div>
-          </div>
-          <label class="st-toggle">
-            <input type="checkbox" id="ft-toggle-gmail" style="opacity:0;width:0;height:0;">
-            <span id="ft-track-gmail" class="st-toggle-track" style="background:var(--border);"></span>
-            <span id="ft-thumb-gmail" class="st-toggle-thumb"></span>
-          </label>
-        </div>
       </div>
 
       <!-- AIキャラクター -->
@@ -1812,51 +1796,6 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
 
       <!-- AI・連携 -->
       <div class="st-sec">AI・連携</div>
-      <!-- Gmail OAuth connect card -->
-      <div class="st-card" id="st-gmail-connect-card">
-        <div class="st-row" id="st-gmail-connect-row" style="cursor:pointer;">
-          <span class="st-ic" style="background:#ea4335;">G</span>
-          <div style="flex:1;">
-            <div class="st-label" id="st-gmail-connect-label">Googleアカウントと連携</div>
-            <div style="font-size:11px;color:var(--fg3);margin-top:1px;" id="st-gmail-connect-sub">タップしてGmailを接続する</div>
-          </div>
-          <span id="st-gmail-connect-arrow" class="st-arrow">›</span>
-        </div>
-        <div class="st-row" id="st-gmail-disconnect-row" style="display:none;cursor:pointer;">
-          <span class="st-ic" style="background:#fee2e2;">🔌</span>
-          <span class="st-label st-action-danger">連携を解除する</span>
-          <span class="st-arrow">›</span>
-        </div>
-        <div class="st-row st-row-toggle" id="st-gmail-auto-event-row" style="display:none;">
-          <span class="st-ic" style="background:#4f46e5;">📅</span>
-          <div style="flex:1;">
-            <div class="st-label">予定を自動追加</div>
-            <div style="font-size:11px;color:var(--fg3);margin-top:1px;">カレンダー予定を確認なしで自動追加</div>
-          </div>
-          <label class="toggle"><input type="checkbox" id="gmail-auto-event-toggle"><span class="toggle-track"><span class="toggle-thumb"></span></span></label>
-        </div>
-        <div class="st-row st-row-toggle" id="st-gmail-auto-task-row" style="display:none;">
-          <span class="st-ic" style="background:#10b981;">✅</span>
-          <div style="flex:1;">
-            <div class="st-label">タスクを自動追加</div>
-            <div style="font-size:11px;color:var(--fg3);margin-top:1px;">タスクを確認なしで自動追加</div>
-          </div>
-          <label class="toggle"><input type="checkbox" id="gmail-auto-task-toggle"><span class="toggle-track"><span class="toggle-thumb"></span></span></label>
-        </div>
-        <div class="st-row" id="st-gmail-lookback-row" style="display:none;">
-          <span class="st-ic" style="background:#6366f1;">📆</span>
-          <div style="flex:1;">
-            <div class="st-label">チェック期間</div>
-            <div style="font-size:11px;color:var(--fg3);margin-top:1px;">過去何日分のメールを遡るか</div>
-          </div>
-          <select id="gmail-lookback-select" style="border:1.5px solid var(--border);border-radius:8px;padding:5px 8px;background:var(--surface2);color:var(--fg);font-size:13px;font-family:inherit;">
-            <option value="7">1週間</option>
-            <option value="30" selected>1か月</option>
-            <option value="90">3か月</option>
-            <option value="180">6か月</option>
-          </select>
-        </div>
-      </div>
       <div class="st-card">
         <div class="st-row st-row-toggle">
           <span class="st-ic" style="background:#8b5cf6;">📎</span>
@@ -1936,7 +1875,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.84.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.85.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -2521,57 +2460,13 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
   </div>
 </div>
 
-<!-- Gmail Sheet (must be before <script> so IDs are available at parse time) -->
-<div id="gmail-sheet" class="gmail-sheet" hidden>
-  <div class="gmail-sheet-hdr">
-    <h2>📧 メールからのアクション</h2>
-    <button class="ai-hdr-btn" id="gmail-close">✕</button>
-  </div>
-  <div class="gmail-sheet-body" id="gmail-sheet-body"></div>
-</div>
-<div id="gmail-overlay" style="position:fixed;inset:0;z-index:299;background:rgba(0,0,0,.4);display:none;"></div>
-<!-- Gmail確認ドロワー (z-index:400, gmailシートの上に重なる) -->
-<div id="gmail-cd-overlay"></div>
-<div id="gmail-cd" class="gmail-cd" hidden>
-  <div class="gmail-cd-hdr">
-    <span class="gmail-cd-icon" id="gmail-cd-icon">📅</span>
-    <h3 id="gmail-cd-heading">予定を確認</h3>
-    <button class="gmail-cd-close" id="gmail-cd-close">✕</button>
-  </div>
-  <div class="gmail-cd-body">
-    <div class="gmail-cd-row">
-      <span class="gmail-cd-label">タイトル</span>
-      <input class="gmail-cd-input" id="gmail-cd-title" type="text" placeholder="タイトル">
-    </div>
-    <div class="gmail-cd-row">
-      <span class="gmail-cd-label">日付</span>
-      <input class="gmail-cd-input" id="gmail-cd-date" type="date">
-    </div>
-    <div class="gmail-cd-row" id="gmail-cd-time-row">
-      <span class="gmail-cd-label">時刻</span>
-      <div class="gmail-cd-row-2">
-        <input class="gmail-cd-input" id="gmail-cd-time" type="time" placeholder="開始">
-        <input class="gmail-cd-input" id="gmail-cd-timeend" type="time" placeholder="終了">
-      </div>
-    </div>
-    <div class="gmail-cd-row" id="gmail-cd-location-row">
-      <span class="gmail-cd-label">場所</span>
-      <input class="gmail-cd-input" id="gmail-cd-location" type="text" placeholder="場所">
-    </div>
-    <div class="gmail-cd-row">
-      <span class="gmail-cd-label">メモ</span>
-      <input class="gmail-cd-input" id="gmail-cd-memo" type="text" placeholder="メモ">
-    </div>
-    <button class="gmail-cd-ok" id="gmail-cd-ok">追加する</button>
-  </div>
-</div>
 <!-- Toast -->
 <div class="lh-toast" id="lh-toast"></div>
 
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='46082ecd3d'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='7ba13c122a'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -2817,20 +2712,6 @@ function getEventsForDate(dateStr){
   return (db.events||[]).filter(ev=>evOccursOn(ev,dateStr)&&!st.hiddenCals.has(ev.calendarId))
     .sort((a,b)=>(a.time||'').localeCompare(b.time||''));
 }
-function getGmailEventsForDate(dateStr){
-  if(!window._getGmailCalItems)return[];
-  const result=[];
-  for(const item of window._getGmailCalItems()){
-    const recDate=item.receivedAt?(()=>{try{return new Date(item.receivedAt).toISOString().substring(0,10);}catch(e){return null;}})():null;
-    if(recDate===dateStr)
-      result.push({_gmail:true,emailId:item.emailId,title:'📧 '+item.subject,date:dateStr,color:'#ea4335',allDay:true,_item:item});
-    (item.actions||[]).forEach(a=>{
-      if(a.type==='event'&&a.date===dateStr&&a.date!==recDate)
-        result.push({_gmail:true,emailId:item.emailId,title:'📅 '+a.title,date:dateStr,time:a.time||'',color:'#ea4335',_item:item,_action:a});
-    });
-  }
-  return result;
-}
 
 let db=load();
 const NOW=new Date();
@@ -2889,7 +2770,8 @@ if(!db.settings)db.settings={addBtnPos:'center',highlightTab:'wo',calLayout:'gen
 if(!db.settings.highlightTab)db.settings.highlightTab='wo';
 if(!db.settings.calLayout)db.settings.calLayout='general';
 if(!db.settings.healthProfile)db.settings.healthProfile={};
-if(!db.settings.features)db.settings.features={workout:true,meals:true,sleep:true,gmail:false};
+if(!db.settings.features)db.settings.features={workout:true,meals:true,sleep:true};
+delete db.settings.features.gmail; // v2.85.0 メール連携削除
 
 // 既存の写真データをlocalStorage→IndexedDBに移行
 (async()=>{
@@ -2909,7 +2791,6 @@ function autoConfigFeatures(useCases){
   const f=db.settings.features;
   if(useCases.includes('fitness')){f.workout=true;f.sleep=true;}
   if(useCases.includes('diet')){f.meals=true;f.sleep=true;}
-  if(useCases.includes('work')){f.gmail=true;}
   if(useCases.includes('study')||useCases.includes('goal')||useCases.includes('habit')){
     // バランス型：全部ON
     f.workout=true;f.meals=true;f.sleep=true;
@@ -2920,10 +2801,10 @@ function autoConfigFeatures(useCases){
 }
 
 function applyFeatureVisibility(){
-  const f=db.settings.features||{workout:true,meals:true,sleep:true,gmail:false};
+  const f=db.settings.features||{workout:true,meals:true,sleep:true};
   if(window._hlReady)updateHlNav(); // calendar.js 読込前は呼ばない（HL_NAVの初期化前）
   // 機能トグルのUI状態を更新
-  ['workout','meals','sleep','gmail'].forEach(key=>{
+  ['workout','meals','sleep'].forEach(key=>{
     const track=document.getElementById(`ft-track-${key}`);
     const thumb=document.getElementById(`ft-thumb-${key}`);
     const cb=document.getElementById(`ft-toggle-${key}`);
@@ -2998,11 +2879,11 @@ function updateNavActive(){
   document.getElementById('hdr-title').textContent=st.tab==='cal'?'LifeHub':st.tab==='tasks'?'タスク':(SCREEN_TITLES[st.otherSub]||'LifeHub');
   fabFloat.hidden=st.tab!=='cal';
 }
-const SCREEN_TITLES={wo:'トレーニング',meals:'食事',sleep:'睡眠',health:'健康',mail:'メール'};
+const SCREEN_TITLES={wo:'トレーニング',meals:'食事',sleep:'睡眠',health:'健康'};
 const drawerEl=document.getElementById('drawer'),drawerOv=document.getElementById('drawer-ov');
 function openDrawer(){
   const f=db.settings.features||{};
-  const featOf={wo:'workout',meals:'meals',sleep:'sleep',mail:'gmail'};
+  const featOf={wo:'workout',meals:'meals',sleep:'sleep'};
   drawerEl.querySelectorAll('.dr-item[data-go]').forEach(b=>{const k=featOf[b.dataset.go];b.hidden=!!k&&f[k]===false;});
   const profs=getProfs();
   const active=profs.find(p=>p.id===window._LH_PID)||profs[0]||{name:'?',color:'#4F46E5'};
@@ -3053,6 +2934,23 @@ document.querySelectorAll('.nb').forEach(btn=>{
 });
 
 // ── Media helpers ─────────────────────────────────────────
+// AIに送る画像を縮小（長辺1568px・JPEG）。API上限5MB超えによる失敗を防ぐ。画像以外・デコード不可はそのまま
+function readFileBase64(file){
+  return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(String(e.target.result).split(',')[1]);r.onerror=rej;r.readAsDataURL(file);});
+}
+async function fileToAIImage(file,max=1568){
+  const raw=async()=>({data:await readFileBase64(file),mediaType:file.type||'application/octet-stream'});
+  if(!file.type||!file.type.startsWith('image/'))return raw();
+  try{
+    const url=URL.createObjectURL(file);
+    const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=url;});
+    URL.revokeObjectURL(url);
+    const scale=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
+    const c=document.createElement('canvas');c.width=Math.round(img.naturalWidth*scale);c.height=Math.round(img.naturalHeight*scale);
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+    return {data:c.toDataURL('image/jpeg',.85).split(',')[1],mediaType:'image/jpeg'};
+  }catch(e){return raw();}
+}
 function compressImage(file){
   return new Promise(resolve=>{
     const reader=new FileReader();
@@ -3540,7 +3438,6 @@ function renderCal(){
   if(searchRow)searchRow.hidden=isClarify;
   document.getElementById('cal-filter-row').hidden=isClarify;
   document.getElementById('clarify-tasks').hidden=!isClarify;
-  document.getElementById('clarify-gmail').hidden=!isClarify;
   if(isClarify){
     document.getElementById('cal-grid').hidden=true;
     document.getElementById('week-view').hidden=true;
@@ -3585,7 +3482,6 @@ function renderClarifyView(){
   document.getElementById('cl-dow-label').textContent=dowStr+'曜日';
   renderDayEv();
   renderClarifyTasks(ds);
-  renderClarifyGmail(ds);
 }
 function taskIsDoneOn(task,dateStr){
   if(task.repeat==='none'||!task.repeat)return!!task.done;
@@ -3628,29 +3524,6 @@ function renderClarifyTasks(dateStr){
     const name=document.createElement('div');name.className='clarify-task-name'+(done?' done':'');
     name.textContent=t.title+(t.repeat&&t.repeat!=='none'?` (${t.repeat==='daily'?'毎日':'毎週'})`:'');
     row.appendChild(chk);row.appendChild(name);sec.appendChild(row);
-  });
-}
-function renderClarifyGmail(dateStr){
-  const sec=document.getElementById('clarify-gmail');sec.innerHTML='';
-  const items=getGmailEventsForDate(dateStr);
-  if(!items.length)return;
-  const lbl=document.createElement('p');lbl.className='section-label';lbl.textContent='メール';sec.appendChild(lbl);
-  items.forEach(gev=>{
-    const row=document.createElement('div');
-    row.className='clarify-task-row';
-    row.style.cssText='cursor:pointer;border-left:3px solid #ea4335;padding-left:11px;';
-    const icon=document.createElement('span');icon.style.cssText='font-size:16px;flex-shrink:0;';
-    icon.textContent=gev._action?'📅':'📧';
-    const info=document.createElement('div');info.style.cssText='flex:1;min-width:0;';
-    const title=document.createElement('div');title.className='clarify-task-name';
-    title.textContent=String(gev.title).replace(/^[📧📅] /,'');
-    const sub=document.createElement('div');sub.style.cssText='font-size:11px;color:var(--fg3);margin-top:1px;';
-    sub.textContent=(gev._action?'予定 (Gmailより)':'メール受信')+(gev._action&&gev._action.time?' · '+gev._action.time:'');
-    info.appendChild(title);info.appendChild(sub);
-    const arr=document.createElement('span');arr.style.cssText='font-size:12px;color:#ea4335;font-weight:600;';arr.textContent='確認›';
-    row.appendChild(icon);row.appendChild(info);row.appendChild(arr);
-    row.onclick=()=>{if(window._gmailOpenSheet)window._gmailOpenSheet();};
-    sec.appendChild(row);
   });
 }
 function addDay(grid,num,cls,ds){
@@ -4392,13 +4265,13 @@ document.getElementById('supp-save').onclick=()=>{
   renderSuppList();
 };
 // 機能トグルハンドラ
-['workout','meals','sleep','gmail'].forEach(key=>{
+['workout','meals','sleep'].forEach(key=>{
   document.getElementById(`ft-toggle-${key}`)?.addEventListener('change',function(){
-    if(!db.settings.features)db.settings.features={workout:true,meals:true,sleep:true,gmail:false};
+    if(!db.settings.features)db.settings.features={workout:true,meals:true,sleep:true};
     db.settings.features[key]=this.checked;
     save(db);
     applyFeatureVisibility();
-    if(!this.checked&&st.tab==='other'){const subMap={workout:'wo',meals:'meals',sleep:'sleep',gmail:'mail'};if(st.otherSub===subMap[key])switchToTab('cal');}
+    if(!this.checked&&st.tab==='other'){const subMap={workout:'wo',meals:'meals',sleep:'sleep'};if(st.otherSub===subMap[key])switchToTab('cal');}
   });
 });
 document.getElementById('toggle-attach').addEventListener('change',function(){
@@ -4457,391 +4330,6 @@ document.querySelectorAll('.st-opt[data-hp-gym]').forEach(btn=>{
     document.querySelectorAll('.st-opt[data-hp-gym]').forEach(b=>b.classList.toggle('on',b.dataset.hpGym===btn.dataset.hpGym));
   };
 });
-// ── Gmail連携 ─────────────────────────────────────────────
-(function(){
-  const WORKER = 'https://lifehub-ai.y-atsuhisa7234.workers.dev';
-  const SECRET = 'lh-gmail-7x9k2m4p8q';
-  let _gmailItems = [];
-  const safeHtml = t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-
-  async function fetchActions(){
-    try{
-      const res = await fetch(`${WORKER}/gmail-actions`, {
-        headers: { 'X-LifeHub-Token': SECRET }
-      });
-      if(!res.ok) return [];
-      return await res.json();
-    } catch(e){ return []; }
-  }
-
-  async function dismissEmail(emailId){
-    try{
-      await fetch(`${WORKER}/gmail-confirm`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain', 'X-LifeHub-Token': SECRET },
-        body: JSON.stringify({ emailId })
-      });
-    } catch(e){}
-  }
-
-  function typeIcon(t){ return t==='event'?'📅':t==='task'?'✅':'↩️'; }
-
-  function renderSheet(items){
-    const body = document.getElementById('gmail-sheet-body');
-    if(items.length === 0){
-      body.innerHTML = '<div class="gmail-empty">📭 新しいアクションはありません</div>';
-      return;
-    }
-    body.innerHTML = items.map((item,i)=>`
-      <div class="gmail-item" id="gmail-item-${i}">
-        <div class="gmail-item-hdr">
-          <div style="flex:1"><div class="gmail-subj">${safeHtml(item.subject)}</div><div class="gmail-from">${safeHtml(item.from)}</div>${item.receivedAt?`<div style="font-size:11px;color:var(--fg3);margin-top:2px;">📅 ${(()=>{try{const d=new Date(item.receivedAt);return`${d.getMonth()+1}月${d.getDate()}日 ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}catch(e){return item.receivedAt.substring(0,10);}})()}</div>`:''}</div>
-          <button class="gmail-item-dismiss" data-dismiss="${i}" title="却下">✕</button>
-        </div>
-        <div class="gmail-summary">${safeHtml(item.summary||'')}</div>
-        <div class="gmail-actions-list">${item.actions.map((a,j)=>`
-          <div class="gmail-action-row">
-            <span class="gmail-action-type">${typeIcon(a.type)}</span>
-            <div class="gmail-action-text"><strong>${safeHtml(a.title)}</strong>${a.date?`<br><span style="color:var(--fg3)">${a.date}${a.time?' '+a.time:''}${a.location?' · '+safeHtml(a.location):''}</span>`:''}${a.description?`<br>${safeHtml(a.description)}`:''}
-            </div>
-            <button class="gmail-action-add" data-item="${i}" data-action="${j}">追加</button>
-          </div>`).join('')}
-        </div>
-      </div>`).join('') +
-      (items.length > 1 ? `<button class="gmail-all-btn" id="gmail-add-all">📥 全部追加（${items.reduce((s,it)=>s+it.actions.length,0)}件）</button>` : '');
-
-    // 追加ボタン
-    body.querySelectorAll('.gmail-action-add').forEach(btn=>{
-      btn.onclick = ()=>{
-        const item = items[+btn.dataset.item];
-        const action = item.actions[+btn.dataset.action];
-        openConfirmDrawer(action, async (edited)=>{
-          btn.disabled = true; btn.textContent = '✓';
-          addActionToApp(edited);
-          // 全アクション追加済みなら dismiss
-          const row = btn.closest('.gmail-item');
-          const remaining = row.querySelectorAll('.gmail-action-add:not(:disabled)');
-          if(remaining.length === 0){
-            await dismissEmail(item.emailId);
-            _gmailItems = _gmailItems.filter(it=>it.emailId!==item.emailId);
-            updateBadge(_gmailItems.length);
-          }
-          closeSheet();
-          navigateAfterAdd(edited);
-        });
-      };
-    });
-
-    // 却下ボタン
-    body.querySelectorAll('[data-dismiss]').forEach(btn=>{
-      btn.onclick = async ()=>{
-        const item = items[+btn.dataset.dismiss];
-        await dismissEmail(item.emailId);
-        _gmailItems = _gmailItems.filter(it=>it.emailId!==item.emailId);
-        updateBadge(_gmailItems.length);
-        renderSheet(_gmailItems);
-      };
-    });
-
-    // 全部追加ボタン
-    const allBtn = body.querySelector('#gmail-add-all');
-    if(allBtn) allBtn.onclick = async ()=>{
-      allBtn.disabled = true; allBtn.textContent = '追加中…';
-      for(const item of items){
-        for(const action of item.actions) addActionToApp(action);
-        await dismissEmail(item.emailId);
-      }
-      _gmailItems = [];
-      updateBadge(0);
-      renderSheet([]);
-    };
-  }
-
-  function addActionToApp(action){
-    const today = TODAY;
-    if(action.type === 'event'){
-      const ev = {
-        id: 'ev_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),
-        title: action.title,
-        date: action.date || today,
-        time: action.time || '',
-        timeEnd: action.time_end || '',
-        location: action.location || '',
-        memo: action.description || '',
-        color: '#4F46E5'
-      };
-      if(!db.events) db.events = [];
-      db.events.push(ev);
-      save(db); renderCal();
-    } else if(action.type === 'task' || action.type === 'reply'){
-      const task = {
-        id: 'tk_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),
-        title: action.title + (action.description ? ' — '+action.description : ''),
-        done: false,
-        priority: 'mid',
-        due: action.date || '',
-        repeat: '',
-        goalId: '',
-        location: '',
-        memo: '',
-        completedAt: null,
-        completedDates: [],
-        source: 'gmail',
-        createdAt: today
-      };
-      if(!db.tasks) db.tasks = [];
-      db.tasks.push(task);
-      save(db); if(typeof renderTasks==='function') renderTasks();
-    }
-    window._missionHook?.('task_add');
-  }
-
-  // ── 確認ドロワー ───────────────────────────────────────────
-  let _cdCallback = null;
-  function openConfirmDrawer(action, onConfirm){
-    const isEvent = action.type === 'event';
-    _cdCallback = onConfirm;
-    document.getElementById('gmail-cd-icon').textContent = isEvent ? '📅' : '✅';
-    document.getElementById('gmail-cd-heading').textContent = isEvent ? '予定を確認・編集' : 'タスクを確認・編集';
-    document.getElementById('gmail-cd-title').value = action.title || '';
-    document.getElementById('gmail-cd-date').value = action.date || TODAY;
-    document.getElementById('gmail-cd-time').value = action.time || '';
-    document.getElementById('gmail-cd-timeend').value = action.time_end || '';
-    document.getElementById('gmail-cd-location').value = action.location || '';
-    document.getElementById('gmail-cd-memo').value = action.description || '';
-    document.getElementById('gmail-cd-time-row').style.display = isEvent ? '' : 'none';
-    document.getElementById('gmail-cd-location-row').style.display = isEvent ? '' : 'none';
-    const cd = document.getElementById('gmail-cd');
-    const ov = document.getElementById('gmail-cd-overlay');
-    cd.hidden = false; ov.style.display = 'block';
-    requestAnimationFrame(()=>cd.classList.add('open'));
-  }
-
-  function closeConfirmDrawer(){
-    const cd = document.getElementById('gmail-cd');
-    const ov = document.getElementById('gmail-cd-overlay');
-    cd.classList.remove('open');
-    ov.style.display = 'none';
-    setTimeout(()=>{ cd.hidden = true; _cdCallback = null; }, 300);
-  }
-
-  function navigateAfterAdd(action){
-    const isEvent = action.type === 'event';
-    const date = action.date || TODAY;
-    if(isEvent){
-      const d = new Date(date + 'T00:00:00');
-      st.selDate = date; st.calY = d.getFullYear(); st.calM = d.getMonth();
-      switchToTab('cal');
-      setTimeout(()=>openDayModal(date), 320);
-      showToast('📅 カレンダーに追加しました');
-    } else {
-      switchToTab('tasks');
-      showToast('✅ タスクに追加しました');
-    }
-  }
-
-  document.getElementById('gmail-cd-ok').onclick = ()=>{
-    if(!_cdCallback) return;
-    const edited = {
-      type: document.getElementById('gmail-cd-time-row').style.display === 'none' ? 'task' : 'event',
-      title: document.getElementById('gmail-cd-title').value.trim() || '(タイトルなし)',
-      date: document.getElementById('gmail-cd-date').value || TODAY,
-      time: document.getElementById('gmail-cd-time').value || '',
-      time_end: document.getElementById('gmail-cd-timeend').value || '',
-      location: document.getElementById('gmail-cd-location').value || '',
-      description: document.getElementById('gmail-cd-memo').value || ''
-    };
-    const cb = _cdCallback;
-    closeConfirmDrawer();
-    cb(edited);
-  };
-  document.getElementById('gmail-cd-close').onclick = closeConfirmDrawer;
-  document.getElementById('gmail-cd-overlay').onclick = closeConfirmDrawer;
-
-  function updateBadge(count){
-    const btn = document.getElementById('hdr-gmail');
-    const badge = document.getElementById('gmail-badge');
-    btn.hidden = count === 0;
-    badge.textContent = count;
-  }
-
-  function openSheet(){
-    const sheet = document.getElementById('gmail-sheet');
-    const ov = document.getElementById('gmail-overlay');
-    renderSheet(_gmailItems);
-    sheet.hidden = false;
-    ov.style.display = 'block';
-    requestAnimationFrame(()=>sheet.classList.add('open'));
-  }
-
-  function closeSheet(){
-    const sheet = document.getElementById('gmail-sheet');
-    const ov = document.getElementById('gmail-overlay');
-    sheet.classList.remove('open');
-    ov.style.display = 'none';
-    setTimeout(()=>{ sheet.hidden = true; }, 300);
-  }
-
-  window._getGmailCalItems = () => _gmailItems;
-  window._gmailOpenSheet = () => openSheet();
-  window._gmailDismiss = async (emailId)=>{
-    await dismissEmail(emailId);
-    _gmailItems=_gmailItems.filter(it=>it.emailId!==emailId);
-    updateBadge(_gmailItems.length);
-  };
-  window._gmailAddAction = (action)=>addActionToApp(action);
-
-  function updateMailTabVisibility(){
-    const btn=document.getElementById('other-mail-btn');
-    if(btn) btn.style.display=db.settings?.features?.gmail===false?'none':'';
-  }
-  updateMailTabVisibility();
-
-  // ── 自動追加 ──────────────────────────────────────────────
-  async function autoProcess(items){
-    if(!items.length)return;
-    let evCount=0,tkCount=0;
-    const autoEv=!!db.settings?.gmailAutoAddEvent;
-    const autoTk=!!db.settings?.gmailAutoAddTask;
-    for(const item of items){
-      let handled=true;
-      (item.actions||[]).forEach(a=>{
-        if(a.type==='event'&&autoEv){addActionToApp(a);evCount++;}
-        else if((a.type==='task'||a.type==='reply')&&autoTk){addActionToApp(a);tkCount++;}
-        else handled=false;
-      });
-      if(handled) await dismissEmail(item.emailId);
-    }
-    // 未処理分だけ残す
-    _gmailItems=items.filter(item=>(item.actions||[]).some(a=>{
-      if(a.type==='event')return !autoEv;
-      return !autoTk;
-    }));
-    updateBadge(_gmailItems.length);
-    const msgs=[];
-    if(evCount>0)msgs.push(`予定${evCount}件`);
-    if(tkCount>0)msgs.push(`タスク${tkCount}件`);
-    if(msgs.length>0)showToast(`📧 Gmail: ${msgs.join('・')}を自動追加しました`);
-  }
-
-  async function fetchAndProcess(){
-    const items = await fetchActions();
-    if(db.settings?.gmailAutoAdd){
-      await autoProcess(items);
-    } else {
-      _gmailItems = items;
-      updateBadge(_gmailItems.length);
-    }
-  }
-
-  // 自動追加トグル初期化・保存（予定/タスク別）
-  const autoEventToggle = document.getElementById('gmail-auto-event-toggle');
-  if(autoEventToggle){
-    autoEventToggle.checked = !!db.settings?.gmailAutoAddEvent;
-    autoEventToggle.onchange = ()=>{ if(!db.settings)db.settings={}; db.settings.gmailAutoAddEvent=autoEventToggle.checked; save(db); };
-  }
-  const autoTaskToggle = document.getElementById('gmail-auto-task-toggle');
-  if(autoTaskToggle){
-    autoTaskToggle.checked = !!db.settings?.gmailAutoAddTask;
-    autoTaskToggle.onchange = ()=>{ if(!db.settings)db.settings={}; db.settings.gmailAutoAddTask=autoTaskToggle.checked; save(db); };
-  }
-
-  // チェック期間セレクタ初期化・保存
-  const lookbackSel = document.getElementById('gmail-lookback-select');
-  if(lookbackSel){
-    const saved = db.settings?.gmailLookback ?? 30;
-    lookbackSel.value = String(saved);
-    lookbackSel.onchange = ()=>{
-      if(!db.settings) db.settings={};
-      db.settings.gmailLookback = Number(lookbackSel.value);
-      save(db);
-    };
-  }
-
-  document.getElementById('hdr-gmail').onclick = openSheet;
-  document.getElementById('gmail-close').onclick = closeSheet;
-  document.getElementById('gmail-overlay').onclick = closeSheet;
-
-  // ── Gmail OAuth UI ────────────────────────────────────────
-  async function checkGmailConnection(){
-    try{
-      const res = await fetch(`${WORKER}/oauth/status`,{headers:{'X-LifeHub-Token':SECRET}});
-      const data = await res.json();
-      const connectRow = document.getElementById('st-gmail-connect-row');
-      const disconnectRow = document.getElementById('st-gmail-disconnect-row');
-      const label = document.getElementById('st-gmail-connect-label');
-      const sub   = document.getElementById('st-gmail-connect-sub');
-      const ic    = connectRow?.querySelector('.st-ic');
-      if(data.connected){
-        if(connectRow) connectRow.style.display='flex';
-        if(disconnectRow) disconnectRow.style.display='flex';
-        if(label) label.textContent = '連携済み ✓';
-        if(sub)   sub.textContent   = data.email ? data.email : 'Gmailが自動でチェックされます';
-        if(ic){ ic.textContent='✓'; ic.style.background='#dcfce7'; ic.style.color='#16a34a'; }
-        document.getElementById('st-gmail-connect-arrow').style.display='none';
-        document.getElementById('st-gmail-auto-event-row').style.display='flex';
-        document.getElementById('st-gmail-auto-task-row').style.display='flex';
-        document.getElementById('st-gmail-lookback-row').style.display='flex';
-        // 機能トグルを自動でON
-        const ck=document.getElementById('ft-toggle-gmail');
-        if(ck&&!ck.checked){ ck.checked=true; ck.dispatchEvent(new Event('change')); }
-      } else {
-        if(disconnectRow) disconnectRow.style.display='none';
-        document.getElementById('st-gmail-auto-event-row').style.display='none';
-        document.getElementById('st-gmail-auto-task-row').style.display='none';
-        document.getElementById('st-gmail-lookback-row').style.display='none';
-        if(label) label.textContent = 'Googleアカウントと連携';
-        if(sub)   sub.textContent   = 'タップしてGmailを接続する';
-        if(ic){ ic.textContent='G'; ic.style.background='#ea4335'; ic.style.color=''; }
-        document.getElementById('st-gmail-connect-arrow').style.display='';
-      }
-    } catch(e){}
-  }
-
-  // 設定画面を開くたびに接続状態を確認
-  const moSettings = document.getElementById('mo-settings');
-  if(moSettings){
-    new MutationObserver(muts=>{
-      muts.forEach(m=>{ if(!moSettings.hidden) checkGmailConnection(); });
-    }).observe(moSettings,{attributeFilter:['hidden']});
-  }
-
-  // 連携ボタン
-  document.getElementById('st-gmail-connect-row').onclick = ()=>{
-    const returnUrl = location.origin + location.pathname;
-    location.href = `${WORKER}/oauth/start?return=${encodeURIComponent(returnUrl)}`;
-  };
-
-  // 解除ボタン
-  document.getElementById('st-gmail-disconnect-row').onclick = async ()=>{
-    if(!confirm('Googleアカウントとの連携を解除しますか？')) return;
-    await fetch(`${WORKER}/oauth/disconnect`,{method:'POST',headers:{'X-LifeHub-Token':SECRET}});
-    checkGmailConnection();
-    showToast('Gmail連携を解除しました');
-    // 機能トグルをOFF
-    const ck=document.getElementById('ft-toggle-gmail');
-    if(ck&&ck.checked){ ck.checked=false; ck.dispatchEvent(new Event('change')); }
-  };
-
-  // OAuth後のコールバック処理（?gmail_connected=1）
-  if(location.search.includes('gmail_connected=1')){
-    history.replaceState(null,'',location.pathname);
-    // 機能フラグをONに設定
-    if(!db.settings.features)db.settings.features={workout:true,meals:true,sleep:true,gmail:true};
-    db.settings.features.gmail=true;
-    save(db);
-    updateMailTabVisibility();
-    setTimeout(()=>{showToast('✅ Gmailと連携しました！');}, 500);
-    // 即アクション取得
-    setTimeout(()=>fetchAndProcess(), 1500);
-  }
-
-  // 起動時に非同期でアクション取得（Gmail機能がONの場合のみ）
-  setTimeout(async ()=>{
-    if(db.settings.features?.gmail===false)return;
-    await fetchAndProcess();
-  }, 2000);
-})();
 // ── ICSインポート ─────────────────────────────────────────
 (function(){
   const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2);
@@ -5239,6 +4727,7 @@ const CHARS={
     system:'あなたはコタ（おっとり伴走のクマ）です。ゆっくり丁寧で温かい口調。急かさない。「焦らなくていいよ」「続けることが一番大事」という姿勢。ユーザーのデータを使って自分ごとにする。一人称は「ぼく」。指定フォーマット厳守。日本語のみ。'},
 };
 const CHANGELOG=[
+  {v:'v2.85.0',d:'AIチャットで📷その場で撮影して送れるように。メール連携は終了しました'},
   {v:'v2.84.0',d:'画面下の3つ目のタブを 筋トレ・食事・睡眠・健康 から選べるように（設定→下のタブ）'},
   {v:'v2.83.0',d:'画面下部に筋トレ・カレンダー・タスクのタブを追加'},
   {v:'v2.82.3',d:'ひとことを親しみやすい口調に。AIの文章が途中で切れる不具合を根本修正'},
@@ -6520,11 +6009,6 @@ document.getElementById('sl-add-nap').onclick=()=>{
 function renderOther(){
   const hl=db.settings?.highlightTab||'wo';
   document.querySelectorAll('.other-sub-btn').forEach(b=>{
-    if(b.dataset.s==='mail'){
-      b.classList.toggle('on',st.otherSub==='mail');
-      b.style.display=db.settings?.features?.gmail===false?'none':'';
-      return;
-    }
     b.hidden=false;
     b.classList.toggle('on',b.dataset.s===st.otherSub);
   });
@@ -6532,7 +6016,6 @@ function renderOther(){
   document.getElementById('other-meals').hidden=st.otherSub!=='meals';
   document.getElementById('other-sleep').hidden=st.otherSub!=='sleep';
   document.getElementById('other-health').hidden=st.otherSub!=='health';
-  document.getElementById('other-mail').hidden=st.otherSub!=='mail';
   if(st.otherSub==='wo'){
     document.querySelectorAll('.wo-vtab').forEach(b=>b.classList.toggle('on',b.dataset.v==='log'));
     document.getElementById('wo-datebar').style.display='';
@@ -6542,80 +6025,7 @@ function renderOther(){
   } else if(st.otherSub==='meals') renderMeals();
   else if(st.otherSub==='sleep') renderSleepTab();
   else if(st.otherSub==='health') renderHealth();
-  else if(st.otherSub==='mail') renderOtherMail();
   updateNavActive();
-}
-function renderOtherMail(){
-  const list=document.getElementById('other-mail-list');
-  const items=window._getGmailCalItems?window._getGmailCalItems():[];
-  if(!items.length){
-    list.innerHTML='<div class="empty" style="padding:40px 0"><div class="empty-icon">📭</div><p>新しいメールはありません</p></div>';
-    return;
-  }
-  list.innerHTML='';
-  items.forEach((item,i)=>{
-    const card=document.createElement('div');card.className='mail-card';
-    // 受信日フォーマット
-    let dateStr='';
-    try{const d=new Date(item.receivedAt);dateStr=`${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}catch(e){}
-    // 送信者のイニシャル
-    const fromName=(item.from||'?').replace(/<.*>/,'').trim();
-    const initial=(fromName[0]||'?').toUpperCase();
-    // esc
-    const e=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    card.innerHTML=`
-      <div class="mail-card-top" data-idx="${i}">
-        <div class="mail-card-avatar">${e(initial)}</div>
-        <div class="mail-card-info">
-          <div class="mail-card-from">${e(fromName)}</div>
-          <div class="mail-card-subject">${e(item.subject)}</div>
-          <div class="mail-card-summary">${e(item.summary||'')}</div>
-        </div>
-        <div class="mail-card-meta">${e(dateStr)}<br><span style="color:var(--accent);font-size:11px;font-weight:600;">${item.actions?.length||0}件</span></div>
-      </div>
-      <div class="mail-card-detail" id="mail-detail-${i}">
-        <button class="mail-card-detail-toggle" data-idx="${i}">アクションを見る ▾</button>
-        <div id="mail-actions-${i}" style="margin-top:8px;"></div>
-        <div style="display:flex;justify-content:flex-end;margin-top:6px;">
-          <button class="mail-dismiss-btn" data-dismiss="${i}" title="却下">✕ 却下</button>
-        </div>
-      </div>`;
-    list.appendChild(card);
-    // トップタップで展開
-    card.querySelector('.mail-card-top').onclick=()=>{
-      const det=document.getElementById(`mail-detail-${i}`);
-      det.classList.toggle('open');
-      if(det.classList.contains('open')) renderMailActions(i,item);
-    };
-    // 却下
-    card.querySelector('.mail-dismiss-btn').onclick=async e=>{
-      e.stopPropagation();
-      await window._gmailDismiss?.(item.emailId);
-      renderOtherMail();
-    };
-  });
-}
-function renderMailActions(idx,item){
-  const wrap=document.getElementById(`mail-actions-${idx}`);
-  if(!wrap)return;
-  const e=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  wrap.innerHTML='';
-  (item.actions||[]).forEach((action,j)=>{
-    const icon=action.type==='event'?'📅':action.type==='task'?'✅':'↩️';
-    const sub=[action.date,action.time,action.location].filter(Boolean).join(' · ');
-    const row=document.createElement('div');row.className='mail-action-row';
-    row.innerHTML=`<span class="mail-action-icon">${icon}</span>
-      <div class="mail-action-body">
-        <div class="mail-action-title">${e(action.title)}</div>
-        ${sub?`<div class="mail-action-sub">${e(sub)}</div>`:''}
-      </div>
-      <button class="mail-action-add" data-idx="${idx}" data-action="${j}">追加</button>`;
-    wrap.appendChild(row);
-    row.querySelector('.mail-action-add').onclick=async btn=>{
-      btn.target.disabled=true;btn.target.textContent='✓';
-      window._gmailAddAction?.(action);
-    };
-  });
 }
 function renderOtherSub(s){st.otherSub=s;renderOther();}
 document.querySelectorAll('.other-sub-btn').forEach(btn=>{
@@ -6899,10 +6309,7 @@ async function analyzePhotoMeal(){
   const btn=document.getElementById('mla-photo-btn');
   statusEl.textContent='📷 分析中...';btn.disabled=true;
   try{
-    const reader=new FileReader();
-    const dataUrl=await new Promise(res=>{reader.onload=e=>res(e.target.result);reader.readAsDataURL(file);});
-    const base64=dataUrl.split(',')[1];
-    const mimeType=file.type||'image/jpeg';
+    const {data:base64,mediaType:mimeType}=await fileToAIImage(file);
     const prompt='この料理・食事の写真を見て、含まれている食品と栄養成分を推定してください。複数の食品が見える場合は全体でまとめて推定してください。\n\n以下のJSON形式のみで返してください（コードブロック不要）:\n{"name":"料理名 (量の目安)","kcal":カロリー数値,"protein":タンパク質g数,"carbs":炭水化物g数,"fat":脂質g数,"note":"推定根拠や注意点（20字以内）"}';
     const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({
       model:'claude-haiku-5-5',max_tokens:400,thinking:{type:'disabled'},
@@ -6913,7 +6320,8 @@ async function analyzePhotoMeal(){
     })});
     if(!res.ok)throw new Error('HTTP '+res.status);
     const data=await res.json();
-    const text=data.content?.find(c=>c.type==='text')?.text||'{}';
+    if(data.error)throw new Error(data.error.type||'api');
+    const text=data.content?.find(c=>c.type==='text')?.text||'';
     const m=text.match(/\{[\s\S]*\}/);
     if(!m)throw new Error('parse');
     const r=JSON.parse(m[0]);
@@ -6929,7 +6337,7 @@ async function analyzePhotoMeal(){
     });
     statusEl.textContent=r.note?`✓ ${r.note}`:'✓ 推定完了（内容を確認してから追加してください）';
   }catch(e){
-    statusEl.textContent='⚠ 分析に失敗しました。手動で入力してください。';
+    statusEl.textContent='⚠ 分析に失敗しました。もう一度撮るか、手動で入力してください。('+(e.message||'err')+')';
   }
   btn.disabled=false;
   document.getElementById('mla-photo-input').value='';
@@ -7283,11 +6691,17 @@ function calcGameStats(){
     if(db.settings.enableAttach)attachBtn.style.display='flex';
     attachBtn.onclick=()=>fileInput.click();
   }
+  // 📷 その場で撮影（常に表示。📎は設定でON/OFF）
+  const camBtn=document.getElementById('ai-camera'),camInput=document.getElementById('ai-camera-input');
+  if(camBtn&&camInput){
+    camBtn.style.display='flex';
+    camBtn.onclick=()=>camInput.click();
+    camInput.addEventListener('change',async()=>{for(const f of camInput.files)await addFile(f);camInput.value='';});
+  }
   async function addFile(file){
     if(!file)return;
-    const reader=new FileReader();
-    const data=await new Promise(res=>{reader.onload=e=>res(e.target.result.split(',')[1]);reader.readAsDataURL(file);});
-    pendingAttachments.push({name:file.name||'file',mediaType:file.type||'application/octet-stream',data});
+    const {data,mediaType}=await fileToAIImage(file);
+    pendingAttachments.push({name:file.name||(mediaType.startsWith('image/')?'写真':'file'),mediaType,data});
     renderAttachPreview();
   }
 
