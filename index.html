@@ -1166,7 +1166,7 @@ body.lefty .drawer.open{transform:translateX(0);box-shadow:-4px 0 24px rgba(0,0,
 /* === トレーニング中のAI記録（v2.86.0） === */
 body.in-training .ai-overlay{z-index:699;}
 body.in-training .ai-modal{z-index:700;}
-.training-ai-log-btn{display:block;width:calc(100% - 32px);margin:0 auto 12px;background:linear-gradient(135deg,#6366f1,#8b5cf6)!important;color:#fff!important;border:none!important;}
+.training-ai-log-btn{display:block;flex:0 0 auto;width:calc(100% - 32px);font-size:14px!important;margin:0 auto 12px;background:linear-gradient(135deg,#6366f1,#8b5cf6)!important;color:#fff!important;border:none!important;}
 </style>
 </head>
 <body>
@@ -2476,7 +2476,7 @@ body.in-training .ai-modal{z-index:700;}
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='42e0af0c05'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='b736e26c29'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -4238,7 +4238,7 @@ function renderExerciseLogs(){
 function talkToLogWorkout(){
   switchToTab('ai');
   const inp=document.getElementById('ai-input');
-  if(inp){if(!inp.dataset.ph0)inp.dataset.ph0=inp.placeholder;inp.placeholder='例: ベンチプレス 60kg×10回を3セット';}
+  if(inp){if(!inp.dataset.ph0)inp.dataset.ph0=inp.placeholder;inp.placeholder='例: ベンチ60kg×10回×3セット';}
 }
 window._afterWorkoutLogged=()=>{
   if(!document.getElementById('mo-training-log-sheet')?.hidden)renderExerciseLogs();
