@@ -1221,6 +1221,12 @@ body.in-training .ai-modal{z-index:700;}
 .wo-copy-day{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;padding:10px 12px;margin-bottom:6px;border:1.5px solid var(--border);border-radius:12px;background:var(--surface);color:var(--fg);font-family:inherit;text-align:left;cursor:pointer;}
 .wo-copy-day b{font-size:13px;}
 .wo-copy-day span{font-size:11px;color:var(--fg3);}
+/* 休憩タイマーは画面上部（トースト・AIボタンと重ならない位置） */
+.rest-pill{bottom:auto;top:calc(env(safe-area-inset-top,0px) + 64px);}
+/* 種目名が縦に折り返さないよう、ボタン群を詰める */
+.ex-head{flex-wrap:wrap;row-gap:6px;}
+.ex-name{flex:1 1 120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ex-acts{flex-shrink:0;margin-left:auto;}
 </style>
 </head>
 <body>
@@ -2550,7 +2556,7 @@ body.in-training .ai-modal{z-index:700;}
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='ce58a64b02'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='8bd1b290eb'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
