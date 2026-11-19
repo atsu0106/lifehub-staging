@@ -1193,6 +1193,34 @@ body.in-training .ai-modal{z-index:700;}
 .stk-goal small{font-size:10px;color:var(--fg3);font-weight:600;}
 .stk-goal.on{border-color:var(--accent);background:var(--accent-bg);color:var(--accent);}
 .stk-warn{color:#ef4444;font-weight:700;}
+
+/* === 動画フィードバック（v2.88.0） === */
+.vid-up{display:inline-block;margin-top:3px;font-size:10px;font-weight:700;color:#10b981;}
+.vid-fb{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.35);display:flex;align-items:flex-end;justify-content:center;}
+.vid-fb-body{width:min(100%,480px);background:var(--surface);border-radius:20px 20px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px));box-shadow:0 -6px 24px rgba(0,0,0,.18);}
+.vid-fb-q{font-size:16px;font-weight:800;color:var(--fg);}
+.vid-fb-title{font-size:12px;color:var(--fg3);margin:4px 0 14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.vid-fb-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.vid-fb-btns button{padding:14px 8px;border-radius:14px;border:1.5px solid var(--border);background:var(--surface2);color:var(--fg);font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;}
+.vid-fb-btns button[data-v="up"]{background:var(--accent);border-color:var(--accent);color:#fff;}
+.vid-fb-skip{display:block;margin:12px auto 0;background:none;border:none;color:var(--fg3);font-size:13px;text-decoration:underline;font-family:inherit;cursor:pointer;}
+
+/* === 筋トレ記録の基本機能（v2.89.0） === */
+.ex-prev{font-size:11px;color:var(--fg3);padding:0 14px 6px;margin-top:-2px;}
+.pr-badge{margin-left:3px;font-size:12px;}
+.pr-row td{background:rgba(250,204,21,.12);}
+.rest-pill{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--nav-h,62px) + var(--nav-off,10px) + 64px);z-index:650;display:flex;align-items:center;gap:6px;padding:8px 10px 8px 14px;border-radius:999px;background:#111827;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.25);font-weight:700;}
+.rest-pill[hidden]{display:none;}
+.rest-pill .rest-lbl{font-size:12px;opacity:.75;}
+.rest-pill .rest-time{font-size:18px;min-width:52px;text-align:center;font-variant-numeric:tabular-nums;}
+.rest-pill button{border:none;background:rgba(255,255,255,.14);color:#fff;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;}
+.rest-pill.done{background:#10b981;animation:rest-pulse .6s ease-in-out 3;}
+@keyframes rest-pulse{50%{transform:translateX(-50%) scale(1.06);}}
+.wo-copy{margin:4px 14px 10px;}
+.wo-copy-h{font-size:12px;font-weight:800;color:var(--fg2);margin-bottom:6px;}
+.wo-copy-day{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;padding:10px 12px;margin-bottom:6px;border:1.5px solid var(--border);border-radius:12px;background:var(--surface);color:var(--fg);font-family:inherit;text-align:left;cursor:pointer;}
+.wo-copy-day b{font-size:13px;}
+.wo-copy-day span{font-size:11px;color:var(--fg3);}
 </style>
 </head>
 <body>
@@ -1854,6 +1882,25 @@ body.in-training .ai-modal{z-index:700;}
           <span class="st-arrow">›</span>
           <input type="file" id="ics-file-input" accept=".ics,text/calendar" style="display:none;">
         </div>
+        <div class="st-row" id="st-wo-import-row" style="cursor:pointer;">
+          <span class="st-ic" style="background:#f97316;">🏋️</span>
+          <div style="flex:1;">
+            <div class="st-label">他のアプリの筋トレ記録を取り込む</div>
+            <div style="font-size:11px;color:var(--fg3);margin-top:1px;" id="wo-import-result">Hevy・Strong などのCSVファイル</div>
+          </div>
+          <span class="st-arrow">›</span>
+          <input type="file" id="wo-import-input" accept=".csv,text/csv,text/plain" style="display:none;">
+        </div>
+        <div class="st-row st-row-toggle">
+          <span class="st-ic" style="background:#6366f1;">⏱</span>
+          <span class="st-label" style="flex:0 0 auto;margin-right:8px;">休憩タイマー</span>
+          <div class="st-opts" style="justify-content:flex-end;">
+            <button class="st-opt" data-rest="60">60秒</button>
+            <button class="st-opt" data-rest="90">90秒</button>
+            <button class="st-opt" data-rest="120">2分</button>
+            <button class="st-opt" data-rest="180">3分</button>
+          </div>
+        </div>
       </div>
 
       <!-- セキュリティ -->
@@ -1911,7 +1958,7 @@ body.in-training .ai-modal{z-index:700;}
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.87.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.89.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -2503,7 +2550,7 @@ body.in-training .ai-modal{z-index:700;}
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='2596b75829'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='ce58a64b02'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -4130,6 +4177,7 @@ document.getElementById('mo-calendars').onclick=e=>{if(e.target===e.currentTarge
 // ── Settings Modal ─────────────────────────────────────────
 document.getElementById('hdr-settings').onclick=()=>{
   const s=db.settings;
+  document.querySelectorAll('.st-opt[data-rest]').forEach(b=>b.classList.toggle('on',+b.dataset.rest===(parseInt(s.restSec)||90)));
   document.querySelectorAll('.st-opt[data-pos]').forEach(b=>b.classList.toggle('on',b.dataset.pos===(s.addBtnPos==='bl'?'bl':'br')));
   document.querySelectorAll('.st-opt[data-hl]').forEach(b=>b.classList.toggle('on',b.dataset.hl===(s.highlightTab||'wo')));
   document.querySelectorAll('.st-opt[data-cal]').forEach(b=>b.classList.toggle('on',b.dataset.cal===(s.calLayout||'general')));
@@ -4361,13 +4409,11 @@ async function fetchMenuVideos(){
     const BASE=WORKER_URL.replace(/\/?$/,'');
     const results=await Promise.all(lines.slice(0,6).map(async ex=>{
       try{
-        const res=await fetch(`${BASE}/youtube/search?q=${encodeURIComponent(ex+' やり方 フォーム')}&n=1`);
-        if(!res.ok)return{ex,video:null};
-        const videos=await res.json();
+        const videos=await fetchRecommendedVideos(ex,ex+' やり方 フォーム',1);
         return{ex,video:videos[0]||null};
       }catch{return{ex,video:null};}
     }));
-    const html=results.filter(r=>r.video).map(({ex,video})=>`<a href="${video.url}" target="_blank" rel="noopener" class="menu-video-item"><img class="menu-video-thumb" src="${video.thumbnail}" alt="" onerror="this.style.display='none'"><div><div class="menu-video-ex">${ex}</div><div class="menu-video-title">${video.title}</div></div></a>`).join('');
+    const html=results.filter(r=>r.video).map(({ex,video})=>`<a ${videoLinkAttrs(video)} class="menu-video-item"><img class="menu-video-thumb" src="${_vidEsc(video.thumbnail)}" alt="" onerror="this.style.display='none'"><div><div class="menu-video-ex">${_vidEsc(ex)}</div><div class="menu-video-title">${_vidEsc(video.title)}</div>${videoUpBadge(video)}</div></a>`).join('');
     list.innerHTML=html||'<div style="color:var(--fg3);font-size:12px;">動画が見つかりませんでした</div>';
   }catch(e){list.innerHTML='<div style="color:var(--fg3);font-size:12px;">動画の取得に失敗しました</div>';}
 }
@@ -4930,6 +4976,8 @@ const CHARS={
     system:'あなたはコタ（おっとり伴走のクマ）です。ゆっくり丁寧で温かい口調。急かさない。「焦らなくていいよ」「続けることが一番大事」という姿勢。ユーザーのデータを使って自分ごとにする。一人称は「ぼく」。指定フォーマット厳守。日本語のみ。'},
 };
 const CHANGELOG=[
+  {v:'v2.89.0',d:'筋トレ記録に「前回の記録」「自己ベスト🏆」「自動の休憩タイマー」「前回のメニューを使う」を追加。他のアプリ（Hevy・Strong）の記録も取り込めます'},
+  {v:'v2.88.0',d:'解説動画を見て戻ると「役に立った？」と聞くように。みんなの評価で、おすすめの動画がどんどん良くなります'},
   {v:'v2.87.0',d:'ホームに「🔥 連続記録」。筋トレは目標に合わせた週の回数で、食事・睡眠は毎日の記録で連続日数を数えます'},
   {v:'v2.86.1',d:'チャットの思考モード（💭）がエラーになる不具合を修正'},
   {v:'v2.86.0',d:'トレーニング中の種目記録が筋トレ記録に出ない不具合を修正。トレーニング中に「💬 AIに話して記録」で話すだけで記録できるように'},
@@ -5736,9 +5784,10 @@ function buildExCard(ex,xi,ds){
   const catBadge=`<span class="ex-cat-badge ${cat}">${CAT_LABEL[cat]}</span>`;
 
   let tableHTML='';
+  const prI=typeof woPRSetIndex==='function'?woPRSetIndex(ex,ds):-1;
   if(cat==='weight'){
-    const rows=ex.sets.map((s,si)=>`<tr>
-      <td><span class="set-num">${si+1}</span></td>
+    const rows=ex.sets.map((s,si)=>`<tr${si===prI?' class="pr-row"':''}>
+      <td><span class="set-num">${si+1}</span>${si===prI?'<span class="pr-badge" title="自己ベスト">🏆</span>':''}</td>
       <td><input type="number" value="${s.w??''}" min="0" class="wi" data-xi="${xi}" data-si="${si}" data-f="w" placeholder="0"></td>
       <td><input type="number" value="${s.r??''}" min="0" class="wi" data-xi="${xi}" data-si="${si}" data-f="r" placeholder="0"></td>
       <td><button class="del-btn del-set" data-xi="${xi}" data-si="${si}">×</button></td>
@@ -5780,6 +5829,7 @@ function buildExCard(ex,xi,ds){
         <button class="del-ex" data-xi="${xi}">削除</button>
       </div>
     </div>
+    ${typeof woPrevLine==='function'?woPrevLine(ex.name,ds,cat):''}
     ${tableHTML}`;
   return card;
 }
@@ -5795,7 +5845,8 @@ function renderWo(){
   list.innerHTML='';
 
   if(!exs.length){
-    list.innerHTML=`<div class="empty"><div class="empty-icon">🏋️</div><p>この日のトレーニングなし<br>上から種目を追加</p></div>`;
+    list.innerHTML=`<div class="empty"><div class="empty-icon">🏋️</div><p>この日のトレーニングなし<br>上から種目を追加</p></div>${typeof woCopyDayHtml==='function'?woCopyDayHtml(ds):''}`;
+    list.querySelectorAll('[data-copy]').forEach(b=>b.onclick=()=>woCopyDay(b.dataset.copy,ds));
   } else {
     exs.forEach((ex,xi)=>{
       const card=buildExCard(ex,xi,ds);
@@ -5803,7 +5854,7 @@ function renderWo(){
     });
 
     list.querySelectorAll('.wi').forEach(inp=>{
-      inp.onchange=()=>{const ex=db.workouts[ds][+inp.dataset.xi];ex.sets[+inp.dataset.si][inp.dataset.f]=parseFloat(inp.value)||0;save(db);renderWo();};
+      inp.onchange=()=>{const ex=db.workouts[ds][+inp.dataset.xi];ex.sets[+inp.dataset.si][inp.dataset.f]=parseFloat(inp.value)||0;save(db);if(typeof woCheckPR==='function')woCheckPR(ex,+inp.dataset.si,ds);renderWo();};
     });
     list.querySelectorAll('.cardio-in').forEach(inp=>{
       inp.onchange=()=>{const ex=db.workouts[ds][+inp.dataset.xi];const s=ex.sets[+inp.dataset.si];s[inp.dataset.f]=inp.value===''?null:parseFloat(inp.value);save(db);};
@@ -5826,6 +5877,7 @@ function renderWo(){
         else if(cat==='cardio') ex.sets.push({time:null,distance:null,speed:null,incline:null});
         else ex.sets.push({time:null});
         save(db);renderWo();
+        if((cat==='weight'||cat==='bodyweight')&&typeof startRestTimer==='function')startRestTimer();
       };
     });
     list.querySelectorAll('.del-ex').forEach(btn=>{
@@ -5882,7 +5934,9 @@ function exAddAndClose(name){
   if(!db.workouts[st.woDate])db.workouts[st.woDate]=[];
   const cat=woCatSel||'weight';
   let initSet;
-  if(cat==='weight') initSet={w:0,r:10};
+  const prevInit=typeof woInitialSet==='function'?woInitialSet(name,cat):null;
+  if(prevInit) initSet=prevInit;
+  else if(cat==='weight') initSet={w:0,r:10};
   else if(cat==='bodyweight') initSet={r:10};
   else if(cat==='cardio') initSet={time:null,distance:null,speed:null,incline:null};
   else initSet={time:null};
@@ -6031,6 +6085,190 @@ document.querySelectorAll('.period-btn').forEach(btn=>{
   };
 });
 
+// ── 筋トレ記録の基本機能（v2.89.0）: 前回の記録・自己ベスト・休憩タイマー・メニュー複製・CSV取り込み ──
+// ※ビルドで1つのscriptに連結されるため、トップレベルに const/let を置かない（TDZ回避）
+
+// 指定日より前で、その種目を最後にやった日の記録
+function woPrevSession(name,beforeDs){
+  const dates=Object.keys(db.workouts||{}).filter(d=>d<beforeDs).sort().reverse();
+  for(const d of dates){const ex=(db.workouts[d]||[]).find(e=>e.name===name&&(e.sets||[]).length);if(ex)return {date:d,ex};}
+  return null;
+}
+function woFmtSet(s,cat){
+  if(cat==='bodyweight')return s.r!=null?`${s.r}回`:'';
+  if(cat==='weight')return (s.w||s.r)?`${s.w??0}kg×${s.r??0}`:'';
+  return '';
+}
+function woPrevLine(name,ds,cat){
+  if(cat!=='weight'&&cat!=='bodyweight')return '';
+  const p=woPrevSession(name,ds);if(!p)return '';
+  const sets=(p.ex.sets||[]).map(s=>woFmtSet(s,cat)).filter(Boolean);
+  if(!sets.length)return '';
+  const shown=sets.slice(0,4).join(' / ')+(sets.length>4?` 他${sets.length-4}`:'');
+  return `<div class="ex-prev">前回 ${jpDate(p.date)}：${esc(shown)}</div>`;
+}
+// 種目追加時の1セット目＝前回の1セット目
+function woInitialSet(name,cat){
+  const p=woPrevSession(name,'9999-12-31');
+  const s=p&&p.ex.sets&&p.ex.sets[0];
+  if(cat==='weight')return {w:s?.w??0,r:s?.r??10};
+  if(cat==='bodyweight')return {r:s?.r??10};
+  return null;
+}
+
+// ── 自己ベスト（推定1RM: Epley） ──
+function woE1RM(s){const w=+s.w||0,r=+s.r||0;if(w<=0||r<=0)return 0;return r===1?w:w*(1+r/30);}
+function woBestBefore(name,ds){
+  let best=0;
+  Object.entries(db.workouts||{}).forEach(([d,exs])=>{if(d>=ds)return;(exs||[]).forEach(e=>{if(e.name!==name||(e.category||'weight')!=='weight')return;(e.sets||[]).forEach(s=>{best=Math.max(best,woE1RM(s));});});});
+  return best;
+}
+// その日のセットのうち、過去最高を超えた最大のセットだけを🏆にする
+function woPRSetIndex(ex,ds){
+  if((ex.category||'weight')!=='weight')return -1;
+  const prev=woBestBefore(ex.name,ds);
+  if(prev<=0)return -1; // 初めての種目は比較対象なし
+  let idx=-1,top=prev;
+  (ex.sets||[]).forEach((s,i)=>{const v=woE1RM(s);if(v>top+0.01){top=v;idx=i;}});
+  return idx;
+}
+function woCheckPR(ex,si,ds){
+  if(woPRSetIndex(ex,ds)!==si)return;
+  const key=`${ds}|${ex.name}|${si}|${ex.sets[si].w}|${ex.sets[si].r}`;
+  if(window._lastPRToast===key)return;window._lastPRToast=key;
+  if(typeof showToast==='function')showToast(`🏆 ${ex.name} 自己ベスト更新！（推定1RM ${Math.round(woE1RM(ex.sets[si]))}kg）`);
+}
+
+// ── 休憩タイマー ──
+function restTimerSec(){return Math.min(600,Math.max(15,parseInt(db.settings.restSec)||90));}
+function startRestTimer(sec){
+  stopRestTimer(true);
+  const total=sec||restTimerSec();
+  window._rest={end:Date.now()+total*1000};
+  let el=document.getElementById('rest-pill');
+  if(!el){el=document.createElement('div');el.id='rest-pill';el.className='rest-pill';document.body.appendChild(el);}
+  el.innerHTML=`<span class="rest-ic">⏱</span><span class="rest-lbl">休憩</span><span class="rest-time" id="rest-time"></span>
+    <button data-r="-15">−15</button><button data-r="15">＋15</button><button data-r="x" aria-label="休憩タイマーを閉じる">✕</button>`;
+  el.hidden=false;el.classList.remove('done');
+  el.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{
+    const v=b.dataset.r;if(v==='x'){stopRestTimer();return;}
+    window._rest.end=Math.max(Date.now()+1000,window._rest.end+(+v)*1000);tickRest();
+  });
+  tickRest();
+  window._restInt=setInterval(tickRest,250);
+}
+function tickRest(){
+  const r=window._rest;const t=document.getElementById('rest-time');if(!r||!t)return;
+  const left=Math.max(0,Math.ceil((r.end-Date.now())/1000));
+  t.textContent=`${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}`;
+  if(left===0&&!r.fired){r.fired=true;restDone();}
+}
+function restDone(){
+  clearInterval(window._restInt);
+  const el=document.getElementById('rest-pill');if(el)el.classList.add('done');
+  const t=document.getElementById('rest-time');if(t)t.textContent='終了！';
+  try{navigator.vibrate&&navigator.vibrate([200,100,200]);}catch(e){}
+  try{const C=window.AudioContext||window.webkitAudioContext;if(C){const ctx=window._restCtx||(window._restCtx=new C());[0,0.25].forEach(off=>{const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=880;g.gain.value=0.15;o.connect(g);g.connect(ctx.destination);o.start(ctx.currentTime+off);o.stop(ctx.currentTime+off+0.15);});}}catch(e){}
+  if(typeof showToast==='function')showToast('休憩終了！次のセットへ 💪');
+  setTimeout(()=>{if(window._rest&&window._rest.fired)stopRestTimer();},8000);
+}
+function stopRestTimer(keepEl){
+  clearInterval(window._restInt);window._rest=null;
+  const el=document.getElementById('rest-pill');if(el&&!keepEl)el.hidden=true;
+}
+// iOS は音を鳴らすのにユーザー操作が必要なので、最初のタップで AudioContext を用意しておく
+document.addEventListener('click',()=>{try{const C=window.AudioContext||window.webkitAudioContext;if(C&&!window._restCtx)window._restCtx=new C();if(window._restCtx?.state==='suspended')window._restCtx.resume();}catch(e){}},{once:true,capture:true});
+
+// ── 前回のメニューを使う ──
+function woRecentDays(beforeDs,limit){
+  return Object.keys(db.workouts||{}).filter(d=>d!==beforeDs&&(db.workouts[d]||[]).length).sort().reverse().slice(0,limit||5);
+}
+function woCopyDayHtml(ds){
+  const days=woRecentDays(ds,5);
+  if(!days.length)return '';
+  return `<div class="wo-copy"><div class="wo-copy-h">📋 前回のメニューを使う</div>${days.map(d=>{
+    const names=(db.workouts[d]||[]).map(e=>e.name);
+    return `<button class="wo-copy-day" data-copy="${d}"><b>${jpDate(d)}</b><span>${esc(names.slice(0,4).join('・')+(names.length>4?` 他${names.length-4}`:''))}</span></button>`;}).join('')}</div>`;
+}
+function woCopyDay(from,to){
+  const src=db.workouts[from]||[];if(!src.length)return;
+  if(!db.workouts[to])db.workouts[to]=[];
+  src.forEach(e=>db.workouts[to].push({id:uid(),name:e.name,category:e.category||'weight',sets:(e.sets||[]).map(s=>({...s}))}));
+  save(db);renderWo();
+  if(typeof showToast==='function')showToast(`${jpDate(from)} のメニューをコピーしました`);
+  window._missionHook?.('log_workout');
+}
+
+// ── 他のアプリのCSVを取り込む（Hevy / Strong / 汎用） ──
+function woParseCSV(text){
+  text=text.replace(/^﻿/,'');
+  const first=text.split(/\r?\n/)[0]||'';
+  const sep=(first.match(/;/g)||[]).length>(first.match(/,/g)||[]).length?';':',';
+  const rows=[];let row=[],cur='',q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){if(c==='"'){if(text[i+1]==='"'){cur+='"';i++;}else q=false;}else cur+=c;continue;}
+    if(c==='"')q=true;else if(c===sep){row.push(cur);cur='';}
+    else if(c==='\n'||c==='\r'){if(c==='\r'&&text[i+1]==='\n')i++;row.push(cur);rows.push(row);row=[];cur='';}
+    else cur+=c;
+  }
+  if(cur||row.length){row.push(cur);rows.push(row);}
+  return rows.filter(r=>r.some(v=>v.trim()!==''));
+}
+function woImportRows(rows){
+  if(rows.length<2)return {err:'データがありません'};
+  const h=rows[0].map(x=>x.trim().toLowerCase());
+  const find=(...names)=>h.findIndex(x=>names.includes(x));
+  const iDate=find('start_time','date','日付','date_time','日時');
+  const iName=find('exercise_title','exercise name','exercise','種目','種目名','exercise_name');
+  const iW=find('weight_kg','weight','重量','重量(kg)','weight (kg)');
+  const iR=find('reps','回数','レップ','rep');
+  const iType=find('set_type','set type');
+  const lbIdx=find('weight_lbs','weight (lbs)');
+  if(iDate<0||iName<0||(iW<0&&lbIdx<0)||iR<0)return {err:'「日付・種目・重量・回数」の列が見つかりません'};
+  const toDs=v=>{
+    v=String(v).trim();
+    let m=v.match(/(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/);if(m)return `${m[1]}-${String(m[2]).padStart(2,'0')}-${String(m[3]).padStart(2,'0')}`;
+    m=v.match(/(\d{1,2})\s+([A-Za-z]{3})\w*\s+(\d{4})/); // Hevy: "15 Nov 2026, 18:00"
+    if(m){const mon=['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'].indexOf(m[2].toLowerCase());if(mon>=0)return `${m[3]}-${String(mon+1).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}`;}
+    const d=new Date(v);return isNaN(d)?null:fmt(d);
+  };
+  const byDay={};let skipped=0;
+  rows.slice(1).forEach(r=>{
+    const ds=toDs(r[iDate]||''),name=(r[iName]||'').trim();
+    if(!ds||!name){skipped++;return;}
+    if(iType>=0&&/warm/i.test(r[iType]||''))return; // ウォームアップは除外
+    let w=iW>=0?parseFloat(r[iW]):NaN;if(isNaN(w)&&lbIdx>=0)w=parseFloat(r[lbIdx])*0.4536;
+    const reps=parseInt(r[iR]);
+    if(isNaN(reps)&&isNaN(w)){skipped++;return;}
+    ((byDay[ds]=byDay[ds]||{})[name]=byDay[ds][name]||[]).push({w:isNaN(w)?0:Math.round(w*10)/10,r:isNaN(reps)?0:reps});
+  });
+  let added=0,dup=0;
+  Object.entries(byDay).forEach(([ds,exs])=>Object.entries(exs).forEach(([name,sets])=>{
+    const ex=(db.workouts[ds]||[]).find(e=>e.name===name);
+    const sig=s=>s.map(x=>`${x.w}x${x.r}`).join(',');
+    if(ex&&sig(ex.sets||[])===sig(sets)){dup++;return;} // 同じ内容は二重に取り込まない
+    addWorkoutSets(ds,name,'weight',sets);added+=sets.length;
+  }));
+  save(db);
+  return {added,dup,skipped,days:Object.keys(byDay).length};
+}
+function woImportFile(file){
+  const resEl=document.getElementById('wo-import-result');
+  const reader=new FileReader();
+  reader.onload=()=>{
+    const r=woImportRows(woParseCSV(String(reader.result||'')));
+    if(resEl)resEl.textContent=r.err?`⚠ ${r.err}`:`✓ ${r.days}日分・${r.added}セットを取り込みました${r.dup?`（重複${r.dup}件はスキップ）`:''}`;
+    if(!r.err&&typeof renderWo==='function'&&st.tab==='other'&&st.otherSub==='wo')renderWo();
+    if(!r.err&&typeof renderGoals==='function')renderGoals();
+  };
+  reader.readAsText(file);
+}
+(function(){
+  const row=document.getElementById('st-wo-import-row'),inp=document.getElementById('wo-import-input');
+  if(row&&inp){row.onclick=e=>{if(e.target!==inp)inp.click();};inp.onchange=()=>{if(inp.files[0])woImportFile(inp.files[0]);inp.value='';};}
+  document.querySelectorAll('.st-opt[data-rest]').forEach(b=>b.onclick=()=>{db.settings.restSec=+b.dataset.rest;save(db);document.querySelectorAll('.st-opt[data-rest]').forEach(x=>x.classList.toggle('on',x===b));});
+})();
 // ── Meals ─────────────────────────────────────────────────
 const MEAL_DEF=[
   {k:'breakfast',l:'朝食',ic:'☕'},
@@ -7264,11 +7502,9 @@ function calcGameStats(){
       const n=Math.min(input.max_results||3,5);
       if(!q)return '検索キーワードが空です。';
       try{
-        const res=await fetch(`${WORKER_URL.replace(/\/?$/,'')}/youtube/search?q=${encodeURIComponent(q)}&n=${n}`);
-        if(!res.ok)throw new Error('HTTP '+res.status);
-        const videos=await res.json();
+        const videos=await fetchRecommendedVideos(q,q,n);
         if(!videos.length)return `「${q}」の動画が見つかりませんでした。`;
-        const cards=videos.map(v=>`<div style="display:flex;gap:10px;align-items:flex-start;margin:8px 0;"><a href="${v.url}" target="_blank" rel="noopener" style="flex-shrink:0;"><img src="${v.thumbnail}" style="width:120px;height:68px;object-fit:cover;border-radius:6px;display:block;"></a><div style="flex:1;min-width:0;"><a href="${v.url}" target="_blank" rel="noopener" style="font-size:13px;font-weight:600;color:var(--accent);text-decoration:none;line-height:1.4;display:block;">${esc(v.title)}</a><div style="font-size:11px;color:var(--fg3);margin-top:3px;">${esc(v.channel)}</div></div></div>`).join('');
+        const cards=videos.map(v=>`<div style="display:flex;gap:10px;align-items:flex-start;margin:8px 0;"><a ${videoLinkAttrs(v)} style="flex-shrink:0;"><img src="${v.thumbnail}" style="width:120px;height:68px;object-fit:cover;border-radius:6px;display:block;"></a><div style="flex:1;min-width:0;"><a ${videoLinkAttrs(v)} style="font-size:13px;font-weight:600;color:var(--accent);text-decoration:none;line-height:1.4;display:block;">${esc(v.title)}</a><div style="font-size:11px;color:var(--fg3);margin-top:3px;">${esc(v.channel)}</div>${videoUpBadge(v)}</div></div>`).join('');
         const wrap=document.getElementById('ai-messages');
         const div=document.createElement('div');div.className='ai-msg ai';
         div.innerHTML=`<div style="font-size:13px;margin-bottom:8px;">「<strong>${esc(q)}</strong>」の動画 ${videos.length}件</div>${cards}`;
@@ -7737,6 +7973,99 @@ function calcGameStats(){
   })();
 })();
 
+// ── 解説動画のおすすめ＋「役に立った？」フィードバック（v2.88.0） ─────────
+// 動画を開く → アプリに戻る（20秒以上後）→ 1回だけ 👍/👎 を聞く → Worker(D1)に匿名で集計 → おすすめ順に反映
+// ※ビルドで1つのscriptに連結されるため、トップレベルに const/let を置かない（TDZ回避）
+
+function videoExerciseKey(name){
+  let s=String(name||'').normalize('NFKC').toLowerCase().replace(/\s+/g,'');
+  s=s.replace(/(のやり方|やり方|のフォーム|フォーム|解説|動画|コツ|初心者)+/g,'');
+  const syn=[
+    [/^(ベンチ|bench|benchpress)$/,'ベンチプレス'],
+    [/^(デッド|deadlift)$/,'デッドリフト'],
+    [/^(squat)$/,'スクワット'],
+    [/^(懸垂|chinning|pullup|プルアップ)$/,'チンニング'],
+    [/^(腕立て|プッシュアップ|pushup)$/,'腕立て伏せ'],
+    [/^(ラットプル|latpulldown)$/,'ラットプルダウン'],
+  ];
+  for(const [re,to] of syn)if(re.test(s))return to;
+  return s.slice(0,40)||String(name||'').slice(0,40);
+}
+function _vidLS(key,fallback){try{return JSON.parse(localStorage.getItem(key)||'null')??fallback;}catch(e){return fallback;}}
+function _vidSaveLS(key,val){try{localStorage.setItem(key,JSON.stringify(val));}catch(e){}}
+function _vidBase(){return WORKER_URL.replace(/\/?$/,'');}
+function _vidEsc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// おすすめ取得（自分が👎を付けた動画は除外）。失敗時は従来の検索にフォールバック
+async function fetchRecommendedVideos(exName,query,n){
+  const ex=videoExerciseKey(exName);
+  const voted=_vidLS('lh_video_voted',{});
+  const exclude=Object.keys(voted).filter(k=>voted[k]==='down'&&k.startsWith(ex+'|')).map(k=>k.split('|')[1]);
+  try{
+    const r=await fetch(`${_vidBase()}/video/recommend?ex=${encodeURIComponent(ex)}&q=${encodeURIComponent(query||exName)}&n=${n||3}${exclude.length?'&exclude='+exclude.join(','):''}`);
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const list=await r.json();
+    if(!Array.isArray(list))throw new Error('bad');
+    return list.map(v=>({...v,ex}));
+  }catch(e){
+    const r=await fetch(`${_vidBase()}/youtube/search?q=${encodeURIComponent(query||exName)}&n=${n||3}`);
+    const list=r.ok?await r.json():[];
+    return (Array.isArray(list)?list:[]).map(v=>({...v,ex,up:0,down:0}));
+  }
+}
+function videoLinkAttrs(v){return `href="${_vidEsc(v.url)}" target="_blank" rel="noopener" data-vid="${_vidEsc(v.id)}" data-ex="${_vidEsc(v.ex)}" data-title="${_vidEsc(v.title)}"`;}
+function videoUpBadge(v){return v.up>0?`<span class="vid-up">👍 ${v.up}人が役立った</span>`:'';}
+
+function _vidEvent(ex,vid,type,sec){
+  try{fetch(`${_vidBase()}/video/event`,{method:'POST',keepalive:true,headers:{'content-type':'text/plain'},body:JSON.stringify({ex,vid,type,sec})}).catch(()=>{});}catch(e){}
+}
+// 動画リンクのタップを記録（どの画面の動画でも data-vid があれば対象）
+document.addEventListener('click',e=>{
+  const a=e.target.closest&&e.target.closest('a[data-vid]');
+  if(!a)return;
+  const p={vid:a.dataset.vid,ex:a.dataset.ex,title:a.dataset.title||'',ts:Date.now()};
+  _vidSaveLS('lh_video_pending',p);
+  _vidEvent(p.ex,p.vid,'click',0);
+},true);
+
+// アプリに戻ってきたら1回だけ聞く
+function checkVideoFeedback(){
+  const p=_vidLS('lh_video_pending',null);
+  if(!p||!p.vid)return;
+  const away=Date.now()-p.ts;
+  if(away<20000)return;                       // すぐ戻った場合は聞かない（まだ見ていない）
+  if(away>3*3600*1000){_vidSaveLS('lh_video_pending',null);return;} // 古すぎるものは捨てる
+  const voted=_vidLS('lh_video_voted',{});
+  if(voted[p.ex+'|'+p.vid]){_vidSaveLS('lh_video_pending',null);return;}
+  _vidSaveLS('lh_video_pending',null);
+  showVideoFeedbackSheet(p,Math.round(away/1000));
+}
+function showVideoFeedbackSheet(p,sec){
+  document.getElementById('vid-fb')?.remove();
+  const el=document.createElement('div');el.id='vid-fb';el.className='vid-fb';
+  el.innerHTML=`<div class="vid-fb-body">
+    <div class="vid-fb-q">さっきの動画、役に立った？</div>
+    <div class="vid-fb-title">${_vidEsc(p.title)}</div>
+    <div class="vid-fb-btns">
+      <button data-v="up">👍 役に立った</button>
+      <button data-v="down">👎 いまいち</button>
+    </div>
+    <button class="vid-fb-skip" data-v="skip">答えない</button>
+  </div>`;
+  el.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{
+    const v=b.dataset.v;
+    if(v!=='skip'){
+      const voted=_vidLS('lh_video_voted',{});voted[p.ex+'|'+p.vid]=v;_vidSaveLS('lh_video_voted',voted);
+      _vidEvent(p.ex,p.vid,v,sec);
+      if(typeof showToast==='function')showToast(v==='up'?'ありがとう！みんなのおすすめに反映するね':'ありがとう！次からは別の動画を出すね');
+    }
+    el.remove();
+  });
+  el.onclick=e=>{if(e.target===el)el.remove();};
+  document.body.appendChild(el);
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(checkVideoFeedback,400);});
+setTimeout(checkVideoFeedback,1500);
 // ── 履歴モーダル ─────────────────────────────────────────
 function openHistModal(title,rows){
   document.getElementById('hist-modal-title').textContent=title;
