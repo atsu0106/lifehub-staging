@@ -1169,7 +1169,7 @@ body.in-training .ai-modal{z-index:700;}
 .training-ai-log-btn{display:block;flex:0 0 auto;width:calc(100% - 32px);font-size:14px!important;margin:0 auto 12px;background:linear-gradient(135deg,#6366f1,#8b5cf6)!important;color:#fff!important;border:none!important;}
 
 /* === 連続記録（v2.87.0） === */
-.streak-card{padding:12px 14px;}
+.streak-card{margin:8px 12px 0;padding:12px 14px;border-radius:12px;}
 .stk-head{display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:800;color:var(--fg);margin-bottom:6px;}
 .stk-edit,.stk-done{border:1px solid var(--border);background:var(--surface2);color:var(--fg2);font-size:11px;font-weight:700;border-radius:999px;padding:4px 10px;cursor:pointer;font-family:inherit;}
 .stk-done{margin-top:8px;background:var(--accent);color:#fff;border-color:var(--accent);}
@@ -2502,7 +2502,7 @@ body.in-training .ai-modal{z-index:700;}
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='7dd381e21c'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='ee0283e78f'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
