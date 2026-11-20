@@ -1351,6 +1351,10 @@ body.in-training .ai-modal{z-index:700;}
 .rcp-pick{flex:1;padding:10px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;min-height:0;}
 .rcp-pick:disabled{background:#10b981;}
 .rcp-in-chat .rcp-card{background:var(--surface2);}
+
+/* === 動画が取れないときの検索リンク（v2.95.1） === */
+.yt-search-link{display:block;padding:10px 12px;border-radius:10px;border:1.5px dashed var(--border);background:var(--surface2);color:var(--accent);font-size:13px;font-weight:700;text-decoration:none;line-height:1.5;overflow-wrap:anywhere;}
+.vl-wrap>.yt-search-link{flex:1;min-width:0;}
 </style>
 </head>
 <body>
@@ -2705,7 +2709,7 @@ body.in-training .ai-modal{z-index:700;}
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='f529bfd1e0'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='2e58594259'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -4571,7 +4575,7 @@ async function fetchMenuVideos(){
         return{ex,video:videos[0]||null};
       }catch{return{ex,video:null};}
     }));
-    const html=results.filter(r=>r.video).map(({ex,video})=>`<div class="vl-wrap"><a ${videoLinkAttrs(video)} class="menu-video-item"><img class="menu-video-thumb" src="${_vidEsc(video.thumbnail)}" alt="" onerror="this.style.display='none'"><div><div class="menu-video-ex">${_vidEsc(ex)}</div><div class="menu-video-title">${_vidEsc(video.title)}</div>${videoUpBadge(video)}</div></a>${typeof videoSaveBtn==='function'?videoSaveBtn(video):''}</div>`).join('');
+    const html=results.map(({ex,video})=>video?null:`<div class="vl-wrap">${ytSearchLinkHtml(ex+' やり方 フォーム')}</div>`).filter(Boolean).join('')+results.filter(r=>r.video).map(({ex,video})=>`<div class="vl-wrap"><a ${videoLinkAttrs(video)} class="menu-video-item"><img class="menu-video-thumb" src="${_vidEsc(video.thumbnail)}" alt="" onerror="this.style.display='none'"><div><div class="menu-video-ex">${_vidEsc(ex)}</div><div class="menu-video-title">${_vidEsc(video.title)}</div>${videoUpBadge(video)}</div></a>${typeof videoSaveBtn==='function'?videoSaveBtn(video):''}</div>`).join('');
     list.innerHTML=html||'<div style="color:var(--fg3);font-size:12px;">動画が見つかりませんでした</div>';
   }catch(e){list.innerHTML='<div style="color:var(--fg3);font-size:12px;">動画の取得に失敗しました</div>';}
 }
@@ -7874,7 +7878,13 @@ function calcGameStats(){
       if(!q)return '検索キーワードが空です。';
       try{
         const videos=await fetchRecommendedVideos(q,q,n);
-        if(!videos.length)return `「${q}」の動画が見つかりませんでした。`;
+        if(!videos.length){
+          const wrap=document.getElementById('ai-messages');
+          const div=document.createElement('div');div.className='ai-msg ai';
+          div.innerHTML=typeof ytSearchLinkHtml==='function'?ytSearchLinkHtml(q):'';
+          if(div.innerHTML){wrap.appendChild(div);wrap.scrollTop=wrap.scrollHeight;}
+          return `「${q}」の動画を取得できなかったため、YouTubeの検索結果を開くリンクを表示しました。`;
+        }
         const cards=videos.map(v=>`<div style="display:flex;gap:10px;align-items:flex-start;margin:8px 0;"><a ${videoLinkAttrs(v)} style="flex-shrink:0;"><img src="${v.thumbnail}" style="width:120px;height:68px;object-fit:cover;border-radius:6px;display:block;"></a><div style="flex:1;min-width:0;"><a ${videoLinkAttrs(v)} style="font-size:13px;font-weight:600;color:var(--accent);text-decoration:none;line-height:1.4;display:block;">${esc(v.title)}</a><div style="font-size:11px;color:var(--fg3);margin-top:3px;">${esc(v.channel)}</div>${videoUpBadge(v)}</div>${(typeof videoSaveBtn==='function'?videoSaveBtn(v):'')}</div>`).join('');
         const wrap=document.getElementById('ai-messages');
         const div=document.createElement('div');div.className='ai-msg ai';
@@ -8387,6 +8397,11 @@ async function fetchRecommendedVideos(exName,query,n){
 function videoLinkAttrs(v){return `href="${_vidEsc(v.url)}" target="_blank" rel="noopener" data-vid="${_vidEsc(v.id)}" data-ex="${_vidEsc(v.ex)}" data-title="${_vidEsc(v.title)}"`;}
 // v2.94.0: 評価の人数は他のユーザーに見せない（おすすめ順位の計算にだけ使う）
 function videoUpBadge(v){return '';}
+// 動画が取れなかったときの代わり（v2.95.1）: YouTube の検索結果ページを開くだけ。API の上限を使わない
+function ytSearchLinkHtml(q,note){
+  const url='https://www.youtube.com/results?search_query='+encodeURIComponent(String(q||'').trim());
+  return `<a class="yt-search-link" href="${_vidEsc(url)}" target="_blank" rel="noopener">▶ YouTubeで「${_vidEsc(String(q||'').trim())}」を検索</a>${note?`<div class="lv-note">${_vidEsc(note)}</div>`:''}`;
+}
 
 function _vidEvent(ex,vid,type,sec,prev){
   try{fetch(`${_vidBase()}/video/event`,{method:'POST',keepalive:true,headers:{'content-type':'text/plain'},body:JSON.stringify({ex,vid,type,sec,prev})}).catch(()=>{});}catch(e){}
@@ -8556,7 +8571,7 @@ async function renderLifeVideoCard(elId,topic,opts){
   const list=await _lvFetch(topic.key,topic.q,2);
   const box=el.querySelector('.lv-list');
   if(el.dataset.token!==token||!box)return; // 取得中に別の内容へ切り替わった
-  box.innerHTML=list.length?_lvItems(list):'<div class="lv-note">今は動画を取得できなかった。あとでまた見てくれ</div>';
+  box.innerHTML=list.length?_lvItems(list):ytSearchLinkHtml(topic.q);
 }
 function renderMealVideos(){
   const show=st.mlDate===todayStr();
@@ -8617,11 +8632,11 @@ async function renderTrendCard(){
     box.innerHTML='<div class="lv-note">動画を探し中…</div>';
     const list=await _lvFetch('topic:'+kw,kw+' 解説',3);
     if(s.kw!==kw||!box.isConnected)return;
-    box.innerHTML=list.length?_lvItems(list):'<div class="lv-note">今は動画を取得できなかった</div>';
+    box.innerHTML=list.length?_lvItems(list):ytSearchLinkHtml(kw);
   }else{
     sub.textContent='YouTubeで今週よく見られている動画';
     const list=((d.videos||{})[s.cat]||[]).map(v=>({...v,url:`https://www.youtube.com/watch?v=${v.id}`,ex:'trend:'+s.cat,up:0,down:0}));
-    box.innerHTML=list.length?_lvItems(list):'<div class="lv-note">今週はまだ見つからなかった</div>';
+    box.innerHTML=list.length?_lvItems(list):ytSearchLinkHtml({muscle:'筋トレ',meal:'筋トレ 食事',sleep:'睡眠 改善'}[s.cat]||'筋トレ');
   }
 }
 document.querySelectorAll('.st-opt[data-trend]').forEach(b=>b.onclick=()=>{db.settings.hideTrend=b.dataset.trend==='off';save(db);document.querySelectorAll('.st-opt[data-trend]').forEach(x=>x.classList.toggle('on',x===b));renderTrendCard();});
@@ -8990,8 +9005,8 @@ async function rcpFillVideos(root){
     if(window._DEV_MODE){box.innerHTML='<div class="lv-note">[DEVモード] 動画は本番のみ</div>';continue;}
     const q=/レシピ|作り方/.test(m.query||'')?m.query:(m.query||m.name)+' レシピ';
     fetchRecommendedVideos('recipe:'+String(m.name).slice(0,30),q,1).then(list=>{
-      box.innerHTML=list.length?_lvItems(list):'<div class="lv-note">動画が見つからなかった</div>';
-    }).catch(()=>{box.innerHTML='<div class="lv-note">動画を取得できなかった</div>';});
+      box.innerHTML=list.length?_lvItems(list):ytSearchLinkHtml(m.name+' レシピ');
+    }).catch(()=>{box.innerHTML=ytSearchLinkHtml(m.name+' レシピ');});
   }
 }
 function rcpLogMenu(m,mt){
