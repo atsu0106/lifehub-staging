@@ -381,7 +381,7 @@ body.lefty .hdr-gmail-btn{order:-2;}
 .gmail-cd-ok{margin-top:4px;padding:14px;border-radius:12px;background:var(--accent);color:#fff;border:none;font-size:15px;font-weight:700;cursor:pointer;width:100%;}
 .gmail-cd-ok:active{opacity:.85;}
 /* Toast */
-.lh-toast{position:fixed;bottom:calc(var(--nav-h) + 16px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%) translateY(20px);background:#1a1a2e;color:#fff;padding:10px 18px;border-radius:999px;font-size:13px;font-weight:600;white-space:nowrap;z-index:9998;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;}
+.lh-toast{position:fixed;bottom:calc(var(--nav-h) + 16px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%) translateY(20px);background:#1a1a2e;color:#fff;padding:10px 18px;border-radius:18px;font-size:13px;font-weight:600;white-space:normal;width:max-content;max-width:calc(100vw - 32px);box-sizing:border-box;text-align:center;line-height:1.5;overflow-wrap:anywhere;z-index:9998;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;}
 .lh-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 #gmail-cd-overlay{position:fixed;inset:0;z-index:399;background:rgba(0,0,0,.5);display:none;}
 .prof-btn{background:none;border:none;cursor:pointer;padding:7px;display:flex;align-items:center;}
@@ -2674,7 +2674,7 @@ body.in-training .ai-modal{z-index:700;}
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='961e1ab8a8'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='f2fe3bef50'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -8796,7 +8796,7 @@ async function _vlImport(id,msgEl){
   const prev=new Map(l.items.map(i=>[i.vid,i]));
   l.items=d.items.slice(0,VL_MAX_ITEMS).map(v=>({vid:v.id,title:v.title,channel:v.channel,thumb:v.thumbnail,at:prev.get(v.id)?.at||now,ft:now}));
   save(db);vlRefreshSaveBtns();
-  if(typeof showToast==='function')showToast(`${isNew?'読み込んだ':'更新した'}: ${l.name}（${l.items.length}本${d.truncated?'・先頭'+VL_MAX_ITEMS+'本':''}）`);
+  if(typeof showToast==='function')showToast(`${isNew?'読み込んだ':'更新した'}: ${l.name.length>20?l.name.slice(0,20)+'…':l.name}（${l.items.length}本${d.truncated?'・先頭'+VL_MAX_ITEMS+'本':''}）`);
   _vlRenderList(l.id);
 }
 
