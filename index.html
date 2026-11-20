@@ -2595,7 +2595,7 @@ body.in-training .ai-modal{z-index:700;}
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='5feabc2d04'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='1f288b4bc1'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -6412,9 +6412,23 @@ function aiPlanContext(){
   const plan=dates.map(ds=>db.trainingMenus?.[ds]?`${dl(ds)}: ${db.trainingMenus[ds].split('\n')[0]}`:null).filter(Boolean).join('\n')||'なし';
   const sk=typeof getStreaks==='function'?getStreaks().workout:null;
   const wk=sk&&!sk.unset?`今週（月曜はじまり）はすでに${sk.thisWeek}回。週${sk.freq}回の目標まであと${sk.need}回、今週の残り${sk.daysLeft}日。連続記録は${sk.count}日`:'週の目標回数は未設定';
+  // 7日間がまたぐ各週（月曜はじまり）で、この7日間に何回入れる必要があるか
+  const freq=hp.gymFreq||3;
+  const mondayOf=ds=>{const [y,m,d]=ds.split('-').map(Number);const x=new Date(y,m-1,d);x.setDate(x.getDate()-((x.getDay()+6)%7));return fmt(x);};
+  const weeks={};dates.forEach(ds=>{(weeks[mondayOf(ds)]=weeks[mondayOf(ds)]||[]).push(ds);});
+  const weekLines=Object.entries(weeks).map(([mon,ds],i)=>{
+    const done=i===0&&sk&&!sk.unset?sk.thisWeek:0;
+    const need=Math.max(0,freq-done);
+    const after=7-((ds.length)+(i===0?((new Date(ds[0]+'T00:00:00').getDay()+6)%7):0)); // この7日間より後に残るその週の日数
+    const min=Math.max(0,need-after);
+    const ideal=Math.min(ds.length,Math.max(min,Math.ceil(need*ds.length/Math.max(1,ds.length+after))));
+    return `・${dl(ds[0])}〜${dl(ds[ds.length-1])}（${i===0?'今週':'来週'}）: 済み${done}回・あと${need}回必要。この7日間より後に残るこの週の日数は${after}日 → この期間に最低${min}回、余裕を持つなら${ideal}回`;
+  }).join('\n');
   return {dates,text:`【今日】${dl(dates[0])}
-【筋トレの目標】${goalMap[hp.goal]||'未設定'}・週${hp.gymFreq||'?'}回${hp.weight?`・体重${hp.weight}kg`:''}${hp.age?`・${hp.age}歳`:''}
+【筋トレの目標】${goalMap[hp.goal]||'未設定'}・週${freq}回${hp.weight?`・体重${hp.weight}kg`:''}${hp.age?`・${hp.age}歳`:''}
 【今週の状況】${wk}
+【週ごとに必要な回数（連続記録を守るため）】
+${weekLines}
 【これから7日間の予定】
 ${evLines}
 【締切が近いタスク】
@@ -6431,8 +6445,8 @@ async function generateAIWeekPlan(){
 
 上の生活の予定に合わせて、${dates[0]}から${dates[6]}までの7日分のトレーニング計画を作ってください。
 ルール:
-- 週の目標回数（月曜はじまりの各週で週${hp.gymFreq||3}回）を守る。今週の残り回数も考慮する
-- 実習・試験・長時間の予定がある日や、その前日は休みか短め（30分程度）にする。予定のない日・時間に余裕のある日にしっかりやる
+- 「週ごとに必要な回数」の各週の最低回数は必ず満たし、できれば「余裕を持つなら」の回数にする（来週の分も、この7日間に入る日で前倒しして確保する。週末にまとめて詰め込みすぎない）
+- 実習・試験・長時間の予定がある日や、その前日は休みか短め（30〜40分・3種目程度）にする。回数が足りない週は、忙しい日でも休みにせず短めのメニューで入れる。予定のない日・時間に余裕のある日にしっかりやる
 - 同じ部位が連日にならないようにする。初心者でもできる一般的な種目名で書く（ジムにあるマシン・バーベル・ダンベル）
 - 休みの日は type を "rest"、exercises は空にする
 - reason は「なぜこの日にこの内容か」を予定に触れて25文字以内で
