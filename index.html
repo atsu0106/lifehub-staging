@@ -1317,6 +1317,19 @@ body.in-training .ai-modal{z-index:700;}
 .vl-item-ops{display:flex;flex-direction:column;gap:2px;flex-shrink:0;}
 .vl-item-ops button{width:30px;height:22px;min-height:0;padding:0;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--fg2);font-size:11px;cursor:pointer;}
 .vl-item-ops button:disabled{opacity:.3;}
+
+/* === 動画の評価・コメント（v2.94.0） === */
+.vl-sec{font-size:11px;font-weight:800;color:var(--fg3);letter-spacing:.04em;margin-bottom:-4px;}
+.vn-rate{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.vn-rate button{padding:10px 6px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface);color:var(--fg);font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;min-height:0;}
+.vn-rate button.on{border-color:var(--accent);background:var(--accent-bg);color:var(--accent);}
+.vn-row{display:flex;gap:8px;align-items:stretch;}
+.vn-text{flex:1;min-width:0;width:100%;min-height:64px;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);color:var(--fg);font-size:16px;font-family:inherit;resize:none;box-sizing:border-box;}
+.vid-fb-body .vn-text{margin-bottom:8px;}
+.vn-send{flex-shrink:0;padding:0 14px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-weight:700;font-size:14px;font-family:inherit;cursor:pointer;min-height:44px;}
+.vid-fb-btns .vn-send{background:var(--accent);border-color:var(--accent);color:#fff;}
+.vn-privacy{font-size:11px;color:var(--fg3);line-height:1.5;margin:2px 0 10px;}
+.vn-mine{font-size:11px;color:var(--accent);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 </style>
 </head>
 <body>
@@ -2661,7 +2674,7 @@ body.in-training .ai-modal{z-index:700;}
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='20c830f969'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='1609d6961d'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -7636,7 +7649,7 @@ function calcGameStats(){
     if(hp.gymFreq)hpParts.push(`ジム目標:週${hp.gymFreq}回`);
     const hpStats=hpParts.length?hpParts.join(' / '):'未設定';
     const streakStats=typeof streakSummaryText==='function'?streakSummaryText():'なし';
-    return `【今日の日付】${today}\n【連続記録】${streakStats}\n【健康プロフィール】${hpStats}\n【使用目的】${useCaseStr}\n【今後14日間の予定】\n${evs}\n【未完了タスク】\n${tasks}\n【進行中の目標】\n${goals}\n【カレンダー一覧】\n${cals}\n【タスク達成状況】${taskStats}\n【筋トレ履歴（直近30日/最大90日遡及）】\n${woStats}\n【睡眠記録（直近30日統計）】\n${sleepStats}\n【食事記録（過去7日間）】\n${mealStats}\n【今日の健康データ】${healthStats}\n【タスクフィードバック履歴】\n${fbStats}`;
+    return `【今日の日付】${today}\n【連続記録】${streakStats}\n【健康プロフィール】${hpStats}\n【使用目的】${useCaseStr}\n【今後14日間の予定】\n${evs}\n【未完了タスク】\n${tasks}\n【進行中の目標】\n${goals}\n【カレンダー一覧】\n${cals}\n【タスク達成状況】${taskStats}\n【筋トレ履歴（直近30日/最大90日遡及）】\n${woStats}\n【睡眠記録（直近30日統計）】\n${sleepStats}\n【食事記録（過去7日間）】\n${mealStats}\n【今日の健康データ】${healthStats}\n【タスクフィードバック履歴】\n${fbStats}\n【動画への本人の評価・コメント（本人とAIだけが見る。好みに合わせた提案に使う）】\n${typeof vnContextText==='function'?vnContextText():'なし'}`;
   }
   async function executeTool(name,input){
     if(name==='add_event'){
@@ -8319,10 +8332,42 @@ async function fetchRecommendedVideos(exName,query,n){
   }
 }
 function videoLinkAttrs(v){return `href="${_vidEsc(v.url)}" target="_blank" rel="noopener" data-vid="${_vidEsc(v.id)}" data-ex="${_vidEsc(v.ex)}" data-title="${_vidEsc(v.title)}"`;}
-function videoUpBadge(v){return v.up>0?`<span class="vid-up">👍 ${v.up}人が役立った</span>`:'';}
+// v2.94.0: 評価の人数は他のユーザーに見せない（おすすめ順位の計算にだけ使う）
+function videoUpBadge(v){return '';}
 
-function _vidEvent(ex,vid,type,sec){
-  try{fetch(`${_vidBase()}/video/event`,{method:'POST',keepalive:true,headers:{'content-type':'text/plain'},body:JSON.stringify({ex,vid,type,sec})}).catch(()=>{});}catch(e){}
+function _vidEvent(ex,vid,type,sec,prev){
+  try{fetch(`${_vidBase()}/video/event`,{method:'POST',keepalive:true,headers:{'content-type':'text/plain'},body:JSON.stringify({ex,vid,type,sec,prev})}).catch(()=>{});}catch(e){}
+}
+
+// ── 動画の評価・コメント（v2.94.0）: 本人の端末(db.videoNotes)と、匿名で Worker(D1) に送る。他のユーザーには見せない ──
+function vnNotes(){if(!db.videoNotes||typeof db.videoNotes!=='object')db.videoNotes={};return db.videoNotes;}
+function vnGet(vid){return vnNotes()[vid]||null;}
+// v={vid,title,ex}。同じ評価なら送らない。付け替えは前の評価を1減らす
+function vnRate(v,rating,sec){
+  if(!v||!v.vid||!['up','down'].includes(rating))return;
+  const ex=v.ex||'mylist';
+  const n=vnNotes()[v.vid]||{};
+  const voted=_vidLS('lh_video_voted',{});
+  const prev=n.r||voted[ex+'|'+v.vid]||null;
+  n.r=rating;n.t=v.title||n.t||'';n.ex=ex;n.ts=Date.now();vnNotes()[v.vid]=n;
+  voted[ex+'|'+v.vid]=rating;_vidSaveLS('lh_video_voted',voted);
+  save(db);
+  if(prev!==rating)_vidEvent(ex,v.vid,rating,sec||0,prev||undefined);
+}
+function vnComment(v,comment){
+  comment=String(comment||'').trim().slice(0,200);
+  const n=vnNotes()[v.vid]||{t:v.title||'',ex:v.ex||'mylist'};
+  if(!comment||comment===n.c)return false;
+  n.c=comment;n.ts=Date.now();vnNotes()[v.vid]=n;save(db);
+  try{fetch(`${_vidBase()}/video/feedback`,{method:'POST',keepalive:true,headers:{'content-type':'text/plain'},body:JSON.stringify({ex:n.ex||v.ex||'mylist',vid:v.vid,rating:n.r||'',comment})}).catch(()=>{});}catch(e){}
+  return true;
+}
+var VN_PRIVACY='🔒 評価とコメントは開発者とAIだけが見ます。ほかのユーザーには表示されません';
+// AIトレーナーの文脈用（本人の評価・コメント 直近10件）
+function vnContextText(){
+  const list=Object.entries(vnNotes()).filter(([,n])=>n&&(n.r||n.c)).sort((a,b)=>(b[1].ts||0)-(a[1].ts||0)).slice(0,10);
+  if(!list.length)return 'なし';
+  return list.map(([,n])=>`${n.r==='up'?'👍':n.r==='down'?'👎':'・'} ${String(n.t||'').slice(0,40)}${n.c?' — 「'+n.c.slice(0,80)+'」':''}`).join('\n');
 }
 // 動画リンクのタップを記録（どの画面の動画でも data-vid があれば対象）
 document.addEventListener('click',e=>{
@@ -8359,12 +8404,17 @@ function showVideoFeedbackSheet(p,sec){
   </div>`;
   el.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{
     const v=b.dataset.v;
-    if(v!=='skip'){
-      const voted=_vidLS('lh_video_voted',{});voted[p.ex+'|'+p.vid]=v;_vidSaveLS('lh_video_voted',voted);
-      _vidEvent(p.ex,p.vid,v,sec);
-      if(typeof showToast==='function')showToast(v==='up'?'ありがとう！みんなのおすすめに反映するね':'ありがとう！次からは別の動画を出すね');
-    }
-    el.remove();
+    if(v==='skip'){el.remove();return;}
+    vnRate({vid:p.vid,title:p.title,ex:p.ex},v,sec);
+    // 続けてひとことコメント（任意）
+    el.querySelector('.vid-fb-body').innerHTML=`
+      <div class="vid-fb-q">${v==='up'?'👍':'👎'} ありがとう！ひとことあれば</div>
+      <div class="vid-fb-title">${_vidEsc(p.title)}</div>
+      <textarea class="vn-text" maxlength="200" placeholder="よかった点・いまいちだった点（任意）"></textarea>
+      <div class="vn-privacy">${VN_PRIVACY}</div>
+      <div class="vid-fb-btns"><button data-c="skip">閉じる</button><button data-c="send" class="vn-send">送る</button></div>`;
+    el.querySelector('[data-c="skip"]').onclick=()=>{el.remove();if(typeof showToast==='function')showToast(v==='up'?'おすすめに反映するね':'次からは別の動画を出すね');};
+    el.querySelector('[data-c="send"]').onclick=()=>{const t=el.querySelector('.vn-text').value;const ok=vnComment({vid:p.vid,title:p.title,ex:p.ex},t);el.remove();if(typeof showToast==='function')showToast(ok?'コメントを送った。ありがとう！':'おすすめに反映するね');};
   });
   el.onclick=e=>{if(e.target===el)el.remove();};
   document.body.appendChild(el);
@@ -8538,7 +8588,7 @@ function vlEsc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;'
 function videoSaveBtn(v){
   if(!v||!v.id)return '';
   const on=vlSavedSet().has(v.id);
-  return `<button type="button" class="vid-save${on?' on':''}" data-vid="${vlEsc(v.id)}" data-title="${vlEsc(v.title)}" data-ch="${vlEsc(v.channel||'')}" data-thumb="${vlEsc(v.thumbnail||'')}" aria-label="マイリストに保存">${on?'✓':'＋'}</button>`;
+  return `<button type="button" class="vid-save${on?' on':''}" data-vid="${vlEsc(v.id)}" data-ex="${vlEsc(v.ex||'')}" data-title="${vlEsc(v.title)}" data-ch="${vlEsc(v.channel||'')}" data-thumb="${vlEsc(v.thumbnail||'')}" aria-label="マイリストに保存">${on?'✓':'＋'}</button>`;
 }
 function vlRefreshSaveBtns(){
   const s=vlSavedSet();
@@ -8548,7 +8598,7 @@ document.addEventListener('click',e=>{
   const b=e.target.closest&&e.target.closest('.vid-save[data-vid]');
   if(!b)return;
   e.preventDefault();e.stopPropagation();
-  openVideoSaveSheet({vid:b.dataset.vid,title:b.dataset.title,channel:b.dataset.ch,thumb:b.dataset.thumb});
+  openVideoSaveSheet({vid:b.dataset.vid,title:b.dataset.title,channel:b.dataset.ch,thumb:b.dataset.thumb,ex:b.dataset.ex||'mylist'});
 },true);
 
 function vlNewList(name){
@@ -8575,15 +8625,20 @@ function _vlSheet(id,html){
 // 保存先を選ぶシート
 function openVideoSaveSheet(v){
   const render=()=>{
+    const typed=document.querySelector('#vl-save-sheet #vn-text')?.value; // 書きかけのコメントを保つ
     const lists=vlLists();
     const rows=lists.map(l=>{const on=l.items.some(i=>i.vid===v.vid);return `<button class="vl-pick${on?' on':''}" data-id="${l.id}"><span class="vl-check">${on?'✓':''}</span><span class="vl-pick-name">${vlEsc(l.name)}</span><span class="vl-count">${l.items.length}本</span></button>`;}).join('');
     const el=_vlSheet('vl-save-sheet',`
-      <div class="training-sheet-title">マイリストに保存<button class="training-sheet-close" data-x>✕</button></div>
+      <div class="training-sheet-title">保存・評価<button class="training-sheet-close" data-x>✕</button></div>
       <div class="vl-save-title">${vlEsc(v.title)}</div>
+      ${_vlRateHtml(v)}
+      <div class="vl-sec">マイリストに保存</div>
       <div class="vl-picks">${rows||'<div class="lv-note">まだリストがない。下で作ろう</div>'}</div>
       <div class="vl-new-row"><input id="vl-new-name" maxlength="30" placeholder="新しいリストの名前"><button id="vl-new-add">作って保存</button></div>
       <button class="vl-done" data-x>完了</button>`);
     el.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>el.remove());
+    if(typed!=null)el.querySelector('#vn-text').value=typed;
+    _vlBindRate(el,v,render);
     el.querySelectorAll('.vl-pick').forEach(b=>b.onclick=()=>{
       const l=vlLists().find(x=>x.id===b.dataset.id);if(!l)return;
       const added=vlToggleItem(l,v);save(db);vlRefreshSaveBtns();
@@ -8599,6 +8654,26 @@ function openVideoSaveSheet(v){
     };
   };
   render();
+}
+
+// 評価・コメント欄（保存シート内）
+function _vlRateHtml(v){
+  const n=(typeof vnGet==='function'&&vnGet(v.vid))||{};
+  return `<div class="vl-sec">評価・コメント</div>
+    <div class="vn-rate"><button data-rate="up" class="${n.r==='up'?'on':''}">👍 役に立った</button><button data-rate="down" class="${n.r==='down'?'on':''}">👎 いまいち</button></div>
+    <div class="vn-row"><textarea class="vn-text" id="vn-text" maxlength="200" placeholder="ひとことコメント（任意）">${vlEsc(n.c||'')}</textarea><button class="vn-send" id="vn-send">送る</button></div>
+    <div class="vn-privacy">${typeof VN_PRIVACY!=='undefined'?VN_PRIVACY:''}</div>`;
+}
+function _vlBindRate(el,v,rerender){
+  el.querySelectorAll('[data-rate]').forEach(b=>b.onclick=()=>{
+    const keep=el.querySelector('#vn-text')?.value;
+    vnRate(v,b.dataset.rate,0);
+    rerender();
+    const t=document.querySelector('#vl-save-sheet #vn-text');if(t&&keep!=null)t.value=keep;
+    if(typeof showToast==='function')showToast(b.dataset.rate==='up'?'👍 おすすめに反映するね':'👎 次からは別の動画を出すね');
+  });
+  const send=el.querySelector('#vn-send');
+  if(send)send.onclick=()=>{const ok=vnComment(v,el.querySelector('#vn-text').value);if(typeof showToast==='function')showToast(ok?'コメントを送った。ありがとう！':'コメントが空か、前と同じだよ');};
 }
 
 // ── リスト画面 ──
@@ -8626,7 +8701,7 @@ function _vlRenderList(id){
     const gone=it.gone,noInfo=!it.title&&!gone;
     const label=gone?'見られなくなった動画':noInfo?'（情報を取得中）':vlEsc(it.title);
     const link=gone?`<div class="vl-item-main vl-gone">`:`<a class="vl-item-main" href="https://www.youtube.com/watch?v=${vlEsc(it.vid)}" target="_blank" rel="noopener">`;
-    return `<div class="vl-item">${link}${it.thumb&&!gone?`<img class="menu-video-thumb" src="${vlEsc(it.thumb)}" alt="" onerror="this.style.visibility='hidden'">`:'<span class="vl-ph sm">▶</span>'}<div style="min-width:0;"><div class="menu-video-title">${label}</div><div class="lv-ch">${vlEsc(gone?'削除または非公開':it.channel||'')}</div></div>${gone?'</div>':'</a>'}
+    return `<div class="vl-item">${link}${it.thumb&&!gone?`<img class="menu-video-thumb" src="${vlEsc(it.thumb)}" alt="" onerror="this.style.visibility='hidden'">`:'<span class="vl-ph sm">▶</span>'}<div style="min-width:0;"><div class="menu-video-title">${label}</div><div class="lv-ch">${vlEsc(gone?'削除または非公開':it.channel||'')}</div>${_vlNoteHtml(it.vid)}</div>${gone?'</div>':'</a>'}
       <div class="vl-item-ops"><button data-up="${i}" ${i===0?'disabled':''} aria-label="上へ">↑</button><button data-down="${i}" ${i===l.items.length-1?'disabled':''} aria-label="下へ">↓</button><button data-del="${i}" aria-label="削除">✕</button></div></div>`;
   }).join('');
   const el=_vlSheet('vl-sheet',`
@@ -8647,6 +8722,11 @@ function _vlRenderList(id){
   vlRefreshInfo(l).then(changed=>{if(changed&&document.getElementById('vl-sheet')&&el.isConnected)_vlRenderList(id);});
 }
 
+function _vlNoteHtml(vid){
+  const n=typeof vnGet==='function'&&vnGet(vid);
+  if(!n||(!n.r&&!n.c))return '';
+  return `<div class="vn-mine">${n.r==='up'?'👍':n.r==='down'?'👎':''}${n.c?' '+vlEsc(n.c):''}</div>`;
+}
 // 7日以上前に取得した情報（と情報のない動画）を取り直す
 async function vlRefreshInfo(l){
   if(window._DEV_MODE)return false;
