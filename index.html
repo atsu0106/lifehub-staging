@@ -2079,7 +2079,7 @@ body.in-training .ai-modal{z-index:700;}
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.90.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.94.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -2674,7 +2674,7 @@ body.in-training .ai-modal{z-index:700;}
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='1609d6961d'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='961e1ab8a8'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -5103,6 +5103,10 @@ const CHARS={
     system:'あなたはコタ（おっとり伴走のクマ）です。ゆっくり丁寧で温かい口調。急かさない。「焦らなくていいよ」「続けることが一番大事」という姿勢。ユーザーのデータを使って自分ごとにする。一人称は「ぼく」。指定フォーマット厳守。日本語のみ。'},
 };
 const CHANGELOG=[
+  {v:'v2.94.0',d:'動画に👍/👎とひとことコメントを付けられるように（動画の「＋」から、いつでも変更可）。評価とコメントは開発者とAIだけが見て、ほかのユーザーには表示されません'},
+  {v:'v2.93.0',d:'📺 マイ動画リスト。動画の「＋」で好きなリストに保存。YouTubeのプレイリスト（公開・限定公開）もURLを貼るだけで読み込めます'},
+  {v:'v2.92.0',d:'ホームに「🐴 ランの今週の話題」。今週の話題ワードと、YouTubeで今週よく見られている筋トレ・食事・睡眠の動画を紹介します'},
+  {v:'v2.91.0',d:'食事・睡眠の画面に、記録に合わせた「ランのおすすめ動画」。たんぱく質が足りない日は作り置きレシピなど。睡眠の動画は寝る前（21時〜5時）は出しません'},
   {v:'v2.90.0',d:'予定に合わせてAIが1週間の筋トレメニューを組むように（週間プランナー）。定番メニューも追加。フォントを丸ゴシックに'},
   {v:'v2.89.0',d:'筋トレ記録に「前回の記録」「自己ベスト🏆」「自動の休憩タイマー」「前回のメニューを使う」を追加。他のアプリ（Hevy・Strong）の記録も取り込めます'},
   {v:'v2.88.0',d:'解説動画を見て戻ると「役に立った？」と聞くように。みんなの評価で、おすすめの動画がどんどん良くなります'},
