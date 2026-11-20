@@ -1282,6 +1282,41 @@ body.in-training .ai-modal{z-index:700;}
 .tr-tab{padding:7px 4px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);color:var(--fg2);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;min-height:0;}
 .tr-tab.on{border-color:var(--accent);background:var(--accent-bg);color:var(--accent);}
 .tr-sub{font-size:11px;color:var(--fg3);font-weight:700;margin-bottom:6px;}
+
+/* === マイ動画リスト（v2.93.0） === */
+.vl-wrap{display:flex;align-items:center;gap:6px;}
+.vl-wrap>a{flex:1;min-width:0;}
+.vid-save{flex-shrink:0;width:36px;height:36px;min-height:0;border-radius:50%;border:1.5px solid var(--border);background:var(--surface);color:var(--accent);font-size:18px;font-weight:800;line-height:1;cursor:pointer;font-family:inherit;padding:0;}
+.vid-save.on{background:var(--accent);border-color:var(--accent);color:#fff;font-size:15px;}
+.vl-sheet{z-index:950;}
+.vl-save-title{font-size:12px;color:var(--fg3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:-6px;}
+.vl-picks,.vl-lists,.vl-items{display:flex;flex-direction:column;gap:6px;}
+.vl-pick,.vl-row-list{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface);color:var(--fg);font-size:14px;font-weight:700;font-family:inherit;text-align:left;cursor:pointer;min-height:0;}
+.vl-pick.on{border-color:var(--accent);background:var(--accent-bg);}
+.vl-check{width:22px;height:22px;border-radius:6px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--accent);flex-shrink:0;}
+.vl-pick.on .vl-check{border-color:var(--accent);}
+.vl-pick-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.vl-count{font-size:12px;color:var(--fg3);font-weight:600;flex-shrink:0;}
+.vl-yt{font-size:10px;color:#ef4444;border:1px solid #ef4444;border-radius:4px;padding:0 4px;margin-left:4px;font-weight:700;}
+.vl-row-list img{width:56px;height:32px;border-radius:6px;object-fit:cover;flex-shrink:0;background:var(--border);}
+.vl-ph{width:56px;height:32px;border-radius:6px;background:var(--surface2);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.vl-ph.sm{width:64px;height:48px;}
+.vl-new-row{display:flex;gap:8px;}
+.vl-new-row input,.vl-import-in{flex:1;min-width:0;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);color:var(--fg);font-size:16px;font-family:inherit;}
+.vl-new-row button{flex-shrink:0;padding:0 14px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-weight:700;font-family:inherit;font-size:14px;cursor:pointer;min-height:44px;}
+.vl-done,.vl-import-btn{width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface2);color:var(--fg);font-weight:700;font-size:14px;font-family:inherit;cursor:pointer;min-height:0;}
+.vl-import-btn.primary,.vl-done{background:var(--accent);border-color:var(--accent);color:#fff;}
+.vl-back{background:none;border:none;font-size:24px;color:var(--fg2);cursor:pointer;padding:0 8px 0 0;line-height:1;min-height:0;}
+.vl-title-txt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.vl-list-ops{display:flex;gap:6px;flex-wrap:wrap;}
+.vl-list-ops button{padding:6px 10px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--fg2);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;min-height:0;}
+.vl-list-ops button.danger{color:#ef4444;}
+.vl-item{display:flex;align-items:center;gap:6px;}
+.vl-item-main{flex:1;min-width:0;display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);text-decoration:none;color:var(--fg);}
+.vl-gone{opacity:.55;}
+.vl-item-ops{display:flex;flex-direction:column;gap:2px;flex-shrink:0;}
+.vl-item-ops button{width:30px;height:22px;min-height:0;padding:0;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--fg2);font-size:11px;cursor:pointer;}
+.vl-item-ops button:disabled{opacity:.3;}
 </style>
 </head>
 <body>
@@ -1632,6 +1667,7 @@ body.in-training .ai-modal{z-index:700;}
       <button class="dr-item" data-go="meals"><span class="dr-ic">🍱</span>食事</button>
       <button class="dr-item" data-go="sleep"><span class="dr-ic">😴</span>睡眠</button>
       <button class="dr-item" data-go="health"><span class="dr-ic">❤️</span>健康</button>
+      <button class="dr-item" data-act="vlists"><span class="dr-ic">📺</span>マイ動画リスト</button>
       <div class="dr-sep"></div>
       <button class="dr-item" data-act="settings"><span class="dr-ic">⚙️</span>設定</button>
     </div>
@@ -2116,6 +2152,7 @@ body.in-training .ai-modal{z-index:700;}
       <div style="font-size:11px;font-weight:700;color:var(--fg3);letter-spacing:.05em;margin-bottom:6px;">▶ 解説動画</div>
       <div id="training-menu-videos-list" style="display:flex;flex-direction:column;gap:8px;"></div>
     </div>
+    <button class="vl-import-btn" data-open-vl>📺 マイ動画リストを開く</button>
   </div>
 </div>
 
@@ -2624,7 +2661,7 @@ body.in-training .ai-modal{z-index:700;}
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='b1b73606cd'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='20c830f969'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -3081,6 +3118,7 @@ drawerEl.querySelectorAll('.dr-item').forEach(b=>{
     if(act==='add')openEvModalAndSetup();
     else if(act==='ai')switchToTab('ai');
     else if(act==='settings')document.getElementById('hdr-settings').click();
+    else if(act==='vlists'){if(typeof openVideoLists==='function')openVideoLists();}
     else if(go==='cal'||go==='tasks')switchToTab(go);
     else{st.otherSub=go;switchToTab('other');}
   };
@@ -4489,7 +4527,7 @@ async function fetchMenuVideos(){
         return{ex,video:videos[0]||null};
       }catch{return{ex,video:null};}
     }));
-    const html=results.filter(r=>r.video).map(({ex,video})=>`<a ${videoLinkAttrs(video)} class="menu-video-item"><img class="menu-video-thumb" src="${_vidEsc(video.thumbnail)}" alt="" onerror="this.style.display='none'"><div><div class="menu-video-ex">${_vidEsc(ex)}</div><div class="menu-video-title">${_vidEsc(video.title)}</div>${videoUpBadge(video)}</div></a>`).join('');
+    const html=results.filter(r=>r.video).map(({ex,video})=>`<div class="vl-wrap"><a ${videoLinkAttrs(video)} class="menu-video-item"><img class="menu-video-thumb" src="${_vidEsc(video.thumbnail)}" alt="" onerror="this.style.display='none'"><div><div class="menu-video-ex">${_vidEsc(ex)}</div><div class="menu-video-title">${_vidEsc(video.title)}</div>${videoUpBadge(video)}</div></a>${typeof videoSaveBtn==='function'?videoSaveBtn(video):''}</div>`).join('');
     list.innerHTML=html||'<div style="color:var(--fg3);font-size:12px;">動画が見つかりませんでした</div>';
   }catch(e){list.innerHTML='<div style="color:var(--fg3);font-size:12px;">動画の取得に失敗しました</div>';}
 }
@@ -7771,7 +7809,7 @@ function calcGameStats(){
       try{
         const videos=await fetchRecommendedVideos(q,q,n);
         if(!videos.length)return `「${q}」の動画が見つかりませんでした。`;
-        const cards=videos.map(v=>`<div style="display:flex;gap:10px;align-items:flex-start;margin:8px 0;"><a ${videoLinkAttrs(v)} style="flex-shrink:0;"><img src="${v.thumbnail}" style="width:120px;height:68px;object-fit:cover;border-radius:6px;display:block;"></a><div style="flex:1;min-width:0;"><a ${videoLinkAttrs(v)} style="font-size:13px;font-weight:600;color:var(--accent);text-decoration:none;line-height:1.4;display:block;">${esc(v.title)}</a><div style="font-size:11px;color:var(--fg3);margin-top:3px;">${esc(v.channel)}</div>${videoUpBadge(v)}</div></div>`).join('');
+        const cards=videos.map(v=>`<div style="display:flex;gap:10px;align-items:flex-start;margin:8px 0;"><a ${videoLinkAttrs(v)} style="flex-shrink:0;"><img src="${v.thumbnail}" style="width:120px;height:68px;object-fit:cover;border-radius:6px;display:block;"></a><div style="flex:1;min-width:0;"><a ${videoLinkAttrs(v)} style="font-size:13px;font-weight:600;color:var(--accent);text-decoration:none;line-height:1.4;display:block;">${esc(v.title)}</a><div style="font-size:11px;color:var(--fg3);margin-top:3px;">${esc(v.channel)}</div>${videoUpBadge(v)}</div>${(typeof videoSaveBtn==='function'?videoSaveBtn(v):'')}</div>`).join('');
         const wrap=document.getElementById('ai-messages');
         const div=document.createElement('div');div.className='ai-msg ai';
         div.innerHTML=`<div style="font-size:13px;margin-bottom:8px;">「<strong>${esc(q)}</strong>」の動画 ${videos.length}件</div>${cards}`;
@@ -8390,7 +8428,7 @@ function _lvHead(title){
   return `<div class="lv-head">${img?`<img class="lv-ran" src="${img}" alt="ラン" onerror="this.style.display='none'">`:''}<span>${title}</span></div>`;
 }
 function _lvItems(list){
-  return list.map(v=>`<a ${videoLinkAttrs(v)} class="menu-video-item"><img class="menu-video-thumb" src="${_vidEsc(v.thumbnail)}" alt="" onerror="this.style.display='none'"><div style="min-width:0;"><div class="menu-video-title">${_vidEsc(v.title)}</div><div class="lv-ch">${_vidEsc(v.channel||'')}</div>${videoUpBadge(v)}</div></a>`).join('');
+  return list.map(v=>`<div class="vl-wrap"><a ${videoLinkAttrs(v)} class="menu-video-item"><img class="menu-video-thumb" src="${_vidEsc(v.thumbnail)}" alt="" onerror="this.style.display='none'"><div style="min-width:0;"><div class="menu-video-title">${_vidEsc(v.title)}</div><div class="lv-ch">${_vidEsc(v.channel||'')}</div>${videoUpBadge(v)}</div></a>${(typeof videoSaveBtn==='function'?videoSaveBtn(v):'')}</div>`).join('');
 }
 // 同じ日・同じテーマは1回だけ取得（記録を編集するたびに再取得しない）
 function _lvFetch(key,q,n){
@@ -8485,6 +8523,202 @@ async function renderTrendCard(){
 }
 document.querySelectorAll('.st-opt[data-trend]').forEach(b=>b.onclick=()=>{db.settings.hideTrend=b.dataset.trend==='off';save(db);document.querySelectorAll('.st-opt[data-trend]').forEach(x=>x.classList.toggle('on',x===b));renderTrendCard();});
 setTimeout(()=>{if(typeof st!=='undefined'&&st.tab==='cal')renderTrendCard();},1800);
+// ── マイ動画リスト（v2.93.0） ─────────────────────────────
+// db.videoLists = [{id, name, src?(YouTubeプレイリストID), items:[{vid, title, channel, thumb, at(追加), ft(情報の取得日時)}]}]
+// 規約（YouTube API Services Developer Policies III.E.4）: タイトル等は7日で取り直し、30日更新できなければ消して動画IDだけ残す
+// ※ビルドで1つのscriptに連結されるため、トップレベルに const/let を置かない（TDZ回避）
+
+var VL_MAX_ITEMS=200, VL_REFRESH_MS=7*86400000, VL_EXPIRE_MS=30*86400000;
+
+function vlLists(){if(!Array.isArray(db.videoLists))db.videoLists=[];return db.videoLists;}
+function vlSavedSet(){const s=new Set();vlLists().forEach(l=>(l.items||[]).forEach(i=>s.add(i.vid)));return s;}
+function vlEsc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// 動画カードに付ける「＋」ボタン（どの画面からでも使う）
+function videoSaveBtn(v){
+  if(!v||!v.id)return '';
+  const on=vlSavedSet().has(v.id);
+  return `<button type="button" class="vid-save${on?' on':''}" data-vid="${vlEsc(v.id)}" data-title="${vlEsc(v.title)}" data-ch="${vlEsc(v.channel||'')}" data-thumb="${vlEsc(v.thumbnail||'')}" aria-label="マイリストに保存">${on?'✓':'＋'}</button>`;
+}
+function vlRefreshSaveBtns(){
+  const s=vlSavedSet();
+  document.querySelectorAll('.vid-save[data-vid]').forEach(b=>{const on=s.has(b.dataset.vid);b.classList.toggle('on',on);b.textContent=on?'✓':'＋';});
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest&&e.target.closest('.vid-save[data-vid]');
+  if(!b)return;
+  e.preventDefault();e.stopPropagation();
+  openVideoSaveSheet({vid:b.dataset.vid,title:b.dataset.title,channel:b.dataset.ch,thumb:b.dataset.thumb});
+},true);
+
+function vlNewList(name){
+  const l={id:uid(),name:String(name||'').trim().slice(0,30)||'マイリスト',items:[]};
+  vlLists().push(l);return l;
+}
+function vlToggleItem(list,v){
+  const i=list.items.findIndex(x=>x.vid===v.vid);
+  if(i>=0){list.items.splice(i,1);return false;}
+  if(list.items.length>=VL_MAX_ITEMS){if(typeof showToast==='function')showToast(`1つのリストは${VL_MAX_ITEMS}本まで`);return false;}
+  list.items.push({vid:v.vid,title:v.title||'',channel:v.channel||'',thumb:v.thumb||'',at:Date.now(),ft:Date.now()});
+  return true;
+}
+
+function _vlSheet(id,html){
+  document.getElementById(id)?.remove();
+  const el=document.createElement('div');el.id=id;el.className='training-sheet vl-sheet';
+  el.innerHTML=`<div class="training-sheet-body">${html}</div>`;
+  el.addEventListener('click',e=>{if(e.target===el)el.remove();});
+  document.body.appendChild(el);
+  return el;
+}
+
+// 保存先を選ぶシート
+function openVideoSaveSheet(v){
+  const render=()=>{
+    const lists=vlLists();
+    const rows=lists.map(l=>{const on=l.items.some(i=>i.vid===v.vid);return `<button class="vl-pick${on?' on':''}" data-id="${l.id}"><span class="vl-check">${on?'✓':''}</span><span class="vl-pick-name">${vlEsc(l.name)}</span><span class="vl-count">${l.items.length}本</span></button>`;}).join('');
+    const el=_vlSheet('vl-save-sheet',`
+      <div class="training-sheet-title">マイリストに保存<button class="training-sheet-close" data-x>✕</button></div>
+      <div class="vl-save-title">${vlEsc(v.title)}</div>
+      <div class="vl-picks">${rows||'<div class="lv-note">まだリストがない。下で作ろう</div>'}</div>
+      <div class="vl-new-row"><input id="vl-new-name" maxlength="30" placeholder="新しいリストの名前"><button id="vl-new-add">作って保存</button></div>
+      <button class="vl-done" data-x>完了</button>`);
+    el.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>el.remove());
+    el.querySelectorAll('.vl-pick').forEach(b=>b.onclick=()=>{
+      const l=vlLists().find(x=>x.id===b.dataset.id);if(!l)return;
+      const added=vlToggleItem(l,v);save(db);vlRefreshSaveBtns();
+      if(added&&typeof showToast==='function')showToast(`「${l.name}」に保存した`);
+      render();
+    });
+    el.querySelector('#vl-new-add').onclick=()=>{
+      const name=el.querySelector('#vl-new-name').value.trim();
+      if(!name){el.querySelector('#vl-new-name').focus();return;}
+      const l=vlNewList(name);vlToggleItem(l,v);save(db);vlRefreshSaveBtns();
+      if(typeof showToast==='function')showToast(`「${l.name}」を作って保存した`);
+      render();
+    };
+  };
+  render();
+}
+
+// ── リスト画面 ──
+function openVideoLists(listId){
+  if(listId){_vlRenderList(listId);return;}
+  const lists=vlLists();
+  const rows=lists.map(l=>{
+    const th=(l.items.find(i=>i.thumb)||{}).thumb;
+    return `<button class="vl-row-list" data-id="${l.id}">${th?`<img src="${vlEsc(th)}" alt="" onerror="this.style.visibility='hidden'">`:'<span class="vl-ph">📺</span>'}<span class="vl-pick-name">${vlEsc(l.name)}${l.src?' <span class="vl-yt">YouTube</span>':''}</span><span class="vl-count">${l.items.length}本 ›</span></button>`;
+  }).join('');
+  const el=_vlSheet('vl-sheet',`
+    <div class="training-sheet-title">📺 マイ動画リスト<button class="training-sheet-close" data-x>✕</button></div>
+    <div class="vl-lists">${rows||'<div class="lv-note">動画カードの「＋」で保存すると、ここにリストができる。YouTubeのプレイリストも読み込める</div>'}</div>
+    <div class="vl-new-row"><input id="vl-new-name2" maxlength="30" placeholder="新しいリストの名前"><button id="vl-new-add2">作る</button></div>
+    <button class="vl-import-btn" id="vl-import-open">▶ YouTubeのプレイリストを読み込む</button>`);
+  el.querySelector('[data-x]').onclick=()=>el.remove();
+  el.querySelectorAll('.vl-row-list').forEach(b=>b.onclick=()=>_vlRenderList(b.dataset.id));
+  el.querySelector('#vl-new-add2').onclick=()=>{const n=el.querySelector('#vl-new-name2').value.trim();if(!n)return;const l=vlNewList(n);save(db);_vlRenderList(l.id);};
+  el.querySelector('#vl-import-open').onclick=()=>_vlRenderImport();
+}
+
+function _vlRenderList(id){
+  const l=vlLists().find(x=>x.id===id);if(!l){openVideoLists();return;}
+  const items=l.items.map((it,i)=>{
+    const gone=it.gone,noInfo=!it.title&&!gone;
+    const label=gone?'見られなくなった動画':noInfo?'（情報を取得中）':vlEsc(it.title);
+    const link=gone?`<div class="vl-item-main vl-gone">`:`<a class="vl-item-main" href="https://www.youtube.com/watch?v=${vlEsc(it.vid)}" target="_blank" rel="noopener">`;
+    return `<div class="vl-item">${link}${it.thumb&&!gone?`<img class="menu-video-thumb" src="${vlEsc(it.thumb)}" alt="" onerror="this.style.visibility='hidden'">`:'<span class="vl-ph sm">▶</span>'}<div style="min-width:0;"><div class="menu-video-title">${label}</div><div class="lv-ch">${vlEsc(gone?'削除または非公開':it.channel||'')}</div></div>${gone?'</div>':'</a>'}
+      <div class="vl-item-ops"><button data-up="${i}" ${i===0?'disabled':''} aria-label="上へ">↑</button><button data-down="${i}" ${i===l.items.length-1?'disabled':''} aria-label="下へ">↓</button><button data-del="${i}" aria-label="削除">✕</button></div></div>`;
+  }).join('');
+  const el=_vlSheet('vl-sheet',`
+    <div class="training-sheet-title"><button class="vl-back" data-back>‹</button><span class="vl-title-txt">${vlEsc(l.name)}</span><button class="training-sheet-close" data-x>✕</button></div>
+    <div class="vl-list-ops"><button data-rename>✎ 名前を変える</button>${l.src?'<button data-resync>↻ YouTubeから更新</button>':''}<button data-dellist class="danger">リストを削除</button></div>
+    <div class="vl-items">${items||'<div class="lv-note">まだ動画がない。動画カードの「＋」で保存しよう</div>'}</div>`);
+  el.querySelector('[data-x]').onclick=()=>el.remove();
+  el.querySelector('[data-back]').onclick=()=>openVideoLists();
+  el.querySelector('[data-rename]').onclick=()=>{const n=prompt('リストの名前',l.name);if(n&&n.trim()){l.name=n.trim().slice(0,30);save(db);_vlRenderList(id);}};
+  el.querySelector('[data-dellist]').onclick=()=>{if(!confirm(`「${l.name}」を削除する？（中の動画もリストから消えます）`))return;db.videoLists=vlLists().filter(x=>x.id!==id);save(db);vlRefreshSaveBtns();openVideoLists();};
+  el.querySelector('[data-resync]')?.addEventListener('click',()=>_vlImport(l.src,el.querySelector('.vl-list-ops')));
+  el.querySelectorAll('[data-up],[data-down],[data-del]').forEach(b=>b.onclick=()=>{
+    const i=+(b.dataset.up??b.dataset.down??b.dataset.del);
+    if(b.dataset.del!=null)l.items.splice(i,1);
+    else{const j=b.dataset.up!=null?i-1:i+1;if(j<0||j>=l.items.length)return;[l.items[i],l.items[j]]=[l.items[j],l.items[i]];}
+    save(db);vlRefreshSaveBtns();_vlRenderList(id);
+  });
+  vlRefreshInfo(l).then(changed=>{if(changed&&document.getElementById('vl-sheet')&&el.isConnected)_vlRenderList(id);});
+}
+
+// 7日以上前に取得した情報（と情報のない動画）を取り直す
+async function vlRefreshInfo(l){
+  if(window._DEV_MODE)return false;
+  const now=Date.now();
+  const stale=l.items.filter(i=>!i.gone&&(!i.title||!i.ft||now-i.ft>VL_REFRESH_MS));
+  if(!stale.length)return false;
+  let changed=false;
+  for(let k=0;k<stale.length;k+=50){
+    const chunk=stale.slice(k,k+50);
+    try{
+      const r=await fetch(`${_vidBase()}/video/details?ids=${chunk.map(i=>i.vid).join(',')}`);
+      if(!r.ok)continue;
+      const d=await r.json();if(!d||d.error)continue;
+      chunk.forEach(i=>{const v=d[i.vid];if(v){i.title=v.title;i.channel=v.channel;i.thumb=v.thumbnail;i.ft=now;}else{i.gone=true;i.title='';i.channel='';i.thumb='';}changed=true;});
+    }catch(e){}
+  }
+  if(changed)save(db);
+  return changed;
+}
+// 起動時: 30日以上更新できていないタイトル等を消す（動画IDは残す）
+function vlPurgeExpired(){
+  const now=Date.now();let n=0;
+  vlLists().forEach(l=>(l.items||[]).forEach(i=>{if(i.title&&(!i.ft||now-i.ft>VL_EXPIRE_MS)){i.title='';i.channel='';i.thumb='';n++;}}));
+  if(n)save(db);
+  return n;
+}
+
+// ── YouTube プレイリストの読み込み ──
+function vlParsePlaylistId(s){
+  s=String(s||'').trim();
+  try{const u=new URL(s);const p=u.searchParams.get('list');if(p)return p;}catch(e){}
+  return /^[A-Za-z0-9_-]{2,64}$/.test(s)?s:'';
+}
+function _vlRenderImport(){
+  const el=_vlSheet('vl-sheet',`
+    <div class="training-sheet-title"><button class="vl-back" data-back>‹</button><span class="vl-title-txt">YouTubeから読み込む</span><button class="training-sheet-close" data-x>✕</button></div>
+    <div class="lv-note">YouTubeアプリでプレイリストを開き「共有」→「コピー」したURLを貼り付けてね。公開・限定公開のプレイリストだけ読み込める（最大${VL_MAX_ITEMS}本）</div>
+    <input id="vl-import-url" class="vl-import-in" placeholder="https://youtube.com/playlist?list=..." autocomplete="off">
+    <button class="vl-import-btn primary" id="vl-import-go">読み込む</button>
+    <div id="vl-import-msg" class="lv-note"></div>`);
+  el.querySelector('[data-x]').onclick=()=>el.remove();
+  el.querySelector('[data-back]').onclick=()=>openVideoLists();
+  el.querySelector('#vl-import-go').onclick=()=>{
+    const id=vlParsePlaylistId(el.querySelector('#vl-import-url').value);
+    const msg=el.querySelector('#vl-import-msg');
+    if(!id){msg.textContent='プレイリストのURLが読み取れなかった。「list=」を含むURLを貼ってね';return;}
+    _vlImport(id,msg);
+  };
+}
+async function _vlImport(id,msgEl){
+  const say=t=>{if(msgEl)msgEl.textContent=t;};
+  say('読み込み中…');
+  let d;
+  try{const r=await fetch(`${_vidBase()}/youtube/playlist?id=${encodeURIComponent(id)}`);d=await r.json();}catch(e){say('通信に失敗した。電波のいいところでもう一度試してね');return;}
+  if(d.error==='private_special'){say('「後で見る」「高く評価した動画」はYouTubeの仕様で読み込めない。普通のプレイリストにコピーしてから試してね');return;}
+  if(d.error==='not_found'){say('見つからなかった。非公開のプレイリストは読み込めないので、公開か限定公開にしてね');return;}
+  if(d.error||!Array.isArray(d.items)){say('読み込めなかった（'+(d.error||'不明なエラー')+'）');return;}
+  if(!d.items.length){say('このプレイリストには見られる動画がなかった');return;}
+  const now=Date.now();
+  let l=vlLists().find(x=>x.src===id);
+  const isNew=!l;
+  if(!l){l=vlNewList(d.title);l.src=id;}
+  const prev=new Map(l.items.map(i=>[i.vid,i]));
+  l.items=d.items.slice(0,VL_MAX_ITEMS).map(v=>({vid:v.id,title:v.title,channel:v.channel,thumb:v.thumbnail,at:prev.get(v.id)?.at||now,ft:now}));
+  save(db);vlRefreshSaveBtns();
+  if(typeof showToast==='function')showToast(`${isNew?'読み込んだ':'更新した'}: ${l.name}（${l.items.length}本${d.truncated?'・先頭'+VL_MAX_ITEMS+'本':''}）`);
+  _vlRenderList(l.id);
+}
+
+// メニュー（≡）・今日のメニューの入口
+document.querySelectorAll('[data-open-vl]').forEach(b=>b.addEventListener('click',()=>{if(typeof closeDrawer==='function')closeDrawer();openVideoLists();}));
+try{if(db&&db.videoLists)vlPurgeExpired();}catch(e){}
 // ── 履歴モーダル ─────────────────────────────────────────
 function openHistModal(title,rows){
   document.getElementById('hist-modal-title').textContent=title;
