@@ -1264,6 +1264,24 @@ body.in-training .ai-modal{z-index:700;}
 .aip-btns{display:grid;grid-template-columns:2fr 1fr;gap:8px;}
 .aip-btns button{padding:11px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface2);color:var(--fg);font-size:13px;font-weight:800;font-family:inherit;cursor:pointer;}
 .aip-btns .aip-save{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+/* === 食事・睡眠のおすすめ動画（v2.91.0）／ランの今週の話題（v2.92.0） === */
+.lv-card{padding:12px 14px;margin:12px 0 0;overflow:visible;}
+.trend-card{margin:0 0 16px;}
+.lv-head{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;color:var(--fg);}
+.lv-ran{width:32px;height:32px;object-fit:contain;flex-shrink:0;}
+.lv-reason{font-size:12px;color:var(--accent);font-weight:700;margin:6px 0 8px;}
+.lv-note{font-size:12px;color:var(--fg3);line-height:1.6;margin-top:6px;}
+.lv-list{display:flex;flex-direction:column;gap:8px;}
+.lv-ch{font-size:10px;color:var(--fg3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tr-intro{font-size:13px;line-height:1.6;color:var(--fg);margin:6px 0 8px;}
+.tr-kws{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.tr-kw{padding:6px 10px;border-radius:999px;border:1.5px solid var(--border);background:var(--surface2);color:var(--fg);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;min-height:0;}
+.tr-kw.on{border-color:var(--accent);background:var(--accent-bg);color:var(--accent);}
+.tr-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px;}
+.tr-tab{padding:7px 4px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);color:var(--fg2);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;min-height:0;}
+.tr-tab.on{border-color:var(--accent);background:var(--accent-bg);color:var(--accent);}
+.tr-sub{font-size:11px;color:var(--fg3);font-weight:700;margin-bottom:6px;}
 </style>
 </head>
 <body>
@@ -1349,6 +1367,7 @@ body.in-training .ai-modal{z-index:700;}
     <div id="streak-card" class="card streak-card" hidden></div>
     <div id="goal-card" class="goal-card"></div>
     <div id="health-advice-card" class="card health-advice-card" hidden></div>
+    <div id="trend-card" class="card lv-card trend-card" hidden></div>
     <button class="training-start-btn" id="training-start-btn" onclick="startTraining()">
       <img class="training-start-btn-img" src="assets/characters/01_Ran_pointing.png" alt="ラン" onerror="this.style.display='none'">
       <div class="training-start-btn-body">
@@ -1484,6 +1503,7 @@ body.in-training .ai-modal{z-index:700;}
       </div>
       <div id="ml-log-view">
         <div id="ml-list"></div>
+        <div id="ml-video-card" class="card lv-card" hidden></div>
       </div>
       <div id="ml-chart-view" hidden>
         <div class="card chart-ctrl">
@@ -1521,6 +1541,7 @@ body.in-training .ai-modal{z-index:700;}
         <button id="sl-add-nap" class="sl-add-nap-btn">＋ 昼寝を追加</button>
         <div id="sl-total-row" class="sleep-total" hidden></div>
       </div>
+      <div id="sl-video-card" class="card lv-card" hidden></div>
     </div>
     <div id="other-health" hidden>
       <div class="card date-bar" style="gap:0;">
@@ -1942,6 +1963,14 @@ body.in-training .ai-modal{z-index:700;}
             <button class="st-opt" data-rest="90">90秒</button>
             <button class="st-opt" data-rest="120">2分</button>
             <button class="st-opt" data-rest="180">3分</button>
+          </div>
+        </div>
+        <div class="st-row st-row-toggle">
+          <span class="st-ic" style="background:#f97316;">🐴</span>
+          <span class="st-label" style="flex:0 0 auto;margin-right:8px;">ホームの今週の話題</span>
+          <div class="st-opts" style="justify-content:flex-end;">
+            <button class="st-opt" data-trend="on">表示</button>
+            <button class="st-opt" data-trend="off">非表示</button>
           </div>
         </div>
       </div>
@@ -2595,7 +2624,7 @@ body.in-training .ai-modal{z-index:700;}
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='1f288b4bc1'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='b1b73606cd'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -3070,7 +3099,7 @@ function switchToTab(t){
   tabEl.classList.add('on');
   tabEl.scrollTop=0;
   updateNavActive();
-  if(t==='cal'){renderGoals();renderCal();renderHealthAdvice();}
+  if(t==='cal'){renderGoals();renderCal();renderHealthAdvice();if(typeof renderTrendCard==='function')renderTrendCard();}
   if(t==='tasks')renderTasks();
   if(t==='other')renderOther();
 }
@@ -4224,6 +4253,7 @@ document.getElementById('mo-calendars').onclick=e=>{if(e.target===e.currentTarge
 document.getElementById('hdr-settings').onclick=()=>{
   const s=db.settings;
   document.querySelectorAll('.st-opt[data-rest]').forEach(b=>b.classList.toggle('on',+b.dataset.rest===(parseInt(s.restSec)||90)));
+  document.querySelectorAll('.st-opt[data-trend]').forEach(b=>b.classList.toggle('on',b.dataset.trend===(s.hideTrend?'off':'on')));
   document.querySelectorAll('.st-opt[data-pos]').forEach(b=>b.classList.toggle('on',b.dataset.pos===(s.addBtnPos==='bl'?'bl':'br')));
   document.querySelectorAll('.st-opt[data-hl]').forEach(b=>b.classList.toggle('on',b.dataset.hl===(s.highlightTab||'wo')));
   document.querySelectorAll('.st-opt[data-cal]').forEach(b=>b.classList.toggle('on',b.dataset.cal===(s.calLayout||'general')));
@@ -6579,6 +6609,7 @@ function renderMeals(){
   con.querySelectorAll('.ml-open-add').forEach(btn=>{
     btn.onclick=()=>openMlAdd(btn.dataset.k);
   });
+  if(typeof renderMealVideos==='function')renderMealVideos();
 }
 
 // ── Sleep ─────────────────────────────────────────────────
@@ -6646,6 +6677,7 @@ function renderSleepTab(){
   const yd=fmt(ydD);
   document.getElementById('sl-bed-badge').textContent=(db.sleep[today]||{}).bedtime||'';
   document.getElementById('sl-wake-badge').textContent=(db.sleep[yd]||{}).wakeTime||'';
+  if(typeof renderSleepVideos==='function')renderSleepVideos();
 }
 document.getElementById('sl-prev').onclick=()=>{const d=new Date(st.slDate);d.setDate(d.getDate()-1);st.slDate=fmt(d);renderSleepTab();};
 document.getElementById('sl-next').onclick=()=>{const d=new Date(st.slDate);d.setDate(d.getDate()+1);st.slDate=fmt(d);renderSleepTab();};
@@ -8301,6 +8333,158 @@ function showVideoFeedbackSheet(p,sec){
 }
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(checkVideoFeedback,400);});
 setTimeout(checkVideoFeedback,1500);
+// ── 食事・睡眠のおすすめ動画（v2.91.0）／ランの今週の話題（v2.92.0） ─────────
+// 動画の取得・「役に立った？」の評価は videos.js の仕組みをそのまま使う（集計キーは meal:〜 / sleep:〜 / topic:〜 / trend:〜）
+// ※ビルドで1つのscriptに連結されるため、トップレベルに const/let を置かない（TDZ回避）
+
+window._lvCache=window._lvCache||{};
+
+function _lvDay(n){const x=new Date(todayStr()+'T00:00:00');x.setDate(x.getDate()+n);return fmt(x);}
+function _lvIsNight(){const h=new Date().getHours();return h>=21||h<5;}
+function _lvBedMins(t){const[h,m]=String(t).split(':').map(Number);let v=h*60+m;if(v<12*60)v+=1440;return v;} // 0時以降の就寝は24時以降として扱う
+function _lvHHMM(v){v=((Math.round(v)%1440)+1440)%1440;return `${Math.floor(v/60)}:${String(v%60).padStart(2,'0')}`;}
+
+// 食事: 記録から「なぜこの動画か」を決める
+function mealVideoTopic(){
+  const hp=db.settings.healthProfile||{};
+  const pn=(db.nutrients||[]).find(n=>/タンパク|たんぱく|蛋白|protein/i.test(n.name||''));
+  if(pn&&hp.weight){
+    const yd=db.meals?.[_lvDay(-1)];
+    const items=yd?MEAL_DEF.flatMap(m=>yd[m.k]||[]):[];
+    if(items.length){
+      const p=items.reduce((s,i)=>s+(parseFloat(i.nutrients?.[pn.id])||0),0);
+      const target=Math.round(hp.weight*(hp.goal==='maintain'?1.0:1.6));
+      if(p<target*0.8)return{key:'meal:protein',q:'高たんぱく 作り置き レシピ',reason:`昨日のたんぱく質 ${Math.round(p)}g（目安 ${target}g）`};
+    }
+  }
+  // 他の食事は記録しているのに朝食がない日（今日は途中なので除く）
+  let noBf=0;
+  for(let n=-3;n<=-1;n++){const d=db.meals?.[_lvDay(n)];if(!d)continue;const other=['lunch','dinner','snack'].some(k=>(d[k]||[]).length);if(other&&!(d.breakfast||[]).length)noBf++;}
+  if(noBf>=2)return{key:'meal:breakfast',q:'朝ごはん 簡単 時短 たんぱく質',reason:'最近、朝食の記録が少なめ'};
+  if(hp.goal==='cut')return{key:'meal:cut',q:'減量 食事 レシピ 高たんぱく 低脂質',reason:'目標が「減量」だから'};
+  if(hp.goal==='bulk')return{key:'meal:bulk',q:'増量 食事 レシピ 簡単',reason:'目標が「増量」だから'};
+  if(hp.goal==='recomp')return{key:'meal:recomp',q:'体脂肪 減らす 食事 筋トレ',reason:'目標が「体脂肪減」だから'};
+  return{key:'meal:basic',q:'筋トレ 食事 基本 自炊',reason:'筋トレする人の食事の基本'};
+}
+
+// 睡眠: 直近7日の記録から決める（db.sleep[D] は D の夜に寝た記録）
+function sleepVideoTopic(){
+  const recs=[];
+  for(let n=-7;n<=-1;n++){const s=db.sleep?.[_lvDay(n)];if(s&&s.bedtime&&s.wakeTime)recs.push(s);}
+  if(recs.length<3)return{key:'sleep:basic',q:'睡眠の質 上げる 方法 基本',reason:'まずは記録を3日ためよう。その間はこれ'};
+  const durs=recs.map(s=>_slMins(s.bedtime,s.wakeTime));
+  const avg=durs.reduce((a,b)=>a+b,0)/durs.length;
+  if(avg<360)return{key:'sleep:short',q:'睡眠不足 解消 方法',reason:`直近${recs.length}日の平均睡眠 ${_fmtMins(Math.round(avg))}`};
+  const beds=recs.map(s=>_lvBedMins(s.bedtime));
+  const spread=Math.max(...beds)-Math.min(...beds);
+  if(spread>=90)return{key:'sleep:rhythm',q:'体内時計 整える 寝る時間 そろえる',reason:`寝る時刻のばらつきが${_fmtMins(spread)}`};
+  const avgBed=beds.reduce((a,b)=>a+b,0)/beds.length;
+  if(avgBed>1440+30)return{key:'sleep:late',q:'早寝 コツ 夜更かし 直す',reason:`平均の就寝が ${_lvHHMM(avgBed)}`};
+  const naps=recs.map(s=>(s.naps||[]).filter(n=>n.start&&n.end).reduce((a,n)=>a+_slMins(n.start,n.end),0));
+  if(naps.reduce((a,b)=>a+b,0)/naps.length>60)return{key:'sleep:nap',q:'昼寝 効果的 時間 取り方',reason:'昼寝が平均1時間を超えてる'};
+  return{key:'sleep:quality',q:'睡眠の質 上げる 習慣',reason:'いい調子。さらに質を上げるなら'};
+}
+
+function _lvHead(title){
+  const img=(typeof CHARS!=='undefined'&&CHARS.ran)?CHARS.ran.img:'';
+  return `<div class="lv-head">${img?`<img class="lv-ran" src="${img}" alt="ラン" onerror="this.style.display='none'">`:''}<span>${title}</span></div>`;
+}
+function _lvItems(list){
+  return list.map(v=>`<a ${videoLinkAttrs(v)} class="menu-video-item"><img class="menu-video-thumb" src="${_vidEsc(v.thumbnail)}" alt="" onerror="this.style.display='none'"><div style="min-width:0;"><div class="menu-video-title">${_vidEsc(v.title)}</div><div class="lv-ch">${_vidEsc(v.channel||'')}</div>${videoUpBadge(v)}</div></a>`).join('');
+}
+// 同じ日・同じテーマは1回だけ取得（記録を編集するたびに再取得しない）
+function _lvFetch(key,q,n){
+  const ck=key+'|'+q+'|'+todayStr();
+  if(!window._lvCache[ck])window._lvCache[ck]=fetchRecommendedVideos(key,q,n).catch(()=>[]);
+  return window._lvCache[ck];
+}
+
+async function renderLifeVideoCard(elId,topic,opts){
+  const el=document.getElementById(elId);if(!el)return;
+  el.dataset.token=''; // 取得中の古い結果を書き込ませない
+  if(!topic){el.hidden=true;return;}
+  el.hidden=false;
+  if(opts&&opts.night){
+    el.innerHTML=_lvHead('ランのおすすめ動画')+`<div class="lv-note">🌙 寝る前の動画は眠りを浅くする。今日はもう休め。おすすめは朝に出す</div>`;
+    return;
+  }
+  const token=topic.key+'|'+todayStr();
+  el.dataset.token=token;
+  el.innerHTML=_lvHead('ランのおすすめ動画')+`<div class="lv-reason">${esc(topic.reason)}</div><div class="lv-list"><div class="lv-note">動画を探し中…</div></div>`;
+  if(window._DEV_MODE){el.querySelector('.lv-list').innerHTML='<div class="lv-note">[DEVモード] 動画は本番のみ</div>';return;}
+  const list=await _lvFetch(topic.key,topic.q,2);
+  const box=el.querySelector('.lv-list');
+  if(el.dataset.token!==token||!box)return; // 取得中に別の内容へ切り替わった
+  box.innerHTML=list.length?_lvItems(list):'<div class="lv-note">今は動画を取得できなかった。あとでまた見てくれ</div>';
+}
+function renderMealVideos(){
+  const show=st.mlDate===todayStr();
+  if(!show){const el=document.getElementById('ml-video-card');if(el){el.hidden=true;el.dataset.token='';}return;}
+  renderLifeVideoCard('ml-video-card',mealVideoTopic());
+}
+function renderSleepVideos(){
+  renderLifeVideoCard('sl-video-card',sleepVideoTopic(),{night:_lvIsNight()});
+}
+
+// ── ランの今週の話題（ホーム） ─────────────────────────────
+// Worker /trend（毎朝5時に作成）を読むだけ。動画は YouTube の検索結果（直近7日・再生数順）をそのまま表示
+window._trendState=window._trendState||{cat:'muscle',kw:null,data:null,day:null,loading:null};
+var TREND_CAT_LABEL={muscle:'💪 筋トレ',meal:'🍚 食事',sleep:'😴 睡眠'};
+
+async function _trendLoad(){
+  const s=window._trendState,today=todayStr();
+  if(s.data&&s.day===today)return s.data;
+  try{const c=JSON.parse(localStorage.getItem('lh_trend_v1')||'null');if(c&&c.day===today&&c.data){s.data=c.data;s.day=today;return s.data;}}catch(e){}
+  if(!s.loading){
+    s.loading=(async()=>{
+      try{
+        const r=await fetch(`${_vidBase()}/trend`);
+        if(!r.ok)throw new Error('HTTP '+r.status);
+        const d=await r.json();
+        if(!d||!Array.isArray(d.keywords))throw new Error('bad');
+        s.data=d;s.day=today;
+        try{localStorage.setItem('lh_trend_v1',JSON.stringify({day:today,data:d}));}catch(e){}
+        return d;
+      }catch(e){return null;}
+      finally{s.loading=null;}
+    })();
+  }
+  return s.loading;
+}
+
+async function renderTrendCard(){
+  const el=document.getElementById('trend-card');if(!el)return;
+  if(db.settings.hideTrend){el.hidden=true;return;}
+  if(window._DEV_MODE){el.hidden=true;return;}
+  const d=await _trendLoad();
+  if(!d){el.hidden=true;return;}
+  const s=window._trendState;
+  el.hidden=false;
+  const kws=(d.keywords||[]).map(k=>`<button class="tr-kw${s.kw===k?' on':''}" data-kw="${_vidEsc(k)}">#${_vidEsc(k)}</button>`).join('');
+  const tabs=Object.keys(TREND_CAT_LABEL).map(c=>`<button class="tr-tab${!s.kw&&s.cat===c?' on':''}" data-cat="${c}">${TREND_CAT_LABEL[c]}</button>`).join('');
+  el.innerHTML=_lvHead('ランの今週の話題')
+    +`<div class="tr-intro">${esc(d.intro||'')}</div>`
+    +`<div class="tr-kws">${kws}</div>`
+    +`<div class="tr-tabs">${tabs}</div>`
+    +`<div class="tr-sub"></div><div class="lv-list tr-list"></div>`;
+  el.querySelectorAll('.tr-kw').forEach(b=>b.onclick=()=>{s.kw=s.kw===b.dataset.kw?null:b.dataset.kw;renderTrendCard();});
+  el.querySelectorAll('.tr-tab').forEach(b=>b.onclick=()=>{s.kw=null;s.cat=b.dataset.cat;renderTrendCard();});
+  const sub=el.querySelector('.tr-sub'),box=el.querySelector('.tr-list');
+  if(s.kw){
+    const kw=s.kw;
+    sub.textContent=`「${kw}」の解説動画`;
+    box.innerHTML='<div class="lv-note">動画を探し中…</div>';
+    const list=await _lvFetch('topic:'+kw,kw+' 解説',3);
+    if(s.kw!==kw||!box.isConnected)return;
+    box.innerHTML=list.length?_lvItems(list):'<div class="lv-note">今は動画を取得できなかった</div>';
+  }else{
+    sub.textContent='YouTubeで今週よく見られている動画';
+    const list=((d.videos||{})[s.cat]||[]).map(v=>({...v,url:`https://www.youtube.com/watch?v=${v.id}`,ex:'trend:'+s.cat,up:0,down:0}));
+    box.innerHTML=list.length?_lvItems(list):'<div class="lv-note">今週はまだ見つからなかった</div>';
+  }
+}
+document.querySelectorAll('.st-opt[data-trend]').forEach(b=>b.onclick=()=>{db.settings.hideTrend=b.dataset.trend==='off';save(db);document.querySelectorAll('.st-opt[data-trend]').forEach(x=>x.classList.toggle('on',x===b));renderTrendCard();});
+setTimeout(()=>{if(typeof st!=='undefined'&&st.tab==='cal')renderTrendCard();},1800);
 // ── 履歴モーダル ─────────────────────────────────────────
 function openHistModal(title,rows){
   document.getElementById('hist-modal-title').textContent=title;
