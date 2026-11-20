@@ -1330,6 +1330,27 @@ body.in-training .ai-modal{z-index:700;}
 .vid-fb-btns .vn-send{background:var(--accent);border-color:var(--accent);color:#fff;}
 .vn-privacy{font-size:11px;color:var(--fg3);line-height:1.5;margin:2px 0 10px;}
 .vn-mine{font-size:11px;color:var(--accent);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* === 食材からメニュー（v2.95.0） === */
+.rcp-open-btn{width:100%;margin:0 0 12px;padding:12px;border-radius:14px;border:1.5px dashed var(--accent);background:var(--accent-bg);color:var(--accent);font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;min-height:0;}
+.hp-text{width:100%;box-sizing:border-box;padding:9px 11px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);color:var(--fg);font-size:16px;font-family:inherit;}
+.rcp-time{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--fg2);font-weight:700;}
+.rcp-time span{margin-right:4px;}
+.rcp-time button{padding:6px 12px;border-radius:999px;border:1.5px solid var(--border);background:var(--surface);color:var(--fg2);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;min-height:0;}
+.rcp-time button.on{border-color:var(--accent);background:var(--accent-bg);color:var(--accent);}
+.rcp-warn{font-size:11px;line-height:1.5;color:#b45309;background:rgba(245,158,11,.12);border-radius:10px;padding:8px 10px;margin:4px 0;}
+.rcp-comment{font-size:13px;font-weight:700;color:var(--fg);margin:6px 0;}
+.rcp-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:12px;margin-top:10px;display:flex;flex-direction:column;gap:6px;}
+.rcp-name{font-size:15px;font-weight:800;color:var(--fg);}
+.rcp-meta{font-size:12px;color:var(--fg2);font-weight:700;}
+.rcp-reason{font-size:12px;color:var(--accent);font-weight:700;}
+.rcp-ing{font-size:12px;color:var(--fg2);line-height:1.5;}
+.rcp-steps{margin:0;padding-left:20px;font-size:12px;line-height:1.6;color:var(--fg);}
+.rcp-actions{display:flex;gap:8px;align-items:center;margin-top:2px;}
+.rcp-mt{flex-shrink:0;padding:8px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);color:var(--fg);font-size:14px;font-family:inherit;}
+.rcp-pick{flex:1;padding:10px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;min-height:0;}
+.rcp-pick:disabled{background:#10b981;}
+.rcp-in-chat .rcp-card{background:var(--surface2);}
 </style>
 </head>
 <body>
@@ -1550,6 +1571,7 @@ body.in-training .ai-modal{z-index:700;}
         <button class="ml-vtab" data-v="chart">📊 グラフ</button>
       </div>
       <div id="ml-log-view">
+        <button class="rcp-open-btn" id="rcp-open">🍳 食材からメニューを考える</button>
         <div id="ml-list"></div>
         <div id="ml-video-card" class="card lv-card" hidden></div>
       </div>
@@ -1829,6 +1851,15 @@ body.in-training .ai-modal{z-index:700;}
             <button class="st-opt" data-hp-gym="3">週3</button>
             <button class="st-opt" data-hp-gym="4">週4</button>
             <button class="st-opt" data-hp-gym="5">週5+</button>
+          </div>
+        </div>
+        <div class="st-row" style="align-items:flex-start;gap:10px;margin-top:4px;">
+          <span class="st-ic" style="background:#dc2626;flex-shrink:0;">⚠️</span>
+          <div style="flex:1;min-width:0;">
+            <div class="st-label" style="margin-bottom:6px;">アレルギー・苦手な食材</div>
+            <input type="text" id="hp-allergies" class="hp-text" maxlength="100" placeholder="アレルギー（例: えび、卵）">
+            <input type="text" id="hp-dislikes" class="hp-text" maxlength="100" placeholder="苦手な食材（例: セロリ）" style="margin-top:6px;">
+            <div style="font-size:11px;color:var(--fg3);margin-top:4px;">メニュー提案とAIトレーナーが避けます。読点（、）で区切って入力</div>
           </div>
         </div>
       </div>
@@ -2674,7 +2705,7 @@ body.in-training .ai-modal{z-index:700;}
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='f2fe3bef50'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='67b7f95931'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -7349,6 +7380,7 @@ function calcGameStats(){
     {name:'log_sleep',description:'睡眠を記録する。ユーザーが昨夜の就寝・今日の起床時刻を話した時に記録する',input_schema:{type:'object',properties:{date:{type:'string',description:'対象日（YYYY-MM-DD）'},bedtime:{type:'string',description:'就寝時刻（HH:MM）省略可'},wake_time:{type:'string',description:'起床時刻（HH:MM）省略可'}},required:['date']}},
     {name:'log_meal',description:'食事を記録する。朝食・昼食・夕食・間食を記録できる。ユーザーが食べたものを教えてくれた時に使う。カロリーや栄養素は推定値でOK',input_schema:{type:'object',properties:{date:{type:'string',description:'日付（YYYY-MM-DD）省略時は今日'},meal_type:{type:'string',enum:['breakfast','lunch','dinner','snack'],description:'朝食=breakfast, 昼食=lunch, 夕食=dinner, 間食=snack'},items:{type:'array',description:'食事アイテムの配列',items:{type:'object',properties:{name:{type:'string',description:'食べたものの名前'},kcal:{type:'number',description:'カロリー（kcal）推定値でOK'},protein:{type:'number',description:'タンパク質（g）推定値でOK'},carbs:{type:'number',description:'炭水化物（g）推定値でOK'},fat:{type:'number',description:'脂質（g）推定値でOK'}}}}},required:['meal_type','items']}},
     {name:'log_health',description:'健康データを記録する。体重・体脂肪率・歩数・心拍数・水分摂取量など。ユーザーが測定値を話してくれた時に使う',input_schema:{type:'object',properties:{date:{type:'string',description:'日付（YYYY-MM-DD）省略時は今日'},weight:{type:'number',description:'体重(kg)'},body_fat:{type:'number',description:'体脂肪率(%)'},steps:{type:'number',description:'歩数'},heart_rate:{type:'number',description:'心拍数(bpm)'},systolic:{type:'number',description:'血圧 収縮期(mmHg)'},diastolic:{type:'number',description:'血圧 拡張期(mmHg)'},water:{type:'number',description:'水分摂取量(ml)'}},required:['date']}},
+    {name:'suggest_recipes',description:'手元の食材からおすすめのメニューを3つ提案し、レシピ動画も表示する。ユーザーが冷蔵庫にある食材・余っている食材を伝えて、何を作るか迷っている時に使う。アレルギーと苦手な食材は自動で除外される',input_schema:{type:'object',properties:{ingredients:{type:'string',description:'手元の食材（例: "鶏むね肉、卵、ブロッコリー"）'},max_minutes:{type:'number',description:'調理時間の上限（分）。指定がなければ省略'}},required:['ingredients']}},
     {name:'search_videos',description:'筋トレ・トレーニング関連のYouTube動画を検索する。ユーザーが種目のやり方・フォーム・メニューを知りたい時や、動画を見たい時に使う',input_schema:{type:'object',properties:{query:{type:'string',description:'検索キーワード（例: "ベンチプレス フォーム", "スクワット 初心者"）'},max_results:{type:'number',description:'取得件数（1〜5、デフォルト3）'}},required:['query']}},
     {name:'save_training_plan',description:'ユーザーの今日のトレーニングメニューを保存する。AIがメニューを提案・作成した後は必ずこのツールを呼んでメニューを保存すること',input_schema:{type:'object',properties:{plan:{type:'string',description:'今日のトレーニングメニュー（各種目を改行で区切る。例: "ベンチプレス 4×10\\nインクラインDB 3×12"）'}},required:['plan']}},
   ];
@@ -7651,6 +7683,8 @@ function calcGameStats(){
     if(hp.age)hpParts.push(`年齢:${hp.age}歳`);
     if(hp.goal)hpParts.push(`目標:${goalMap[hp.goal]||hp.goal}`);
     if(hp.gymFreq)hpParts.push(`ジム目標:週${hp.gymFreq}回`);
+    if(hp.allergies)hpParts.push(`アレルギー:${hp.allergies}（食事の提案では絶対に使わない）`);
+    if(hp.dislikes)hpParts.push(`苦手な食材:${hp.dislikes}`);
     const hpStats=hpParts.length?hpParts.join(' / '):'未設定';
     const streakStats=typeof streakSummaryText==='function'?streakSummaryText():'なし';
     return `【今日の日付】${today}\n【連続記録】${streakStats}\n【健康プロフィール】${hpStats}\n【使用目的】${useCaseStr}\n【今後14日間の予定】\n${evs}\n【未完了タスク】\n${tasks}\n【進行中の目標】\n${goals}\n【カレンダー一覧】\n${cals}\n【タスク達成状況】${taskStats}\n【筋トレ履歴（直近30日/最大90日遡及）】\n${woStats}\n【睡眠記録（直近30日統計）】\n${sleepStats}\n【食事記録（過去7日間）】\n${mealStats}\n【今日の健康データ】${healthStats}\n【タスクフィードバック履歴】\n${fbStats}\n【動画への本人の評価・コメント（本人とAIだけが見る。好みに合わせた提案に使う）】\n${typeof vnContextText==='function'?vnContextText():'なし'}`;
@@ -7818,6 +7852,19 @@ function calcGameStats(){
       if(input.systolic!=null&&input.diastolic!=null)parts.push(`血圧:${input.systolic}/${input.diastolic}mmHg`);
       if(input.water!=null)parts.push(`水分:${input.water}ml`);
       return `健康データを記録しました（${date}）: ${parts.join(' ')}`;
+    }
+    if(name==='suggest_recipes'){
+      if(typeof rcpSuggest!=='function')return 'メニュー提案は使えません。';
+      try{
+        const r=await rcpSuggest(input.ingredients||'',{minutes:input.max_minutes||0});
+        const wrap=document.getElementById('ai-messages');
+        const div=document.createElement('div');div.className='ai-msg ai rcp-in-chat';
+        div.innerHTML=rcpAllergyNote()+rcpResultHtml(r,rcpMealTypeNow());
+        wrap.appendChild(div);wrap.scrollTop=wrap.scrollHeight;
+        rcpFillVideos(div);
+        if(!r.menus.length)return 'アレルギー・苦手な食材を除くと、条件に合うメニューがありませんでした。';
+        return `メニューを${r.menus.length}件カードで表示しました（${r.menus.map(m=>m.name).join('、')}）。各カードにレシピ動画と「これにする」ボタンがあります。${r.removed.length?'アレルギー・苦手な食材を含む'+r.removed.length+'件は除外しました。':''}カードの内容を繰り返さず、短くひとこと添えてください。`;
+      }catch(e){return typeof rcpErrorText==='function'?rcpErrorText(e):'メニューを考えられませんでした。';}
     }
     if(name==='search_videos'){
       const q=input.query||'';
@@ -8803,6 +8850,226 @@ async function _vlImport(id,msgEl){
 // メニュー（≡）・今日のメニューの入口
 document.querySelectorAll('[data-open-vl]').forEach(b=>b.addEventListener('click',()=>{if(typeof closeDrawer==='function')closeDrawer();openVideoLists();}));
 try{if(db&&db.videoLists)vlPurgeExpired();}catch(e){}
+// ── 食材からメニュー提案＋レシピ動画（v2.95.0） ─────────────────────────
+// 食材 → AI(Haiku・構造化出力)がメニュー3つ → 各メニューの検索語で YouTube を実際に検索して1本ずつ（AI に URL は作らせない）
+// アレルギー・苦手な食材は「AIへの指示」と「返ってきた内容の照合」の二重で除外する
+// ※ビルドで1つのscriptに連結されるため、トップレベルに const/let を置かない（TDZ回避）
+
+var RCP_DAILY_LIMIT=5;
+window._rcpStore=window._rcpStore||{}; // id → menu（「これにする」用）
+
+function rcpTerms(s){return String(s||'').split(/[、,，\/・\s]+/).map(t=>t.trim()).filter(t=>t.length>=1).slice(0,30);}
+function rcpMealTypeNow(){const h=new Date().getHours();return h<10?'breakfast':h<15?'lunch':h<21?'dinner':'snack';}
+function rcpUsage(){const d=todayStr();try{const u=JSON.parse(localStorage.getItem('lh_recipe_count')||'null');return u&&u.day===d?u:{day:d,n:0};}catch(e){return{day:d,n:0};}}
+function rcpCountUp(){const u=rcpUsage();u.n++;try{localStorage.setItem('lh_recipe_count',JSON.stringify(u));}catch(e){}return u;}
+
+function rcpProteinNut(){return (db.nutrients||[]).find(n=>/タンパク|たんぱく|蛋白|protein/i.test(n.name||''));}
+function rcpContext(){
+  const hp=db.settings.healthProfile||{};
+  const goalMap={bulk:'増量',cut:'減量',maintain:'維持',recomp:'体脂肪を減らす'};
+  const parts=[];
+  if(hp.goal)parts.push(`目標: ${goalMap[hp.goal]||hp.goal}`);
+  if(hp.weight){
+    const target=Math.round(hp.weight*(hp.goal==='maintain'?1.0:1.6));
+    parts.push(`体重${hp.weight}kg・たんぱく質の目安 1日${target}g`);
+    const pn=rcpProteinNut();const dm=db.meals?.[todayStr()];
+    if(pn&&dm){const p=['breakfast','lunch','dinner','snack'].flatMap(k=>dm[k]||[]).reduce((s,i)=>s+(parseFloat(i.nutrients?.[pn.id])||0),0);parts.push(`今日ここまでのたんぱく質 ${Math.round(p)}g`);}
+  }
+  const evs=(db.events||[]).filter(e=>typeof evOccursOn==='function'&&evOccursOn(e,todayStr())).map(e=>`${e.time?e.time+(e.timeEnd?'〜'+e.timeEnd:'')+' ':''}${e.title}`).slice(0,6);
+  parts.push(`今日の予定: ${evs.length?evs.join('、'):'なし'}`);
+  return parts.join('\n');
+}
+function rcpSchema(){
+  return {type:'object',additionalProperties:false,required:['comment','menus'],properties:{
+    comment:{type:'string'},
+    menus:{type:'array',items:{type:'object',additionalProperties:false,
+      required:['name','minutes','kcal','protein','fat','carbs','uses','extra','steps','reason','query'],
+      properties:{name:{type:'string'},minutes:{type:'integer'},kcal:{type:'integer'},protein:{type:'integer'},fat:{type:'integer'},carbs:{type:'integer'},
+        uses:{type:'array',items:{type:'string'}},extra:{type:'array',items:{type:'string'}},steps:{type:'array',items:{type:'string'}},
+        reason:{type:'string'},query:{type:'string'}}}}}};
+}
+// 表記ゆれをそろえる（全角半角・カタカナ→ひらがな・小文字）
+function rcpNorm(s){return String(s||'').normalize('NFKC').toLowerCase().replace(/[ァ-ヶ]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60));}
+// 特定原材料8品目などの言い換え（どれか1つを登録すれば、同じグループの言葉も照合する）
+var RCP_SYNONYMS=[
+  ['えび','海老','シュリンプ','桜えび'],['かに','蟹','カニカマ'],['くるみ','胡桃','ウォールナッツ'],
+  ['小麦','小麦粉','薄力粉','強力粉','パン粉','パン','パスタ','うどん','ラーメン','中華麺','餃子の皮','天ぷら粉','ホットケーキミックス'],
+  ['そば','蕎麦'],['卵','たまご','玉子','鶏卵','卵黄','卵白','マヨネーズ'],
+  ['乳','牛乳','ミルク','チーズ','バター','ヨーグルト','生クリーム','練乳'],['落花生','ピーナッツ','ピーナツ'],
+  ['大豆','豆腐','納豆','豆乳','厚揚げ','油揚げ','きな粉'],['ごま','胡麻','ゴマ油','ごま油'],['さば','鯖'],['いか','烏賊'],['鮭','さけ','サーモン'],
+];
+function rcpExpand(terms){
+  const out=new Set();
+  terms.forEach(t=>{const n=rcpNorm(t);out.add(n);RCP_SYNONYMS.forEach(g=>{const gn=g.map(rcpNorm);if(gn.includes(n))gn.forEach(x=>out.add(x));});});
+  return [...out].filter(Boolean);
+}
+// AIへの指示用（元の表記のまま、言い換えも並べる）
+function rcpExpandRaw(terms){
+  const out=new Set();
+  terms.forEach(t=>{out.add(t);const n=rcpNorm(t);RCP_SYNONYMS.forEach(g=>{if(g.map(rcpNorm).includes(n))g.forEach(x=>out.add(x));});});
+  return [...out];
+}
+// 返ってきたメニューをアレルギー・苦手な食材と照合する（料理名・材料・手順のどこかに含まれたら外す）
+function rcpFilter(menus,hp){
+  const al=rcpExpand(rcpTerms(hp.allergies)),dl=rcpExpand(rcpTerms(hp.dislikes));
+  const removed=[];
+  const kept=(menus||[]).filter(m=>{
+    const text=rcpNorm([m.name,...(m.uses||[]),...(m.extra||[]),...(m.steps||[])].join(' '));
+    const hit=al.find(t=>text.includes(t))||dl.find(t=>text.includes(t));
+    if(hit){removed.push({name:m.name,hit});return false;}
+    return true;
+  });
+  return{kept,removed};
+}
+
+// 提案を取得（画面・AIチャットの両方から使う）
+async function rcpSuggest(ingredients,opts){
+  opts=opts||{};
+  ingredients=String(ingredients||'').trim().slice(0,200);
+  if(!ingredients)throw new Error('empty');
+  const u=rcpUsage();
+  if(u.n>=RCP_DAILY_LIMIT){const e=new Error('limit');e.code='limit';throw e;}
+  const hp=db.settings.healthProfile||{};
+  const al=rcpTerms(hp.allergies),dl=rcpTerms(hp.dislikes);
+  const timeReq=opts.minutes?`${opts.minutes}分以内で作れるもの`:'指定なし（予定が多い日は短時間のものを優先）';
+  const prompt=`手元の食材: ${ingredients}
+${rcpContext()}
+調理時間: ${timeReq}
+アレルギー（絶対に使わない。だし・調味料・加工品に含まれる場合も避ける）: ${al.length?rcpExpandRaw(al).join('、'):'なし'}
+苦手な食材（使わない）: ${dl.length?dl.join('、'):'なし'}
+
+条件:
+- メニューを3つ。手元の食材をなるべく使い、足りない材料は家にありがちな調味料・主食程度に抑える
+- uses は使う手元の食材、extra は追加で必要な材料
+- steps は手順を3〜5個、各30字以内
+- kcal・protein・fat・carbs は1人前の推定値
+- reason はこの人の目標・今日の状況に合う理由を、タメ口で40字以内
+- query はこの料理のレシピ動画を YouTube で探すための日本語の検索語（料理名＋主な食材）
+- comment はランとして3つ全体へのひとこと。タメ口で30字以内`;
+  const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({
+    model:'claude-haiku-5-5',max_tokens:2500,thinking:{type:'disabled'},
+    system:'あなたはLifeHubの食事コーチ「ラン」。筋トレする人の自炊を、手軽さと栄養の両方から提案する。アレルギーの指定は最優先で守る。医学的に一般的な範囲の内容にする。日本語のみ。',
+    output_config:{format:{type:'json_schema',schema:rcpSchema()}},
+    messages:[{role:'user',content:prompt}],
+  })});
+  const data=await res.json();
+  if(data.error)throw new Error(data.error.message||data.error.type||'api');
+  const t=data.content?.find(c=>c.type==='text')?.text;
+  if(!t)throw new Error(data.stop_reason||'empty');
+  const o=JSON.parse(t);
+  rcpCountUp();
+  const {kept,removed}=rcpFilter(o.menus,hp);
+  const menus=kept.slice(0,3).map(m=>{const id=uid();const mm={...m,id};window._rcpStore[id]=mm;return mm;});
+  return{comment:String(o.comment||''),menus,removed};
+}
+
+function rcpMenuHtml(m,mt){
+  const tl={breakfast:'朝食',lunch:'昼食',dinner:'夕食',snack:'間食'};
+  return `<div class="rcp-card" data-rcp="${m.id}">
+    <div class="rcp-name">${esc(m.name)}</div>
+    <div class="rcp-meta">⏱ ${m.minutes|0}分　🔥 ${m.kcal|0}kcal　P${m.protein|0} F${m.fat|0} C${m.carbs|0}</div>
+    <div class="rcp-reason">${esc(m.reason||'')}</div>
+    <div class="rcp-ing">使う: ${esc((m.uses||[]).join('、')||'—')}${(m.extra||[]).length?`<br>追加: ${esc(m.extra.join('、'))}`:''}</div>
+    <ol class="rcp-steps">${(m.steps||[]).map(s=>`<li>${esc(s)}</li>`).join('')}</ol>
+    <div class="rcp-video lv-list"><div class="lv-note">レシピ動画を探し中…</div></div>
+    <div class="rcp-actions"><select class="rcp-mt">${Object.entries(tl).map(([k,l])=>`<option value="${k}"${k===mt?' selected':''}>${l}</option>`).join('')}</select><button class="rcp-pick" data-id="${m.id}">これにする（記録）</button></div>
+  </div>`;
+}
+// 各メニューのレシピ動画（YouTube を実際に検索）
+async function rcpFillVideos(root){
+  for(const card of root.querySelectorAll('.rcp-card[data-rcp]')){
+    const m=window._rcpStore[card.dataset.rcp];const box=card.querySelector('.rcp-video');
+    if(!m||!box||box.dataset.done)continue;
+    box.dataset.done='1';
+    if(window._DEV_MODE){box.innerHTML='<div class="lv-note">[DEVモード] 動画は本番のみ</div>';continue;}
+    const q=/レシピ|作り方/.test(m.query||'')?m.query:(m.query||m.name)+' レシピ';
+    fetchRecommendedVideos('recipe:'+String(m.name).slice(0,30),q,1).then(list=>{
+      box.innerHTML=list.length?_lvItems(list):'<div class="lv-note">動画が見つからなかった</div>';
+    }).catch(()=>{box.innerHTML='<div class="lv-note">動画を取得できなかった</div>';});
+  }
+}
+function rcpLogMenu(m,mt){
+  const ds=todayStr();
+  if(!db.meals[ds])db.meals[ds]={breakfast:[],lunch:[],dinner:[],snack:[]};
+  if(!db.meals[ds][mt])db.meals[ds][mt]=[];
+  const nut={};
+  (db.nutrients||[]).forEach(n=>{
+    const nm=(n.name||'').toLowerCase();
+    if(/タンパク|たんぱく|蛋白|protein/.test(nm))nut[n.id]=m.protein|0;
+    else if(/炭水化物|carb/.test(nm))nut[n.id]=m.carbs|0;
+    else if(/脂質|fat/.test(nm))nut[n.id]=m.fat|0;
+  });
+  db.meals[ds][mt].push({id:uid(),name:m.name,kcal:m.kcal|0,nutrients:nut});
+  save(db);
+  if(typeof renderMeals==='function'&&document.getElementById('ml-list'))renderMeals();
+}
+// 「これにする」（シート・AIチャットのどちらのカードでも）
+document.addEventListener('click',e=>{
+  const b=e.target.closest&&e.target.closest('.rcp-pick[data-id]');
+  if(!b)return;
+  const m=window._rcpStore[b.dataset.id];if(!m)return;
+  const mt=b.closest('.rcp-card')?.querySelector('.rcp-mt')?.value||rcpMealTypeNow();
+  rcpLogMenu(m,mt);
+  b.disabled=true;b.textContent='✓ 記録した';
+  if(typeof showToast==='function')showToast(`「${m.name.length>16?m.name.slice(0,16)+'…':m.name}」を記録した`);
+});
+
+function rcpAllergyNote(){
+  const hp=db.settings.healthProfile||{};
+  const al=rcpTerms(hp.allergies);
+  return `<div class="rcp-warn">⚠️ ${al.length?`アレルギー（${esc(al.join('、'))}）は除外して提案するけど、`:'アレルギーは設定の健康プロフィールに登録できる。'}原材料は必ず自分でも確認してね</div>`;
+}
+function rcpResultHtml(r,mt){
+  return `${r.comment?`<div class="rcp-comment">🐴 ${esc(r.comment)}</div>`:''}
+    ${r.removed.length?`<div class="rcp-warn">アレルギー・苦手な食材を含む${r.removed.length}件を外した（${esc(r.removed.map(x=>x.hit).join('、'))}）</div>`:''}
+    ${r.menus.length?r.menus.map(m=>rcpMenuHtml(m,mt)).join(''):'<div class="lv-note">条件に合うメニューがなかった。食材を変えてもう一度試してね</div>'}`;
+}
+function rcpErrorText(e){
+  if(e&&e.code==='limit')return `今日はもう${RCP_DAILY_LIMIT}回使った。また明日な`;
+  if(e&&e.message==='empty')return '食材を入力してね';
+  return 'うまく考えられなかった。少し時間をおいてもう一度試してね';
+}
+
+// 食事画面のシート
+function openRecipeSheet(){
+  const mt=rcpMealTypeNow();
+  const el=_vlSheet('rcp-sheet',`
+    <div class="training-sheet-title">🍳 食材からメニュー<button class="training-sheet-close" data-x>✕</button></div>
+    <textarea id="rcp-in" class="vn-text" maxlength="200" placeholder="冷蔵庫にある食材（例: 鶏むね肉、卵、ブロッコリー）"></textarea>
+    <div class="rcp-time"><span>調理時間</span><button class="on" data-min="">指定なし</button><button data-min="10">10分</button><button data-min="20">20分</button></div>
+    <button class="vl-import-btn primary" id="rcp-go">メニューを考えてもらう</button>
+    <div class="rcp-left lv-note">今日あと${Math.max(0,RCP_DAILY_LIMIT-rcpUsage().n)}回使える</div>
+    ${rcpAllergyNote()}
+    <div id="rcp-result"></div>`);
+  el.querySelector('[data-x]').onclick=()=>el.remove();
+  let minutes='';
+  el.querySelectorAll('[data-min]').forEach(b=>b.onclick=()=>{minutes=b.dataset.min;el.querySelectorAll('[data-min]').forEach(x=>x.classList.toggle('on',x===b));});
+  el.querySelector('#rcp-go').onclick=async()=>{
+    const go=el.querySelector('#rcp-go'),out=el.querySelector('#rcp-result');
+    go.disabled=true;out.innerHTML='<div class="lv-note">🐴 考え中…（5〜10秒）</div>';
+    try{
+      const r=await rcpSuggest(el.querySelector('#rcp-in').value,{minutes:minutes?+minutes:0});
+      out.innerHTML=rcpResultHtml(r,mt);
+      rcpFillVideos(out);
+    }catch(e){out.innerHTML=`<div class="lv-note">${esc(rcpErrorText(e))}</div>`;}
+    go.disabled=false;
+    el.querySelector('.rcp-left').textContent=`今日あと${Math.max(0,RCP_DAILY_LIMIT-rcpUsage().n)}回使える`;
+  };
+}
+document.getElementById('rcp-open')?.addEventListener('click',openRecipeSheet);
+
+// 設定: アレルギー・苦手な食材
+['allergies','dislikes'].forEach(k=>{
+  document.getElementById('hp-'+k)?.addEventListener('input',function(){
+    if(!db.settings.healthProfile)db.settings.healthProfile={};
+    db.settings.healthProfile[k]=this.value.slice(0,100);
+    save(db);
+  });
+});
+document.getElementById('hdr-settings')?.addEventListener('click',()=>{
+  const hp=db.settings.healthProfile||{};
+  ['allergies','dislikes'].forEach(k=>{const el=document.getElementById('hp-'+k);if(el)el.value=hp[k]||'';});
+});
 // ── 履歴モーダル ─────────────────────────────────────────
 function openHistModal(title,rows){
   document.getElementById('hist-modal-title').textContent=title;
