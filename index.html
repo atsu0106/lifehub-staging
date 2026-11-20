@@ -2096,7 +2096,7 @@ body.in-training .ai-modal{z-index:700;}
     <div class="training-sheet-title">📅 週間プランナー
       <button class="training-sheet-close" onclick="closeTrainingSchedule()">✕</button>
     </div>
-    <button class="ai-plan-btn" id="ai-plan-btn" onclick="runAIWeekPlan()">🤖 予定に合わせてAIに1週間のメニューを組んでもらう</button>
+    <button class="ai-plan-btn" id="ai-plan-btn" onclick="runAIWeekPlan()">🤖 予定に合わせてAIが1週間分を組む</button>
     <div id="ai-plan-preview" class="ai-plan-preview" hidden></div>
     <div id="training-schedule-grid" style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;"></div>
     <div id="training-schedule-detail" class="plan-detail" hidden>
@@ -2595,7 +2595,7 @@ body.in-training .ai-modal{z-index:700;}
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='372c34b67a'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='5feabc2d04'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
