@@ -13,7 +13,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22LifeHub%22%2C%22short_name%22%3A%22LifeHub%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23F3F4F9%22%2C%22theme_color%22%3A%22%234F46E5%22%2C%22orientation%22%3A%22portrait-primary%22%7D">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&display=swap">
 
 <style>
 /* === Design tokens === */
@@ -58,7 +58,7 @@
 html,body{height:100%;margin:0;padding:0;overflow:hidden;
   overscroll-behavior:none;-webkit-tap-highlight-color:transparent;}
 body{position:fixed;top:0;left:0;width:100%;height:100%;}
-body{font-family:'Noto Sans JP',-apple-system,sans-serif;background:var(--bg);color:var(--fg);}
+body{font-family:ui-rounded,'SF Pro Rounded','M PLUS Rounded 1c',-apple-system,sans-serif;background:var(--bg);color:var(--fg);}
 button,a,[role="button"]{touch-action:manipulation;}
 /* iOS: font-size<16pxのinputをタップすると自動ズームするのを防ぐ */
 @supports (-webkit-touch-callout:none){
@@ -1229,6 +1229,41 @@ body.in-training .ai-modal{z-index:700;}
 .ex-acts{flex-shrink:0;margin-left:auto;}
 .rest-pill{top:calc(env(safe-area-inset-top,0px) + 92px);white-space:nowrap;}
 .rest-pill *{white-space:nowrap;flex-shrink:0;}
+
+/* === 定番メニュー・AI週間メニュー（v2.90.0） === */
+.wo-prog-btn{display:block;width:calc(100% - 28px);margin:0 14px 12px;padding:12px;border-radius:12px;border:1.5px dashed var(--accent);background:var(--accent-bg);color:var(--accent);font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;}
+.prog-sheet{position:fixed;inset:0;z-index:850;background:rgba(0,0,0,.4);display:flex;align-items:flex-end;justify-content:center;}
+.prog-body{width:min(100%,480px);max-height:86dvh;overflow:auto;background:var(--bg);border-radius:20px 20px 0 0;padding:16px 14px calc(16px + env(safe-area-inset-bottom,0px));}
+.prog-head{display:flex;justify-content:space-between;align-items:center;font-size:16px;}
+.prog-close{border:none;background:var(--surface2);border-radius:50%;width:30px;height:30px;font-size:14px;cursor:pointer;color:var(--fg);}
+.prog-sub{font-size:12px;color:var(--fg3);margin:4px 0 10px;}
+.prog-card{background:var(--surface);border-radius:14px;padding:12px;margin-bottom:10px;border:1.5px solid transparent;}
+.prog-card.rec{border-color:var(--accent);}
+.prog-title{font-size:15px;font-weight:800;color:var(--fg);display:flex;flex-wrap:wrap;align-items:center;gap:6px;}
+.prog-title span{font-size:11px;font-weight:700;color:var(--fg3);}
+.prog-title em{font-style:normal;font-size:10px;font-weight:800;color:#fff;background:var(--accent);border-radius:999px;padding:2px 8px;}
+.prog-note{font-size:11px;color:var(--fg3);margin:3px 0 8px;}
+.prog-days{display:flex;flex-direction:column;gap:6px;}
+.prog-days button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:9px 11px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:var(--fg);font-family:inherit;text-align:left;cursor:pointer;}
+.prog-days button b{font-size:13px;}
+.prog-days button span{font-size:11px;color:var(--fg3);}
+.ai-plan-btn{width:100%;margin:2px 0 10px;padding:12px;border:none;border-radius:12px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-size:13px;font-weight:800;font-family:inherit;cursor:pointer;}
+.ai-plan-btn:disabled{opacity:.6;}
+.ai-plan-preview{background:var(--surface);border-radius:14px;padding:12px;margin-bottom:10px;}
+.ai-plan-preview[hidden]{display:none;}
+.aip-loading{font-size:13px;color:var(--fg2);text-align:center;padding:12px 0;}
+.aip-sum{font-size:13px;font-weight:700;color:var(--fg);margin-bottom:8px;line-height:1.5;}
+.aip-day{display:flex;gap:10px;padding:8px 0;border-top:1px solid var(--border);}
+.aip-date{flex:0 0 64px;font-size:12px;font-weight:800;color:var(--fg2);}
+.aip-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.aip-main b{font-size:13px;color:var(--fg);}
+.aip-main span{font-size:11px;color:var(--fg3);}
+.aip-day.rest .aip-main b{color:var(--fg2);}
+.aip-ex{font-size:11px;color:var(--fg2);line-height:1.5;}
+.aip-note{font-size:11px;color:var(--fg3);margin:8px 0;}
+.aip-btns{display:grid;grid-template-columns:2fr 1fr;gap:8px;}
+.aip-btns button{padding:11px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface2);color:var(--fg);font-size:13px;font-weight:800;font-family:inherit;cursor:pointer;}
+.aip-btns .aip-save{background:var(--accent);border-color:var(--accent);color:#fff;}
 </style>
 </head>
 <body>
@@ -1966,7 +2001,7 @@ body.in-training .ai-modal{z-index:700;}
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.89.1 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.90.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -2061,6 +2096,8 @@ body.in-training .ai-modal{z-index:700;}
     <div class="training-sheet-title">📅 週間プランナー
       <button class="training-sheet-close" onclick="closeTrainingSchedule()">✕</button>
     </div>
+    <button class="ai-plan-btn" id="ai-plan-btn" onclick="runAIWeekPlan()">🤖 予定に合わせてAIに1週間のメニューを組んでもらう</button>
+    <div id="ai-plan-preview" class="ai-plan-preview" hidden></div>
     <div id="training-schedule-grid" style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;"></div>
     <div id="training-schedule-detail" class="plan-detail" hidden>
       <div id="training-schedule-detail-title" style="font-size:13px;font-weight:700;color:var(--accent);"></div>
@@ -2558,7 +2595,7 @@ body.in-training .ai-modal{z-index:700;}
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='30e3574111'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='372c34b67a'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -4340,7 +4377,7 @@ function renderTrainingSchedule(){
   grid.innerHTML='';
   for(let i=0;i<7;i++){
     const d=new Date(today);d.setDate(d.getDate()+i);
-    const ds=d.toISOString().slice(0,10);
+    const ds=fmt(d); // v2.90.0: toISOString(UTC)だと日本時間0〜9時に1日ずれる
     const hasTraining=!!(db.trainingMenus?.[ds]);
     const meal=db.mealPlans?.[ds]||{};
     const hasMeal=!!(meal.breakfast||meal.lunch||meal.dinner);
@@ -4409,7 +4446,7 @@ async function fetchMenuVideos(){
   const container=document.getElementById('training-menu-videos');
   const list=document.getElementById('training-menu-videos-list');
   if(!textarea||!container||!list)return;
-  const lines=textarea.value.split('\n').map(l=>l.replace(/^[・\-\d\.\s]+/,'').replace(/[\s　][\dx×\/\s\d]+.*/,'').trim()).filter(l=>l.length>1);
+  const lines=textarea.value.split('\n').filter(l=>!/^\s*[【#]/.test(l)).map(l=>l.replace(/^[・\-\d\.\s]+/,'').replace(/[\s　][\dx×\/\s\d]+.*/,'').trim()).filter(l=>l.length>1);
   if(!lines.length){container.hidden=true;return;}
   container.hidden=false;
   list.innerHTML='<div style="color:var(--fg3);font-size:12px;">動画を検索中…</div>';
@@ -4985,6 +5022,7 @@ const CHARS={
     system:'あなたはコタ（おっとり伴走のクマ）です。ゆっくり丁寧で温かい口調。急かさない。「焦らなくていいよ」「続けることが一番大事」という姿勢。ユーザーのデータを使って自分ごとにする。一人称は「ぼく」。指定フォーマット厳守。日本語のみ。'},
 };
 const CHANGELOG=[
+  {v:'v2.90.0',d:'予定に合わせてAIが1週間の筋トレメニューを組むように（週間プランナー）。定番メニューも追加。フォントを丸ゴシックに'},
   {v:'v2.89.0',d:'筋トレ記録に「前回の記録」「自己ベスト🏆」「自動の休憩タイマー」「前回のメニューを使う」を追加。他のアプリ（Hevy・Strong）の記録も取り込めます'},
   {v:'v2.88.0',d:'解説動画を見て戻ると「役に立った？」と聞くように。みんなの評価で、おすすめの動画がどんどん良くなります'},
   {v:'v2.87.0',d:'ホームに「🔥 連続記録」。筋トレは目標に合わせた週の回数で、食事・睡眠は毎日の記録で連続日数を数えます'},
@@ -5854,8 +5892,9 @@ function renderWo(){
   list.innerHTML='';
 
   if(!exs.length){
-    list.innerHTML=`<div class="empty"><div class="empty-icon">🏋️</div><p>この日のトレーニングなし<br>上から種目を追加</p></div>${typeof woCopyDayHtml==='function'?woCopyDayHtml(ds):''}`;
+    list.innerHTML=`<div class="empty"><div class="empty-icon">🏋️</div><p>この日のトレーニングなし<br>上から種目を追加</p></div>${typeof openProgramPicker==='function'?'<button class="wo-prog-btn" id="wo-prog-btn">📚 定番メニューから選ぶ</button>':''}${typeof woCopyDayHtml==='function'?woCopyDayHtml(ds):''}`;
     list.querySelectorAll('[data-copy]').forEach(b=>b.onclick=()=>woCopyDay(b.dataset.copy,ds));
+    const progBtn=document.getElementById('wo-prog-btn');if(progBtn)progBtn.onclick=()=>openProgramPicker(ds);
   } else {
     exs.forEach((ex,xi)=>{
       const card=buildExCard(ex,xi,ds);
@@ -6278,6 +6317,179 @@ function woImportFile(file){
   if(row&&inp){row.onclick=e=>{if(e.target!==inp)inp.click();};inp.onchange=()=>{if(inp.files[0])woImportFile(inp.files[0]);inp.value='';};}
   document.querySelectorAll('.st-opt[data-rest]').forEach(b=>b.onclick=()=>{db.settings.restSec=+b.dataset.rest;save(db);document.querySelectorAll('.st-opt[data-rest]').forEach(x=>x.classList.toggle('on',x===b));});
 })();
+// ── 定番メニュー＆予定を知っているAIの週間メニュー（v2.90.0） ─────────────
+// ※ビルドで1つのscriptに連結されるため、トップレベルに const/let を置かない（TDZ回避）
+
+// 一般的なトレーニングの型（特定の人・ブランドのプログラムではない）
+function programTemplates(){
+  const ex=(name,sets,reps)=>({name,sets,reps});
+  return [
+    {id:'health2',name:'健康維持 全身',freq:2,level:'はじめて',note:'マシン中心で全身をまんべんなく',days:[
+      {label:'全身',exercises:[ex('レッグプレス',3,'10-12'),ex('チェストプレス',3,'10-12'),ex('ラットプルダウン',3,'10-12'),ex('ショルダープレス',2,'10-12'),ex('プランク',3,'30秒')]},
+    ]},
+    {id:'full3',name:'初心者 全身',freq:3,level:'初級',note:'AとBを交互に（例: 月A・水B・金A）',days:[
+      {label:'全身A',exercises:[ex('スクワット',3,'8-10'),ex('ベンチプレス',3,'8-10'),ex('ラットプルダウン',3,'10'),ex('プランク',3,'30秒')]},
+      {label:'全身B',exercises:[ex('ルーマニアンデッドリフト',3,'8-10'),ex('ショルダープレス',3,'8-10'),ex('シーテッドロー',3,'10'),ex('レッグカール',2,'12')]},
+    ]},
+    {id:'ul4',name:'上下2分割',freq:4,level:'中級',note:'上半身・下半身を交互に週2回ずつ',days:[
+      {label:'上半身',exercises:[ex('ベンチプレス',4,'6-8'),ex('ベントオーバーロー',4,'8'),ex('ショルダープレス',3,'8-10'),ex('ラットプルダウン',3,'10'),ex('アームカール',2,'12'),ex('トライセプスプッシュダウン',2,'12')]},
+      {label:'下半身',exercises:[ex('スクワット',4,'6-8'),ex('ルーマニアンデッドリフト',3,'8'),ex('レッグプレス',3,'10'),ex('レッグカール',3,'12'),ex('カーフレイズ',3,'15')]},
+    ]},
+    {id:'ppl',name:'プッシュ・プル・脚',freq:3,level:'中級',note:'押す・引く・脚の3日で1周。週3〜6回',days:[
+      {label:'プッシュ（胸・肩・三頭）',exercises:[ex('ベンチプレス',4,'6-8'),ex('インクラインダンベルプレス',3,'8-10'),ex('ショルダープレス',3,'8-10'),ex('サイドレイズ',3,'12-15'),ex('トライセプスプッシュダウン',3,'12')]},
+      {label:'プル（背中・二頭）',exercises:[ex('デッドリフト',3,'5'),ex('ラットプルダウン',3,'8-10'),ex('シーテッドロー',3,'10'),ex('フェイスプル',3,'15'),ex('アームカール',3,'12')]},
+      {label:'脚',exercises:[ex('スクワット',4,'6-8'),ex('レッグプレス',3,'10'),ex('ルーマニアンデッドリフト',3,'8-10'),ex('レッグエクステンション',3,'12'),ex('カーフレイズ',3,'15')]},
+    ]},
+  ];
+}
+function _repsNum(reps){const m=String(reps).match(/\d+/);return m?+m[0]:10;}
+function _isTimed(reps){return /秒|分/.test(String(reps));}
+
+// 定番メニューの1日分を、指定日の記録に複製（重量は前回の記録があれば前回と同じ）
+function applyTemplateDay(tplId,dayIdx,ds){
+  const tpl=programTemplates().find(t=>t.id===tplId);if(!tpl)return;
+  const day=tpl.days[dayIdx];if(!day)return;
+  if(!db.workouts[ds])db.workouts[ds]=[];
+  day.exercises.forEach(e=>{
+    if(_isTimed(e.reps)){db.workouts[ds].push({id:uid(),name:e.name,category:'stretch',sets:Array.from({length:e.sets},()=>({time:null}))});return;}
+    const prev=typeof woInitialSet==='function'?woInitialSet(e.name,'weight'):null;
+    const w=prev?.w||0;
+    db.workouts[ds].push({id:uid(),name:e.name,category:'weight',sets:Array.from({length:e.sets},()=>({w,r:_repsNum(e.reps)}))});
+  });
+  save(db);
+  document.getElementById('mo-programs')?.remove();
+  if(typeof renderWo==='function')renderWo();
+  if(typeof showToast==='function')showToast(`「${tpl.name}・${day.label}」を入れました`);
+  window._missionHook?.('log_workout');
+}
+function openProgramPicker(ds){
+  document.getElementById('mo-programs')?.remove();
+  const freq=(db.settings.healthProfile||{}).gymFreq||0;
+  const tpls=programTemplates();
+  // 目標の週回数に一番近い定番をおすすめに
+  const rec=freq?tpls.reduce((a,b)=>Math.abs(b.freq-freq)<Math.abs(a.freq-freq)?b:a).id:null;
+  const el=document.createElement('div');el.id='mo-programs';el.className='prog-sheet';
+  el.innerHTML=`<div class="prog-body">
+    <div class="prog-head"><b>📚 定番メニュー</b><button class="prog-close" aria-label="閉じる">✕</button></div>
+    <div class="prog-sub">${jpDate(ds)} の記録に入れる日を選んでください</div>
+    ${tpls.map(t=>`<div class="prog-card${t.id===rec?' rec':''}">
+      <div class="prog-title">${esc(t.name)} <span>週${t.freq}${t.id==='ppl'?'〜6':''}回・${esc(t.level)}</span>${t.id===rec?'<em>あなたの目標におすすめ</em>':''}</div>
+      <div class="prog-note">${esc(t.note)}</div>
+      <div class="prog-days">${t.days.map((d,i)=>`<button data-tpl="${t.id}" data-day="${i}"><b>${esc(d.label)}</b><span>${esc(d.exercises.map(e=>e.name).join('・'))}</span></button>`).join('')}</div>
+    </div>`).join('')}
+  </div>`;
+  el.querySelector('.prog-close').onclick=()=>el.remove();
+  el.onclick=e=>{if(e.target===el)el.remove();};
+  el.querySelectorAll('[data-tpl]').forEach(b=>b.onclick=()=>applyTemplateDay(b.dataset.tpl,+b.dataset.day,ds));
+  document.body.appendChild(el);
+}
+
+// ── 予定を知っているAIが7日分のメニューを組む ──
+function aiPlanSchema(){
+  return {type:'object',properties:{
+    days:{type:'array',items:{type:'object',properties:{
+      date:{type:'string'},type:{type:'string',enum:['training','rest']},title:{type:'string'},reason:{type:'string'},
+      exercises:{type:'array',items:{type:'object',properties:{name:{type:'string'},sets:{type:'integer'},reps:{type:'string'}},required:['name','sets','reps'],additionalProperties:false}},
+    },required:['date','type','title','reason','exercises'],additionalProperties:false}},
+    summary:{type:'string'},
+  },required:['days','summary'],additionalProperties:false};
+}
+function aiPlanDates(){
+  const [y,m,d]=todayStr().split('-').map(Number);const base=new Date(y,m-1,d);
+  return Array.from({length:7},(_,i)=>{const x=new Date(base);x.setDate(base.getDate()+i);return fmt(x);});
+}
+function aiPlanContext(){
+  const dates=aiPlanDates(),DOW=['日','月','火','水','木','金','土'];
+  const dl=ds=>{const [y,m,d]=ds.split('-').map(Number);return `${ds}(${DOW[new Date(y,m-1,d).getDay()]})`;};
+  const evLines=dates.map(ds=>{
+    const evs=(typeof getEventsForDate==='function'?getEventsForDate(ds):(db.events||[]).filter(e=>e.date===ds));
+    return `${dl(ds)}: ${evs.length?evs.map(e=>`${e.time||'終日'}${e.timeEnd?'-'+e.timeEnd:''} ${e.title}`).join(' / '):'予定なし'}`;
+  }).join('\n');
+  const taskLines=(db.tasks||[]).filter(t=>!t.done&&t.due&&t.due>=dates[0]&&t.due<=dates[6]).map(t=>`${t.due}締切: ${t.title}`).join('\n')||'なし';
+  const hp=db.settings.healthProfile||{};
+  const goalMap={bulk:'筋肉を増やす',cut:'減量',maintain:'健康維持',recomp:'体脂肪を減らす'};
+  const recent=Object.keys(db.workouts||{}).filter(d=>d<dates[0]).sort().reverse().slice(0,8).map(d=>`${dl(d)}: ${(db.workouts[d]||[]).map(e=>e.name).join('、')}`).join('\n')||'記録なし';
+  const plan=dates.map(ds=>db.trainingMenus?.[ds]?`${dl(ds)}: ${db.trainingMenus[ds].split('\n')[0]}`:null).filter(Boolean).join('\n')||'なし';
+  const sk=typeof getStreaks==='function'?getStreaks().workout:null;
+  const wk=sk&&!sk.unset?`今週（月曜はじまり）はすでに${sk.thisWeek}回。週${sk.freq}回の目標まであと${sk.need}回、今週の残り${sk.daysLeft}日。連続記録は${sk.count}日`:'週の目標回数は未設定';
+  return {dates,text:`【今日】${dl(dates[0])}
+【筋トレの目標】${goalMap[hp.goal]||'未設定'}・週${hp.gymFreq||'?'}回${hp.weight?`・体重${hp.weight}kg`:''}${hp.age?`・${hp.age}歳`:''}
+【今週の状況】${wk}
+【これから7日間の予定】
+${evLines}
+【締切が近いタスク】
+${taskLines}
+【直近の筋トレ記録】
+${recent}
+【すでに入っているトレーニング予定（置き換え対象）】
+${plan}`};
+}
+async function generateAIWeekPlan(){
+  const {dates,text}=aiPlanContext();
+  const hp=db.settings.healthProfile||{};
+  const prompt=`${text}
+
+上の生活の予定に合わせて、${dates[0]}から${dates[6]}までの7日分のトレーニング計画を作ってください。
+ルール:
+- 週の目標回数（月曜はじまりの各週で週${hp.gymFreq||3}回）を守る。今週の残り回数も考慮する
+- 実習・試験・長時間の予定がある日や、その前日は休みか短め（30分程度）にする。予定のない日・時間に余裕のある日にしっかりやる
+- 同じ部位が連日にならないようにする。初心者でもできる一般的な種目名で書く（ジムにあるマシン・バーベル・ダンベル）
+- 休みの日は type を "rest"、exercises は空にする
+- reason は「なぜこの日にこの内容か」を予定に触れて25文字以内で
+- title は「上半身」「脚」「全身」「休養」など短く
+- summary は1週間の方針を、タメ口でやさしく1〜2文で
+- date は必ず ${dates.join(', ')} の7つをこの順で`;
+  const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({
+    model:'claude-sonnet-5-5',max_tokens:8000,
+    system:'あなたはLifeHubのパーソナルトレーナー。ユーザーの授業・実習・試験などの予定を知っていて、生活に無理なく続けられる筋トレ計画を立てる。安全第一で、医学的に一般的な範囲の内容にする。',
+    output_config:{effort:'medium',format:{type:'json_schema',schema:aiPlanSchema()}},
+    messages:[{role:'user',content:prompt}],
+  })});
+  const data=await res.json();
+  if(data.error)throw new Error(data.error.type||'api');
+  const t=data.content?.find(c=>c.type==='text')?.text;
+  if(!t)throw new Error(data.stop_reason||'empty');
+  const plan=JSON.parse(t);
+  // 7日分・指定の日付だけに揃える（足りない日は休養扱い）
+  const byDate={};(plan.days||[]).forEach(d=>{if(dates.includes(d.date))byDate[d.date]=d;});
+  plan.days=dates.map(ds=>byDate[ds]||{date:ds,type:'rest',title:'休養',reason:'',exercises:[]});
+  return plan;
+}
+function aiPlanToMenuText(d){
+  if(d.type!=='training'||!(d.exercises||[]).length)return '';
+  return `【${d.title}】${d.reason||''}\n`+d.exercises.map(e=>`${e.name} ${e.sets}×${e.reps}`).join('\n');
+}
+function applyAIWeekPlan(plan){
+  if(!db.trainingMenus)db.trainingMenus={};
+  plan.days.forEach(d=>{const t=aiPlanToMenuText(d);if(t)db.trainingMenus[d.date]=t;else delete db.trainingMenus[d.date];});
+  save(db);
+  if(typeof renderTrainingSchedule==='function')renderTrainingSchedule();
+}
+function renderAIPlanPreview(plan){
+  const box=document.getElementById('ai-plan-preview');if(!box)return;
+  const DOW=['日','月','火','水','木','金','土'];
+  const dl=ds=>{const [y,m,d]=ds.split('-').map(Number);const x=new Date(y,m-1,d);return `${m}/${d}（${DOW[x.getDay()]}）`;};
+  box.hidden=false;
+  box.innerHTML=`<div class="aip-sum">🤖 ${esc(plan.summary||'')}</div>
+    ${plan.days.map(d=>`<div class="aip-day ${d.type}">
+      <div class="aip-date">${dl(d.date)}</div>
+      <div class="aip-main"><b>${d.type==='training'?'💪 ':'😴 '}${esc(d.title)}</b><span>${esc(d.reason||'')}</span>
+      ${d.type==='training'?`<div class="aip-ex">${d.exercises.map(e=>`${esc(e.name)} ${e.sets}×${esc(e.reps)}`).join(' / ')}</div>`:''}</div>
+    </div>`).join('')}
+    <div class="aip-note">保存すると、この7日間のトレーニング予定を置き換えます</div>
+    <div class="aip-btns"><button class="aip-save">この内容で保存</button><button class="aip-retry">作り直す</button></div>`;
+  box.querySelector('.aip-save').onclick=()=>{applyAIWeekPlan(plan);box.hidden=true;if(typeof showToast==='function')showToast('1週間のメニューを週間プランナーに入れました');};
+  box.querySelector('.aip-retry').onclick=()=>runAIWeekPlan();
+}
+async function runAIWeekPlan(){
+  const box=document.getElementById('ai-plan-preview');const btn=document.getElementById('ai-plan-btn');
+  if(!box)return;
+  box.hidden=false;box.innerHTML='<div class="aip-loading">🤖 予定を見ながらメニューを考えてるよ…（10〜20秒）</div>';
+  if(btn)btn.disabled=true;
+  try{renderAIPlanPreview(await generateAIWeekPlan());}
+  catch(e){box.innerHTML=`<div class="aip-loading">メニューを作れませんでした。もう一度試してください。（${esc(e.message||'err')}）</div>`;}
+  finally{if(btn)btn.disabled=false;}
+}
 // ── Meals ─────────────────────────────────────────────────
 const MEAL_DEF=[
   {k:'breakfast',l:'朝食',ic:'☕'},
@@ -8128,7 +8340,7 @@ function _roundRect(ctx,x,y,w,h,r){
 function _drawStatBar(ctx,label,val,color,x,y,barW){
   const H=24;
   ctx.fillStyle='rgba(255,255,255,0.65)';
-  ctx.font='700 22px "Noto Sans JP",sans-serif';
+  ctx.font='700 22px "M PLUS Rounded 1c",sans-serif';
   ctx.textBaseline='middle';
   ctx.fillText(label,x,y+H/2);
   const bx=x+58,bw=barW-58;
@@ -8137,7 +8349,7 @@ function _drawStatBar(ctx,label,val,color,x,y,barW){
   ctx.fillStyle=color;
   _roundRect(ctx,bx,y+4,bw*Math.min(val/100,1),H-8,6);ctx.fill();
   ctx.fillStyle='rgba(255,255,255,0.9)';
-  ctx.font='700 20px "Noto Sans JP",sans-serif';
+  ctx.font='700 20px "M PLUS Rounded 1c",sans-serif';
   ctx.textAlign='right';
   ctx.fillText(String(val),bx+bw-4,y+H/2);
   ctx.textAlign='left';
@@ -8194,7 +8406,7 @@ async function generateShareCanvas(type,extra={}){
   else if(type==='weekly')_drawWeeklyCard(ctx,W,H,g);
   // Branding
   ctx.fillStyle='rgba(255,255,255,0.3)';
-  ctx.font='500 28px "Noto Sans JP",sans-serif';
+  ctx.font='500 28px "M PLUS Rounded 1c",sans-serif';
   ctx.textAlign='right';ctx.textBaseline='bottom';
   ctx.fillText('#LifeHub',W-54,H-48);
   ctx.textAlign='left';ctx.textBaseline='alphabetic';
@@ -8207,19 +8419,19 @@ function _drawStatusCard(ctx,W,H,g){
   lbg.addColorStop(0,'#4F46E5');lbg.addColorStop(1,'#7c3aed');
   ctx.fillStyle=lbg;_roundRect(ctx,54,80,140,140,20);ctx.fill();
   ctx.fillStyle='rgba(255,255,255,0.7)';
-  ctx.font='700 26px "Noto Sans JP",sans-serif';
+  ctx.font='700 26px "M PLUS Rounded 1c",sans-serif';
   ctx.textAlign='center';ctx.textBaseline='middle';
   ctx.fillText('LEVEL',54+70,80+42);
   ctx.fillStyle='#fff';
-  ctx.font='900 72px "Noto Sans JP",sans-serif';
+  ctx.font='900 72px "M PLUS Rounded 1c",sans-serif';
   ctx.fillText(String(g.level),54+70,80+100);
   ctx.textAlign='left';ctx.textBaseline='alphabetic';
   // Name and title
   ctx.fillStyle='rgba(255,255,255,0.5)';
-  ctx.font='500 28px "Noto Sans JP",sans-serif';
+  ctx.font='500 28px "M PLUS Rounded 1c",sans-serif';
   ctx.fillText(name,210,130);
   ctx.fillStyle='#fff';
-  ctx.font='700 46px "Noto Sans JP",sans-serif';
+  ctx.font='700 46px "M PLUS Rounded 1c",sans-serif';
   ctx.fillText(g.title,210,190);
   // XP bar
   ctx.fillStyle='rgba(255,255,255,0.1)';
@@ -8229,7 +8441,7 @@ function _drawStatusCard(ctx,W,H,g){
   xpg.addColorStop(0,'#4F46E5');xpg.addColorStop(1,'#a78bfa');
   ctx.fillStyle=xpg;_roundRect(ctx,54,250,(W-108)*xpPct,18,9);ctx.fill();
   ctx.fillStyle='rgba(255,255,255,0.4)';
-  ctx.font='500 24px "Noto Sans JP",sans-serif';
+  ctx.font='500 24px "M PLUS Rounded 1c",sans-serif';
   ctx.textAlign='right';
   ctx.fillText(`${g.xp.toLocaleString()} XP 累計`,W-54,243);
   ctx.textAlign='left';
@@ -8238,10 +8450,10 @@ function _drawStatusCard(ctx,W,H,g){
   [[g.str,'STR','#ef4444'],[g.int,'INT','#3b82f6'],[g.vit,'VIT','#10b981'],[g.hap,'HAP','#f59e0b']].forEach(([val,lbl,col],i)=>{
     const sx=54+i*(statW+8);
     ctx.fillStyle='rgba(255,255,255,0.06)';_roundRect(ctx,sx,statY,statW,220,16);ctx.fill();
-    ctx.fillStyle=col;ctx.font='700 28px "Noto Sans JP",sans-serif';
+    ctx.fillStyle=col;ctx.font='700 28px "M PLUS Rounded 1c",sans-serif';
     ctx.textAlign='center';ctx.textBaseline='top';
     ctx.fillText(lbl,sx+statW/2,statY+16);
-    ctx.fillStyle='#fff';ctx.font='900 68px "Noto Sans JP",sans-serif';
+    ctx.fillStyle='#fff';ctx.font='900 68px "M PLUS Rounded 1c",sans-serif';
     ctx.textBaseline='middle';
     ctx.fillText(String(val),sx+statW/2,statY+120);
     // mini bar
@@ -8253,24 +8465,24 @@ function _drawStatusCard(ctx,W,H,g){
   // Streak + badge
   const streak=g.streak||0;
   ctx.fillStyle='rgba(249,115,22,0.15)';_roundRect(ctx,54,560,260,70,12);ctx.fill();
-  ctx.fillStyle='#f97316';ctx.font='700 30px "Noto Sans JP",sans-serif';
+  ctx.fillStyle='#f97316';ctx.font='700 30px "M PLUS Rounded 1c",sans-serif';
   ctx.textBaseline='middle';ctx.textAlign='center';
   ctx.fillText(`🔥 ${streak}日連続`,54+130,595);
   ctx.fillStyle='rgba(255,255,255,0.08)';_roundRect(ctx,330,560,W-108-276,70,12);ctx.fill();
-  ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='700 28px "Noto Sans JP",sans-serif';
+  ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='700 28px "M PLUS Rounded 1c",sans-serif';
   ctx.fillText(`${g.totalTasks}タスク完了`,330+(W-108-276)/2,595);
   ctx.textAlign='left';ctx.textBaseline='alphabetic';
   // Badges (top 4 earned)
   const earned=g.badges.filter(b=>b.earned).slice(0,4);
   earned.forEach((b,i)=>{
     ctx.fillStyle='rgba(79,70,229,0.2)';_roundRect(ctx,54+i*220,660,210,70,12);ctx.fill();
-    ctx.fillStyle='rgba(255,255,255,0.8)';ctx.font='500 26px "Noto Sans JP",sans-serif';
+    ctx.fillStyle='rgba(255,255,255,0.8)';ctx.font='500 26px "M PLUS Rounded 1c",sans-serif';
     ctx.textBaseline='middle';ctx.textAlign='center';
     ctx.fillText(`${b.icon} ${b.label}`,54+i*220+105,695);
     ctx.textAlign='left';ctx.textBaseline='alphabetic';
   });
   // Date
-  ctx.fillStyle='rgba(255,255,255,0.3)';ctx.font='500 24px "Noto Sans JP",sans-serif';
+  ctx.fillStyle='rgba(255,255,255,0.3)';ctx.font='500 24px "M PLUS Rounded 1c",sans-serif';
   ctx.textBaseline='bottom';
   ctx.fillText(new Date().toLocaleDateString('ja-JP'),54,H-48);
   ctx.textBaseline='alphabetic';
@@ -8283,19 +8495,19 @@ function _drawLevelUpCard(ctx,W,H,g,extra){
   ctx.fillStyle=cg;ctx.fillRect(0,0,W,H);ctx.restore();
   ctx.textAlign='center';ctx.textBaseline='middle';
   ctx.fillStyle='rgba(255,255,255,0.4)';
-  ctx.font='700 44px "Noto Sans JP",sans-serif';ctx.letterSpacing='0.3em';
+  ctx.font='700 44px "M PLUS Rounded 1c",sans-serif';ctx.letterSpacing='0.3em';
   ctx.fillText('LEVEL UP',W/2,180);
   const rarity=extra.rarity||'common';
   const rarityCol={common:'#fbbf24',uncommon:'#60a5fa',rare:'#f0abfc',ultra:'#fde68a'}[rarity];
   if(rarity!=='common'){
-    ctx.fillStyle=rarityCol;ctx.font='700 32px "Noto Sans JP",sans-serif';
+    ctx.fillStyle=rarityCol;ctx.font='700 32px "M PLUS Rounded 1c",sans-serif';
     ctx.fillText({'uncommon':'★ UNCOMMON','rare':'★★ RARE','ultra':'★★★ ULTRA RARE'}[rarity]||'',W/2,240);
   }
-  ctx.fillStyle='#fff';ctx.font='900 300px "Noto Sans JP",sans-serif';
+  ctx.fillStyle='#fff';ctx.font='900 300px "M PLUS Rounded 1c",sans-serif';
   ctx.fillText(String(g.level),W/2,560);
-  ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='700 54px "Noto Sans JP",sans-serif';
+  ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='700 54px "M PLUS Rounded 1c",sans-serif';
   ctx.fillText(g.title,W/2,780);
-  ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='500 32px "Noto Sans JP",sans-serif';
+  ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='500 32px "M PLUS Rounded 1c",sans-serif';
   ctx.fillText(`累計 ${g.xp.toLocaleString()} XP`,W/2,870);
   ctx.textAlign='left';ctx.textBaseline='alphabetic';
 }
@@ -8305,30 +8517,30 @@ function _drawGoalCard(ctx,W,H,g,extra){
   cg.addColorStop(0,'#059669');cg.addColorStop(1,'transparent');
   ctx.fillStyle=cg;ctx.fillRect(0,0,W,H);ctx.restore();
   ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillStyle='#10b981';ctx.font='700 44px "Noto Sans JP",sans-serif';
+  ctx.fillStyle='#10b981';ctx.font='700 44px "M PLUS Rounded 1c",sans-serif';
   ctx.fillText('🎯 目標達成！',W/2,200);
   const title=extra.title||'目標';
-  ctx.fillStyle='#fff';ctx.font='700 60px "Noto Sans JP",sans-serif';
+  ctx.fillStyle='#fff';ctx.font='700 60px "M PLUS Rounded 1c",sans-serif';
   // wrap long text
   const words=title;const maxW=W-120;
-  ctx.font='700 58px "Noto Sans JP",sans-serif';
+  ctx.font='700 58px "M PLUS Rounded 1c",sans-serif';
   if(ctx.measureText(words).width>maxW){
-    ctx.font='700 44px "Noto Sans JP",sans-serif';
+    ctx.font='700 44px "M PLUS Rounded 1c",sans-serif';
   }
   ctx.fillText(words,W/2,350);
   if(extra.elapsed!=null){
-    ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font='500 36px "Noto Sans JP",sans-serif';
+    ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font='500 36px "M PLUS Rounded 1c",sans-serif';
     ctx.fillText(`${extra.elapsed}日間で達成`,W/2,450);
   }
   // Level
   ctx.fillStyle='rgba(255,255,255,0.1)';_roundRect(ctx,W/2-180,540,360,180,20);ctx.fill();
-  ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='700 28px "Noto Sans JP",sans-serif';
+  ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='700 28px "M PLUS Rounded 1c",sans-serif';
   ctx.fillText('LEVEL',W/2,575);
-  ctx.fillStyle='#fff';ctx.font='900 110px "Noto Sans JP",sans-serif';
+  ctx.fillStyle='#fff';ctx.font='900 110px "M PLUS Rounded 1c",sans-serif';
   ctx.fillText(String(g.level),W/2,670);
-  ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='500 30px "Noto Sans JP",sans-serif';
+  ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='500 30px "M PLUS Rounded 1c",sans-serif';
   ctx.fillText(g.title,W/2,750);
-  ctx.fillStyle='rgba(16,185,129,0.6)';ctx.font='700 34px "Noto Sans JP",sans-serif';
+  ctx.fillStyle='rgba(16,185,129,0.6)';ctx.font='700 34px "M PLUS Rounded 1c",sans-serif';
   ctx.fillText(`累計 ${g.xp.toLocaleString()} XP`,W/2,840);
   ctx.textAlign='left';ctx.textBaseline='alphabetic';
 }
@@ -8339,9 +8551,9 @@ function _drawWeeklyCard(ctx,W,H,g){
   cg.addColorStop(0,'#1e1b4b');cg.addColorStop(1,'transparent');
   ctx.fillStyle=cg;ctx.fillRect(0,0,W,H);ctx.restore();
   ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='700 36px "Noto Sans JP",sans-serif';
+  ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='700 36px "M PLUS Rounded 1c",sans-serif';
   ctx.fillText('WEEKLY REPORT',W/2,130);
-  ctx.fillStyle='#fff';ctx.font='700 54px "Noto Sans JP",sans-serif';
+  ctx.fillStyle='#fff';ctx.font='700 54px "M PLUS Rounded 1c",sans-serif';
   const wd=new Date(wk.weekStart+'T00:00:00');
   ctx.fillText(`${wd.getMonth()+1}/${wd.getDate()} の週`,W/2,210);
   ctx.textAlign='left';ctx.textBaseline='alphabetic';
@@ -8355,18 +8567,18 @@ function _drawWeeklyCard(ctx,W,H,g){
     const row=i<2?i:null;const col=i%2;
     const iy=300+Math.floor(i/2)*200;const ix=54+col*500;
     ctx.fillStyle='rgba(255,255,255,0.06)';_roundRect(ctx,ix,iy,460,170,16);ctx.fill();
-    ctx.fillStyle=it.col;ctx.font='700 30px "Noto Sans JP",sans-serif';
+    ctx.fillStyle=it.col;ctx.font='700 30px "M PLUS Rounded 1c",sans-serif';
     ctx.textBaseline='top';ctx.fillText(`${it.icon} ${it.label}`,ix+20,iy+18);
-    ctx.fillStyle='#fff';ctx.font='900 72px "Noto Sans JP",sans-serif';
+    ctx.fillStyle='#fff';ctx.font='900 72px "M PLUS Rounded 1c",sans-serif';
     ctx.textBaseline='bottom';ctx.fillText(it.val,ix+20,iy+160);
     ctx.textBaseline='alphabetic';
   });
   // Level
   ctx.fillStyle='rgba(255,255,255,0.08)';_roundRect(ctx,54,730,W-108,170,16);ctx.fill();
   ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font='700 28px "Noto Sans JP",sans-serif';
+  ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font='700 28px "M PLUS Rounded 1c",sans-serif';
   ctx.fillText('LEVEL',W/2,780);
-  ctx.fillStyle='#fff';ctx.font='900 80px "Noto Sans JP",sans-serif';
+  ctx.fillStyle='#fff';ctx.font='900 80px "M PLUS Rounded 1c",sans-serif';
   ctx.fillText(`${g.level}  ${g.title}`,W/2,860);
   ctx.textAlign='left';ctx.textBaseline='alphabetic';
 }
