@@ -2705,7 +2705,7 @@ body.in-training .ai-modal{z-index:700;}
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='67b7f95931'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='c3610e0653'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -8856,6 +8856,10 @@ try{if(db&&db.videoLists)vlPurgeExpired();}catch(e){}
 // ※ビルドで1つのscriptに連結されるため、トップレベルに const/let を置かない（TDZ回避）
 
 var RCP_DAILY_LIMIT=5;
+// staging（/lifehub-staging/）では回数制限なし。ビルドは本番と同一なので、開いている URL で判定する
+function lhIsStaging(path){try{return /^\/lifehub-staging(\/|$)/.test(path??location.pathname);}catch(e){return false;}}
+function rcpDailyLimit(){return lhIsStaging()?Infinity:RCP_DAILY_LIMIT;}
+function rcpLeftText(){return lhIsStaging()?'STG: 回数制限なし':`今日あと${Math.max(0,RCP_DAILY_LIMIT-rcpUsage().n)}回使える`;}
 window._rcpStore=window._rcpStore||{}; // id → menu（「これにする」用）
 
 function rcpTerms(s){return String(s||'').split(/[、,，\/・\s]+/).map(t=>t.trim()).filter(t=>t.length>=1).slice(0,30);}
@@ -8928,7 +8932,7 @@ async function rcpSuggest(ingredients,opts){
   ingredients=String(ingredients||'').trim().slice(0,200);
   if(!ingredients)throw new Error('empty');
   const u=rcpUsage();
-  if(u.n>=RCP_DAILY_LIMIT){const e=new Error('limit');e.code='limit';throw e;}
+  if(u.n>=rcpDailyLimit()){const e=new Error('limit');e.code='limit';throw e;}
   const hp=db.settings.healthProfile||{};
   const al=rcpTerms(hp.allergies),dl=rcpTerms(hp.dislikes);
   const timeReq=opts.minutes?`${opts.minutes}分以内で作れるもの`:'指定なし（予定が多い日は短時間のものを優先）';
@@ -9038,7 +9042,7 @@ function openRecipeSheet(){
     <textarea id="rcp-in" class="vn-text" maxlength="200" placeholder="冷蔵庫にある食材（例: 鶏むね肉、卵、ブロッコリー）"></textarea>
     <div class="rcp-time"><span>調理時間</span><button class="on" data-min="">指定なし</button><button data-min="10">10分</button><button data-min="20">20分</button></div>
     <button class="vl-import-btn primary" id="rcp-go">メニューを考えてもらう</button>
-    <div class="rcp-left lv-note">今日あと${Math.max(0,RCP_DAILY_LIMIT-rcpUsage().n)}回使える</div>
+    <div class="rcp-left lv-note">${rcpLeftText()}</div>
     ${rcpAllergyNote()}
     <div id="rcp-result"></div>`);
   el.querySelector('[data-x]').onclick=()=>el.remove();
@@ -9053,7 +9057,7 @@ function openRecipeSheet(){
       rcpFillVideos(out);
     }catch(e){out.innerHTML=`<div class="lv-note">${esc(rcpErrorText(e))}</div>`;}
     go.disabled=false;
-    el.querySelector('.rcp-left').textContent=`今日あと${Math.max(0,RCP_DAILY_LIMIT-rcpUsage().n)}回使える`;
+    el.querySelector('.rcp-left').textContent=rcpLeftText();
   };
 }
 document.getElementById('rcp-open')?.addEventListener('click',openRecipeSheet);
