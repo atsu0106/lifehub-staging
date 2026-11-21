@@ -1381,6 +1381,18 @@ body.in-training .ai-modal{z-index:700;}
 /* ── v2.97.0 カレンダー・タスクを隠す ── */
 body.no-cal #tab-cal .cal-toolbar,body.no-cal #tab-cal .cal-search-row,body.no-cal #cal-filter-row,body.no-cal #cal-grid,body.no-cal #week-view,body.no-cal #search-results,body.no-cal #day-lbl,body.no-cal #ev-list,body.no-cal #clarify-view,body.no-cal #clarify-tasks,body.no-cal #fab-float,body.no-cal #dr-add{display:none!important;}
 body.no-tasks .nb[data-t="tasks"],body.no-tasks #dr-tasks,body.no-tasks #home-tasks-card,body.no-tasks #clarify-tasks{display:none!important;}
+
+/* ── v2.98.0 段階解放・体調の手入力・プロフィール ── */
+body.lock-level #st-game-row,body.lock-level #game-stats-panel{display:none!important;}
+body.lock-missions #daily-mission-card,body.lock-missions .gs-badges{display:none!important;}
+body.no-health-extra .health-extra{display:none!important;}
+body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-security,body.no-profiles #st-card-security{display:none!important;}
+.unlock-sheet{text-align:center;}
+.unlock-sheet h3{font-size:18px;margin:6px 0 8px;}
+.unlock-sheet p{font-size:14px;line-height:1.7;margin:0 0 8px;}
+.unlock-img{width:72px;height:72px;object-fit:contain;}
+.unlock-lv{font-weight:700;color:var(--accent);}
+.unlock-sub{font-size:12px!important;color:var(--fg3);margin-bottom:14px!important;}
 </style>
 </head>
 <body>
@@ -1664,21 +1676,21 @@ body.no-tasks .nb[data-t="tasks"],body.no-tasks #dr-tasks,body.no-tasks #home-ta
             <span class="health-unit">%</span>
           </div>
         </div>
-        <div class="health-row">
+        <div class="health-row health-extra">
           <span class="health-lbl">歩数</span>
           <div class="health-input-wrap">
             <input type="number" id="hlt-steps" class="health-in" placeholder="--" min="0" step="100">
             <span class="health-unit">歩</span>
           </div>
         </div>
-        <div class="health-row">
+        <div class="health-row health-extra">
           <span class="health-lbl">心拍数</span>
           <div class="health-input-wrap">
             <input type="number" id="hlt-heartrate" class="health-in" placeholder="--" min="0" max="300">
             <span class="health-unit">bpm</span>
           </div>
         </div>
-        <div class="health-row">
+        <div class="health-row health-extra">
           <span class="health-lbl">血圧</span>
           <div class="health-input-wrap health-bp-wrap">
             <input type="number" id="hlt-systolic" class="health-in health-bp-in" placeholder="--" min="0" max="300">
@@ -2000,6 +2012,24 @@ body.no-tasks .nb[data-t="tasks"],body.no-tasks #dr-tasks,body.no-tasks #home-ta
             <span id="ft-thumb-tasks" class="st-toggle-thumb" style="left:23px;"></span>
           </label>
         </div>
+        <div class="st-row st-row-toggle">
+          <span class="st-ic" style="background:#ef4444;">❤️</span>
+          <span class="st-label">歩数・心拍・血圧の手入力</span>
+          <label class="st-toggle">
+            <input type="checkbox" id="ft-toggle-healthExtra" style="opacity:0;width:0;height:0;">
+            <span id="ft-track-healthExtra" class="st-toggle-track" style="background:var(--accent);"></span>
+            <span id="ft-thumb-healthExtra" class="st-toggle-thumb" style="left:23px;"></span>
+          </label>
+        </div>
+        <div class="st-row st-row-toggle">
+          <span class="st-ic" style="background:#64748b;">👤</span>
+          <span class="st-label">複数のプロフィール・パスコード</span>
+          <label class="st-toggle">
+            <input type="checkbox" id="ft-toggle-profiles" style="opacity:0;width:0;height:0;">
+            <span id="ft-track-profiles" class="st-toggle-track" style="background:var(--accent);"></span>
+            <span id="ft-thumb-profiles" class="st-toggle-thumb" style="left:23px;"></span>
+          </label>
+        </div>
       </div>
 
       <!-- AIキャラクター -->
@@ -2104,8 +2134,8 @@ body.no-tasks .nb[data-t="tasks"],body.no-tasks #dr-tasks,body.no-tasks #home-ta
       </div>
 
       <!-- セキュリティ -->
-      <div class="st-sec">セキュリティ</div>
-      <div class="st-card">
+      <div class="st-sec" id="st-sec-security">セキュリティ</div>
+      <div class="st-card" id="st-card-security">
         <div class="st-row" id="st-pc-row" style="cursor:pointer;">
           <span class="st-ic" style="background:#64748b;">🔑</span>
           <div style="flex:1;">
@@ -2180,7 +2210,7 @@ body.no-tasks .nb[data-t="tasks"],body.no-tasks #dr-tasks,body.no-tasks #home-ta
         <div class="st-about-note">動画の検索・表示に YouTube API Services を使っています。<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube利用規約</a>・<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Googleプライバシーポリシー</a>が適用されます。AIの答えは医療アドバイスではありません。</div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.97.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.98.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -2775,7 +2805,7 @@ body.no-tasks .nb[data-t="tasks"],body.no-tasks #dr-tasks,body.no-tasks #home-ta
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='1b77cfc05d'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='2f3b92add3'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -3101,6 +3131,10 @@ if(!db.settings.calLayout)db.settings.calLayout='general';
 if(!db.settings.healthProfile)db.settings.healthProfile={};
 if(!db.settings.features)db.settings.features={workout:true,meals:true,sleep:true};
 delete db.settings.features.gmail; // v2.85.0 メール連携削除
+// v2.98.0: 歩数・心拍・血圧の手入力は、記録したことがある人だけ表示のまま
+if(db.settings.features.healthExtra===undefined){
+  db.settings.features.healthExtra=Object.values(db.health||{}).some(h=>h&&(h.steps||h.heartRate||h.systolic||h.diastolic));
+}
 
 // 既存の写真データをlocalStorage→IndexedDBに移行
 (async()=>{
@@ -3136,6 +3170,8 @@ function applyFeatureVisibility(){
   const calOn=f.calendar!==false,tasksOn=f.tasks!==false;
   document.body.classList.toggle('no-cal',!calOn);
   document.body.classList.toggle('no-tasks',!tasksOn);
+  document.body.classList.toggle('no-health-extra',f.healthExtra!==true);
+  document.body.classList.toggle('no-profiles',f.profiles===false);
   const cl=document.getElementById('nav-cal-label');if(cl)cl.textContent=calOn?'カレンダー':'ホーム';
   const cs=document.getElementById('nav-cal-svg');if(cs)cs.innerHTML=calOn?'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>':'<path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>';
   if(window._hlReady){ // ui.js・calendar.js の読込後だけ（const の初期化前に触らない）
@@ -3143,12 +3179,12 @@ function applyFeatureVisibility(){
     if(!tasksOn&&st.tab==='tasks')switchToTab('cal');
   }
   // 機能トグルのUI状態を更新
-  ['workout','meals','sleep','calendar','tasks'].forEach(key=>{
+  ['workout','meals','sleep','calendar','tasks','healthExtra','profiles'].forEach(key=>{
     const track=document.getElementById(`ft-track-${key}`);
     const thumb=document.getElementById(`ft-thumb-${key}`);
     const cb=document.getElementById(`ft-toggle-${key}`);
     if(!track)return;
-    const on=f[key]!==false;
+    const on=key==='healthExtra'?f[key]===true:f[key]!==false;
     if(cb)cb.checked=on;
     track.style.background=on?'var(--accent)':'var(--border)';
     thumb.style.left=on?'23px':'3px';
@@ -3261,7 +3297,7 @@ function switchToTab(t){
   tabEl.classList.add('on');
   tabEl.scrollTop=0;
   updateNavActive();
-  if(t==='cal'){renderGoals();renderCal();renderHealthAdvice();if(typeof renderTrendCard==='function')renderTrendCard();}
+  if(t==='cal'){renderGoals();renderCal();renderHealthAdvice();if(typeof renderTrendCard==='function')renderTrendCard();if(typeof lhCheckUnlocks==='function')setTimeout(lhCheckUnlocks,600);}
   if(t==='tasks')renderTasks();
   if(t==='other')renderOther();
 }
@@ -4755,7 +4791,7 @@ document.getElementById('supp-save').onclick=()=>{
   renderSuppList();
 };
 // 機能トグルハンドラ
-['workout','meals','sleep','calendar','tasks'].forEach(key=>{
+['workout','meals','sleep','calendar','tasks','healthExtra','profiles'].forEach(key=>{
   document.getElementById(`ft-toggle-${key}`)?.addEventListener('change',function(){
     if(!db.settings.features)db.settings.features={workout:true,meals:true,sleep:true};
     db.settings.features[key]=this.checked;
@@ -5294,6 +5330,7 @@ document.getElementById('st-ai-consent-row')?.addEventListener('click',async()=>
 ['privacy','support'].forEach(n=>{const a=document.getElementById('st-link-'+n);if(a)a.href=legalUrl(n);});
 renderAiConsentRow();
 const CHANGELOG=[
+  {v:'v2.98.0',d:'新しく始める人は、レベル・ミッション・バッジが記録した日数で解放されるように（3日でレベル、7日でミッションとバッジ）。歩数・心拍・血圧の手入力と、複数のプロフィール・パスコードは設定の「表示する機能」へ'},
   {v:'v2.97.0',d:'AIを初めて使うときに、AIに送る内容を確認して同意する画面を追加（設定の「AIの利用」で取り消し可）。新しく始める人はカレンダーとタスクを最初は表示しない（設定の「表示する機能」でオンにできる）。設定に「このアプリについて」（プライバシーポリシー・サポート）'},
   {v:'v2.96.1',d:'AIトレーナーのチャットが、ランらしい短く力強いタメ口で話すように'},
   {v:'v2.96.0',d:'AIトレーナーの返事が速く・軽くなりました（普段は軽量モデル、💭思考モードのときだけ高性能モデル）。AIの使いすぎを防ぐため、1日の利用枠を設けました'},
@@ -7106,7 +7143,7 @@ function renderHealthCharts(){
     container.appendChild(block);
   }
 
-  metrics.forEach(m=>{
+  metrics.filter(m=>db.settings.features?.healthExtra===true||!(m.bp||m.key==='steps'||m.key==='heartRate')).forEach(m=>{ // v2.98.0
     if(m.bp){
       const sys=dates.map(d=>(db.health[d]||{}).systolic??null);
       const dia=dates.map(d=>(db.health[d]||{}).diastolic??null);
@@ -7408,7 +7445,9 @@ document.getElementById('ml-next').onclick=()=>{const d=new Date(st.mlDate);d.se
       const savedName=inp.value.trim()||'マイデータ';
       db.userProfile={useCase:selected,setupAt:todayStr(),name:savedName};
       // v2.97.0: 新しく始める人はカレンダーとタスクを最初は隠す（設定の「表示する機能」でオン）
-      db.settings.features=Object.assign(db.settings.features||{},{calendar:false,tasks:false});
+      db.settings.features=Object.assign(db.settings.features||{},{calendar:false,tasks:false,profiles:false});
+      db.settings.unlocks={level:false,missions:false}; // v2.98.0: ゲーム要素は記録した日数で解放
+      if(typeof lhApplyUnlocks==='function')lhApplyUnlocks();
       if(selected.length>0)autoConfigFeatures(selected);
       save(db);
       ob.hidden=true;
@@ -8467,7 +8506,9 @@ function calcGameStats(){
       });
     }
 
+    window._lhRenderMissions=()=>generateMissions(false);
     async function generateMissions(force){
+      if(!lhUnlocked('missions'))return; // v2.98.0: 記録した日が7日で解放
       const today=todayStr();
       if(!force){
         const cached=loadMissions();
@@ -9602,6 +9643,7 @@ async function shareCanvas(canvas,text){
 /* ===== End Share Card System ===== */
 
 function checkLevelUp(){
+  if(typeof lhUnlocked==='function'&&!lhUnlocked('level'))return; // v2.98.0
   const g=calcGameStats();
   let last=1;try{last=parseInt(localStorage.getItem('lh_last_level')||'1');}catch{}
   if(g.level<=last)return;
@@ -9699,6 +9741,58 @@ function renderGameStats(){
     wkBtn.disabled=false;wkBtn.textContent='📊 今週のサマリー';};
   shareRow.appendChild(wkBtn);
 }
+// ── ゲーム要素の段階解放（v2.98.0） ──
+// db.settings.unlocks = {level:bool, missions:bool}。未設定＝すべて解放済み（既存ユーザー）
+// 新しく始める人はオンボーディング完了時に {level:false, missions:false}
+var UNLOCK_RULES=[
+  {key:'level',days:3,title:'レベルが解放された！',body:'記録した日が3日になった。ここからは、記録や達成、楽しかった体験でXPがたまって、レベルが上がっていく。'},
+  {key:'missions',days:7,title:'ミッションとバッジが解放された！',body:'記録した日が7日。毎日3つのミッションが届くようになる。続けるとバッジも集まっていくよ。'},
+];
+function lhUnlocked(k){const u=db.settings&&db.settings.unlocks;return !u||u[k]!==false;}
+// 記録した日（筋トレ・食事・睡眠・体重/体脂肪のどれか）の数。連続でなくてよい
+function lhRecordDays(){
+  const days=new Set();
+  Object.entries(db.workouts||{}).forEach(([d,v])=>{if(Array.isArray(v)&&v.length)days.add(d);});
+  Object.entries(db.meals||{}).forEach(([d,v])=>{if(v&&Object.values(v).some(a=>Array.isArray(a)&&a.length))days.add(d);});
+  Object.entries(db.sleep||{}).forEach(([d,v])=>{if(v&&(v.bedtime||v.wakeTime))days.add(d);});
+  Object.entries(db.health||{}).forEach(([d,v])=>{if(v&&(v.weight||v.bodyFat))days.add(d);});
+  return days.size;
+}
+function lhApplyUnlocks(){
+  document.body.classList.toggle('lock-level',!lhUnlocked('level'));
+  document.body.classList.toggle('lock-missions',!lhUnlocked('missions'));
+}
+function lhShowUnlock(rule){
+  const ov=document.createElement('div');ov.className='aic-ov unlock-ov';
+  const lv=rule.key==='level'&&typeof calcGameStats==='function'?calcGameStats():null;
+  ov.innerHTML=`<div class="aic-sheet unlock-sheet" role="dialog" aria-modal="true">
+    <img class="unlock-img" src="assets/characters/01_Ran_pointing.png" alt="" onerror="this.style.display='none'">
+    <h3>🎉 ${esc(rule.title)}</h3>
+    <p>${esc(rule.body)}</p>
+    ${lv?`<p class="unlock-lv">今のレベル: Lv.${lv.level}「${esc(lv.title)}」</p>`:''}
+    <p class="unlock-sub">${rule.key==='level'?'設定の「ゲームステータス」で見られる':'ホームにミッションが出るよ'}</p>
+    <button class="aic-ok" type="button">OK</button>
+  </div>`;
+  ov.querySelector('.aic-ok').onclick=()=>ov.remove();
+  document.body.appendChild(ov);
+}
+// 解放の条件を満たしたら解放して知らせる（1回に1つずつ）
+function lhCheckUnlocks(){
+  const u=db.settings&&db.settings.unlocks;
+  if(!u)return;
+  if(document.getElementById('onboarding')&&!document.getElementById('onboarding').hidden)return;
+  if(document.querySelector('.unlock-ov,#aic-ov'))return;
+  const n=lhRecordDays();
+  const rule=UNLOCK_RULES.find(r=>u[r.key]===false&&n>=r.days);
+  if(!rule)return;
+  u[rule.key]=true;
+  if(rule.key==='level'){try{localStorage.setItem('lh_last_level',String(calcGameStats().level));}catch(e){}} // 解放と同時にレベルアップ演出を出さない
+  save(db);lhApplyUnlocks();
+  if(rule.key==='missions'&&typeof window._lhRenderMissions==='function')window._lhRenderMissions();
+  lhShowUnlock(rule);
+}
+lhApplyUnlocks();
+setTimeout(lhCheckUnlocks,2500);
 </script>
 <div id="lu-overlay" hidden style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;"></div>
 <div id="share-pv-modal" class="share-pv-modal" hidden>
