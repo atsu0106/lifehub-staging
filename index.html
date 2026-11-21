@@ -2709,7 +2709,7 @@ body.in-training .ai-modal{z-index:700;}
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='2e58594259'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='a280e84f55'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -5125,6 +5125,20 @@ if(window._DEV_MODE){
   });
 }
 const WORKER_URL='https://lifehub-ai.y-atsuhisa7234.workers.dev';
+// ── AIが使えないときの表示（v2.95.2） ──
+// x: Anthropic 形式の応答 {error:{type,message}} / Error / 文字列。残高切れ・混雑のときだけ案内文を返し、それ以外は null
+function aiErrorKind(x){
+  const s=typeof x==='string'?x:[x?.error?.message,x?.error?.type,x?.message,x?.code].filter(Boolean).join(' ');
+  if(/credit balance|purchase credits|billing/i.test(s))return 'credit';
+  if(/overloaded|rate_limit|rate limit|429|529|混み合/i.test(s))return 'busy';
+  return 'other';
+}
+function aiErrorText(x){
+  const k=aiErrorKind(x);
+  if(k==='credit')return 'ごめん、今AIが使えない状態になってる（運営側のAI利用枠が切れた）。直るまで少し待ってね。記録はいつも通りできるよ';
+  if(k==='busy')return 'AIが混み合ってる。少し時間をおいてもう一度試してね';
+  return null;
+}
 const CHARS={
   ran:{name:'ラン',role:'熱血コーチ',emoji:'🐴',img:'assets/characters/01_Ran_pointing.png',
     system:'あなたはラン（熱血コーチのウマ）です。口調は短く力強い。ストイックで追い込み系。「お前ならできる」という信頼を持ちつつ、言葉は少なく本質をつく。指定フォーマット厳守。日本語のみ。'},
@@ -5512,6 +5526,7 @@ async function _fbSend(){
     const fbSystem=`あなたはLifeHubのAIコーチです。ユーザーが「${t.title}」を完了しました。\n過去のフィードバック: ${pastFb}\nユーザーの返答を受けて、次回への具体的アドバイスを2〜3行で伝えてください。短く・具体的・ポジティブに。`;
     const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-sonnet-5-5',max_tokens:512,system:fbSystem,messages:_fbMessages})});
     const data=await res.json();
+    if(data.error&&!data.content){typing.remove();_fbAddMsg('ai',aiErrorText(data)||'エラーが発生しました。');_fbMessages.pop();return;}
     const reply=data.content?.find(c=>c.type==='text')?.text||'ありがとうございます！次回も頑張りましょう。';
     typing.remove();_fbAddMsg('ai',reply);
     _fbMessages.push({role:'assistant',content:reply});
@@ -6582,7 +6597,7 @@ async function generateAIWeekPlan(){
     messages:[{role:'user',content:prompt}],
   })});
   const data=await res.json();
-  if(data.error)throw new Error(data.error.type||'api');
+  if(data.error)throw new Error(aiErrorText(data)||data.error.type||'api');
   const t=data.content?.find(c=>c.type==='text')?.text;
   if(!t)throw new Error(data.stop_reason||'empty');
   const plan=JSON.parse(t);
@@ -6623,7 +6638,7 @@ async function runAIWeekPlan(){
   box.hidden=false;box.innerHTML='<div class="aip-loading">🤖 予定を見ながらメニューを考えてるよ…（10〜20秒）</div>';
   if(btn)btn.disabled=true;
   try{renderAIPlanPreview(await generateAIWeekPlan());}
-  catch(e){box.innerHTML=`<div class="aip-loading">メニューを作れませんでした。もう一度試してください。（${esc(e.message||'err')}）</div>`;}
+  catch(e){box.innerHTML=`<div class="aip-loading">${aiErrorText(e)?esc(aiErrorText(e)):`メニューを作れませんでした。もう一度試してください。（${esc(e.message||'err')}）`}</div>`;}
   finally{if(btn)btn.disabled=false;}
 }
 // ── Meals ─────────────────────────────────────────────────
@@ -7123,7 +7138,7 @@ async function analyzePhotoMeal(){
     })});
     if(!res.ok)throw new Error('HTTP '+res.status);
     const data=await res.json();
-    if(data.error)throw new Error(data.error.type||'api');
+    if(data.error)throw new Error(aiErrorText(data)||data.error.type||'api');
     const text=data.content?.find(c=>c.type==='text')?.text||'';
     const m=text.match(/\{[\s\S]*\}/);
     if(!m)throw new Error('parse');
@@ -7140,7 +7155,7 @@ async function analyzePhotoMeal(){
     });
     statusEl.textContent=r.note?`✓ ${r.note}`:'✓ 推定完了（内容を確認してから追加してください）';
   }catch(e){
-    statusEl.textContent='⚠ 分析に失敗しました。もう一度撮るか、手動で入力してください。('+(e.message||'err')+')';
+    statusEl.textContent=aiErrorText(e)?'⚠ '+aiErrorText(e):'⚠ 分析に失敗しました。もう一度撮るか、手動で入力してください。('+(e.message||'err')+')';
   }
   btn.disabled=false;
   document.getElementById('mla-photo-input').value='';
@@ -8004,6 +8019,7 @@ function calcGameStats(){
           const res=await fetch(workerUrl,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify(reqBody)});
           if(!res.ok)throw new Error('HTTP '+res.status);
           const data=await res.json();
+          if(data.error&&!data.content){const t=aiErrorText(data);const err=new Error(t||data.error.message||data.error.type||'api');err.friendly=!!t;throw err;}
           // 思考ブロックをthinkingElの直前に挿入（折りたたみ式）
           const thinkBlocks=data.content?.filter(c=>c.type==='thinking')||[];
           if(thinkBlocks.length){
@@ -8041,7 +8057,7 @@ function calcGameStats(){
       aiHistory[aiHistory.length-1]={role:'assistant',content:reply};
       saveSession();
     }catch(e){
-      thinkingEl.textContent='エラーが発生しました: '+e.message;
+      thinkingEl.textContent=e.friendly?e.message:(aiErrorText(e)||'エラーが発生しました: '+e.message);
       thinkingEl.className='ai-msg ai';
       setRanState(null);
     }
@@ -8193,9 +8209,11 @@ function calcGameStats(){
             renderCard(text);
             return;
           }
-          lastErr=data.error?.type||data.error?.message||(typeof data.error==='string'?data.error:'')||('HTTP '+res.status);
+          lastErr=data.error?.message||data.error?.type||(typeof data.error==='string'?data.error:'')||('HTTP '+res.status);
+          if(aiErrorKind(lastErr)==='credit')break; // 残高切れは再試行しても直らない
         }catch(e){lastErr=e.message||'network';}
       }
+      if(aiErrorText(lastErr)){renderCard(aiErrorText(lastErr));return;}
       console.warn('[brief] failed:',lastErr);
       renderCard('ひとことを取得できませんでした。↺ で再試行できます。');
       const t=card.querySelector('.ai-brief-text');
@@ -9048,6 +9066,7 @@ function rcpResultHtml(r,mt){
 function rcpErrorText(e){
   if(e&&e.code==='limit')return `今日はもう${RCP_DAILY_LIMIT}回使った。また明日な`;
   if(e&&e.message==='empty')return '食材を入力してね';
+  if(aiErrorText(e))return aiErrorText(e);
   return 'うまく考えられなかった。少し時間をおいてもう一度試してね';
 }
 
