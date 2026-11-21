@@ -2114,7 +2114,7 @@ body.in-training .ai-modal{z-index:700;}
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.95.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.96.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -2709,7 +2709,7 @@ body.in-training .ai-modal{z-index:700;}
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='40ef659b7a'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='07fda7d307'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -5154,6 +5154,9 @@ const CHARS={
     system:'あなたはコタ（おっとり伴走のクマ）です。ゆっくり丁寧で温かい口調。急かさない。「焦らなくていいよ」「続けることが一番大事」という姿勢。ユーザーのデータを使って自分ごとにする。一人称は「ぼく」。指定フォーマット厳守。日本語のみ。'},
 };
 const CHANGELOG=[
+  {v:'v2.96.0',d:'AIトレーナーの返事が速く・軽くなりました（普段は軽量モデル、💭思考モードのときだけ高性能モデル）。AIの使いすぎを防ぐため、1日の利用枠を設けました'},
+  {v:'v2.95.2',d:'AIが使えないとき（混雑・利用枠の終了など）に、分かりやすい案内を出すように'},
+  {v:'v2.95.1',d:'動画が見つからないとき「▶ YouTubeで検索」リンクを出すように'},
   {v:'v2.95.0',d:'🍳 食材からメニュー。冷蔵庫の食材を入れると、ランが目標・今日の予定に合わせて3品を提案（レシピ動画つき・「これにする」で食事記録へ）。設定の健康プロフィールにアレルギー・苦手な食材を登録すると除外します'},
   {v:'v2.94.1',d:'長い通知が画面からはみ出して読めない不具合を修正'},
   {v:'v2.94.0',d:'動画に👍/👎とひとことコメントを付けられるように（動画の「＋」から、いつでも変更可）。評価とコメントは開発者とAIだけが見て、ほかのユーザーには表示されません'},
