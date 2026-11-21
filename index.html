@@ -2709,7 +2709,7 @@ body.in-training .ai-modal{z-index:700;}
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='a280e84f55'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='40ef659b7a'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -5129,6 +5129,7 @@ const WORKER_URL='https://lifehub-ai.y-atsuhisa7234.workers.dev';
 // x: Anthropic 形式の応答 {error:{type,message}} / Error / 文字列。残高切れ・混雑のときだけ案内文を返し、それ以外は null
 function aiErrorKind(x){
   const s=typeof x==='string'?x:[x?.error?.message,x?.error?.type,x?.message,x?.code].filter(Boolean).join(' ');
+  if(/daily_budget_exceeded|daily AI budget/i.test(s))return 'budget';
   if(/credit balance|purchase credits|billing/i.test(s))return 'credit';
   if(/overloaded|rate_limit|rate limit|429|529|混み合/i.test(s))return 'busy';
   return 'other';
@@ -5137,6 +5138,7 @@ function aiErrorText(x){
   const k=aiErrorKind(x);
   if(k==='credit')return 'ごめん、今AIが使えない状態になってる（運営側のAI利用枠が切れた）。直るまで少し待ってね。記録はいつも通りできるよ';
   if(k==='busy')return 'AIが混み合ってる。少し時間をおいてもう一度試してね';
+  if(k==='budget')return '今日のAI利用枠を使い切った。明日になったらまた使えるよ（記録はいつも通りできる）';
   return null;
 }
 const CHARS={
@@ -5524,7 +5526,7 @@ async function _fbSend(){
     const t=db.tasks.find(t=>t.id===_fbTaskId)||{};
     const pastFb=(t.feedbackLogs||[]).slice(-3).map(f=>`${f.date}: ${f.text}`).join(' / ')||'なし';
     const fbSystem=`あなたはLifeHubのAIコーチです。ユーザーが「${t.title}」を完了しました。\n過去のフィードバック: ${pastFb}\nユーザーの返答を受けて、次回への具体的アドバイスを2〜3行で伝えてください。短く・具体的・ポジティブに。`;
-    const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-sonnet-5-5',max_tokens:512,system:fbSystem,messages:_fbMessages})});
+    const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:512,thinking:{type:'disabled'},system:fbSystem,messages:_fbMessages})});
     const data=await res.json();
     if(data.error&&!data.content){typing.remove();_fbAddMsg('ai',aiErrorText(data)||'エラーが発生しました。');_fbMessages.pop();return;}
     const reply=data.content?.find(c=>c.type==='text')?.text||'ありがとうございます！次回も頑張りましょう。';
@@ -5703,7 +5705,7 @@ async function estimateProgressWithAI(manual){
   }).join('\n');
   const prompt=`以下のタスクの進捗を、ユーザーの記録をもとに評価してください。\n\n【最近のユーザー発言（参考）】\n${recentChat||'なし'}\n\n【タスク一覧】\n${taskList}\n\nJSON配列のみ返してください（他テキスト不要）:\n[{"id":"...","score":整数0〜100,"comment":"20字以内のポジティブなコメント"}]`;
   try{
-    const res=await fetch(workerUrl,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-sonnet-5-5',max_tokens:600,system:'あなたはLifeHubのAI進捗評価アシスタントです。ユーザーのモチベーション維持・向上を最優先に評価してください。正確さより励ましを重視し、少しでも取り組みの記録があれば高めに評価してください。全く記録がない場合でも最低20点を付けてください。コメントは必ずポジティブなトーンで20字以内にしてください。',messages:[{role:'user',content:prompt}]})});
+    const res=await fetch(workerUrl,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-sonnet-5-5',max_tokens:600,output_config:{effort:'low'},system:'あなたはLifeHubのAI進捗評価アシスタントです。ユーザーのモチベーション維持・向上を最優先に評価してください。正確さより励ましを重視し、少しでも取り組みの記録があれば高めに評価してください。全く記録がない場合でも最低20点を付けてください。コメントは必ずポジティブなトーンで20字以内にしてください。',messages:[{role:'user',content:prompt}]})});
     if(!res.ok)throw new Error('HTTP '+res.status);
     const data=await res.json();
     const text=data.content?.find(c=>c.type==='text')?.text||'';
@@ -8004,13 +8006,17 @@ function calcGameStats(){
         reply='[DEVモード] AIは動作していません。Worker URLを設定すると実際に動作します。\n\n取得したコンテキスト:\n'+getContext();
       } else {
         const workerUrl=WORKER_URL;
-        const system='あなたはLifeHubのAIアシスタントです。\n\n【LifeHubの全機能（必ず把握すること）】\nLifeHubは以下の全機能を持つ総合生活管理アプリです：\n・📅 カレンダー: 予定の追加・編集・削除・繰り返し予定・複数カレンダー\n・✅ タスク管理: 追加・完了・編集・削除・優先度・期限・繰り返し・目標連携\n・🍱 食事記録: 朝食・昼食・夕食・間食の記録、カロリー・栄養素管理（log_mealツールで記録可能）\n・💪 筋トレ記録: 種目・セット数・重量・有酸素運動の記録、グラフ分析（log_workoutツールで記録可能）\n・😴 睡眠記録: 就寝・起床時刻、昼寝の記録（log_sleepツールで記録可能）\n・❤️ 健康データ: 体重・体脂肪率・歩数・心拍数・血圧・水分摂取量（log_healthツールで記録可能）\n・🎯 目標管理: 目標追加・進捗更新・達成済みマーク\n・🎮 ゲームステータス: XP・レベル・称号・実績バッジ\n・🤖 AI機能: デイリーブリーフ・ミッション生成・AIチャット（現在使用中）\n\nこれらすべての機能を持つアプリです。「○○の機能はない」と絶対に言わないでください。\n\nユーザーの生活データを把握しており、日本語でアドバイスします。ツールを使って全機能のデータを読み書きできます。\n\n【ツール使用のルール（最重要）】\nツールは、ユーザーが「追加して」「記録して」「変更して」「削除して」「入力して」など、明示的に操作を指示した場合のみ使用してください。ユーザーの意図を推測して自主的にツールを呼び出さないでください。ユーザーが話してくれた内容（例: 筋トレをした、ご飯を食べた）でも、「記録しますか？」と一度確認してから、OKをもらった後にツールを呼び出してください。\n\n【XP哲学】\nXPは「人生の充実」への報酬。努力・達成だけでなく、幸せな体験・発見・成長にも与える。LifeHubはユーザーの人生をゲーム化し、充実した人生を送るための相棒である。\n\n【award_event_xp — 過去の予定へのXP】\n過去の予定でaiXpが付いていないものがあれば、会話の流れで自然に「どうだった？」と聞き出し付与する。\n目安: 国試=5000〜10000、CBT/OSCE=1000〜3000、定期試験=40〜100、難しい実習=30〜80、授業=5〜15、日常予定=5〜20、楽しい遊び=1〜5。\nユーザーの申告より予定の実態を優先。\n\n【award_xp — 体験・幸せへのXP（新機能）】\nユーザーが以下を話してくれたときは自然に聞き出し award_xp を使う:\n・美味しいご飯や新しいお店を発見した → food: 3〜10\n・旅行・新しい場所に行った → travel: 20〜100（特別な場所は100以上も可。旅行の目的地1か所ごとに付与）\n・新しいことを学んだ・理解が深まった → learning: 5〜30\n・感動・喜び・楽しかった体験 → joy: 5〜20\n・初めての挑戦・体験 → challenge: 10〜30\nポイント: 目標が「旅行をたくさんしたい」なら旅行で働いてお金を貯めること（タスク）も目標連動XP対象。旅行先1か所訪問は award_xp(travel)で記録する。\n\n【回答フォーマットのルール】\n・適切な場所で改行を入れ、読みやすくする\n・複数の内容がある場合は箇条書き（・）を使う\n・句読点（。、）を正しく使い、文章を短く区切る\n・何を言いたいか一目でわかるよう、結論や要点を最初に書く\n・長くなりすぎず、必要な情報に絞って答える\n\n'+getContext();
+        // v2.96.0: 固定の指示（キャッシュする）と、毎回変わるユーザーデータを分ける
+        const system=[{type:'text',text:'あなたはLifeHubのAIアシスタントです。\n\n【LifeHubの全機能（必ず把握すること）】\nLifeHubは以下の全機能を持つ総合生活管理アプリです：\n・📅 カレンダー: 予定の追加・編集・削除・繰り返し予定・複数カレンダー\n・✅ タスク管理: 追加・完了・編集・削除・優先度・期限・繰り返し・目標連携\n・🍱 食事記録: 朝食・昼食・夕食・間食の記録、カロリー・栄養素管理（log_mealツールで記録可能）\n・💪 筋トレ記録: 種目・セット数・重量・有酸素運動の記録、グラフ分析（log_workoutツールで記録可能）\n・😴 睡眠記録: 就寝・起床時刻、昼寝の記録（log_sleepツールで記録可能）\n・❤️ 健康データ: 体重・体脂肪率・歩数・心拍数・血圧・水分摂取量（log_healthツールで記録可能）\n・🎯 目標管理: 目標追加・進捗更新・達成済みマーク\n・🎮 ゲームステータス: XP・レベル・称号・実績バッジ\n・🤖 AI機能: デイリーブリーフ・ミッション生成・AIチャット（現在使用中）\n\nこれらすべての機能を持つアプリです。「○○の機能はない」と絶対に言わないでください。\n\nユーザーの生活データを把握しており、日本語でアドバイスします。ツールを使って全機能のデータを読み書きできます。\n\n【ツール使用のルール（最重要）】\nツールは、ユーザーが「追加して」「記録して」「変更して」「削除して」「入力して」など、明示的に操作を指示した場合のみ使用してください。ユーザーの意図を推測して自主的にツールを呼び出さないでください。ユーザーが話してくれた内容（例: 筋トレをした、ご飯を食べた）でも、「記録しますか？」と一度確認してから、OKをもらった後にツールを呼び出してください。\n\n【XP哲学】\nXPは「人生の充実」への報酬。努力・達成だけでなく、幸せな体験・発見・成長にも与える。LifeHubはユーザーの人生をゲーム化し、充実した人生を送るための相棒である。\n\n【award_event_xp — 過去の予定へのXP】\n過去の予定でaiXpが付いていないものがあれば、会話の流れで自然に「どうだった？」と聞き出し付与する。\n目安: 国試=5000〜10000、CBT/OSCE=1000〜3000、定期試験=40〜100、難しい実習=30〜80、授業=5〜15、日常予定=5〜20、楽しい遊び=1〜5。\nユーザーの申告より予定の実態を優先。\n\n【award_xp — 体験・幸せへのXP（新機能）】\nユーザーが以下を話してくれたときは自然に聞き出し award_xp を使う:\n・美味しいご飯や新しいお店を発見した → food: 3〜10\n・旅行・新しい場所に行った → travel: 20〜100（特別な場所は100以上も可。旅行の目的地1か所ごとに付与）\n・新しいことを学んだ・理解が深まった → learning: 5〜30\n・感動・喜び・楽しかった体験 → joy: 5〜20\n・初めての挑戦・体験 → challenge: 10〜30\nポイント: 目標が「旅行をたくさんしたい」なら旅行で働いてお金を貯めること（タスク）も目標連動XP対象。旅行先1か所訪問は award_xp(travel)で記録する。\n\n【回答フォーマットのルール】\n・適切な場所で改行を入れ、読みやすくする\n・複数の内容がある場合は箇条書き（・）を使う\n・句読点（。、）を正しく使い、文章を短く区切る\n・何を言いたいか一目でわかるよう、結論や要点を最初に書く\n・長くなりすぎず、必要な情報に絞って答える\n\n',cache_control:{type:'ephemeral'}},{type:'text',text:'【ユーザーのデータ】\n'+getContext()}];
         const apiMessages=aiHistory.slice(0,-2).filter(m=>m.role==='user'||m.role==='assistant').map(m=>({role:m.role,content:m.content}));
         const userContent=buildApiContent(text,attachments);
         apiMessages.push({role:'user',content:userContent});
         // 思考モード: Sonnet 5.5 は adaptive thinking＋effort で深さを指定（budget_tokens は400）。display:'summarized'で思考の要約を返す
-        const reqBody={model:'claude-sonnet-5-5',max_tokens:useThinking?16000:4096,system,messages:apiMessages,tools:AI_TOOLS};
+        // v2.96.0: 普段は Haiku 5.5（思考オフ・約1/20の料金）。💭思考モードのときだけ Sonnet 5.5
+        // cache_control（上部）: ツール定義＋固定の指示をキャッシュ。トップレベルの cache_control で、ツールの往復でも前の部分を読み出しで済ませる
+        const reqBody={model:useThinking?'claude-sonnet-5-5':'claude-haiku-5-5',max_tokens:useThinking?16000:4096,system,messages:apiMessages,tools:AI_TOOLS,cache_control:{type:'ephemeral'}};
         if(useThinking){reqBody.thinking={type:'adaptive',display:'summarized'};reqBody.output_config={effort:'xhigh'};}
+        else reqBody.thinking={type:'disabled'};
         if(useThinking){
           thinkingEl.innerHTML='<div class="ran-inline-state"><img class="ran-inline-img" src="assets/characters/Ran_thinking.png" onerror="this.style.display=\'none\'"><div class="ai-thinking-anim">深く考え中<span></span><span></span><span></span></div></div>';
           thinkingEl.className='ai-msg ai';
@@ -8210,7 +8216,7 @@ function calcGameStats(){
             return;
           }
           lastErr=data.error?.message||data.error?.type||(typeof data.error==='string'?data.error:'')||('HTTP '+res.status);
-          if(aiErrorKind(lastErr)==='credit')break; // 残高切れは再試行しても直らない
+          if(['credit','budget'].includes(aiErrorKind(lastErr)))break; // 残高切れ・予算切れは再試行しても直らない
         }catch(e){lastErr=e.message||'network';}
       }
       if(aiErrorText(lastErr)){renderCard(aiErrorText(lastErr));return;}
