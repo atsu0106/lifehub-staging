@@ -1355,6 +1355,32 @@ body.in-training .ai-modal{z-index:700;}
 /* === 動画が取れないときの検索リンク（v2.95.1） === */
 .yt-search-link{display:block;padding:10px 12px;border-radius:10px;border:1.5px dashed var(--border);background:var(--surface2);color:var(--accent);font-size:13px;font-weight:700;text-decoration:none;line-height:1.5;overflow-wrap:anywhere;}
 .vl-wrap>.yt-search-link{flex:1;min-width:0;}
+
+/* ── v2.97.0 AIの利用への同意 ── */
+.aic-ov{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;}
+.aic-sheet{background:var(--surface);color:var(--fg);width:100%;max-width:520px;max-height:88vh;overflow:auto;border-radius:20px 20px 0 0;padding:20px 18px calc(18px + env(safe-area-inset-bottom));box-sizing:border-box;}
+.aic-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.aic-head img{width:44px;height:44px;object-fit:contain;}
+.aic-head h3{font-size:17px;margin:0;}
+.aic-lead{font-size:14px;margin:6px 0 10px;}
+.aic-list{margin:0 0 10px;font-size:13px;line-height:1.6;}
+.aic-list dt{font-weight:700;color:var(--fg2);margin-top:6px;}
+.aic-list dd{margin:0;}
+.aic-warn{font-size:13px;line-height:1.6;background:var(--surface2);border-radius:10px;padding:8px 10px;margin:0 0 8px;}
+.aic-sub{font-size:12px;line-height:1.6;color:var(--fg3);margin:0 0 14px;}
+.aic-sub a,.st-about-note a{color:var(--accent);}
+.aic-ok,.aic-no{display:block;width:100%;border:0;border-radius:12px;padding:13px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;}
+.aic-ok{background:var(--accent);color:#fff;margin-bottom:8px;}
+.aic-no{background:transparent;color:var(--fg2);}
+.aic-brief{display:flex;align-items:flex-start;gap:10px;margin-top:4px;}
+.aic-brief img{width:36px;height:36px;object-fit:contain;flex-shrink:0;}
+.aic-brief-txt{font-size:13px;line-height:1.6;}
+.aic-brief-btn{margin-top:8px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-weight:700;font-size:13px;padding:8px 14px;cursor:pointer;font-family:inherit;}
+.ai-empty-note{font-size:11px;color:var(--fg3);margin-top:6px;}
+.st-about-note{font-size:11px;line-height:1.6;color:var(--fg3);padding:10px 14px 12px;border-top:1px solid var(--border);}
+/* ── v2.97.0 カレンダー・タスクを隠す ── */
+body.no-cal #tab-cal .cal-toolbar,body.no-cal #tab-cal .cal-search-row,body.no-cal #cal-filter-row,body.no-cal #cal-grid,body.no-cal #week-view,body.no-cal #search-results,body.no-cal #day-lbl,body.no-cal #ev-list,body.no-cal #clarify-view,body.no-cal #clarify-tasks,body.no-cal #fab-float,body.no-cal #dr-add{display:none!important;}
+body.no-tasks .nb[data-t="tasks"],body.no-tasks #dr-tasks,body.no-tasks #home-tasks-card,body.no-tasks #clarify-tasks{display:none!important;}
 </style>
 </head>
 <body>
@@ -1676,8 +1702,8 @@ body.in-training .ai-modal{z-index:700;}
 
   <nav class="nav" id="main-nav">
     <button class="nb on" data-t="cal">
-      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-      カレンダー
+      <svg viewBox="0 0 24 24" id="nav-cal-svg"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      <span id="nav-cal-label">カレンダー</span>
     </button>
     <button class="nb" data-t="tasks">
       <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
@@ -1699,9 +1725,9 @@ body.in-training .ai-modal{z-index:700;}
     <div class="dr-list">
       <button class="dr-item" data-go="cal"><span class="dr-ic">🏠</span>ホーム</button>
       <button class="dr-item" data-act="ai"><span class="dr-ic">✨</span>AIトレーナー</button>
-      <button class="dr-item" data-act="add"><span class="dr-ic">➕</span>予定追加</button>
+      <button class="dr-item" data-act="add" id="dr-add"><span class="dr-ic">➕</span>予定追加</button>
       <div class="dr-sep"></div>
-      <button class="dr-item" data-go="tasks"><span class="dr-ic">✅</span>タスク</button>
+      <button class="dr-item" data-go="tasks" id="dr-tasks"><span class="dr-ic">✅</span>タスク</button>
       <button class="dr-item" data-go="wo"><span class="dr-ic">🏋️</span>トレーニング</button>
       <button class="dr-item" data-go="meals"><span class="dr-ic">🍱</span>食事</button>
       <button class="dr-item" data-go="sleep"><span class="dr-ic">😴</span>睡眠</button>
@@ -1736,7 +1762,7 @@ body.in-training .ai-modal{z-index:700;}
     <button class="ai-close" id="ai-close">✕</button>
   </div>
   <div class="ai-messages" id="ai-messages">
-    <div class="ai-empty"><img src="assets/characters/01_Ran_pointing.png" style="width:68px;height:68px;object-fit:contain;" onerror="this.style.display='none'"><div class="ai-empty-name">AIトレーナー ラン</div><div>今日の予定・タスク・目標を把握しています。</div><div>何でも聞いてください！</div></div>
+    <div class="ai-empty"><img src="assets/characters/01_Ran_pointing.png" style="width:68px;height:68px;object-fit:contain;" onerror="this.style.display='none'"><div class="ai-empty-name">AIトレーナー ラン</div><div>記録や予定を見ながら、何でも相談にのるよ。</div><div class="ai-empty-note">AIの答えは医療アドバイスではありません。体調のことは医師に相談してね</div></div>
   </div>
   <div id="ai-attach-preview" class="ai-attach-preview" style="display:none;"></div>
   <div id="ran-chat-status" hidden>
@@ -1956,6 +1982,24 @@ body.in-training .ai-modal{z-index:700;}
             <span id="ft-thumb-sleep" class="st-toggle-thumb" style="left:23px;"></span>
           </label>
         </div>
+        <div class="st-row st-row-toggle">
+          <span class="st-ic" style="background:#4F46E5;">📅</span>
+          <span class="st-label">カレンダー</span>
+          <label class="st-toggle">
+            <input type="checkbox" id="ft-toggle-calendar" style="opacity:0;width:0;height:0;">
+            <span id="ft-track-calendar" class="st-toggle-track" style="background:var(--accent);"></span>
+            <span id="ft-thumb-calendar" class="st-toggle-thumb" style="left:23px;"></span>
+          </label>
+        </div>
+        <div class="st-row st-row-toggle">
+          <span class="st-ic" style="background:#10b981;">✅</span>
+          <span class="st-label">タスク</span>
+          <label class="st-toggle">
+            <input type="checkbox" id="ft-toggle-tasks" style="opacity:0;width:0;height:0;">
+            <span id="ft-track-tasks" class="st-toggle-track" style="background:var(--accent);"></span>
+            <span id="ft-thumb-tasks" class="st-toggle-thumb" style="left:23px;"></span>
+          </label>
+        </div>
       </div>
 
       <!-- AIキャラクター -->
@@ -2114,7 +2158,29 @@ body.in-training .ai-modal{z-index:700;}
         <div class="st-hist-wrap" id="hist-list" hidden style="display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.96.1 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <!-- このアプリについて（v2.97.0） -->
+      <div class="st-sec">このアプリについて</div>
+      <div class="st-card">
+        <div class="st-row" id="st-ai-consent-row" style="cursor:pointer;">
+          <span class="st-ic" style="background:#8b5cf6;">🤖</span>
+          <span class="st-label">AIの利用</span>
+          <span class="st-val" id="st-ai-consent-state" style="font-size:12px;color:var(--fg3);">未同意</span>
+          <span class="st-arrow">›</span>
+        </div>
+        <a class="st-row" id="st-link-privacy" href="#" target="_blank" rel="noopener" style="text-decoration:none;">
+          <span class="st-ic" style="background:#64748b;">🔒</span>
+          <span class="st-label">プライバシーポリシー</span>
+          <span class="st-arrow">›</span>
+        </a>
+        <a class="st-row" id="st-link-support" href="#" target="_blank" rel="noopener" style="text-decoration:none;">
+          <span class="st-ic" style="background:#0ea5e9;">💬</span>
+          <span class="st-label">サポート・お問い合わせ</span>
+          <span class="st-arrow">›</span>
+        </a>
+        <div class="st-about-note">動画の検索・表示に YouTube API Services を使っています。<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube利用規約</a>・<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Googleプライバシーポリシー</a>が適用されます。AIの答えは医療アドバイスではありません。</div>
+      </div>
+
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.97.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -2709,7 +2775,7 @@ body.in-training .ai-modal{z-index:700;}
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='6cc16b8853'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='1b77cfc05d'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -3066,8 +3132,18 @@ function autoConfigFeatures(useCases){
 function applyFeatureVisibility(){
   const f=db.settings.features||{workout:true,meals:true,sleep:true};
   if(window._hlReady)updateHlNav(); // calendar.js 読込前は呼ばない（HL_NAVの初期化前）
+  // v2.97.0: カレンダー・タスクを隠す（未設定=表示。新規ユーザーはオンボーディングで false）
+  const calOn=f.calendar!==false,tasksOn=f.tasks!==false;
+  document.body.classList.toggle('no-cal',!calOn);
+  document.body.classList.toggle('no-tasks',!tasksOn);
+  const cl=document.getElementById('nav-cal-label');if(cl)cl.textContent=calOn?'カレンダー':'ホーム';
+  const cs=document.getElementById('nav-cal-svg');if(cs)cs.innerHTML=calOn?'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>':'<path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>';
+  if(window._hlReady){ // ui.js・calendar.js の読込後だけ（const の初期化前に触らない）
+    applyAddBtnPos();
+    if(!tasksOn&&st.tab==='tasks')switchToTab('cal');
+  }
   // 機能トグルのUI状態を更新
-  ['workout','meals','sleep'].forEach(key=>{
+  ['workout','meals','sleep','calendar','tasks'].forEach(key=>{
     const track=document.getElementById(`ft-track-${key}`);
     const thumb=document.getElementById(`ft-thumb-${key}`);
     const cb=document.getElementById(`ft-toggle-${key}`);
@@ -3113,7 +3189,7 @@ const fabFloat=document.getElementById('fab-float');
 function applyAddBtnPos(){
   const pos=db.settings.addBtnPos==='bl'?'bl':'br';
   fabFloat.className='fab-float pos-'+pos;
-  fabFloat.hidden=st.tab!=='cal';
+  fabFloat.hidden=st.tab!=='cal'||db.settings.features?.calendar===false;
   document.querySelectorAll('.st-opt[data-pos]').forEach(b=>b.classList.toggle('on',b.dataset.pos===pos));
 }
 function applyLeftyMode(){
@@ -3139,7 +3215,7 @@ function updateNavActive(){
   const key=st.tab==='other'?st.otherSub:st.tab;
   document.querySelectorAll('.dr-item[data-go]').forEach(b=>b.classList.toggle('on',b.dataset.go===key));
   document.getElementById('hdr-title').textContent=st.tab==='cal'?'LifeHub':st.tab==='tasks'?'タスク':(SCREEN_TITLES[st.otherSub]||'LifeHub');
-  fabFloat.hidden=st.tab!=='cal';
+  fabFloat.hidden=st.tab!=='cal'||db.settings.features?.calendar===false;
 }
 const SCREEN_TITLES={wo:'トレーニング',meals:'食事',sleep:'睡眠',health:'健康'};
 const drawerEl=document.getElementById('drawer'),drawerOv=document.getElementById('drawer-ov');
@@ -3154,7 +3230,7 @@ function openDrawer(){
   document.getElementById('dr-acct-name').textContent=active.name;
   drawerEl.classList.add('open');drawerOv.classList.add('open');fabFloat.hidden=true;
 }
-function closeDrawer(){drawerEl.classList.remove('open');drawerOv.classList.remove('open');fabFloat.hidden=st.tab!=='cal';}
+function closeDrawer(){drawerEl.classList.remove('open');drawerOv.classList.remove('open');fabFloat.hidden=st.tab!=='cal'||db.settings.features?.calendar===false;}
 document.getElementById('hdr-menu').onclick=openDrawer;
 drawerOv.onclick=closeDrawer;
 document.getElementById('hdr-title').onclick=()=>switchToTab('cal');
@@ -4679,7 +4755,7 @@ document.getElementById('supp-save').onclick=()=>{
   renderSuppList();
 };
 // 機能トグルハンドラ
-['workout','meals','sleep'].forEach(key=>{
+['workout','meals','sleep','calendar','tasks'].forEach(key=>{
   document.getElementById(`ft-toggle-${key}`)?.addEventListener('change',function(){
     if(!db.settings.features)db.settings.features={workout:true,meals:true,sleep:true};
     db.settings.features[key]=this.checked;
@@ -5129,6 +5205,7 @@ const WORKER_URL='https://lifehub-ai.y-atsuhisa7234.workers.dev';
 // x: Anthropic 形式の応答 {error:{type,message}} / Error / 文字列。残高切れ・混雑のときだけ案内文を返し、それ以外は null
 function aiErrorKind(x){
   const s=typeof x==='string'?x:[x?.error?.message,x?.error?.type,x?.message,x?.code].filter(Boolean).join(' ');
+  if(/ai_consent_required/i.test(s))return 'consent';
   if(/daily_budget_exceeded|daily AI budget/i.test(s))return 'budget';
   if(/credit balance|purchase credits|billing/i.test(s))return 'credit';
   if(/overloaded|rate_limit|rate limit|429|529|混み合/i.test(s))return 'busy';
@@ -5138,6 +5215,7 @@ function aiErrorText(x){
   const k=aiErrorKind(x);
   if(k==='credit')return 'ごめん、今AIが使えない状態になってる（運営側のAI利用枠が切れた）。直るまで少し待ってね。記録はいつも通りできるよ';
   if(k==='busy')return 'AIが混み合ってる。少し時間をおいてもう一度試してね';
+  if(k==='consent')return 'AIを使うには最初に確認が必要だよ。設定の「AIの利用」から同意できる';
   if(k==='budget')return '今日のAI利用枠を使い切った。明日になったらまた使えるよ（記録はいつも通りできる）';
   return null;
 }
@@ -5153,7 +5231,70 @@ const CHARS={
   kota:{name:'コタ',role:'おっとり伴走',emoji:'🐻',img:'assets/characters/06_Kota_waving.png',
     system:'あなたはコタ（おっとり伴走のクマ）です。ゆっくり丁寧で温かい口調。急かさない。「焦らなくていいよ」「続けることが一番大事」という姿勢。ユーザーのデータを使って自分ごとにする。一人称は「ぼく」。指定フォーマット厳守。日本語のみ。'},
 };
+// ── AIの利用への同意（v2.97.0・App Store 審査ガイドライン 5.1.2(i)） ──
+// 端末ごとに localStorage へ保存。未同意の間は Worker 本体（AIプロキシ）への POST を送らない
+var AI_CONSENT_KEY='lh_ai_consent';
+function aiConsented(){try{const c=JSON.parse(localStorage.getItem(AI_CONSENT_KEY)||'null');return !!(c&&c.at);}catch(e){return false;}}
+function aiSetConsent(on){try{if(on)localStorage.setItem(AI_CONSENT_KEY,JSON.stringify({v:1,at:new Date().toISOString()}));else localStorage.removeItem(AI_CONSENT_KEY);}catch(e){}}
+// 規約ページ（アプリ版でも開けるよう絶対URL。staging では staging の版を開く）
+function legalUrl(name){const base=(typeof lhIsStaging==='function'&&lhIsStaging())?'https://atsu0106.github.io/lifehub-staging':'https://atsu0106.github.io/lifehub';return base+'/legal/'+name+'.html';}
+(function(){
+  const realFetch=window.fetch;
+  window.fetch=function(u,o){
+    try{
+      const url=String(u&&u.url||u).replace(/\/+$/,'');
+      const method=String(o&&o.method||(u&&u.method)||'GET').toUpperCase();
+      if(url===WORKER_URL&&method==='POST'&&!aiConsented()){
+        return Promise.resolve(new Response(JSON.stringify({type:'error',error:{type:'ai_consent_required',message:'AI consent required'}}),{status:200,headers:{'content-type':'application/json'}}));
+      }
+    }catch(e){}
+    return realFetch.apply(this,arguments);
+  };
+})();
+var _aicPending=null;
+function aiRequireConsent(){
+  if(aiConsented())return Promise.resolve(true);
+  if(_aicPending)return _aicPending;
+  _aicPending=new Promise(resolve=>{
+    const c=(typeof getCharInfo==='function'?getCharInfo():null)||{name:'ラン',img:'assets/characters/01_Ran_pointing.png'};
+    const ov=document.createElement('div');ov.className='aic-ov';ov.id='aic-ov';
+    ov.innerHTML=`<div class="aic-sheet" role="dialog" aria-modal="true" aria-labelledby="aic-title">
+      <div class="aic-head"><img src="assets/characters/01_Ran_pointing.png" alt="" onerror="this.style.display='none'"><h3 id="aic-title">AIトレーナーを使う前に</h3></div>
+      <p class="aic-lead">ランの返事を作るために、次の内容をAIに送るよ。</p>
+      <dl class="aic-list">
+        <dt>送り先</dt><dd>Anthropic社（米国）のAI「Claude」。LifeHubのサーバーを経由して送ります</dd>
+        <dt>送る内容</dt><dd>AIに入力した文章・写真と、アプリに記録した内容（筋トレ・食事・睡眠・体重、健康プロフィール、アレルギー、目標、予定など）</dd>
+        <dt>使い道</dt><dd>返事を作るためだけに使います。送った内容がAIの学習に使われることはありません</dd>
+      </dl>
+      <p class="aic-warn">⚠️ AIの答えは医療アドバイスではありません。けが・体調・持病のことは医師に相談してください。</p>
+      <p class="aic-sub">同意しなくても、記録などAI以外の機能はすべて使えます。設定の「AIの利用」からいつでも取り消せます。<a href="${legalUrl('privacy')}" target="_blank" rel="noopener">プライバシーポリシー</a></p>
+      <button class="aic-ok" type="button">同意してAIを使う</button>
+      <button class="aic-no" type="button">今はしない</button>
+    </div>`;
+    const done=ok=>{ov.remove();_aicPending=null;if(ok){aiSetConsent(true);try{document.dispatchEvent(new Event('lh-ai-consent'));}catch(e){}}if(typeof renderAiConsentRow==='function')renderAiConsentRow();resolve(ok);};
+    ov.querySelector('.aic-ok').onclick=()=>done(true);
+    ov.querySelector('.aic-no').onclick=()=>done(false);
+    ov.addEventListener('click',e=>{if(e.target===ov)done(false);});
+    document.body.appendChild(ov);
+  });
+  return _aicPending;
+}
+// 設定: AIの利用（同意の状態・取り消し）と「このアプリについて」
+function renderAiConsentRow(){
+  const el=document.getElementById('st-ai-consent-state');if(!el)return;
+  el.textContent=aiConsented()?'同意済み':'未同意';
+}
+document.getElementById('st-ai-consent-row')?.addEventListener('click',async()=>{
+  if(aiConsented()){
+    if(!confirm('AIの利用への同意を取り消す？\n取り消すと、チャット・今日のひとことなどAIの機能は止まり、AIにデータを送らなくなるよ（記録はそのまま使える）'))return;
+    aiSetConsent(false);renderAiConsentRow();
+    const card=document.getElementById('ai-brief-card');if(card)card.hidden=true;
+  }else{await aiRequireConsent();}
+});
+['privacy','support'].forEach(n=>{const a=document.getElementById('st-link-'+n);if(a)a.href=legalUrl(n);});
+renderAiConsentRow();
 const CHANGELOG=[
+  {v:'v2.97.0',d:'AIを初めて使うときに、AIに送る内容を確認して同意する画面を追加（設定の「AIの利用」で取り消し可）。新しく始める人はカレンダーとタスクを最初は表示しない（設定の「表示する機能」でオンにできる）。設定に「このアプリについて」（プライバシーポリシー・サポート）'},
   {v:'v2.96.1',d:'AIトレーナーのチャットが、ランらしい短く力強いタメ口で話すように'},
   {v:'v2.96.0',d:'AIトレーナーの返事が速く・軽くなりました（普段は軽量モデル、💭思考モードのときだけ高性能モデル）。AIの使いすぎを防ぐため、1日の利用枠を設けました'},
   {v:'v2.95.2',d:'AIが使えないとき（混雑・利用枠の終了など）に、分かりやすい案内を出すように'},
@@ -5364,6 +5505,7 @@ async function renderHealthAdvice(force){
   const el=document.getElementById('health-advice-card');if(!el)return;
   const hp=db.settings.healthProfile||{};
   if(!hp.height&&!hp.weight&&!hp.goal){el.hidden=true;return;}
+  if(!aiConsented()){el.hidden=true;return;} // v2.97.0: 未同意ならAIに送らない
   const today=todayStr();
   const CKEY='lh_hadv_'+(window._LH_PID||'def');
   function _attachAdviceEvents(){el.querySelector('.health-advice-refresh')?.addEventListener('click',()=>renderHealthAdvice(true));el.querySelectorAll('.advice-fb-btn').forEach(btn=>btn.addEventListener('click',e=>{e.stopPropagation();saveAdviceFeedback(btn.dataset.fb);el.querySelectorAll('.advice-fb-btn').forEach(b=>{b.classList.toggle('active',b.dataset.fb===btn.dataset.fb);b.classList.toggle('good',b.dataset.fb==='good');b.classList.toggle('bad',b.dataset.fb==='bad');});}));}
@@ -5483,6 +5625,7 @@ async function _autoUpdateGoalProgress(goalId,taskTitle){
   const totalCount=linked.length;
   g.progress=Math.round(doneCount/totalCount*100);
   save(db);renderGoals();
+  if(!aiConsented())return; // v2.97.0
   try{
     const prompt=`ゴール「${g.text}」の達成進捗を判定してください。\n関連タスク: 全${totalCount}件中${doneCount}件完了\n直前に完了したタスク:「${taskTitle}」\n\n0〜100の整数のみで回答:`;
     const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:8,thinking:{type:'disabled'},system:'ゴール進捗率を0〜100の整数のみで返す。',messages:[{role:'user',content:prompt}]})});
@@ -5520,6 +5663,7 @@ function _fbAddMsg(role,text){
 async function _fbSend(){
   const inp=document.getElementById('task-fb-input');
   const text=inp.value.trim();if(!text)return;
+  if(!await aiRequireConsent())return; // v2.97.0
   inp.value='';inp.style.height='auto';
   _fbAddMsg('user',text);
   _fbMessages.push({role:'user',content:text});
@@ -5693,6 +5837,7 @@ async function estimateProgressWithAI(manual){
   if(_aiEstimating&&!manual)return;
   const workerUrl=WORKER_URL;
   if(!workerUrl)return;
+  if(!aiConsented())return; // v2.97.0
   const active=(db.tasks||[]).filter(t=>!(!t.repeat&&t.done));
   const targets=active.filter(t=>!t.repeat&&!t.done);
   if(!targets.length)return;
@@ -6641,6 +6786,7 @@ function renderAIPlanPreview(plan){
 async function runAIWeekPlan(){
   const box=document.getElementById('ai-plan-preview');const btn=document.getElementById('ai-plan-btn');
   if(!box)return;
+  if(!await aiRequireConsent())return; // v2.97.0
   box.hidden=false;box.innerHTML='<div class="aip-loading">🤖 予定を見ながらメニューを考えてるよ…（10〜20秒）</div>';
   if(btn)btn.disabled=true;
   try{renderAIPlanPreview(await generateAIWeekPlan());}
@@ -7129,6 +7275,7 @@ document.getElementById('mla-photo-input').onchange=()=>analyzePhotoMeal();
 async function analyzePhotoMeal(){
   const file=document.getElementById('mla-photo-input').files[0];
   if(!file)return;
+  if(!await aiRequireConsent()){document.getElementById('mla-photo-input').value='';return;} // v2.97.0
   const statusEl=document.getElementById('mla-photo-status');
   const btn=document.getElementById('mla-photo-btn');
   statusEl.textContent='📷 分析中...';btn.disabled=true;
@@ -7260,11 +7407,14 @@ document.getElementById('ml-next').onclick=()=>{const d=new Date(st.mlDate);d.se
       db.settings.highlightTab=hlChoice||(selected.includes('diet')&&!selected.includes('fitness')?'meals':'wo');
       const savedName=inp.value.trim()||'マイデータ';
       db.userProfile={useCase:selected,setupAt:todayStr(),name:savedName};
+      // v2.97.0: 新しく始める人はカレンダーとタスクを最初は隠す（設定の「表示する機能」でオン）
+      db.settings.features=Object.assign(db.settings.features||{},{calendar:false,tasks:false});
       if(selected.length>0)autoConfigFeatures(selected);
       save(db);
       ob.hidden=true;
       app.style.display='';
       renderProfHeader();
+      applyFeatureVisibility();
       updateHlNav();
       renderGoals();renderCal();renderTasks();renderHealthAdvice();
       if(window._showCharIntro)window._showCharIntro();
@@ -7428,7 +7578,7 @@ function calcGameStats(){
     currentSessionId=UID();
     aiHistory=[];
     const wrap=document.getElementById('ai-messages');
-    wrap.innerHTML='<div class="ai-empty"><img src="assets/characters/01_Ran_pointing.png" style="width:68px;height:68px;object-fit:contain;" onerror="this.style.display=\'none\'"><div class="ai-empty-name">AIトレーナー ラン</div><div>今日の予定・タスク・目標を把握しています。</div><div>何でも聞いてください！</div></div>';
+    wrap.innerHTML='<div class="ai-empty"><img src="assets/characters/01_Ran_pointing.png" style="width:68px;height:68px;object-fit:contain;" onerror="this.style.display=\'none\'"><div class="ai-empty-name">AIトレーナー ラン</div><div>記録や予定を見ながら、何でも相談にのるよ。</div><div class="ai-empty-note">AIの答えは医療アドバイスではありません。体調のことは医師に相談してね</div></div>';
     document.getElementById('ai-chat-title').innerHTML='<img src="assets/characters/01_Ran_pointing.png" style="width:24px;height:24px;object-fit:contain;vertical-align:middle;margin-right:6px;" onerror="this.style.display=\'none\'">AIトレーナー';
   }
   function loadSession(sess){
@@ -7996,6 +8146,7 @@ function calcGameStats(){
     const text=input.value.trim();
     const attachments=[...pendingAttachments];
     if(!text&&!attachments.length)return;
+    if(!await aiRequireConsent())return; // v2.97.0: 同意するまで送らない（入力は残す）
     input.value='';input.style.height='auto';btn.disabled=true;
     pendingAttachments=[];renderAttachPreview();
     if(!currentSessionId)currentSessionId=UID();
@@ -8188,6 +8339,7 @@ function calcGameStats(){
       card.innerHTML=`<div class="ai-brief-label">✦ AIからの今日のひとこと</div><div style="display:flex;align-items:flex-start;gap:10px;margin-top:4px;">${compIcon}<div class="ai-brief-text">${safeHtml(text)}</div></div><button class="ai-brief-refresh" title="更新">↺</button>`;
       card.querySelector('.ai-brief-refresh').onclick=()=>generateBrief(true);
     }
+    document.addEventListener('lh-ai-consent',()=>{try{generateBrief(false);}catch(e){}});
     async function generateBrief(force){
       const today=todayStr();
       if(!force){
@@ -8198,6 +8350,13 @@ function calcGameStats(){
       }
       renderCard('分析中…',true);
       if(window._DEV_MODE){renderCard('[DEVモード] AIブリーフは本番・stagingのみ動作します。');return;}
+      if(!aiConsented()){ // v2.97.0: 未同意なら送らず、受け取るボタンを出す
+        const c=getCharInfo();
+        card.hidden=false;card.className='ai-brief-card';
+        card.innerHTML=`<div class="ai-brief-label">✦ AIからの今日のひとこと</div><div class="aic-brief"><img src="${c.img}" alt="" onerror="this.style.display='none'"><div><div class="aic-brief-txt">記録に合わせて、${esc(c.name)}が毎日ひとことくれるよ。AIを使うには最初に確認が必要。</div><button class="aic-brief-btn" type="button">${esc(c.name)}のひとことを受け取る</button></div></div>`;
+        card.querySelector('.aic-brief-btn').onclick=async()=>{if(await aiRequireConsent())generateBrief(true);};
+        return;
+      }
       let ctx='';
       try{ctx=getContext();}catch(e){console.warn('[brief] getContext failed:',e);card.hidden=true;return;}
       const prompt='以下はユーザーの今日のライフデータです。\n\n'+ctx+'\n\n上記データを踏まえて、今日のユーザーへの「ひとこと」を2〜3文で書いてください。予定・タスク・筋トレ状況を絡めて、具体的に、明るく親しみやすい言葉で。余計な前置きなしで本文だけ返してください。';
@@ -8314,6 +8473,7 @@ function calcGameStats(){
         const cached=loadMissions();
         if(cached){renderMissions(cached);return;}
       }
+      if(!window._DEV_MODE&&!aiConsented())return; // v2.97.0: 未同意ならAIに送らない
       // 目標が0件（初回・未設定）→ AIを呼ばずオンボーディングミッションを表示
       const activeGoals=(db.goals||[]).filter(g=>!g.done);
       if(!activeGoals.length){
@@ -9096,6 +9256,7 @@ function openRecipeSheet(){
   el.querySelectorAll('[data-min]').forEach(b=>b.onclick=()=>{minutes=b.dataset.min;el.querySelectorAll('[data-min]').forEach(x=>x.classList.toggle('on',x===b));});
   el.querySelector('#rcp-go').onclick=async()=>{
     const go=el.querySelector('#rcp-go'),out=el.querySelector('#rcp-result');
+    if(!await aiRequireConsent())return; // v2.97.0
     go.disabled=true;out.innerHTML='<div class="lv-note">🐴 考え中…（5〜10秒）</div>';
     try{
       const r=await rcpSuggest(el.querySelector('#rcp-in').value,{minutes:minutes?+minutes:0});

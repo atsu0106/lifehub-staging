@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>プライバシーポリシー｜LifeHub</title>
+<style>
+:root{--bg:#f7f7fb;--fg:#1f2330;--fg2:#5b6070;--card:#fff;--line:#e4e6ee;--accent:#4f46e5;--warn:#fff7e6;}
+@media (prefers-color-scheme:dark){:root{--bg:#12131a;--fg:#eceef5;--fg2:#a3a8b8;--card:#1c1e27;--line:#2c2f3b;--accent:#8b85ff;--warn:#2b2516;}}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;line-height:1.8;font-size:15px;}
+main{max-width:760px;margin:0 auto;padding:24px 16px 48px;}
+h1{font-size:22px;margin:0 0 4px;}
+h2{font-size:17px;margin:28px 0 8px;padding-top:12px;border-top:1px solid var(--line);}
+.meta{color:var(--fg2);font-size:13px;margin:0 0 20px;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0;}
+.todo{background:var(--warn);border-radius:8px;padding:2px 6px;}
+table{width:100%;border-collapse:collapse;font-size:14px;}
+th,td{border:1px solid var(--line);padding:8px;text-align:left;vertical-align:top;}
+th{background:var(--card);}
+a{color:var(--accent);}
+ul{padding-left:1.3em;}
+</style>
+</head>
+<body>
+<main>
+<h1>プライバシーポリシー</h1>
+<p class="meta">LifeHub（以下「本アプリ」）／制定日: 2026年11月22日</p>
+
+<p>本アプリの運営者（以下「運営者」）は、利用者の情報を次のとおり取り扱います。本アプリは<strong>アカウント登録なし</strong>で使え、記録したデータは原則として<strong>利用者の端末の中だけ</strong>に保存されます。</p>
+
+<h2>1. 端末の中に保存する情報</h2>
+<p>筋トレ・食事・睡眠・体重などの記録、健康プロフィール（身長・体重・年齢・目標・アレルギー・苦手な食材）、目標、予定、タスク、写真、AIとの会話履歴、動画の評価・コメント、設定は、利用者の端末（ブラウザまたはアプリの保存領域）に保存されます。運営者のサーバーには保存しません。</p>
+
+<h2>2. 外部に送る情報</h2>
+<table>
+<tr><th>いつ</th><th>送る情報</th><th>送り先</th></tr>
+<tr><td>AIの機能を使うとき（チャット、今日のひとこと、食事写真の分析、食材からメニュー、週間プランナーのAIなど）。<strong>アプリ内で同意した場合のみ</strong></td><td>入力した文章・写真と、返事を作るのに必要な記録（筋トレ・食事・睡眠・体重、健康プロフィール、アレルギー、目標、予定など）</td><td>Anthropic, PBC（米国）のAI「Claude」。運営者のサーバー（Cloudflare Workers）を経由します</td></tr>
+<tr><td>動画のおすすめ・検索・プレイリストの読み込み</td><td>検索する言葉、動画やプレイリストのID</td><td>YouTube（Google LLC・米国）。運営者のサーバーを経由します</td></tr>
+<tr><td>動画に👍/👎・コメントを付けたとき、動画を見たとき</td><td>動画ID、評価、コメント（200字まで）、見た回数</td><td>運営者のサーバー（Cloudflare D1）に<strong>匿名で</strong>保存</td></tr>
+</table>
+<p>氏名・メールアドレス・電話番号・位置情報・広告ID は取得しません。広告や行動追跡（トラッキング）のためのツールは使っていません。</p>
+
+<h2>3. 利用目的</h2>
+<ul>
+<li>AIの返事・提案を作るため</li>
+<li>動画のおすすめ・検索のため</li>
+<li>動画のおすすめの質を上げるため（匿名の評価・見た回数の集計）、本アプリの改善のため（匿名のコメントは運営者とAIの分析だけに使い、他の利用者には表示しません）</li>
+<li>不正利用の防止のため</li>
+</ul>
+
+<h2>4. AI（Anthropic）について</h2>
+<div class="card">
+<ul>
+<li>AIへの送信は、アプリ内の確認画面で同意した場合のみ行います。同意は設定の「AIの利用」からいつでも取り消せます。取り消すとAIへの送信は止まり、AI以外の機能はそのまま使えます。</li>
+<li>Anthropic社は、APIで受け取った内容をAIの学習に使いません。内容は同社の規約に基づき、不正利用の監視などのため一定期間保存されたあと削除されます。詳しくは <a href="https://www.anthropic.com/legal/privacy" target="_blank" rel="noopener">Anthropic のプライバシーポリシー</a> をご覧ください。</li>
+<li>運営者のサーバーは、AIに送った内容を保存しません。費用の管理のため、日ごとの利用回数・文字量（トークン数）・金額の合計だけを記録します（利用者ごとの記録はしません）。</li>
+<li>AIの答えは医療アドバイスではありません。けが・体調・持病については医師に相談してください。</li>
+</ul>
+</div>
+
+<h2>5. YouTube API Services について</h2>
+<p>本アプリは動画の検索・表示に YouTube API Services を使っています。本アプリの動画機能を使うことで、<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube 利用規約</a>に同意したものとみなされます。YouTube（Google）による情報の取り扱いは <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google プライバシーポリシー</a> をご覧ください。</p>
+<p>本アプリは利用者の Google アカウントにはアクセスしません。YouTube から取得した動画の情報（タイトル・サムネイルなど）は、最長30日で更新または削除します。</p>
+
+<h2>6. 外国にある第三者への提供</h2>
+<p>AIの機能を使う場合、情報は米国の Anthropic, PBC に送られます。米国の個人情報保護制度については、<a href="https://www.ppc.go.jp/personalinfo/legal/kaiseihogohou/#gaikoku" target="_blank" rel="noopener">個人情報保護委員会が公表している情報</a>をご覧ください。Anthropic社は、同社のプライバシーポリシーに基づいて情報を安全に管理する措置をとっています。</p>
+<p>運営者のサーバーは Cloudflare, Inc.（米国）、ウェブ版の配信は GitHub, Inc.（米国）のサービスを使っています。</p>
+
+<h2>7. 保存期間</h2>
+<ul>
+<li>端末の中のデータ: 利用者が削除するまで</li>
+<li>匿名の動画の評価・コメント: 180日で削除</li>
+<li>動画ごと・日ごとの匿名の集計: 30日で削除</li>
+<li>不正利用防止のための回数制限: IPアドレスを短時間だけ使い、保存しません</li>
+</ul>
+
+<h2>8. データの削除</h2>
+<p>設定の「全データを削除」で、端末の中のデータをすべて削除できます。アプリを削除した場合も端末の中のデータは消えます。運営者のサーバーにある動画の評価・コメントは匿名で、利用者と結び付けられないため、個別には削除できません（180日で自動的に削除されます）。</p>
+
+<h2>9. 未成年の方へ</h2>
+<p>16歳未満の方は、保護者の同意を得てから本アプリを使ってください。</p>
+
+<h2>10. 変更</h2>
+<p>本ポリシーを変更する場合は、このページとアプリ内のお知らせでお知らせします。</p>
+
+<h2>11. お問い合わせ</h2>
+<p>運営者: <span class="todo">（App Store の登録名が決まり次第記入）</span><br>
+連絡先: <span class="todo">（専用のメールアドレスを作成後に記入）</span><br>
+<a href="support.html">サポートページ</a></p>
+</main>
+</body>
+</html>
