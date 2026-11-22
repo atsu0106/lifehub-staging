@@ -1393,6 +1393,33 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 .unlock-img{width:72px;height:72px;object-fit:contain;}
 .unlock-lv{font-weight:700;color:var(--accent);}
 .unlock-sub{font-size:12px!important;color:var(--fg3);margin-bottom:14px!important;}
+
+/* ── v2.100.0 ストイックモード（赤と黒） ── */
+:root[data-stoic]{--bg:#000;--surface:#0c0c0c;--surface2:#171717;--fg:#F2F2F2;--fg2:#A3A3A3;--fg3:#5C5C5C;--accent:#E11D2E;--accent-bg:#2A070B;--accent-fg:#FF5A66;--border:#262626;--ok:#E11D2E;--shadow:none;color-scheme:dark;}
+:root[data-stoic] body{background:#000;}
+:root[data-stoic] #tab-cal.on{display:flex;flex-direction:column;}
+:root[data-stoic] #tab-cal>*{order:1;}
+:root[data-stoic] #stoic-today{order:0;}
+:root[data-stoic] #ai-brief-card{order:3;background:transparent;border:0;border-top:1px solid var(--border);border-radius:0;box-shadow:none;}
+:root[data-stoic] #ai-brief-card img,:root[data-stoic] #ai-fab img,:root[data-stoic] .ai-empty img,:root[data-stoic] .ran-inline-img,:root[data-stoic] #ai-chat-title img,:root[data-stoic] .aic-head img{display:none!important;}
+:root[data-stoic] #daily-mission-card,:root[data-stoic] #streak-card,:root[data-stoic] #goal-card,:root[data-stoic] #health-advice-card,:root[data-stoic] #trend-card,:root[data-stoic] #training-start-btn,:root[data-stoic] .training-schedule-btn,:root[data-stoic] #home-tasks-card,:root[data-stoic] #ml-video-card,:root[data-stoic] #sl-video-card,
+:root[data-stoic] #tab-cal .cal-toolbar,:root[data-stoic] #tab-cal .cal-search-row,:root[data-stoic] #cal-filter-row,:root[data-stoic] #cal-grid,:root[data-stoic] #week-view,:root[data-stoic] #search-results,:root[data-stoic] #day-lbl,:root[data-stoic] #ev-list,:root[data-stoic] #clarify-view,:root[data-stoic] #clarify-tasks,:root[data-stoic] #fab-float{display:none!important;}
+:root[data-stoic] .ai-fab{background:#E11D2E;box-shadow:none;}
+:root[data-stoic] .hdr-logo{color:#F2F2F2;}
+.stoic-today{padding:18px 16px 8px;}
+.sk-head{display:flex;justify-content:space-between;align-items:baseline;}
+.sk-title{font-size:20px;font-weight:800;letter-spacing:.02em;color:var(--fg);}
+.sk-count{font-size:14px;color:var(--fg2);} .sk-count b{color:var(--accent);font-size:18px;}
+.sk-bar{height:4px;background:var(--surface2);border-radius:2px;margin:10px 0 4px;overflow:hidden;}
+.sk-bar i{display:block;height:100%;background:var(--accent);transition:width .3s;}
+.sk-item{display:flex;align-items:center;gap:12px;width:100%;padding:14px 2px;background:none;border:0;border-bottom:1px solid var(--border);color:var(--fg);font:inherit;font-size:15px;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.sk-item:last-child{border-bottom:0;}
+.sk-dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--fg3);flex-shrink:0;box-sizing:border-box;position:relative;}
+.sk-item.done .sk-dot{background:var(--accent);border-color:var(--accent);}
+.sk-item.done .sk-dot::after{content:'';position:absolute;left:5px;top:1px;width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);}
+.sk-item.done .sk-txt{color:var(--fg3);}
+.sk-txt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sk-sub{font-size:12px;color:var(--fg2);flex-shrink:0;}
 </style>
 </head>
 <body>
@@ -1473,6 +1500,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
   </header>
 
   <section id="tab-cal" class="tab on">
+    <div id="stoic-today" class="card stoic-today" hidden></div>
     <div id="ai-brief-card" class="ai-brief-card" hidden></div>
     <div id="daily-mission-card" class="daily-mission-card" hidden></div>
     <div id="streak-card" class="card streak-card" hidden></div>
@@ -1910,6 +1938,18 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
       <div class="st-sec">外観</div>
       <div class="st-card">
         <div class="st-row st-row-toggle">
+          <span class="st-ic" style="background:#111;">⬛</span>
+          <div style="flex:1;">
+            <div class="st-label">ストイックモード</div>
+            <div style="font-size:11px;color:var(--fg3);margin-top:1px;">赤と黒の画面で「今日やること」だけ。キャラ・連続記録・おすすめ動画を隠す</div>
+          </div>
+          <label class="st-toggle">
+            <input type="checkbox" id="st-stoic-toggle" style="opacity:0;width:0;height:0;">
+            <span id="st-stoic-track" class="st-toggle-track" style="background:var(--border);"></span>
+            <span id="st-stoic-thumb" class="st-toggle-thumb" style="left:3px;"></span>
+          </label>
+        </div>
+        <div class="st-row st-row-toggle">
           <span class="st-ic" style="background:#6366f1;">🎨</span>
           <span class="st-label">テーマ</span>
           <div class="st-opts" style="gap:4px;">
@@ -2210,7 +2250,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         <div class="st-about-note">動画の検索・表示に YouTube API Services を使っています。<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube利用規約</a>・<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Googleプライバシーポリシー</a>が適用されます。AIの答えは医療アドバイスではありません。</div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.99.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.100.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -2805,7 +2845,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='649ea7ff48'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='835ed65fb9'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -3172,8 +3212,9 @@ function applyFeatureVisibility(){
   document.body.classList.toggle('no-tasks',!tasksOn);
   document.body.classList.toggle('no-health-extra',f.healthExtra!==true);
   document.body.classList.toggle('no-profiles',f.profiles===false);
-  const cl=document.getElementById('nav-cal-label');if(cl)cl.textContent=calOn?'カレンダー':'ホーム';
-  const cs=document.getElementById('nav-cal-svg');if(cs)cs.innerHTML=calOn?'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>':'<path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>';
+  const calLbl=calOn&&!db.settings.stoic; // v2.100.0: ストイックではカレンダーを出さない
+  const cl=document.getElementById('nav-cal-label');if(cl)cl.textContent=calLbl?'カレンダー':'ホーム';
+  const cs=document.getElementById('nav-cal-svg');if(cs)cs.innerHTML=calLbl?'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>':'<path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>';
   if(window._hlReady){ // ui.js・calendar.js の読込後だけ（const の初期化前に触らない）
     applyAddBtnPos();
     if(!tasksOn&&st.tab==='tasks')switchToTab('cal');
@@ -3297,7 +3338,7 @@ function switchToTab(t){
   tabEl.classList.add('on');
   tabEl.scrollTop=0;
   updateNavActive();
-  if(t==='cal'){renderGoals();renderCal();renderHealthAdvice();if(typeof renderTrendCard==='function')renderTrendCard();if(typeof lhCheckUnlocks==='function')setTimeout(lhCheckUnlocks,600);}
+  if(t==='cal'){renderGoals();renderCal();renderHealthAdvice();if(typeof renderTrendCard==='function')renderTrendCard();if(typeof lhCheckUnlocks==='function')setTimeout(lhCheckUnlocks,600);if(typeof renderStoicToday==='function')renderStoicToday();}
   if(t==='tasks')renderTasks();
   if(t==='other')renderOther();
 }
@@ -4191,6 +4232,7 @@ document.querySelectorAll('.st-opt[data-cal]').forEach(btn=>{
   };
 });
 function applyTheme(theme){
+  if(db.settings&&db.settings.stoic)theme='dark'; // v2.100.0 ストイックモード
   if(theme==='light')document.documentElement.setAttribute('data-theme','light');
   else if(theme==='dark')document.documentElement.setAttribute('data-theme','dark');
   else document.documentElement.removeAttribute('data-theme');
@@ -5331,6 +5373,7 @@ document.getElementById('st-ai-consent-row')?.addEventListener('click',async()=>
 ['privacy','support'].forEach(n=>{const a=document.getElementById('st-link-'+n);if(a)a.href=legalUrl(n);});
 renderAiConsentRow();
 const CHANGELOG=[
+  {v:'v2.100.0',d:'⬛ ストイックモード（設定 → 外観）。赤と黒の画面で「今日やること」だけに集中。キャラ・連続記録・ミッション・おすすめ動画を隠し、AIは事実と数字だけで話す'},
   {v:'v2.99.0',d:'アプリの名前を「LifeWith」に変えました（記録・設定はそのまま）'},
   {v:'v2.98.0',d:'新しく始める人は、レベル・ミッション・バッジが記録した日数で解放されるように（3日でレベル、7日でミッションとバッジ）。歩数・心拍・血圧の手入力と、複数のプロフィール・パスコードは設定の「表示する機能」へ'},
   {v:'v2.97.0',d:'AIを初めて使うときに、AIに送る内容を確認して同意する画面を追加（設定の「AIの利用」で取り消し可）。新しく始める人はカレンダーとタスクを最初は表示しない（設定の「表示する機能」でオンにできる）。設定に「このアプリについて」（プライバシーポリシー・サポート）'},
@@ -5545,6 +5588,7 @@ async function renderHealthAdvice(force){
   const hp=db.settings.healthProfile||{};
   if(!hp.height&&!hp.weight&&!hp.goal){el.hidden=true;return;}
   if(!aiConsented()){el.hidden=true;return;} // v2.97.0: 未同意ならAIに送らない
+  if(lhStoic()){el.hidden=true;return;} // v2.100.0
   const today=todayStr();
   const CKEY='lh_hadv_'+(window._LH_PID||'def');
   function _attachAdviceEvents(){el.querySelector('.health-advice-refresh')?.addEventListener('click',()=>renderHealthAdvice(true));el.querySelectorAll('.advice-fb-btn').forEach(btn=>btn.addEventListener('click',e=>{e.stopPropagation();saveAdviceFeedback(btn.dataset.fb);el.querySelectorAll('.advice-fb-btn').forEach(b=>{b.classList.toggle('active',b.dataset.fb===btn.dataset.fb);b.classList.toggle('good',b.dataset.fb==='good');b.classList.toggle('bad',b.dataset.fb==='bad');});}));}
@@ -8203,7 +8247,7 @@ function calcGameStats(){
       } else {
         const workerUrl=WORKER_URL;
         // v2.96.0: 固定の指示（キャッシュする）と、毎回変わるユーザーデータを分ける
-        const system=[{type:'text',text:'あなたはLifeWithのAIトレーナー「ラン」（熱血コーチのウマ）です。\n\n【話し方（必ず守る）】\n・タメ口で話す。です・ます調は使わない\n・短く力強く。言葉は少なく、本質をつく\n・ユーザーを信頼して、前向きに背中を押す。説教くさくしない\n・健康や医療の大事な注意は、タメ口のまま正確に伝える\n\n【LifeWithの全機能（必ず把握すること）】\nLifeWithは以下の全機能を持つ総合生活管理アプリです：\n・📅 カレンダー: 予定の追加・編集・削除・繰り返し予定・複数カレンダー\n・✅ タスク管理: 追加・完了・編集・削除・優先度・期限・繰り返し・目標連携\n・🍱 食事記録: 朝食・昼食・夕食・間食の記録、カロリー・栄養素管理（log_mealツールで記録可能）\n・💪 筋トレ記録: 種目・セット数・重量・有酸素運動の記録、グラフ分析（log_workoutツールで記録可能）\n・😴 睡眠記録: 就寝・起床時刻、昼寝の記録（log_sleepツールで記録可能）\n・❤️ 健康データ: 体重・体脂肪率・歩数・心拍数・血圧・水分摂取量（log_healthツールで記録可能）\n・🎯 目標管理: 目標追加・進捗更新・達成済みマーク\n・🎮 ゲームステータス: XP・レベル・称号・実績バッジ\n・🤖 AI機能: デイリーブリーフ・ミッション生成・AIチャット（現在使用中）\n\nこれらすべての機能を持つアプリです。「○○の機能はない」と絶対に言わないでください。\n\nユーザーの生活データを把握しており、日本語でアドバイスします。ツールを使って全機能のデータを読み書きできます。\n\n【ツール使用のルール（最重要）】\nツールは、ユーザーが「追加して」「記録して」「変更して」「削除して」「入力して」など、明示的に操作を指示した場合のみ使用してください。ユーザーの意図を推測して自主的にツールを呼び出さないでください。ユーザーが話してくれた内容（例: 筋トレをした、ご飯を食べた）でも、「記録する？」と一度確認してから、OKをもらった後にツールを呼び出してください。\n\n【XP哲学】\nXPは「人生の充実」への報酬。努力・達成だけでなく、幸せな体験・発見・成長にも与える。LifeWithはユーザーの人生をゲーム化し、充実した人生を送るための相棒である。\n\n【award_event_xp — 過去の予定へのXP】\n過去の予定でaiXpが付いていないものがあれば、会話の流れで自然に「どうだった？」と聞き出し付与する。\n目安: 国試=5000〜10000、CBT/OSCE=1000〜3000、定期試験=40〜100、難しい実習=30〜80、授業=5〜15、日常予定=5〜20、楽しい遊び=1〜5。\nユーザーの申告より予定の実態を優先。\n\n【award_xp — 体験・幸せへのXP（新機能）】\nユーザーが以下を話してくれたときは自然に聞き出し award_xp を使う:\n・美味しいご飯や新しいお店を発見した → food: 3〜10\n・旅行・新しい場所に行った → travel: 20〜100（特別な場所は100以上も可。旅行の目的地1か所ごとに付与）\n・新しいことを学んだ・理解が深まった → learning: 5〜30\n・感動・喜び・楽しかった体験 → joy: 5〜20\n・初めての挑戦・体験 → challenge: 10〜30\nポイント: 目標が「旅行をたくさんしたい」なら旅行で働いてお金を貯めること（タスク）も目標連動XP対象。旅行先1か所訪問は award_xp(travel)で記録する。\n\n【回答フォーマットのルール】\n・適切な場所で改行を入れ、読みやすくする\n・複数の内容がある場合は箇条書き（・）を使う\n・句読点（。、）を正しく使い、文章を短く区切る\n・何を言いたいか一目でわかるよう、結論や要点を最初に書く\n・長くなりすぎず、必要な情報に絞って答える\n\n',cache_control:{type:'ephemeral'}},{type:'text',text:'【ユーザーのデータ】\n'+getContext()}];
+        const system=[{type:'text',text:(lhStoic()?'あなたはLifeWithのAIトレーナーです（キャラクターは演じない）。\n\n【話し方（必ず守る）】\n・短く、事実と数字を中心に答える\n・絵文字・感嘆符・決まり文句の励ましは使わない\n・です・ます調で簡潔に。前置きはしない\n・健康や医療の大事な注意は正確に伝える\n\n':'あなたはLifeWithのAIトレーナー「ラン」（熱血コーチのウマ）です。\n\n【話し方（必ず守る）】\n・タメ口で話す。です・ます調は使わない\n・短く力強く。言葉は少なく、本質をつく\n・ユーザーを信頼して、前向きに背中を押す。説教くさくしない\n・健康や医療の大事な注意は、タメ口のまま正確に伝える\n\n')+'【LifeWithの全機能（必ず把握すること）】\nLifeWithは以下の全機能を持つ総合生活管理アプリです：\n・📅 カレンダー: 予定の追加・編集・削除・繰り返し予定・複数カレンダー\n・✅ タスク管理: 追加・完了・編集・削除・優先度・期限・繰り返し・目標連携\n・🍱 食事記録: 朝食・昼食・夕食・間食の記録、カロリー・栄養素管理（log_mealツールで記録可能）\n・💪 筋トレ記録: 種目・セット数・重量・有酸素運動の記録、グラフ分析（log_workoutツールで記録可能）\n・😴 睡眠記録: 就寝・起床時刻、昼寝の記録（log_sleepツールで記録可能）\n・❤️ 健康データ: 体重・体脂肪率・歩数・心拍数・血圧・水分摂取量（log_healthツールで記録可能）\n・🎯 目標管理: 目標追加・進捗更新・達成済みマーク\n・🎮 ゲームステータス: XP・レベル・称号・実績バッジ\n・🤖 AI機能: デイリーブリーフ・ミッション生成・AIチャット（現在使用中）\n\nこれらすべての機能を持つアプリです。「○○の機能はない」と絶対に言わないでください。\n\nユーザーの生活データを把握しており、日本語でアドバイスします。ツールを使って全機能のデータを読み書きできます。\n\n【ツール使用のルール（最重要）】\nツールは、ユーザーが「追加して」「記録して」「変更して」「削除して」「入力して」など、明示的に操作を指示した場合のみ使用してください。ユーザーの意図を推測して自主的にツールを呼び出さないでください。ユーザーが話してくれた内容（例: 筋トレをした、ご飯を食べた）でも、「記録する？」と一度確認してから、OKをもらった後にツールを呼び出してください。\n\n【XP哲学】\nXPは「人生の充実」への報酬。努力・達成だけでなく、幸せな体験・発見・成長にも与える。LifeWithはユーザーの人生をゲーム化し、充実した人生を送るための相棒である。\n\n【award_event_xp — 過去の予定へのXP】\n過去の予定でaiXpが付いていないものがあれば、会話の流れで自然に「どうだった？」と聞き出し付与する。\n目安: 国試=5000〜10000、CBT/OSCE=1000〜3000、定期試験=40〜100、難しい実習=30〜80、授業=5〜15、日常予定=5〜20、楽しい遊び=1〜5。\nユーザーの申告より予定の実態を優先。\n\n【award_xp — 体験・幸せへのXP（新機能）】\nユーザーが以下を話してくれたときは自然に聞き出し award_xp を使う:\n・美味しいご飯や新しいお店を発見した → food: 3〜10\n・旅行・新しい場所に行った → travel: 20〜100（特別な場所は100以上も可。旅行の目的地1か所ごとに付与）\n・新しいことを学んだ・理解が深まった → learning: 5〜30\n・感動・喜び・楽しかった体験 → joy: 5〜20\n・初めての挑戦・体験 → challenge: 10〜30\nポイント: 目標が「旅行をたくさんしたい」なら旅行で働いてお金を貯めること（タスク）も目標連動XP対象。旅行先1か所訪問は award_xp(travel)で記録する。\n\n【回答フォーマットのルール】\n・適切な場所で改行を入れ、読みやすくする\n・複数の内容がある場合は箇条書き（・）を使う\n・句読点（。、）を正しく使い、文章を短く区切る\n・何を言いたいか一目でわかるよう、結論や要点を最初に書く\n・長くなりすぎず、必要な情報に絞って答える\n\n',cache_control:{type:'ephemeral'}},{type:'text',text:'【ユーザーのデータ】\n'+getContext()}];
         const apiMessages=aiHistory.slice(0,-2).filter(m=>m.role==='user'||m.role==='assistant').map(m=>({role:m.role,content:m.content}));
         const userContent=buildApiContent(text,attachments);
         apiMessages.push({role:'user',content:userContent});
@@ -8381,12 +8425,13 @@ function calcGameStats(){
       card.querySelector('.ai-brief-refresh').onclick=()=>generateBrief(true);
     }
     document.addEventListener('lh-ai-consent',()=>{try{generateBrief(false);}catch(e){}});
+    document.addEventListener('lh-stoic',()=>{try{generateBrief(false);}catch(e){}});
     async function generateBrief(force){
       const today=todayStr();
       if(!force){
         try{
           const cached=JSON.parse(localStorage.getItem(BRIEF_KEY)||'null');
-          if(cached&&cached.date===today&&isComplete(cached.text)){renderCard(cached.text);return;}
+          if(cached&&cached.date===today&&!!cached.stoic===lhStoic()&&isComplete(cached.text)){renderCard(cached.text);return;}
         }catch{}
       }
       renderCard('分析中…',true);
@@ -8401,7 +8446,9 @@ function calcGameStats(){
       let ctx='';
       try{ctx=getContext();}catch(e){console.warn('[brief] getContext failed:',e);card.hidden=true;return;}
       const prompt='以下はユーザーの今日のライフデータです。\n\n'+ctx+'\n\n上記データを踏まえて、今日のユーザーへの「ひとこと」を2〜3文で書いてください。予定・タスク・筋トレ状況を絡めて、具体的に、明るく親しみやすい言葉で。余計な前置きなしで本文だけ返してください。';
-      const body=JSON.stringify({model:'claude-haiku-5-5',max_tokens:400,thinking:{type:'disabled'},system:'あなたはLifeWithのAIアシスタントです。ユーザーの生活データを把握している、身近な友達のような存在です。です・ます調は使わず、自然でやわらかいタメ口の日本語で短く話します。',messages:[{role:'user',content:prompt}]});
+      const stoicBrief=lhStoic(); // v2.100.0: ストイックは事実と数字だけ・1〜2文
+      const promptX=stoicBrief?'以下はユーザーの今日のライフデータです。\n\n'+ctx+'\n\n今日やるべきことを、事実と数字だけで1〜2文、合計60字以内で書いてください。励ましの言葉・絵文字・感嘆符は使わない。本文だけ返してください。':prompt;
+      const body=JSON.stringify({model:'claude-haiku-5-5',max_tokens:400,thinking:{type:'disabled'},system:stoicBrief?'あなたはLifeWithのAIトレーナーです。キャラクターは演じず、事実と数字だけを簡潔な常体の日本語で伝えます。':'あなたはLifeWithのAIアシスタントです。ユーザーの生活データを把握している、身近な友達のような存在です。です・ます調は使わず、自然でやわらかいタメ口の日本語で短く話します。',messages:[{role:'user',content:promptX}]});
       let lastErr='';
       // Workerは上流のエラー（混雑・回数制限）もHTTP 200で返すため、本文の有無で成否を判定する
       for(let attempt=0;attempt<3;attempt++){
@@ -8415,7 +8462,7 @@ function calcGameStats(){
             text=end>0?text.slice(0,end+1):text+'…';
           }
           if(res.ok&&text){
-            try{localStorage.setItem(BRIEF_KEY,JSON.stringify({date:today,text}));}catch{}
+            try{localStorage.setItem(BRIEF_KEY,JSON.stringify({date:today,text,stoic:lhStoic()}));}catch{}
             renderCard(text);
             return;
           }
@@ -8511,6 +8558,7 @@ function calcGameStats(){
     window._lhRenderMissions=()=>generateMissions(false);
     async function generateMissions(force){
       if(!lhUnlocked('missions'))return; // v2.98.0: 記録した日が7日で解放
+      if(lhStoic())return; // v2.100.0
       const today=todayStr();
       if(!force){
         const cached=loadMissions();
@@ -8789,7 +8837,7 @@ function _lvFetch(key,q,n){
 async function renderLifeVideoCard(elId,topic,opts){
   const el=document.getElementById(elId);if(!el)return;
   el.dataset.token=''; // 取得中の古い結果を書き込ませない
-  if(!topic){el.hidden=true;return;}
+  if(!topic||lhStoic()){el.hidden=true;return;} // v2.100.0: ストイックはおすすめ動画を出さない
   el.hidden=false;
   if(opts&&opts.night){
     el.innerHTML=_lvHead('ランのおすすめ動画')+`<div class="lv-note">🌙 寝る前の動画は眠りを浅くする。今日はもう休め。おすすめは朝に出す</div>`;
@@ -8841,7 +8889,7 @@ async function _trendLoad(){
 
 async function renderTrendCard(){
   const el=document.getElementById('trend-card');if(!el)return;
-  if(db.settings.hideTrend){el.hidden=true;return;}
+  if(db.settings.hideTrend||lhStoic()){el.hidden=true;return;}
   if(window._DEV_MODE){el.hidden=true;return;}
   const d=await _trendLoad();
   if(!d){el.hidden=true;return;}
@@ -9646,6 +9694,7 @@ async function shareCanvas(canvas,text){
 
 function checkLevelUp(){
   if(typeof lhUnlocked==='function'&&!lhUnlocked('level'))return; // v2.98.0
+  if(lhStoic())return; // v2.100.0
   const g=calcGameStats();
   let last=1;try{last=parseInt(localStorage.getItem('lh_last_level')||'1');}catch{}
   if(g.level<=last)return;
@@ -9781,7 +9830,7 @@ function lhShowUnlock(rule){
 // 解放の条件を満たしたら解放して知らせる（1回に1つずつ）
 function lhCheckUnlocks(){
   const u=db.settings&&db.settings.unlocks;
-  if(!u)return;
+  if(!u||lhStoic())return; // v2.100.0: ストイックでは解放の演出を出さない（解放はオフに戻したとき）
   if(document.getElementById('onboarding')&&!document.getElementById('onboarding').hidden)return;
   if(document.querySelector('.unlock-ov,#aic-ov'))return;
   const n=lhRecordDays();
@@ -9795,6 +9844,66 @@ function lhCheckUnlocks(){
 }
 lhApplyUnlocks();
 setTimeout(lhCheckUnlocks,2500);
+// ── ストイックモード（v2.100.0） ──
+// db.settings.stoic=true で、赤と黒だけの画面・「今日やること」が主役・キャラとゲーム要素を隠す
+function lhStoic(){return !!(db.settings&&db.settings.stoic);}
+function _skYesterday(){const d=new Date(todayStr()+'T00:00:00');d.setDate(d.getDate()-1);return fmt(d);}
+function _skGo(sub,after){st.otherSub=sub;switchToTab('other');if(after)setTimeout(after,250);}
+// 今日やること（記録の有無で自動チェック）
+function stoicTodayItems(){
+  const t=todayStr(),f=db.settings.features||{},items=[];
+  if(f.workout!==false){
+    const menu=(db.trainingMenus||{})[t];
+    const title=menu?String(menu).split('\n')[0].replace(/^[#\s・-]+/,'').slice(0,24):'';
+    const n=(db.workouts?.[t]||[]).length;
+    items.push({k:'wo',label:title?`トレーニング：${title}`:'トレーニング',sub:n?`${n}種目`:(menu?'':'メニュー未定'),done:n>0,go:()=>{if(menu&&typeof startTraining==='function')startTraining();else _skGo('wo');}});
+  }
+  if(f.meals!==false){
+    [['breakfast','朝食'],['lunch','昼食'],['dinner','夕食']].forEach(([k,l])=>{
+      const arr=db.meals?.[t]?.[k]||[];
+      const kcal=arr.reduce((s,x)=>s+(+x.kcal||0),0);
+      items.push({k:'meal-'+k,label:`${l}を記録`,sub:arr.length?(kcal?`${kcal}kcal`:`${arr.length}品`):'',done:arr.length>0,go:()=>{st.mlDate=t;_skGo('meals',()=>{if(typeof openMlAdd==='function')openMlAdd(k);});}});
+    });
+  }
+  const w=db.health?.[t]?.weight;
+  items.push({k:'weight',label:'体重を記録',sub:w?`${w}kg`:'',done:!!w,go:()=>_skGo('health')});
+  if(f.sleep!==false){
+    const y=_skYesterday(),s=db.sleep?.[y]||{};
+    items.push({k:'sleep',label:'昨日の睡眠を記録',sub:s.bedtime&&s.wakeTime?`${s.bedtime}–${s.wakeTime}`:'',done:!!(s.bedtime&&s.wakeTime),go:()=>{st.slDate=y;_skGo('sleep');}});
+  }
+  if(f.tasks!==false&&typeof taskOccursToday==='function'){
+    (db.tasks||[]).filter(x=>x.source!=='gmail').filter(taskOccursToday).filter(x=>x.repeat||!x.done||x.completedAt===t).slice(0,8).forEach(x=>{
+      const done=typeof taskIsDoneToday==='function'?taskIsDoneToday(x):!!x.done;
+      items.push({k:'task-'+x.id,label:x.title||'タスク',sub:'タスク',done,go:()=>{if(typeof _doToggleTaskDone==='function')_doToggleTaskDone(x.id);setTimeout(renderStoicToday,50);}});
+    });
+  }
+  return items;
+}
+function renderStoicToday(){
+  const el=document.getElementById('stoic-today');if(!el)return;
+  if(!lhStoic()){el.hidden=true;el.innerHTML='';return;}
+  const items=stoicTodayItems(),done=items.filter(i=>i.done).length;
+  el.hidden=false;
+  el.innerHTML=`<div class="sk-head"><span class="sk-title">今日やること</span><span class="sk-count"><b>${done}</b> / ${items.length}</span></div>
+    <div class="sk-bar"><i style="width:${items.length?Math.round(done/items.length*100):0}%"></i></div>
+    ${items.map((i,n)=>`<button class="sk-item${i.done?' done':''}" data-i="${n}" type="button"><span class="sk-dot"></span><span class="sk-txt">${esc(i.label)}</span>${i.sub?`<span class="sk-sub">${esc(i.sub)}</span>`:''}</button>`).join('')}`;
+  el.querySelectorAll('.sk-item').forEach(b=>b.onclick=()=>items[+b.dataset.i].go());
+}
+function lhApplyStoic(){
+  const on=lhStoic();
+  document.documentElement.toggleAttribute('data-stoic',on);
+  if(typeof applyTheme==='function')applyTheme(db.settings.theme||'system');
+  if(typeof applyFeatureVisibility==='function')applyFeatureVisibility();
+  const cb=document.getElementById('st-stoic-toggle'),tr=document.getElementById('st-stoic-track'),th=document.getElementById('st-stoic-thumb');
+  if(cb)cb.checked=on;if(tr)tr.style.background=on?'var(--accent)':'var(--border)';if(th)th.style.left=on?'23px':'3px';
+  renderStoicToday();
+}
+document.getElementById('st-stoic-toggle')?.addEventListener('change',function(){
+  db.settings.stoic=this.checked;save(db);lhApplyStoic();
+  try{document.dispatchEvent(new Event('lh-stoic'));}catch(e){}
+  if(!this.checked&&typeof renderTrendCard==='function'){renderTrendCard();}
+});
+lhApplyStoic();
 </script>
 <div id="lu-overlay" hidden style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;"></div>
 <div id="share-pv-modal" class="share-pv-modal" hidden>
