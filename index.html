@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>LifeHub</title>
+<title>LifeWith</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="LifeHub">
+<meta name="apple-mobile-web-app-title" content="LifeWith">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#4F46E5">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22LifeHub%22%2C%22short_name%22%3A%22LifeHub%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23F3F4F9%22%2C%22theme_color%22%3A%22%234F46E5%22%2C%22orientation%22%3A%22portrait-primary%22%7D">
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22LifeWith%22%2C%22short_name%22%3A%22LifeWith%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23F3F4F9%22%2C%22theme_color%22%3A%22%234F46E5%22%2C%22orientation%22%3A%22portrait-primary%22%7D">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&display=swap">
 
 <style>
@@ -1400,7 +1400,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 <!-- Passcode screen -->
 <div id="pc-screen" hidden>
   <div class="pc-logo">🔒</div>
-  <div class="pc-title">LifeHub</div>
+  <div class="pc-title">LifeWith</div>
   <div class="pc-sub" id="pc-sub">パスコードを入力</div>
   <div class="pc-dots" id="pc-dots">
     <div class="pc-dot" id="pc-d0"></div>
@@ -1427,7 +1427,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 <div id="onboarding" hidden>
   <div class="ob-inner">
     <div class="ob-logo">🗓</div>
-    <h1 class="ob-title">LifeHub</h1>
+    <h1 class="ob-title">LifeWith</h1>
     <p class="ob-sub">あなただけの生活管理アプリ</p>
     <div class="ob-form" id="ob-step1">
       <label class="ob-label">名前を入力してください</label>
@@ -1464,7 +1464,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 <div id="app">
   <header class="hdr">
     <button class="hdr-menu-btn" id="hdr-menu" aria-label="メニュー"><svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <span class="hdr-logo" id="hdr-title">LifeHub</span>
+    <span class="hdr-logo" id="hdr-title">LifeWith</span>
     <span class="hdr-date" id="hdr-date"></span>
     <button class="prof-btn" id="prof-btn" title="プロフィール切り替え">
       <span class="prof-avatar" id="prof-avatar" style="background:#4F46E5">?</span>
@@ -2210,7 +2210,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         <div class="st-about-note">動画の検索・表示に YouTube API Services を使っています。<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube利用規約</a>・<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Googleプライバシーポリシー</a>が適用されます。AIの答えは医療アドバイスではありません。</div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeHub v2.98.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.99.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -2805,7 +2805,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='2f3b92add3'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='649ea7ff48'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -3250,7 +3250,7 @@ function updateNavActive(){
   });
   const key=st.tab==='other'?st.otherSub:st.tab;
   document.querySelectorAll('.dr-item[data-go]').forEach(b=>b.classList.toggle('on',b.dataset.go===key));
-  document.getElementById('hdr-title').textContent=st.tab==='cal'?'LifeHub':st.tab==='tasks'?'タスク':(SCREEN_TITLES[st.otherSub]||'LifeHub');
+  document.getElementById('hdr-title').textContent=st.tab==='cal'?'LifeWith':st.tab==='tasks'?'タスク':(SCREEN_TITLES[st.otherSub]||'LifeWith');
   fabFloat.hidden=st.tab!=='cal'||db.settings.features?.calendar===false;
 }
 const SCREEN_TITLES={wo:'トレーニング',meals:'食事',sleep:'睡眠',health:'健康'};
@@ -3579,7 +3579,7 @@ function renderGoals(){
         // share prompt after a short delay
         setTimeout(()=>{
           if(confirm(`🎉 目標達成！\n「${g.text}」\n\nシェアカードを作りますか？`)){
-            generateShareCanvas('goal',{title:g.text,elapsed}).then(cv=>shareCanvas(cv,`LifeHubで「${g.text}」を達成！ #LifeHub`)).catch(()=>{});
+            generateShareCanvas('goal',{title:g.text,elapsed}).then(cv=>shareCanvas(cv,`LifeWithで「${g.text}」を達成！ #LifeWith`)).catch(()=>{});
           }
         },400);
       };
@@ -5079,6 +5079,7 @@ document.getElementById('mo-settings').onclick=e=>{if(e.target===e.currentTarget
 // ===== お知らせ =====
 // 新しいお知らせを追加するときは先頭に追加する（idは一意な文字列）
 const ANNOUNCEMENTS=[
+  {id:'ann_015',date:'2026-11-22',title:'名前が「LifeWith」に変わりました',body:'App Storeでの公開に向けて、アプリの名前を LifeHub から LifeWith に変えました。記録や設定はそのまま使えます。ホーム画面のアイコンの名前を変えたいときは、一度削除してから、もう一度ホーム画面に追加してください（記録は消えません）。'},
   {id:'ann_014',date:'2026-11-18',title:'アップデート v2.81.0',body:'週間プランナーに食事プラン・睡眠目標が追加されました。ホーム画面の「📅 週間プランナー」から1週間分のトレーニング・食事・睡眠を事前に設定できます。'},
   {id:'ann_013',date:'2026-11-17',title:'アップデート v2.60.0',body:'① 食事記録に「📷 写真で自動入力」を追加。料理の写真を撮るとAIがカロリー・栄養素を自動推定します。② 今日のタスク一覧に完了率（X/Y・Z%）を表示。③ 音声入力が途中で止まるバグを修正。'},  {id:'ann_012',date:'2026-11-16',title:'アップデート v2.59.0',body:'タスク完了時にAIコーチとフィードバックチャットができるようになりました。「どうでしたか？」と聞いてくれるので、感想や気づきを話すとAIが次回へのアドバイスをします。スキップして即完了も可能です。'},
   {id:'ann_011',date:'2026-11-16',title:'アップデート v2.58.0',body:'① AIが過去7日間の食事・筋トレ詳細（重量・回数・距離）を参照できるようになりました。② AIチャットが途中で止まるバグを修正。③「その他」タブのトレーニングボタンが表示されないバグを修正。'},
@@ -5298,7 +5299,7 @@ function aiRequireConsent(){
       <div class="aic-head"><img src="assets/characters/01_Ran_pointing.png" alt="" onerror="this.style.display='none'"><h3 id="aic-title">AIトレーナーを使う前に</h3></div>
       <p class="aic-lead">ランの返事を作るために、次の内容をAIに送るよ。</p>
       <dl class="aic-list">
-        <dt>送り先</dt><dd>Anthropic社（米国）のAI「Claude」。LifeHubのサーバーを経由して送ります</dd>
+        <dt>送り先</dt><dd>Anthropic社（米国）のAI「Claude」。LifeWithのサーバーを経由して送ります</dd>
         <dt>送る内容</dt><dd>AIに入力した文章・写真と、アプリに記録した内容（筋トレ・食事・睡眠・体重、健康プロフィール、アレルギー、目標、予定など）</dd>
         <dt>使い道</dt><dd>返事を作るためだけに使います。送った内容がAIの学習に使われることはありません</dd>
       </dl>
@@ -5330,6 +5331,7 @@ document.getElementById('st-ai-consent-row')?.addEventListener('click',async()=>
 ['privacy','support'].forEach(n=>{const a=document.getElementById('st-link-'+n);if(a)a.href=legalUrl(n);});
 renderAiConsentRow();
 const CHANGELOG=[
+  {v:'v2.99.0',d:'アプリの名前を「LifeWith」に変えました（記録・設定はそのまま）'},
   {v:'v2.98.0',d:'新しく始める人は、レベル・ミッション・バッジが記録した日数で解放されるように（3日でレベル、7日でミッションとバッジ）。歩数・心拍・血圧の手入力と、複数のプロフィール・パスコードは設定の「表示する機能」へ'},
   {v:'v2.97.0',d:'AIを初めて使うときに、AIに送る内容を確認して同意する画面を追加（設定の「AIの利用」で取り消し可）。新しく始める人はカレンダーとタスクを最初は表示しない（設定の「表示する機能」でオンにできる）。設定に「このアプリについて」（プライバシーポリシー・サポート）'},
   {v:'v2.96.1',d:'AIトレーナーのチャットが、ランらしい短く力強いタメ口で話すように'},
@@ -5399,7 +5401,7 @@ document.getElementById('btn-export').onclick=()=>{
   const a=document.createElement('a');
   a.href=url;
   const d=new Date();
-  a.download=`lifehub_backup_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.json`;
+  a.download=`lifewith_backup_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.json`;
   a.click();
   URL.revokeObjectURL(url);
 };
@@ -5409,7 +5411,7 @@ document.getElementById('import-file').onchange=e=>{
   reader.onload=ev=>{
     try{
       const imported=JSON.parse(ev.target.result);
-      if(!imported.events&&!imported.tasks){alert('有効なLifeHubのバックアップファイルではありません。');return;}
+      if(!imported.events&&!imported.tasks){alert('有効なLifeWithのバックアップファイルではありません。');return;}
       if(!confirm('現在のデータをインポートしたデータで上書きします。よろしいですか？'))return;
       save(imported);
       Object.assign(db,imported);
@@ -5710,7 +5712,7 @@ async function _fbSend(){
   try{
     const t=db.tasks.find(t=>t.id===_fbTaskId)||{};
     const pastFb=(t.feedbackLogs||[]).slice(-3).map(f=>`${f.date}: ${f.text}`).join(' / ')||'なし';
-    const fbSystem=`あなたはLifeHubのAIコーチです。ユーザーが「${t.title}」を完了しました。\n過去のフィードバック: ${pastFb}\nユーザーの返答を受けて、次回への具体的アドバイスを2〜3行で伝えてください。短く・具体的・ポジティブに。`;
+    const fbSystem=`あなたはLifeWithのAIコーチです。ユーザーが「${t.title}」を完了しました。\n過去のフィードバック: ${pastFb}\nユーザーの返答を受けて、次回への具体的アドバイスを2〜3行で伝えてください。短く・具体的・ポジティブに。`;
     const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:512,thinking:{type:'disabled'},system:fbSystem,messages:_fbMessages})});
     const data=await res.json();
     if(data.error&&!data.content){typing.remove();_fbAddMsg('ai',aiErrorText(data)||'エラーが発生しました。');_fbMessages.pop();return;}
@@ -5891,7 +5893,7 @@ async function estimateProgressWithAI(manual){
   }).join('\n');
   const prompt=`以下のタスクの進捗を、ユーザーの記録をもとに評価してください。\n\n【最近のユーザー発言（参考）】\n${recentChat||'なし'}\n\n【タスク一覧】\n${taskList}\n\nJSON配列のみ返してください（他テキスト不要）:\n[{"id":"...","score":整数0〜100,"comment":"20字以内のポジティブなコメント"}]`;
   try{
-    const res=await fetch(workerUrl,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-sonnet-5-5',max_tokens:600,output_config:{effort:'low'},system:'あなたはLifeHubのAI進捗評価アシスタントです。ユーザーのモチベーション維持・向上を最優先に評価してください。正確さより励ましを重視し、少しでも取り組みの記録があれば高めに評価してください。全く記録がない場合でも最低20点を付けてください。コメントは必ずポジティブなトーンで20字以内にしてください。',messages:[{role:'user',content:prompt}]})});
+    const res=await fetch(workerUrl,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-sonnet-5-5',max_tokens:600,output_config:{effort:'low'},system:'あなたはLifeWithのAI進捗評価アシスタントです。ユーザーのモチベーション維持・向上を最優先に評価してください。正確さより励ましを重視し、少しでも取り組みの記録があれば高めに評価してください。全く記録がない場合でも最低20点を付けてください。コメントは必ずポジティブなトーンで20字以内にしてください。',messages:[{role:'user',content:prompt}]})});
     if(!res.ok)throw new Error('HTTP '+res.status);
     const data=await res.json();
     const text=data.content?.find(c=>c.type==='text')?.text||'';
@@ -6780,7 +6782,7 @@ async function generateAIWeekPlan(){
 - date は必ず ${dates.join(', ')} の7つをこの順で`;
   const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({
     model:'claude-sonnet-5-5',max_tokens:8000,
-    system:'あなたはLifeHubのパーソナルトレーナー。ユーザーの授業・実習・試験などの予定を知っていて、生活に無理なく続けられる筋トレ計画を立てる。安全第一で、医学的に一般的な範囲の内容にする。',
+    system:'あなたはLifeWithのパーソナルトレーナー。ユーザーの授業・実習・試験などの予定を知っていて、生活に無理なく続けられる筋トレ計画を立てる。安全第一で、医学的に一般的な範囲の内容にする。',
     output_config:{effort:'medium',format:{type:'json_schema',schema:aiPlanSchema()}},
     messages:[{role:'user',content:prompt}],
   })});
@@ -8201,7 +8203,7 @@ function calcGameStats(){
       } else {
         const workerUrl=WORKER_URL;
         // v2.96.0: 固定の指示（キャッシュする）と、毎回変わるユーザーデータを分ける
-        const system=[{type:'text',text:'あなたはLifeHubのAIトレーナー「ラン」（熱血コーチのウマ）です。\n\n【話し方（必ず守る）】\n・タメ口で話す。です・ます調は使わない\n・短く力強く。言葉は少なく、本質をつく\n・ユーザーを信頼して、前向きに背中を押す。説教くさくしない\n・健康や医療の大事な注意は、タメ口のまま正確に伝える\n\n【LifeHubの全機能（必ず把握すること）】\nLifeHubは以下の全機能を持つ総合生活管理アプリです：\n・📅 カレンダー: 予定の追加・編集・削除・繰り返し予定・複数カレンダー\n・✅ タスク管理: 追加・完了・編集・削除・優先度・期限・繰り返し・目標連携\n・🍱 食事記録: 朝食・昼食・夕食・間食の記録、カロリー・栄養素管理（log_mealツールで記録可能）\n・💪 筋トレ記録: 種目・セット数・重量・有酸素運動の記録、グラフ分析（log_workoutツールで記録可能）\n・😴 睡眠記録: 就寝・起床時刻、昼寝の記録（log_sleepツールで記録可能）\n・❤️ 健康データ: 体重・体脂肪率・歩数・心拍数・血圧・水分摂取量（log_healthツールで記録可能）\n・🎯 目標管理: 目標追加・進捗更新・達成済みマーク\n・🎮 ゲームステータス: XP・レベル・称号・実績バッジ\n・🤖 AI機能: デイリーブリーフ・ミッション生成・AIチャット（現在使用中）\n\nこれらすべての機能を持つアプリです。「○○の機能はない」と絶対に言わないでください。\n\nユーザーの生活データを把握しており、日本語でアドバイスします。ツールを使って全機能のデータを読み書きできます。\n\n【ツール使用のルール（最重要）】\nツールは、ユーザーが「追加して」「記録して」「変更して」「削除して」「入力して」など、明示的に操作を指示した場合のみ使用してください。ユーザーの意図を推測して自主的にツールを呼び出さないでください。ユーザーが話してくれた内容（例: 筋トレをした、ご飯を食べた）でも、「記録する？」と一度確認してから、OKをもらった後にツールを呼び出してください。\n\n【XP哲学】\nXPは「人生の充実」への報酬。努力・達成だけでなく、幸せな体験・発見・成長にも与える。LifeHubはユーザーの人生をゲーム化し、充実した人生を送るための相棒である。\n\n【award_event_xp — 過去の予定へのXP】\n過去の予定でaiXpが付いていないものがあれば、会話の流れで自然に「どうだった？」と聞き出し付与する。\n目安: 国試=5000〜10000、CBT/OSCE=1000〜3000、定期試験=40〜100、難しい実習=30〜80、授業=5〜15、日常予定=5〜20、楽しい遊び=1〜5。\nユーザーの申告より予定の実態を優先。\n\n【award_xp — 体験・幸せへのXP（新機能）】\nユーザーが以下を話してくれたときは自然に聞き出し award_xp を使う:\n・美味しいご飯や新しいお店を発見した → food: 3〜10\n・旅行・新しい場所に行った → travel: 20〜100（特別な場所は100以上も可。旅行の目的地1か所ごとに付与）\n・新しいことを学んだ・理解が深まった → learning: 5〜30\n・感動・喜び・楽しかった体験 → joy: 5〜20\n・初めての挑戦・体験 → challenge: 10〜30\nポイント: 目標が「旅行をたくさんしたい」なら旅行で働いてお金を貯めること（タスク）も目標連動XP対象。旅行先1か所訪問は award_xp(travel)で記録する。\n\n【回答フォーマットのルール】\n・適切な場所で改行を入れ、読みやすくする\n・複数の内容がある場合は箇条書き（・）を使う\n・句読点（。、）を正しく使い、文章を短く区切る\n・何を言いたいか一目でわかるよう、結論や要点を最初に書く\n・長くなりすぎず、必要な情報に絞って答える\n\n',cache_control:{type:'ephemeral'}},{type:'text',text:'【ユーザーのデータ】\n'+getContext()}];
+        const system=[{type:'text',text:'あなたはLifeWithのAIトレーナー「ラン」（熱血コーチのウマ）です。\n\n【話し方（必ず守る）】\n・タメ口で話す。です・ます調は使わない\n・短く力強く。言葉は少なく、本質をつく\n・ユーザーを信頼して、前向きに背中を押す。説教くさくしない\n・健康や医療の大事な注意は、タメ口のまま正確に伝える\n\n【LifeWithの全機能（必ず把握すること）】\nLifeWithは以下の全機能を持つ総合生活管理アプリです：\n・📅 カレンダー: 予定の追加・編集・削除・繰り返し予定・複数カレンダー\n・✅ タスク管理: 追加・完了・編集・削除・優先度・期限・繰り返し・目標連携\n・🍱 食事記録: 朝食・昼食・夕食・間食の記録、カロリー・栄養素管理（log_mealツールで記録可能）\n・💪 筋トレ記録: 種目・セット数・重量・有酸素運動の記録、グラフ分析（log_workoutツールで記録可能）\n・😴 睡眠記録: 就寝・起床時刻、昼寝の記録（log_sleepツールで記録可能）\n・❤️ 健康データ: 体重・体脂肪率・歩数・心拍数・血圧・水分摂取量（log_healthツールで記録可能）\n・🎯 目標管理: 目標追加・進捗更新・達成済みマーク\n・🎮 ゲームステータス: XP・レベル・称号・実績バッジ\n・🤖 AI機能: デイリーブリーフ・ミッション生成・AIチャット（現在使用中）\n\nこれらすべての機能を持つアプリです。「○○の機能はない」と絶対に言わないでください。\n\nユーザーの生活データを把握しており、日本語でアドバイスします。ツールを使って全機能のデータを読み書きできます。\n\n【ツール使用のルール（最重要）】\nツールは、ユーザーが「追加して」「記録して」「変更して」「削除して」「入力して」など、明示的に操作を指示した場合のみ使用してください。ユーザーの意図を推測して自主的にツールを呼び出さないでください。ユーザーが話してくれた内容（例: 筋トレをした、ご飯を食べた）でも、「記録する？」と一度確認してから、OKをもらった後にツールを呼び出してください。\n\n【XP哲学】\nXPは「人生の充実」への報酬。努力・達成だけでなく、幸せな体験・発見・成長にも与える。LifeWithはユーザーの人生をゲーム化し、充実した人生を送るための相棒である。\n\n【award_event_xp — 過去の予定へのXP】\n過去の予定でaiXpが付いていないものがあれば、会話の流れで自然に「どうだった？」と聞き出し付与する。\n目安: 国試=5000〜10000、CBT/OSCE=1000〜3000、定期試験=40〜100、難しい実習=30〜80、授業=5〜15、日常予定=5〜20、楽しい遊び=1〜5。\nユーザーの申告より予定の実態を優先。\n\n【award_xp — 体験・幸せへのXP（新機能）】\nユーザーが以下を話してくれたときは自然に聞き出し award_xp を使う:\n・美味しいご飯や新しいお店を発見した → food: 3〜10\n・旅行・新しい場所に行った → travel: 20〜100（特別な場所は100以上も可。旅行の目的地1か所ごとに付与）\n・新しいことを学んだ・理解が深まった → learning: 5〜30\n・感動・喜び・楽しかった体験 → joy: 5〜20\n・初めての挑戦・体験 → challenge: 10〜30\nポイント: 目標が「旅行をたくさんしたい」なら旅行で働いてお金を貯めること（タスク）も目標連動XP対象。旅行先1か所訪問は award_xp(travel)で記録する。\n\n【回答フォーマットのルール】\n・適切な場所で改行を入れ、読みやすくする\n・複数の内容がある場合は箇条書き（・）を使う\n・句読点（。、）を正しく使い、文章を短く区切る\n・何を言いたいか一目でわかるよう、結論や要点を最初に書く\n・長くなりすぎず、必要な情報に絞って答える\n\n',cache_control:{type:'ephemeral'}},{type:'text',text:'【ユーザーのデータ】\n'+getContext()}];
         const apiMessages=aiHistory.slice(0,-2).filter(m=>m.role==='user'||m.role==='assistant').map(m=>({role:m.role,content:m.content}));
         const userContent=buildApiContent(text,attachments);
         apiMessages.push({role:'user',content:userContent});
@@ -8399,7 +8401,7 @@ function calcGameStats(){
       let ctx='';
       try{ctx=getContext();}catch(e){console.warn('[brief] getContext failed:',e);card.hidden=true;return;}
       const prompt='以下はユーザーの今日のライフデータです。\n\n'+ctx+'\n\n上記データを踏まえて、今日のユーザーへの「ひとこと」を2〜3文で書いてください。予定・タスク・筋トレ状況を絡めて、具体的に、明るく親しみやすい言葉で。余計な前置きなしで本文だけ返してください。';
-      const body=JSON.stringify({model:'claude-haiku-5-5',max_tokens:400,thinking:{type:'disabled'},system:'あなたはLifeHubのAIアシスタントです。ユーザーの生活データを把握している、身近な友達のような存在です。です・ます調は使わず、自然でやわらかいタメ口の日本語で短く話します。',messages:[{role:'user',content:prompt}]});
+      const body=JSON.stringify({model:'claude-haiku-5-5',max_tokens:400,thinking:{type:'disabled'},system:'あなたはLifeWithのAIアシスタントです。ユーザーの生活データを把握している、身近な友達のような存在です。です・ます調は使わず、自然でやわらかいタメ口の日本語で短く話します。',messages:[{role:'user',content:prompt}]});
       let lastErr='';
       // Workerは上流のエラー（混雑・回数制限）もHTTP 200で返すため、本文の有無で成否を判定する
       for(let attempt=0;attempt<3;attempt++){
@@ -8543,7 +8545,7 @@ function calcGameStats(){
         const ctx=getContext();
         const goalList=activeGoals.map(g=>`・${g.text||g.title}（進捗${g.progress||0}%${g.dueDate?'・期限'+g.dueDate:''}）`).join('\n');
         const prompt=`以下はユーザーの今日のライフデータです。\n\n${ctx}\n\n【現在の目標】\n${goalList}\n\n今日やるべき3つのミッションをJSONで生成してください。\n【重要】ミッションは「現在の目標」に直接つながるアクションを優先してください。目標の進捗を高めるために今日具体的に何をすべきかを考えて設定してください。タスク・筋トレ・予定なども踏まえて具体的に。\n\n返答はJSON配列のみ（説明不要）:\n[\n  {"id":"m1","text":"ミッション説明（20字以内）","type":"complete_task","taskId":"タスクのid（特定する場合のみ）"},\n  {"id":"m2","text":"...","type":"log_workout"},\n  {"id":"m3","text":"...","type":"open_ai"}\n]\n\ntypeは complete_task / log_workout / open_ai / manual のいずれか。`;
-        const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:300,thinking:{type:'disabled'},system:'あなたはLifeHubのミッション生成AIです。ユーザーのデータを読んで今日のミッションをJSON配列で返します。JSON以外は一切出力しないでください。',messages:[{role:'user',content:prompt}]})});
+        const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:300,thinking:{type:'disabled'},system:'あなたはLifeWithのミッション生成AIです。ユーザーのデータを読んで今日のミッションをJSON配列で返します。JSON以外は一切出力しないでください。',messages:[{role:'user',content:prompt}]})});
         if(!res.ok)throw new Error('HTTP '+res.status);
         const data=await res.json();
         const raw=data.content?.find(c=>c.type==='text')?.text||'[]';
@@ -9198,7 +9200,7 @@ ${rcpContext()}
 - comment はランとして3つ全体へのひとこと。タメ口で30字以内`;
   const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({
     model:'claude-haiku-5-5',max_tokens:2500,thinking:{type:'disabled'},
-    system:'あなたはLifeHubの食事コーチ「ラン」。筋トレする人の自炊を、手軽さと栄養の両方から提案する。アレルギーの指定は最優先で守る。医学的に一般的な範囲の内容にする。日本語のみ。',
+    system:'あなたはLifeWithの食事コーチ「ラン」。筋トレする人の自炊を、手軽さと栄養の両方から提案する。アレルギーの指定は最優先で守る。医学的に一般的な範囲の内容にする。日本語のみ。',
     output_config:{format:{type:'json_schema',schema:rcpSchema()}},
     messages:[{role:'user',content:prompt}],
   })});
@@ -9443,7 +9445,7 @@ async function generateShareCanvas(type,extra={}){
   ctx.fillStyle='rgba(255,255,255,0.3)';
   ctx.font='500 28px "M PLUS Rounded 1c",sans-serif';
   ctx.textAlign='right';ctx.textBaseline='bottom';
-  ctx.fillText('#LifeHub',W-54,H-48);
+  ctx.fillText('#LifeWith',W-54,H-48);
   ctx.textAlign='left';ctx.textBaseline='alphabetic';
   return cv;
 }
@@ -9619,11 +9621,11 @@ function _drawWeeklyCard(ctx,W,H,g){
 }
 function _doShareBlob(canvas,text){
   canvas.toBlob(async blob=>{
-    const file=new File([blob],'lifehub-share.png',{type:'image/png'});
+    const file=new File([blob],'lifewith-share.png',{type:'image/png'});
     if(navigator.canShare&&navigator.canShare({files:[file]})){
-      try{await navigator.share({files:[file],title:'LifeHub',text:text||'LifeHubで成長中！ #LifeHub'});return;}catch(e){if(e.name==='AbortError')return;}
+      try{await navigator.share({files:[file],title:'LifeWith',text:text||'LifeWithで成長中！ #LifeWith'});return;}catch(e){if(e.name==='AbortError')return;}
     }
-    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='lifehub-share.png';a.click();
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='lifewith-share.png';a.click();
     setTimeout(()=>URL.revokeObjectURL(a.href),3000);
   },'image/png');
 }
@@ -9689,7 +9691,7 @@ function showLevelUpAnim(level,title,rarity){
   shareBtn.onclick=async e=>{
     e.stopPropagation();
     shareBtn.disabled=true;shareBtn.textContent='生成中…';
-    try{const cv=await generateShareCanvas('levelup',{rarity});await shareCanvas(cv,`LifeHubでレベル${level}に到達！「${title}」 #LifeHub`);}catch(err){}
+    try{const cv=await generateShareCanvas('levelup',{rarity});await shareCanvas(cv,`LifeWithでレベル${level}に到達！「${title}」 #LifeWith`);}catch(err){}
     shareBtn.disabled=false;shareBtn.textContent='📤 シェアする';
   };
   content.innerHTML=`<div class="lu-badge" style="color:${cfg.badgeColor}">${cfg.badge}</div><div class="lu-level-num" style="color:${cfg.numColor}${rarity==='ultra'?';text-shadow:0 0 40px #fde68a,0 0 80px #f59e0b':''}">${level}</div><div class="lu-title" style="color:${cfg.numColor};opacity:.8">${title}</div>${cfg.rarityLabel?`<div class="lu-rarity" style="color:${cfg.rarityColor}">${cfg.rarityLabel}</div>`:''}<div class="lu-hint" style="color:#fff">タップで閉じる</div>`;
@@ -9734,10 +9736,10 @@ function renderGameStats(){
       b.disabled=false;b.textContent=label;};
     return b;
   };
-  shareRow.appendChild(mkBtn('📤 ステータスをシェア','status','LifeHubで成長中！ #LifeHub'));
+  shareRow.appendChild(mkBtn('📤 ステータスをシェア','status','LifeWithで成長中！ #LifeWith'));
   const wkBtn=document.createElement('button');wkBtn.className='gs-share-btn secondary';wkBtn.textContent='📊 今週のサマリー';
   wkBtn.onclick=async()=>{wkBtn.disabled=true;wkBtn.textContent='生成中…';
-    try{const cv=await generateShareCanvas('weekly');await shareCanvas(cv,'今週の実績をシェア！ #LifeHub');}catch(e){}
+    try{const cv=await generateShareCanvas('weekly');await shareCanvas(cv,'今週の実績をシェア！ #LifeWith');}catch(e){}
     wkBtn.disabled=false;wkBtn.textContent='📊 今週のサマリー';};
   shareRow.appendChild(wkBtn);
 }
