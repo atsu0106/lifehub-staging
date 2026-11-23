@@ -1425,6 +1425,25 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 .sk-item.done .sk-txt{color:var(--fg3);}
 .sk-txt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .sk-sub{font-size:12px;color:var(--fg2);flex-shrink:0;}
+
+/* v2.103.0: プレミアムの案内画面 */
+.pw-sheet{max-height:88vh;overflow-y:auto;}
+.pw-badge{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.12em;color:#fff;background:linear-gradient(135deg,#111,#4F46E5);padding:3px 8px;border-radius:999px;}
+.pw-sheet h3{margin:8px 0 4px;font-size:20px;}
+.pw-lead{font-size:13px;color:var(--fg2);margin:0 0 10px;}
+.pw-list{list-style:none;padding:0;margin:0 0 12px;display:flex;flex-direction:column;gap:8px;}
+.pw-list li{display:flex;flex-direction:column;padding:8px 10px;border-radius:10px;background:var(--surface2);font-size:13px;}
+.pw-list li span{font-size:11px;color:var(--fg3);margin-top:2px;}
+.pw-list li.pw-soon{background:transparent;border:1px dashed var(--border);}
+.pw-price{display:flex;gap:10px;justify-content:center;font-size:13px;}
+.pw-price>div{flex:1;text-align:center;padding:8px;border:1px solid var(--border);border-radius:10px;}
+.pw-price b{font-size:18px;}
+.pw-price small{display:block;font-size:10px;color:var(--fg3);}
+.pw-trial{text-align:center;font-weight:700;color:var(--accent);margin:8px 0;font-size:13px;}
+.pw-buy:disabled{opacity:.55;}
+.pw-legal{font-size:10px;color:var(--fg3);line-height:1.5;margin-top:8px;}
+.pw-tag{font-size:9px;font-weight:800;letter-spacing:.08em;color:#fff;background:#111;padding:2px 5px;border-radius:4px;vertical-align:middle;}
+#st-plan-row[hidden],.pw-tag[hidden]{display:none!important;}
 </style>
 </head>
 <body>
@@ -2236,6 +2255,12 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
       <!-- このアプリについて（v2.97.0） -->
       <div class="st-sec">このアプリについて</div>
       <div class="st-card">
+        <div class="st-row" id="st-plan-row" style="cursor:pointer;" hidden>
+          <span class="st-ic" style="background:#111;">👑</span>
+          <span class="st-label">プラン</span>
+          <span class="st-val" id="st-plan-state" style="font-size:12px;color:var(--fg3);">無料</span>
+          <span class="st-arrow">›</span>
+        </div>
         <div class="st-row" id="st-ai-consent-row" style="cursor:pointer;">
           <span class="st-ic" style="background:#8b5cf6;">🤖</span>
           <span class="st-label">AIの利用</span>
@@ -2255,7 +2280,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         <div class="st-about-note">動画の検索・表示に YouTube API Services を使っています。<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube利用規約</a>・<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Googleプライバシーポリシー</a>が適用されます。AIの答えは医療アドバイスではありません。</div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.102.1 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.103.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -2351,7 +2376,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
     <div class="training-sheet-title">📅 週間プランナー
       <button class="training-sheet-close" onclick="closeTrainingSchedule()">✕</button>
     </div>
-    <button class="ai-plan-btn" id="ai-plan-btn" onclick="runAIWeekPlan()">🤖 予定に合わせてAIが1週間分を組む</button>
+    <button class="ai-plan-btn" id="ai-plan-btn" onclick="runAIWeekPlan()">🤖 予定に合わせてAIが1週間分を組む <span class="pw-tag" hidden>PREMIUM</span></button>
     <div id="ai-plan-preview" class="ai-plan-preview" hidden></div>
     <div id="training-schedule-grid" style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;"></div>
     <div id="training-schedule-detail" class="plan-detail" hidden>
@@ -2850,7 +2875,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='04f6ce9272'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='8a67701d2a'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -5289,6 +5314,8 @@ const WORKER_URL='https://lifehub-ai.y-atsuhisa7234.workers.dev';
 function aiErrorKind(x){
   const s=typeof x==='string'?x:[x?.error?.message,x?.error?.type,x?.message,x?.code].filter(Boolean).join(' ');
   if(/ai_consent_required/i.test(s))return 'consent';
+  if(/quota_exceeded/i.test(s))return 'quota';
+  if(/pro_required/i.test(s))return 'pro';
   if(/daily_budget_exceeded|daily AI budget/i.test(s))return 'budget';
   if(/credit balance|purchase credits|billing/i.test(s))return 'credit';
   if(/overloaded|rate_limit|rate limit|429|529|混み合/i.test(s))return 'busy';
@@ -5299,6 +5326,8 @@ function aiErrorText(x){
   if(k==='credit')return 'ごめん、今AIが使えない状態になってる（運営側のAI利用枠が切れた）。直るまで少し待ってね。記録はいつも通りできるよ';
   if(k==='busy')return 'AIが混み合ってる。少し時間をおいてもう一度試してね';
   if(k==='consent')return 'AIを使うには最初に確認が必要だよ。設定の「AIの利用」から同意できる';
+  if(k==='quota')return '今日の無料の回数を使い切ったよ。明日また使える（プレミアムならたっぷり使える）';
+  if(k==='pro')return 'これはプレミアムの機能だよ';
   if(k==='budget')return '今日のAI利用枠を使い切った。明日になったらまた使えるよ（記録はいつも通りできる）';
   return null;
 }
@@ -5330,10 +5359,106 @@ function legalUrl(name){const base=(typeof lhIsStaging==='function'&&lhIsStaging
       if(url===WORKER_URL&&method==='POST'&&!aiConsented()){
         return Promise.resolve(new Response(JSON.stringify({type:'error',error:{type:'ai_consent_required',message:'AI consent required'}}),{status:200,headers:{'content-type':'application/json'}}));
       }
+      // v2.103.0: 端末ID・プランを付けて送り、返ってきた回数を覚える
+      if(url===WORKER_URL&&method==='POST'&&o&&typeof o.body==='string'){
+        let b=null;try{b=JSON.parse(o.body);}catch(e){}
+        if(b&&typeof b==='object'){
+          const feature=b.lh_feature||'legacy';
+          if(lhPlanEnforced()){
+            const dev=lhDeviceId();if(dev)b.lh_dev=dev;
+            const tok=lhProToken();if(tok)b.lh_pro=tok;
+            b.lh_enforce=true;
+          }else{
+            for(const k of Object.keys(b))if(k.startsWith('lh_'))delete b[k]; // Web版は今までと同じ形で送る
+          }
+          const o2=Object.assign({},o,{body:JSON.stringify(b)});
+          return realFetch.call(this,u,o2).then(res=>{
+            try{res.clone().json().then(d=>lhOnAiResponse(feature,d)).catch(()=>{});}catch(e){}
+            return res;
+          });
+        }
+      }
     }catch(e){}
     return realFetch.apply(this,arguments);
   };
 })();
+// ── 無料／プレミアム（v2.103.0） ──
+// プレミアムは Apple のアプリ内課金（アプリ版・Mac作業）で入れる。それまでは全員が無料版
+var LH_DEV_KEY='lh_dev',LH_QUOTA_KEY='lh_quota';
+var LH_PRICE={month:'1,200円',year:'9,800円',yearPerMonth:'約817円'};
+var LH_FREE_LIMITS={chat:10,photo:2,recipe:1,feedback:3};
+var LH_FEATURE_NAMES={chat:'AIチャット',think:'💭じっくり考えるモード',photo:'食事写真の分析',recipe:'食材からメニュー',feedback:'タスクのふり返り',plan:'AIの週間トレーニングメニュー',goal:'目標のAI判定',progress:'進捗のAI評価',brief:'今日のひとこと',mission:'今日のミッション',advice:'健康アドバイス'};
+// 自分で押して使う機能だけ、回数切れで案内画面を出す（ひとことなど自動のものは出さない）
+var LH_USER_FEATURES=['chat','think','photo','recipe','feedback','plan','progress'];
+function lhDeviceId(){
+  try{
+    let d=localStorage.getItem(LH_DEV_KEY);
+    if(!d||!/^[a-z0-9]{16,40}$/.test(d)){d=Array.from(crypto.getRandomValues(new Uint8Array(12)),x=>x.toString(36).padStart(2,'0')).join('');localStorage.setItem(LH_DEV_KEY,d);}
+    return d;
+  }catch(e){return null;}
+}
+// v2.103.0: 無料と有料の差はアプリ版（Capacitor）だけ。Web版（デモ）は今までどおり全部使える（オーナー判断）
+// lh_plan_test はテスト用（Web でもアプリ版と同じ決まりにする）
+function lhPlanEnforced(){try{return !!(window.Capacitor&&typeof window.Capacitor.isNativePlatform==='function'&&window.Capacitor.isNativePlatform())||!!localStorage.getItem('lh_plan_test');}catch(e){return false;}}
+function lhProToken(){try{return (window.LH_NATIVE&&window.LH_NATIVE.proToken)||localStorage.getItem('lh_pro_test')||null;}catch(e){return null;}}
+function lhIsPro(){if(!lhPlanEnforced())return true;try{return !!((window.LH_NATIVE&&window.LH_NATIVE.pro)||localStorage.getItem('lh_pro_test'));}catch(e){return false;}}
+function lhCanPurchase(){return !!(window.LH_NATIVE&&typeof window.LH_NATIVE.purchase==='function');}
+function lhQuotaToday(){
+  const today=typeof todayStr==='function'?todayStr():new Date().toISOString().slice(0,10);
+  try{const q=JSON.parse(localStorage.getItem(LH_QUOTA_KEY)||'null');if(q&&q.day===today)return q;}catch(e){}
+  return {day:today,used:{},limit:{}};
+}
+function lhOnAiResponse(feature,d){
+  if(!d||typeof d!=='object')return;
+  const q=d.lh_quota;
+  if(q&&q.feature){const t=lhQuotaToday();t.used[q.feature]=q.used;if(!t.limit)t.limit={};if(q.limit>0)t.limit[q.feature]=q.limit;try{localStorage.setItem(LH_QUOTA_KEY,JSON.stringify(t));}catch(e){}}
+  if(typeof renderPlanRow==='function')renderPlanRow();
+  const k=aiErrorKind(d);
+  if((k==='quota'||k==='pro')&&LH_USER_FEATURES.includes(feature))lhShowPaywall({feature,kind:k});
+}
+function renderPlanRow(){
+  const on=lhPlanEnforced();
+  const row=document.getElementById('st-plan-row');if(row)row.hidden=!on;
+  document.querySelectorAll('.pw-tag').forEach(e=>{e.hidden=!on;});
+  const el=document.getElementById('st-plan-state');if(!el)return;
+  if(lhIsPro()){el.textContent='プレミアム';return;}
+  const t=lhQuotaToday(),u=t.used,lim=(t.limit&&t.limit.chat)||LH_FREE_LIMITS.chat; // Worker が返した上限を優先
+  el.textContent='無料 ・ 今日のチャット残り'+Math.max(0,lim-(u.chat||0))+'回';
+}
+function lhShowPaywall(opt){
+  opt=opt||{};
+  if(document.getElementById('pw-ov'))return;
+  const name=LH_FEATURE_NAMES[opt.feature]||'';
+  const lead=opt.kind==='quota'&&name?`今日の無料の「${name}」（${LH_FREE_LIMITS[opt.feature]||''}回）を使い切りました。明日また使えます。`
+    :name&&opt.feature!=='none'?`「${name}」はプレミアムで使えます。`:'AIがあなたの記録をもっと深く読み解きます。';
+  const native=lhCanPurchase();
+  const ov=document.createElement('div');ov.className='aic-ov pw-ov';ov.id='pw-ov';
+  ov.innerHTML=`<div class="aic-sheet pw-sheet" role="dialog" aria-modal="true" aria-labelledby="pw-title">
+    <div class="pw-badge">PREMIUM</div>
+    <h3 id="pw-title">LifeWith プレミアム</h3>
+    <p class="pw-lead">${esc(lead)}</p>
+    <ul class="pw-list">
+      <li><b>AIをたっぷり</b><span>チャット・食事写真の分析・食材からメニュー（無料は1日10回・2回・1回）</span></li>
+      <li><b>30日分の記録を読むAI</b><span>無料は直近7日。長い目で見た変化まで分析します</span></li>
+      <li><b>あなた専用の週間トレーニングメニュー</b><span>予定・過去の重量・睡眠に合わせてAIが組みます（無料は定番メニュー）</span></li>
+      <li><b>目標のAI判定・進捗のAI評価</b></li>
+      <li><b>💭じっくり考えるモード</b><span>より賢いAIで深く考えて答えます</span></li>
+      <li class="pw-soon"><b>近日追加</b><span>週のAIレポート・体調との関係の分析・AIからのおすすめ</span></li>
+    </ul>
+    <div class="pw-price"><div><b>${LH_PRICE.month}</b> / 月</div><div><b>${LH_PRICE.year}</b> / 年<small>（1か月あたり${LH_PRICE.yearPerMonth}）</small></div></div>
+    <div class="pw-trial">最初の1か月は無料</div>
+    <button class="aic-ok pw-buy" type="button" ${native?'':'disabled'}>${native?'1か月無料で始める':'iPhoneアプリ版で近日開始'}</button>
+    ${native?'<button class="aic-no pw-restore" type="button">購入を復元</button>':''}
+    <button class="aic-no pw-close" type="button">閉じる</button>
+    <p class="pw-legal">無料期間が終わると自動で更新され、料金がかかります。無料期間の終わる24時間前までに解約すれば料金はかかりません。確認・解約は iPhone の「設定」→ 自分の名前 →「サブスクリプション」から。記録の機能は無料のまま使えます。<a href="${legalUrl('privacy')}" target="_blank" rel="noopener">プライバシーポリシー</a></p>
+  </div>`;
+  const close=()=>ov.remove();
+  ov.querySelector('.pw-close').onclick=close;
+  ov.addEventListener('click',e=>{if(e.target===ov)close();});
+  const buy=ov.querySelector('.pw-buy');if(buy&&native)buy.onclick=async()=>{try{await window.LH_NATIVE.purchase();}catch(e){}if(lhIsPro())close();renderPlanRow();};
+  const rs=ov.querySelector('.pw-restore');if(rs)rs.onclick=async()=>{try{await window.LH_NATIVE.restore();}catch(e){}if(lhIsPro())close();renderPlanRow();};
+  document.body.appendChild(ov);
+}
 var _aicPending=null;
 function aiRequireConsent(){
   if(aiConsented())return Promise.resolve(true);
@@ -5376,7 +5501,10 @@ document.getElementById('st-ai-consent-row')?.addEventListener('click',async()=>
 });
 ['privacy','support'].forEach(n=>{const a=document.getElementById('st-link-'+n);if(a)a.href=legalUrl(n);});
 renderAiConsentRow();
+document.getElementById('st-plan-row')?.addEventListener('click',()=>lhShowPaywall({feature:'none'}));
+renderPlanRow();
 const CHANGELOG=[
+  {v:'v2.103.0',d:'iPhoneアプリ版に向けて、無料版とプレミアムの準備をしました（Web版はこれまでどおり全部使えます）'},
   {v:'v2.102.1',d:'AIの返事に「**」などの記号がそのまま出ることがあったのを修正'},
   {v:'v2.102.0',d:'ストイックモードに昼（白・黒・赤）と夜（黒・白・赤）。設定 → 外観のテーマで切り替え'},
   {v:'v2.101.0',d:'ホーム画面に追加したときのアイコンを新しいロゴに'},
@@ -5621,7 +5749,7 @@ async function renderHealthAdvice(force){
   try{const fbList=JSON.parse(localStorage.getItem('lh_advice_fb')||'[]');if(fbList.length>0){const good=fbList.filter(e=>e.rating==='good').length;const bad=fbList.filter(e=>e.rating==='bad').length;const rec=fbList.slice(0,7);const recGood=rec.filter(e=>e.rating==='good').length;fbContext=`\n過去の提案評価: 役立った${good}回, 不要${bad}回（計${fbList.length}回）`;if(recGood>=5)fbContext+='\n（最近の提案はよく評価されている。同様のスタイルを継続）';else if(recGood<=2&&rec.length>=5)fbContext+='\n（最近の提案はあまり評価されていない。より具体的で実践的な内容に変える）';}}catch(e){}
   const prompt=`ユーザーの健康データ:\nプロフィール: ${hpParts.join(', ')||'未設定'}\n今週のジム: ${thisWeekWo}回${hp.gymFreq?'（目標:週'+hp.gymFreq+'回、残り'+(Math.max(0,hp.gymFreq-thisWeekWo))+'回）':''}\n昨日の睡眠: ${sleepInfo}\n昨日のトレーニング: ${ydWoInfo}\n${taskInfo}${fbContext}\n\n以下の形式で出力（JSON・マークダウン不要）:\n1行目: 昨日の振り返り1文（30字以内）\n2〜4行目: 今日のアクション（各30字以内、「・」で始める）`;
   try{
-    const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:200,thinking:{type:'disabled'},system:getCharSystem(),messages:[{role:'user',content:prompt}]})});
+    const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({lh_feature:'advice',model:'claude-haiku-5-5',max_tokens:200,thinking:{type:'disabled'},system:getCharSystem(),messages:[{role:'user',content:prompt}]})});
     if(!res.ok)throw new Error('HTTP '+res.status);
     const data=await res.json();
     const text=data.content?.find(c=>c.type==='text')?.text?.trim()||'';
@@ -5715,10 +5843,10 @@ async function _autoUpdateGoalProgress(goalId,taskTitle){
   const totalCount=linked.length;
   g.progress=Math.round(doneCount/totalCount*100);
   save(db);renderGoals();
-  if(!aiConsented())return; // v2.97.0
+  if(!aiConsented()||!lhIsPro())return; // v2.97.0 / v2.103.0: 目標のAI判定はプレミアム（無料はタスクの割合）
   try{
     const prompt=`ゴール「${g.text}」の達成進捗を判定してください。\n関連タスク: 全${totalCount}件中${doneCount}件完了\n直前に完了したタスク:「${taskTitle}」\n\n0〜100の整数のみで回答:`;
-    const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:8,thinking:{type:'disabled'},system:'ゴール進捗率を0〜100の整数のみで返す。',messages:[{role:'user',content:prompt}]})});
+    const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({lh_feature:'goal',model:'claude-haiku-5-5',max_tokens:8,thinking:{type:'disabled'},system:'ゴール進捗率を0〜100の整数のみで返す。',messages:[{role:'user',content:prompt}]})});
     if(!res.ok)return;
     const data=await res.json();
     const txt=data.content?.find(c=>c.type==='text')?.text?.trim()||'';
@@ -5764,7 +5892,7 @@ async function _fbSend(){
     const t=db.tasks.find(t=>t.id===_fbTaskId)||{};
     const pastFb=(t.feedbackLogs||[]).slice(-3).map(f=>`${f.date}: ${f.text}`).join(' / ')||'なし';
     const fbSystem=`あなたはLifeWithのAIコーチです。ユーザーが「${t.title}」を完了しました。\n過去のフィードバック: ${pastFb}\nユーザーの返答を受けて、次回への具体的アドバイスを2〜3行で伝えてください。短く・具体的・ポジティブに。`;
-    const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:512,thinking:{type:'disabled'},system:fbSystem,messages:_fbMessages})});
+    const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({lh_feature:'feedback',model:'claude-haiku-5-5',max_tokens:512,thinking:{type:'disabled'},system:fbSystem,messages:_fbMessages})});
     const data=await res.json();
     if(data.error&&!data.content){typing.remove();_fbAddMsg('ai',aiErrorText(data)||'エラーが発生しました。');_fbMessages.pop();return;}
     const reply=data.content?.find(c=>c.type==='text')?.text||'ありがとうございます！次回も頑張りましょう。';
@@ -5927,6 +6055,7 @@ async function estimateProgressWithAI(manual){
   if(_aiEstimating&&!manual)return;
   const workerUrl=WORKER_URL;
   if(!workerUrl)return;
+  if(!lhIsPro()){if(manual)lhShowPaywall({feature:'progress'});return;} // v2.103.0: 進捗のAI評価はプレミアム
   if(!aiConsented())return; // v2.97.0
   const active=(db.tasks||[]).filter(t=>!(!t.repeat&&t.done));
   const targets=active.filter(t=>!t.repeat&&!t.done);
@@ -5944,7 +6073,7 @@ async function estimateProgressWithAI(manual){
   }).join('\n');
   const prompt=`以下のタスクの進捗を、ユーザーの記録をもとに評価してください。\n\n【最近のユーザー発言（参考）】\n${recentChat||'なし'}\n\n【タスク一覧】\n${taskList}\n\nJSON配列のみ返してください（他テキスト不要）:\n[{"id":"...","score":整数0〜100,"comment":"20字以内のポジティブなコメント"}]`;
   try{
-    const res=await fetch(workerUrl,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-sonnet-5-5',max_tokens:600,output_config:{effort:'low'},system:'あなたはLifeWithのAI進捗評価アシスタントです。ユーザーのモチベーション維持・向上を最優先に評価してください。正確さより励ましを重視し、少しでも取り組みの記録があれば高めに評価してください。全く記録がない場合でも最低20点を付けてください。コメントは必ずポジティブなトーンで20字以内にしてください。',messages:[{role:'user',content:prompt}]})});
+    const res=await fetch(workerUrl,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({lh_feature:'progress',model:'claude-sonnet-5-5',max_tokens:600,output_config:{effort:'low'},system:'あなたはLifeWithのAI進捗評価アシスタントです。ユーザーのモチベーション維持・向上を最優先に評価してください。正確さより励ましを重視し、少しでも取り組みの記録があれば高めに評価してください。全く記録がない場合でも最低20点を付けてください。コメントは必ずポジティブなトーンで20字以内にしてください。',messages:[{role:'user',content:prompt}]})});
     if(!res.ok)throw new Error('HTTP '+res.status);
     const data=await res.json();
     const text=data.content?.find(c=>c.type==='text')?.text||'';
@@ -6832,7 +6961,7 @@ async function generateAIWeekPlan(){
 - summary は1週間の方針を、タメ口でやさしく1〜2文で
 - date は必ず ${dates.join(', ')} の7つをこの順で`;
   const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({
-    model:'claude-sonnet-5-5',max_tokens:8000,
+    lh_feature:'plan',model:'claude-sonnet-5-5',max_tokens:8000,
     system:'あなたはLifeWithのパーソナルトレーナー。ユーザーの授業・実習・試験などの予定を知っていて、生活に無理なく続けられる筋トレ計画を立てる。安全第一で、医学的に一般的な範囲の内容にする。',
     output_config:{effort:'medium',format:{type:'json_schema',schema:aiPlanSchema()}},
     messages:[{role:'user',content:prompt}],
@@ -6876,6 +7005,7 @@ function renderAIPlanPreview(plan){
 async function runAIWeekPlan(){
   const box=document.getElementById('ai-plan-preview');const btn=document.getElementById('ai-plan-btn');
   if(!box)return;
+  if(!lhIsPro()){lhShowPaywall({feature:'plan'});return;} // v2.103.0: AIの週間メニューはプレミアム（無料は定番メニュー）
   if(!await aiRequireConsent())return; // v2.97.0
   box.hidden=false;box.innerHTML='<div class="aip-loading">🤖 予定を見ながらメニューを考えてるよ…（10〜20秒）</div>';
   if(btn)btn.disabled=true;
@@ -7373,7 +7503,7 @@ async function analyzePhotoMeal(){
     const {data:base64,mediaType:mimeType}=await fileToAIImage(file);
     const prompt='この料理・食事の写真を見て、含まれている食品と栄養成分を推定してください。複数の食品が見える場合は全体でまとめて推定してください。\n\n以下のJSON形式のみで返してください（コードブロック不要）:\n{"name":"料理名 (量の目安)","kcal":カロリー数値,"protein":タンパク質g数,"carbs":炭水化物g数,"fat":脂質g数,"note":"推定根拠や注意点（20字以内）"}';
     const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({
-      model:'claude-haiku-5-5',max_tokens:400,thinking:{type:'disabled'},
+      lh_feature:'photo',model:'claude-haiku-5-5',max_tokens:400,thinking:{type:'disabled'},
       messages:[{role:'user',content:[
         {type:'image',source:{type:'base64',media_type:mimeType,data:base64}},
         {type:'text',text:prompt}
@@ -7870,6 +8000,7 @@ function calcGameStats(){
 
   // ── ツール ──
   function getContext(){
+    const AIDAYS=lhIsPro()?30:7; // v2.103.0: AIが読む記録の期間（無料は直近7日）
     const today=todayStr();
     const todayD=new Date(today+'T00:00:00');
     const futD=new Date(todayD);futD.setDate(futD.getDate()+14);
@@ -7895,10 +8026,10 @@ function calcGameStats(){
     }
     // 筋トレ履歴（直近30日、なければ90日遡及）
     const allWoDates=Object.keys(db.workouts||{}).filter(d=>d<=today).sort().reverse();
-    const cut30=new Date(todayD);cut30.setDate(cut30.getDate()-30);const cut30s=cut30.toISOString().slice(0,10);
+    const cut30=new Date(todayD);cut30.setDate(cut30.getDate()-AIDAYS);const cut30s=cut30.toISOString().slice(0,10);
     const cut90=new Date(todayD);cut90.setDate(cut90.getDate()-90);const cut90s=cut90.toISOString().slice(0,10);
     let woDates=allWoDates.filter(d=>d>=cut30s);
-    if(!woDates.length)woDates=allWoDates.filter(d=>d>=cut90s).slice(0,10);
+    if(!woDates.length&&AIDAYS>7)woDates=allWoDates.filter(d=>d>=cut90s).slice(0,10);
     let woStats='記録なし';
     if(woDates.length){
       const thisWeek=woDates.filter(d=>{const dd=new Date(todayD);dd.setDate(dd.getDate()-7);return d>=dd.toISOString().slice(0,10);}).length;
@@ -7911,13 +8042,13 @@ function calcGameStats(){
         }).join(' / ');
         return `${d}: ${exDetail}`;
       }).join('\n');
-      woStats=`今週${thisWeek}回・先週${lastWeek}回\n${recent}`;
+      woStats=(AIDAYS>7?`今週${thisWeek}回・先週${lastWeek}回`:`直近7日で${thisWeek}回`)+`\n${recent}`;
     }
     const useCaseMap={study:'勉強・試験',fitness:'筋トレ・体づくり',habit:'習慣管理',goal:'目標達成'};
     const useCaseStr=(db.userProfile?.useCase||[]).map(v=>useCaseMap[v]||v).join('・')||'未設定';
     // 睡眠データ（直近30日の統計）
     const sleepRecs=[];
-    for(let i=0;i<30;i++){const d=new Date(todayD);d.setDate(d.getDate()-i);const ds=d.toISOString().slice(0,10);const sl=db.sleep[ds]||{};if(sl.bedtime&&sl.wakeTime){const[bh,bm]=sl.bedtime.split(':').map(Number);const[wh,wm]=sl.wakeTime.split(':').map(Number);let dur=(wh*60+wm)-(bh*60+bm);if(dur<0)dur+=1440;sleepRecs.push({date:ds,bedtime:sl.bedtime,wake:sl.wakeTime,dur:dur/60});}}
+    for(let i=0;i<AIDAYS;i++){const d=new Date(todayD);d.setDate(d.getDate()-i);const ds=d.toISOString().slice(0,10);const sl=db.sleep[ds]||{};if(sl.bedtime&&sl.wakeTime){const[bh,bm]=sl.bedtime.split(':').map(Number);const[wh,wm]=sl.wakeTime.split(':').map(Number);let dur=(wh*60+wm)-(bh*60+bm);if(dur<0)dur+=1440;sleepRecs.push({date:ds,bedtime:sl.bedtime,wake:sl.wakeTime,dur:dur/60});}}
     let sleepStats='記録なし';
     if(sleepRecs.length){
       const avgDur=(sleepRecs.reduce((s,r)=>s+r.dur,0)/sleepRecs.length).toFixed(1);
@@ -7956,7 +8087,7 @@ function calcGameStats(){
     if(hp.dislikes)hpParts.push(`苦手な食材:${hp.dislikes}`);
     const hpStats=hpParts.length?hpParts.join(' / '):'未設定';
     const streakStats=typeof streakSummaryText==='function'?streakSummaryText():'なし';
-    return `【今日の日付】${today}\n【連続記録】${streakStats}\n【健康プロフィール】${hpStats}\n【使用目的】${useCaseStr}\n【今後14日間の予定】\n${evs}\n【未完了タスク】\n${tasks}\n【進行中の目標】\n${goals}\n【カレンダー一覧】\n${cals}\n【タスク達成状況】${taskStats}\n【筋トレ履歴（直近30日/最大90日遡及）】\n${woStats}\n【睡眠記録（直近30日統計）】\n${sleepStats}\n【食事記録（過去7日間）】\n${mealStats}\n【今日の健康データ】${healthStats}\n【タスクフィードバック履歴】\n${fbStats}\n【動画への本人の評価・コメント（本人とAIだけが見る。好みに合わせた提案に使う）】\n${typeof vnContextText==='function'?vnContextText():'なし'}`;
+    return `【今日の日付】${today}\n【連続記録】${streakStats}\n【健康プロフィール】${hpStats}\n【使用目的】${useCaseStr}\n【今後14日間の予定】\n${evs}\n【未完了タスク】\n${tasks}\n【進行中の目標】\n${goals}\n【カレンダー一覧】\n${cals}\n【タスク達成状況】${taskStats}\n【筋トレ履歴（直近${AIDAYS}日${AIDAYS>7?'/最大90日遡及':''}）】\n${woStats}\n【睡眠記録（直近${AIDAYS}日統計）】\n${sleepStats}\n【食事記録（過去7日間）】\n${mealStats}\n【今日の健康データ】${healthStats}\n【タスクフィードバック履歴】\n${fbStats}\n【動画への本人の評価・コメント（本人とAIだけが見る。好みに合わせた提案に使う）】\n${typeof vnContextText==='function'?vnContextText():'なし'}`;
   }
   async function executeTool(name,input){
     if(name==='add_event'){
@@ -8261,7 +8392,7 @@ function calcGameStats(){
         // 思考モード: Sonnet 5.5 は adaptive thinking＋effort で深さを指定（budget_tokens は400）。display:'summarized'で思考の要約を返す
         // v2.96.0: 普段は Haiku 5.5（思考オフ・約1/20の料金）。💭思考モードのときだけ Sonnet 5.5
         // cache_control（上部）: ツール定義＋固定の指示をキャッシュ。トップレベルの cache_control で、ツールの往復でも前の部分を読み出しで済ませる
-        const reqBody={model:useThinking?'claude-sonnet-5-5':'claude-haiku-5-5',max_tokens:useThinking?16000:4096,system,messages:apiMessages,tools:AI_TOOLS,cache_control:{type:'ephemeral'}};
+        const reqBody={lh_feature:useThinking?'think':'chat',model:useThinking?'claude-sonnet-5-5':'claude-haiku-5-5',max_tokens:useThinking?16000:4096,system,messages:apiMessages,tools:AI_TOOLS,cache_control:{type:'ephemeral'}};
         if(useThinking){reqBody.thinking={type:'adaptive',display:'summarized'};reqBody.output_config={effort:'xhigh'};}
         else reqBody.thinking={type:'disabled'};
         if(useThinking){
@@ -8294,7 +8425,7 @@ function calcGameStats(){
             thinkingEl.innerHTML='<div class="ran-inline-state"><img class="ran-inline-img" src="assets/characters/Ran_thinking.png" onerror="this.style.display=\'none\'"><span class="ran-inline-label">考え中…</span></div>';thinkingEl.className='ai-msg ai thinking';
             const toolResults=await Promise.all(toolUseBlocks.map(async tool=>({type:'tool_result',tool_use_id:tool.id,content:confirmed?await executeTool(tool.name,tool.input):'ユーザーがキャンセルしました'})));
             apiMessages.push({role:'user',content:toolResults});
-            reqBody.messages=apiMessages;
+            reqBody.messages=apiMessages;reqBody.lh_feature='chat_tool'; // v2.103.0: 同じ質問の中のツールの続きは回数に数えない
           } else {
             reply=data.content?.find(c=>c.type==='text')?.text||'応答を取得できませんでした';
             break;
@@ -8374,6 +8505,7 @@ function calcGameStats(){
     document.getElementById('ai-size-toggle').textContent=small?'⤡':'⤢';
   };
   document.getElementById('ai-think-toggle').onclick=()=>{
+    if(!useThinking&&!lhIsPro()){lhShowPaywall({feature:'think'});return;} // v2.103.0: 思考モードはプレミアム
     useThinking=!useThinking;
     document.getElementById('ai-think-toggle').classList.toggle('on',useThinking);
     document.getElementById('ai-think-toggle').title=useThinking?'思考モード ON（深く考える）':'思考モード OFF';
@@ -8455,7 +8587,7 @@ function calcGameStats(){
       const prompt='以下はユーザーの今日のライフデータです。\n\n'+ctx+'\n\n上記データを踏まえて、今日のユーザーへの「ひとこと」を2〜3文で書いてください。予定・タスク・筋トレ状況を絡めて、具体的に、明るく親しみやすい言葉で。余計な前置きなしで本文だけ返してください。';
       const stoicBrief=lhStoic(); // v2.100.0: ストイックは事実と数字だけ・1〜2文
       const promptX=stoicBrief?'以下はユーザーの今日のライフデータです。\n\n'+ctx+'\n\n今日やるべきことを、事実と数字だけで1〜2文、合計60字以内で書いてください。励ましの言葉・絵文字・感嘆符は使わない。本文だけ返してください。':prompt;
-      const body=JSON.stringify({model:'claude-haiku-5-5',max_tokens:400,thinking:{type:'disabled'},system:stoicBrief?'あなたはLifeWithのAIトレーナーです。キャラクターは演じず、事実と数字だけを簡潔な常体の日本語で伝えます。':'あなたはLifeWithのAIアシスタントです。ユーザーの生活データを把握している、身近な友達のような存在です。です・ます調は使わず、自然でやわらかいタメ口の日本語で短く話します。',messages:[{role:'user',content:promptX}]});
+      const body=JSON.stringify({lh_feature:'brief',model:'claude-haiku-5-5',max_tokens:400,thinking:{type:'disabled'},system:stoicBrief?'あなたはLifeWithのAIトレーナーです。キャラクターは演じず、事実と数字だけを簡潔な常体の日本語で伝えます。':'あなたはLifeWithのAIアシスタントです。ユーザーの生活データを把握している、身近な友達のような存在です。です・ます調は使わず、自然でやわらかいタメ口の日本語で短く話します。',messages:[{role:'user',content:promptX}]});
       let lastErr='';
       // Workerは上流のエラー（混雑・回数制限）もHTTP 200で返すため、本文の有無で成否を判定する
       for(let attempt=0;attempt<3;attempt++){
@@ -8474,7 +8606,7 @@ function calcGameStats(){
             return;
           }
           lastErr=data.error?.message||data.error?.type||(typeof data.error==='string'?data.error:'')||('HTTP '+res.status);
-          if(['credit','budget'].includes(aiErrorKind(lastErr)))break; // 残高切れ・予算切れは再試行しても直らない
+          if(['credit','budget','quota','pro'].includes(aiErrorKind(lastErr)))break; // 残高切れ・予算切れは再試行しても直らない
         }catch(e){lastErr=e.message||'network';}
       }
       if(aiErrorText(lastErr)){renderCard(aiErrorText(lastErr));return;}
@@ -8600,7 +8732,7 @@ function calcGameStats(){
         const ctx=getContext();
         const goalList=activeGoals.map(g=>`・${g.text||g.title}（進捗${g.progress||0}%${g.dueDate?'・期限'+g.dueDate:''}）`).join('\n');
         const prompt=`以下はユーザーの今日のライフデータです。\n\n${ctx}\n\n【現在の目標】\n${goalList}\n\n今日やるべき3つのミッションをJSONで生成してください。\n【重要】ミッションは「現在の目標」に直接つながるアクションを優先してください。目標の進捗を高めるために今日具体的に何をすべきかを考えて設定してください。タスク・筋トレ・予定なども踏まえて具体的に。\n\n返答はJSON配列のみ（説明不要）:\n[\n  {"id":"m1","text":"ミッション説明（20字以内）","type":"complete_task","taskId":"タスクのid（特定する場合のみ）"},\n  {"id":"m2","text":"...","type":"log_workout"},\n  {"id":"m3","text":"...","type":"open_ai"}\n]\n\ntypeは complete_task / log_workout / open_ai / manual のいずれか。`;
-        const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({model:'claude-haiku-5-5',max_tokens:300,thinking:{type:'disabled'},system:'あなたはLifeWithのミッション生成AIです。ユーザーのデータを読んで今日のミッションをJSON配列で返します。JSON以外は一切出力しないでください。',messages:[{role:'user',content:prompt}]})});
+        const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({lh_feature:'mission',model:'claude-haiku-5-5',max_tokens:300,thinking:{type:'disabled'},system:'あなたはLifeWithのミッション生成AIです。ユーザーのデータを読んで今日のミッションをJSON配列で返します。JSON以外は一切出力しないでください。',messages:[{role:'user',content:prompt}]})});
         if(!res.ok)throw new Error('HTTP '+res.status);
         const data=await res.json();
         const raw=data.content?.find(c=>c.type==='text')?.text||'[]';
@@ -9254,7 +9386,7 @@ ${rcpContext()}
 - query はこの料理のレシピ動画を YouTube で探すための日本語の検索語（料理名＋主な食材）
 - comment はランとして3つ全体へのひとこと。タメ口で30字以内`;
   const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({
-    model:'claude-haiku-5-5',max_tokens:2500,thinking:{type:'disabled'},
+    lh_feature:'recipe',model:'claude-haiku-5-5',max_tokens:2500,thinking:{type:'disabled'},
     system:'あなたはLifeWithの食事コーチ「ラン」。筋トレする人の自炊を、手軽さと栄養の両方から提案する。アレルギーの指定は最優先で守る。医学的に一般的な範囲の内容にする。日本語のみ。',
     output_config:{format:{type:'json_schema',schema:rcpSchema()}},
     messages:[{role:'user',content:prompt}],
