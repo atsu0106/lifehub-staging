@@ -1601,6 +1601,73 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 .tut-txt b{font-size:14px;}
 .tut-txt small{font-size:11px;color:var(--fg2);}
 .tut-flash{outline:3px solid var(--accent);outline-offset:2px;transition:outline .3s;}
+
+/* v2.107.0: プレミアムのAIの提案とAIの判定 */
+.exf-typing .exf-parts,.exf-typing .exf-plbl{display:none;}
+.mm-ai-note{font-size:12px;font-weight:700;color:var(--accent);margin:2px 2px 4px;}
+.mm-d-why{display:flex;gap:6px;align-items:center;font-size:13px;margin:4px 0;color:var(--fg);}
+.mm-ai-box{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+.mm-ai-box.loading{color:var(--fg2);font-size:14px;}
+.mm-ai-box small{display:block;color:var(--fg3);font-size:12px;}
+.mm-ai-head{display:flex;align-items:center;gap:8px;}
+.mm-ai-head b{flex:1;font-size:15px;}
+.mm-ai-redo{width:44px;height:44px;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--fg2);font-size:18px;cursor:pointer;}
+.mm-ai-focus{display:flex;gap:6px;flex-wrap:wrap;}
+.mm-ai-focus span{padding:4px 12px;border-radius:999px;background:#F59E0B;color:#fff;font-weight:800;font-size:13px;}
+.mm-ai-today{margin:0;font-size:14px;line-height:1.6;}
+.mm-ai-ask{min-height:44px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--fg);font:inherit;font-size:13px;font-weight:700;cursor:pointer;}
+.mm-ai-err{font-size:13px;color:#B45309;margin:10px 2px 0;}
+.ai-suggest-card{display:flex;flex-direction:column;gap:8px;}
+.ai-suggest-card.loading{opacity:.8;}
+.ais-head{display:flex;align-items:center;gap:8px;}
+.ais-lbl{flex:1;font-size:12px;font-weight:800;color:var(--accent);}
+.ais-redo{width:44px;height:44px;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--fg2);cursor:pointer;}
+.ais-load{margin:0;font-size:13px;color:var(--fg2);}
+.ais-item{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--border);}
+.ais-item:first-of-type{border-top:0;}
+.ais-ic{font-size:20px;line-height:1.2;}
+.ais-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--fg2);line-height:1.6;}
+.ais-main b{font-size:15px;color:var(--fg);}
+.ais-menu{margin:2px 0;padding:8px 10px;border-radius:10px;background:var(--surface2);font:inherit;font-size:13px;color:var(--fg);white-space:pre-wrap;}
+.ais-act{align-self:flex-start;min-height:40px;padding:0 14px;border-radius:10px;border:0;background:var(--accent);color:#fff;font:inherit;font-size:13px;font-weight:700;cursor:pointer;}
+.ais-ask{background:var(--surface);color:var(--fg);border:1px solid var(--border);}
+.ais-x{width:44px;height:44px;flex:none;border:0;background:none;color:var(--fg3);font-size:18px;cursor:pointer;margin:-10px -8px 0 0;}
+.ais-teaser{display:flex;align-items:center;gap:8px;}
+.ais-t-txt{flex:1;display:flex;flex-direction:column;font-size:12px;color:var(--fg2);}
+.ais-t-txt b{font-size:14px;color:var(--fg);}
+.ais-t-go{min-height:40px;padding:0 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--fg);font:inherit;font-size:12px;font-weight:700;cursor:pointer;}
+.rp-sec{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;font-weight:800;font-size:15px;margin:14px 2px 8px;}
+.rp-sec small{font-weight:400;font-size:12px;color:var(--fg3);}
+.rp-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+.rp-tile{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;}
+.rp-tile>small{font-size:12px;color:var(--fg2);}
+.rp-tile>div{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;}
+.rp-v{font-size:20px;font-weight:800;color:var(--fg);}
+.rp-v i{font-style:normal;font-size:12px;font-weight:700;color:var(--fg2);margin-left:2px;}
+.rp-tile small.up{color:#047857;font-weight:700;}
+.rp-tile small.down{color:#B45309;font-weight:700;}
+.rp-lock{display:flex;flex-direction:column;gap:6px;margin-top:14px;}
+.rp-lock b{font-size:15px;}
+.rp-lock small{font-size:13px;color:var(--fg2);line-height:1.6;}
+.rp-cor{display:flex;flex-direction:column;}
+.rp-c-row{padding:8px 0;border-top:1px solid var(--border);}
+.rp-c-row:first-child{border-top:0;}
+.rp-c-pair{font-size:12px;color:var(--fg3);}
+.rp-c-txt{font-size:14px;font-weight:700;color:var(--fg);}
+.rp-c-row.none .rp-c-txt{font-weight:400;color:var(--fg2);}
+.rp-c-meta{font-size:12px;color:var(--fg3);}
+.rp-c-row.strong .rp-c-meta{color:var(--accent);font-weight:700;}
+.rp-ai{display:flex;flex-direction:column;gap:6px;}
+.rp-ai.loading{color:var(--fg2);font-size:14px;}
+.rp-ai-head{display:flex;align-items:center;justify-content:space-between;}
+.rp-ai-head small{color:var(--fg3);font-size:12px;}
+.rp-sum{margin:0;font-size:15px;line-height:1.6;font-weight:700;}
+.rp-lbl{font-size:12px;font-weight:800;color:var(--fg2);margin-top:4px;}
+.rp-ul{margin:0;padding-left:20px;font-size:14px;line-height:1.7;}
+.rp-ins{margin:0;font-size:14px;line-height:1.6;}
+.ai-suggest-card,.mm-ai-box,.rp-lock,.rp-cor,.rp-ai{padding:12px 14px;}
+.ai-suggest-card{gap:4px;}
+.ai-suggest-card.teaser{padding:8px 4px 8px 14px;}
 </style>
 </head>
 <body>
@@ -1661,6 +1728,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
     <div id="tut-card" class="card tut-card" hidden></div>
     <div id="mm-home-card" class="card mm-home-card" hidden></div>
     <div id="ai-brief-card" class="ai-brief-card" hidden></div>
+    <div id="ai-suggest-card" class="card ai-suggest-card" hidden></div>
     <div id="stoic-today" class="card stoic-today" hidden></div>
     <div id="daily-mission-card" class="daily-mission-card" hidden></div>
     <div id="streak-card" class="card streak-card" hidden></div>
@@ -2444,7 +2512,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         <div class="st-about-note">動画の検索・表示に YouTube API Services を使っています。<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube利用規約</a>・<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Googleプライバシーポリシー</a>が適用されます。AIの答えは医療アドバイスではありません。</div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.106.1 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.107.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -3039,7 +3107,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='3c8999f837'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='6473d9bc05'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -5572,9 +5640,9 @@ function legalUrl(name){const base=(typeof lhIsStaging==='function'&&lhIsStaging
 var LH_DEV_KEY='lh_dev',LH_QUOTA_KEY='lh_quota';
 var LH_PRICE={month:'1,200円',year:'9,800円',yearPerMonth:'約817円'};
 var LH_FREE_LIMITS={chat:10,photo:2,recipe:1,feedback:3};
-var LH_FEATURE_NAMES={chat:'AIチャット',think:'💭じっくり考えるモード',photo:'食事写真の分析',recipe:'食材からメニュー',feedback:'タスクのふり返り',plan:'AIの週間トレーニングメニュー',goal:'目標のAI判定',progress:'進捗のAI評価',brief:'今日のひとこと',mission:'今日のミッション',advice:'健康アドバイス'};
+var LH_FEATURE_NAMES={chat:'AIチャット',think:'💭じっくり考えるモード',photo:'食事写真の分析',recipe:'食材からメニュー',feedback:'タスクのふり返り',plan:'AIの週間トレーニングメニュー',goal:'目標のAI判定',progress:'進捗のAI評価',recovery:'筋肉の回復のAI判定',suggest:'ランからの提案',report:'週のAIレポート',brief:'今日のひとこと',mission:'今日のミッション',advice:'健康アドバイス'};
 // 自分で押して使う機能だけ、回数切れで案内画面を出す（ひとことなど自動のものは出さない）
-var LH_USER_FEATURES=['chat','think','photo','recipe','feedback','plan','progress'];
+var LH_USER_FEATURES=['chat','think','photo','recipe','feedback','plan','progress','recovery','report'];
 function lhDeviceId(){
   try{
     let d=localStorage.getItem(LH_DEV_KEY);
@@ -5628,7 +5696,9 @@ function lhShowPaywall(opt){
       <li><b>あなた専用の週間トレーニングメニュー</b><span>予定・過去の重量・睡眠に合わせてAIが組みます（無料は定番メニュー）</span></li>
       <li><b>目標のAI判定・進捗のAI評価</b></li>
       <li><b>💭じっくり考えるモード</b><span>より賢いAIで深く考えて答えます</span></li>
-      <li class="pw-soon"><b>近日追加</b><span>週のAIレポート・体調との関係の分析・AIからのおすすめ</span></li>
+      <li><b>ランからの提案</b><span>頼まなくても、記録を見てメニューや生活のおすすめを毎日</span></li>
+      <li><b>筋肉の回復をAIが判定</b><span>前回の量・睡眠・食事から、15部位の鍛えどきを判定（無料は日数で色分け）</span></li>
+      <li><b>週のAIレポート・体調との関係</b><span>「睡眠が長い日ほどトレーニング量が多い」などを見つけて、1週間をふり返ります</span></li>
     </ul>
     <div class="pw-price"><div><b>${LH_PRICE.month}</b> / 月</div><div><b>${LH_PRICE.year}</b> / 年<small>（1か月あたり${LH_PRICE.yearPerMonth}）</small></div></div>
     <div class="pw-trial">最初の1か月は無料</div>
@@ -5689,6 +5759,7 @@ renderAiConsentRow();
 document.getElementById('st-plan-row')?.addEventListener('click',()=>lhShowPaywall({feature:'none'}));
 renderPlanRow();
 const CHANGELOG=[
+  {v:'v2.107.0',d:'プレミアム: 筋肉の回復をAIが判定（睡眠・食事・前回の量から）・ホームに「ランからの提案」・分析に「週のレポート」（数字は無料。体調との関係とAIのレポートはプレミアム）'},
   {v:'v2.106.1',d:'プロフィールから「質問に答えてプランを作る」をいつでも開けるように'},
   {v:'v2.106.0',d:'はじめての人向けに、最初の質問（目的・体・場所とジム・器具・回数・経験・健康チェック）と、あなた専用のプラン・はじめてガイドを追加。プロフィール → ジムと器具'},
   {v:'v2.105.0',d:'トレーニングに🔍種目を探す（名前・部位から。種目の絵つき）。「今日は軽めで」（睡眠が短い日などは自動でおすすめ）。下のタブ「自分」を「プロフィール」に'},
@@ -8187,6 +8258,7 @@ function calcGameStats(){
   }
 
   // ── ツール ──
+  window.lhGetContext=function(){return getContext();}; // v2.107.0: 提案・週のレポートで使う
   function getContext(){
     const AIDAYS=lhIsPro()?30:7; // v2.103.0: AIが読む記録の期間（無料は直近7日）
     const today=todayStr();
@@ -10327,6 +10399,13 @@ function mmState(){
     o.days=_mmDays(o.last,t);
     o.st=o.days<=1?'rest':o.days<=3?'soon':o.days<=6?'ready':'long';
   });
+  // v2.107.0: プレミアムでAIが今日判定していれば、その判定を色に使う
+  const ai=typeof lhMmAiToday==='function'?lhMmAiToday():null;
+  if(ai)MM_PARTS.forEach(p=>{
+    const a=ai.parts[p.k],o=out[p.k];if(!a||!MM_ST[a.st])return;
+    let s=a.st;if(s==='ready'&&o.days!=null&&o.days>=7)s='long';if(s==='none'&&o.last)s=o.st;if(s!=='none'&&!o.last)s='none';
+    o.st=s;o.ai=true;o.why=String(a.why||'');
+  });
   return out;
 }
 function mmDaysText(o){return o.days==null?'記録なし':o.days===0?'今日':o.days+'日前';}
@@ -10385,12 +10464,12 @@ function renderMmHomeCard(){
 
 // 分析の上の切り替え（筋肉・食事・睡眠・体重と健康）
 function mmAnaChips(cur){
-  return `<div class="ana-chips" role="tablist">${[['muscle','筋肉'],['meals','食事'],['sleep','睡眠'],['health','体重・健康']].map(([k,l])=>`<button type="button" class="ana-chip${k===cur?' on':''}" data-ana="${k}">${l}</button>`).join('')}</div>`;
+  return `<div class="ana-chips" role="tablist">${[['muscle','筋肉'],['report','週のレポート'],['meals','食事'],['sleep','睡眠'],['health','体重・健康']].map(([k,l])=>`<button type="button" class="ana-chip${k===cur?' on':''}" data-ana="${k}">${l}</button>`).join('')}</div>`;
 }
 function mmBindChips(root){
   root.querySelectorAll('.ana-chip').forEach(b=>b.onclick=()=>{
     const k=b.dataset.ana;
-    if(k==='muscle')switchToTab('ana');
+    if(k==='muscle'||k==='report'){window._anaView=k;switchToTab('ana');}
     else{st.otherSub=k;switchToTab('other');}
   });
 }
@@ -10398,6 +10477,7 @@ function mmBindChips(root){
 // 分析 → 筋肉
 function renderMuscleMap(){
   const root=document.getElementById('mm-root');if(!root)return;
+  if(window._anaView==='report'&&typeof renderWeekReport==='function'){renderWeekReport(root);return;}
   const s=mmState(),side=window._mmSide==='b'?'b':'f';
   const list=MM_PARTS.filter(p=>p.side.includes(side));
   const sel=window._mmSel&&MM_PARTS.find(p=>p.k===window._mmSel);
@@ -10407,19 +10487,15 @@ function renderMuscleMap(){
       <div class="mm-fig">${mmSvg(side,_mmFill(s),150,312,side==='f'?'体の前側の筋肉マップ':'体の後ろ側の筋肉マップ')}</div>
       <div class="mm-list">${list.map(p=>{const o=s[p.k];return `<button type="button" class="mm-row${sel&&sel.k===p.k?' on':''}" data-k="${p.k}"><span class="mm-dot" style="background:${MM_ST[o.st].c}"></span><span class="mm-nm"><b>${esc(p.n)}</b><small>${esc(p.f)}</small></span><span class="mm-days">${mmDaysText(o)}</span></button>`;}).join('')}</div>
     </div>
+    ${typeof lhMmAiToday==='function'&&lhMmAiToday()?'<div class="mm-ai-note">色は今日のAIの判定</div>':''}
     <div class="mm-legend">${Object.values(MM_ST).map((v,i)=>`<span><i style="background:${v.c}"></i>${v.l}${[' 0〜1日',' 2〜3日',' 4〜6日',' 7日以上',''][i]}</span>`).join('')}</div>
     <div id="mm-detail">${sel?mmDetailHtml(sel,s[sel.k]):'<p class="mm-hint">部位をタップすると、前回の記録とおすすめの種目が出ます</p>'}</div>
-    <button type="button" class="mm-ai-btn" id="mm-ai-btn"><span class="pw-tag">PREMIUM</span> AIにくわしく判定してもらう<small>睡眠・食事・その日の量まで見て、今日の鍛えどきを判定</small></button>`;
+    <div id="mm-ai-area">${typeof mmAiBoxHtml==='function'?mmAiBoxHtml():''}</div>`;
   root.querySelectorAll('.mm-side').forEach(b=>b.onclick=()=>{window._mmSide=b.dataset.side;renderMuscleMap();});
   root.querySelectorAll('.mm-row').forEach(b=>b.onclick=()=>{window._mmSel=b.dataset.k;renderMuscleMap();});
   root.querySelectorAll('.mm-svg [data-k]').forEach(e=>e.addEventListener('click',()=>{window._mmSel=e.getAttribute('data-k');renderMuscleMap();}));
   mmBindChips(root);
-  document.getElementById('mm-ai-btn').onclick=()=>{
-    if(typeof lhIsPro==='function'&&!lhIsPro()){lhShowPaywall({feature:'none'});return;}
-    switchToTab('ai');
-    const inp=document.getElementById('ai-input');
-    if(inp){inp.value='筋肉マップを見て、今日どこを鍛えるのがいいか判定して。睡眠・食事・前回の量も踏まえて、くわしく教えて';inp.dispatchEvent(new Event('input'));}
-  };
+  if(typeof mmAiBind==='function')mmAiBind(root);
   if(typeof renderPlanRow==='function')renderPlanRow();
 }
 function mmDetailHtml(p,o){
@@ -10427,6 +10503,7 @@ function mmDetailHtml(p,o){
   const yt=q=>'https://www.youtube.com/results?search_query='+encodeURIComponent(q+' やり方');
   return `<div class="card mm-detail">
     <div class="mm-d-head"><b>${esc(p.n)}</b><small>${esc(p.f)}</small><span class="mm-d-st" style="color:${o.st==='none'?'var(--fg3)':MM_ST[o.st].c}">${mmDaysText(o)}${o.st!=='none'?'・'+MM_ST[o.st].l:''}</span></div>
+    ${o.ai&&o.why?`<div class="mm-d-why"><span class="pw-tag">AI</span>${esc(o.why)}</div>`:''}
     ${o.last?`<div class="mm-d-last">前回 ${esc(o.last.slice(5).replace('-','/'))}：${esc(o.ex.slice(0,3).join('、'))}</div>`:''}
     <div class="mm-d-lbl">おすすめの種目</div>
     ${lib.map(([n,tool,note])=>`<div class="mm-ex"><span class="mm-ex-nm"><b>${esc(n)}</b><small>${esc(note)}</small></span><span class="mm-tool">${esc(tool)}</span><a class="mm-yt" href="${yt(n)}" target="_blank" rel="noopener">動画</a></div>`).join('')}
@@ -10476,7 +10553,7 @@ function renderExFind(){
   if(!box.dataset.built){
     box.dataset.built='1';
     box.innerHTML=`<div class="card exf-box"><label for="exf-q" class="exf-lbl">種目の名前で探す</label><div class="exf-search"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="exf-q" type="search" placeholder="例：ベンチ、すくわっと" autocomplete="off"></div></div>
-      <div class="exf-lbl" style="margin:4px 2px 6px">部位から探す</div>
+      <div class="exf-lbl exf-plbl" style="margin:4px 2px 6px">部位から探す</div>
       <div class="exf-parts" id="exf-parts"></div>
       <div id="exf-list"></div>`;
     document.getElementById('exf-q').addEventListener('input',renderExFindList);
@@ -10489,6 +10566,7 @@ function renderExFind(){
 function renderExFindList(){
   const el=document.getElementById('exf-list');if(!el)return;
   const q=_exKana(document.getElementById('exf-q')?.value.trim());
+  document.getElementById('wo-find-view')?.classList.toggle('exf-typing',!!q); // v2.107.0
   const part=window._exfPart;
   let list=exCatalog().map(e=>({...e,m:mmMusclesOf(e.name)}));
   if(q)list=list.filter(e=>_exKana(e.name).includes(q));
@@ -10804,6 +10882,277 @@ function renderTutorial(){
 document.querySelector('.me-row[data-me="gym"]')?.addEventListener('click',openGymSheet);
 
 renderTutorial();
+// ── プレミアムのAIの提案とAIの判定（v2.107.0） ─────────────────
+// ①筋肉の回復のAI判定 ②ランからの提案（ホーム・1日1回） ③週のレポート（数字は無料・体調との関係とAIのレポートはプレミアム）
+// ※ビルドで1つのscriptに連結されるため、トップレベルに const/let を置かない（TDZ回避）
+
+function _pmDate(off,base){const d=new Date((base||todayStr())+'T00:00:00');d.setDate(d.getDate()+off);return fmt(d);}
+function _pmKey(k){return k+'_'+(window._LH_PID||'');}
+function _pmGet(k){try{return JSON.parse(localStorage.getItem(_pmKey(k))||'null');}catch(e){return null;}}
+function _pmSet(k,v){try{localStorage.setItem(_pmKey(k),JSON.stringify(v));}catch(e){}}
+function _pmVol(ds){let sets=0,vol=0;((db.workouts&&db.workouts[ds])||[]).forEach(e=>(e.sets||[]).forEach(s=>{sets++;if(s.w!=null&&s.r!=null)vol+=(+s.w||0)*(+s.r||0);}));return {sets,vol:Math.round(vol)};}
+function _pmMeal(ds){const m=db.meals&&db.meals[ds];if(!m)return null;let kcal=0,p=0,n=0;['breakfast','lunch','dinner','snack'].forEach(k=>(m[k]||[]).forEach(it=>{n++;kcal+=+it.kcal||0;p+=+it.protein||0;}));return n?{kcal:Math.round(kcal),p:Math.round(p)}:null;}
+function _pmSleepH(ds){const m=typeof _lhSleepMin==='function'?_lhSleepMin(db.sleep&&db.sleep[ds]):null;return m==null?null:m/60;}
+function _pmH(ds){return (db.health&&db.health[ds])||{};}
+function lhPremiumLocked(){return typeof lhIsPro==='function'&&!lhIsPro();}
+function lhAskRan(text){
+  switchToTab('ai');
+  const inp=document.getElementById('ai-input');
+  if(inp){inp.value=text;inp.dispatchEvent(new Event('input'));inp.focus();}
+}
+function _pmTarget(){
+  const h=db.settings.healthProfile||{};
+  if(typeof onbNutrition!=='function')return null;
+  return onbNutrition(Object.assign({},h,{goal:h.goal||(typeof onbGoalOf==='function'?onbGoalOf(h.purposes):'maintain')}));
+}
+// AIにJSONで答えてもらう。{data} か {err, kind}
+async function lhAiJson(feature,sys,prompt,maxTok,silent){
+  if(window._DEV_MODE)return {err:'[DEVモード] AIは本番・stagingのみ動作します'};
+  if(!aiConsented()){if(silent||!(await aiRequireConsent()))return {err:'AIを使うには最初に確認が必要です',kind:'consent'};}
+  try{
+    const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({lh_feature:feature,model:'claude-haiku-5-5',max_tokens:maxTok||1200,thinking:{type:'disabled'},system:sys+'\n出力はJSONだけ。前置き・コードブロック・説明は書かない。',messages:[{role:'user',content:prompt}]})});
+    const d=await res.json();
+    if(d&&(d.error||d.type==='error'))return {err:aiErrorText(d)||'AIの返事を受け取れませんでした。少し時間をおいて試してください',kind:aiErrorKind(d)};
+    const t=((d&&d.content)||[]).filter(c=>c.type==='text').map(c=>c.text).join('');
+    const m=t.match(/\{[\s\S]*\}/);if(!m)return {err:'AIの返事を読み取れませんでした。もう一度試してください'};
+    return {data:JSON.parse(m[0])};
+  }catch(e){return {err:'通信できませんでした。電波のよいところでもう一度試してください'};}
+}
+function _pmDataCtx(){
+  let s='';
+  try{if(typeof window.lhGetContext==='function')s+=window.lhGetContext()+'\n';}catch(e){}
+  try{if(typeof lhProfileContext==='function')s+=lhProfileContext();}catch(e){}
+  try{if(typeof lhLightContext==='function')s+=lhLightContext();}catch(e){}
+  return s;
+}
+
+// ── ① 筋肉の回復のAI判定 ──
+// 今日の判定（プレミアムのときだけ使う）。mmState() が色に重ねる
+function lhMmAiToday(){
+  if(lhPremiumLocked())return null;
+  const c=_pmGet('lh_mm_ai');
+  return c&&c.date===todayStr()&&c.data&&c.data.parts?c.data:null;
+}
+function lhRecoveryPrompt(){
+  const parts={};MM_PARTS.forEach(p=>{parts[p.k]=[];});
+  for(let i=0;i<14;i++){
+    const ds=_pmDate(-i);
+    ((db.workouts&&db.workouts[ds])||[]).forEach(e=>{
+      const m=mmMusclesOf(e.name),sets=e.sets||[];
+      const desc=sets.map(s=>s.w!=null?`${s.w}kg×${s.r==null?'?':s.r}`:s.r!=null?`${s.r}回`:s.time!=null?`${s.time}分`:'').filter(Boolean).join(',');
+      m.main.forEach(k=>{if(parts[k])parts[k].push(`${i}日前 ${e.name} ${sets.length}セット${desc?'('+desc+')':''}`);});
+      m.sub.forEach(k=>{if(parts[k])parts[k].push(`${i}日前 ${e.name}（補助で使用） ${sets.length}セット`);});
+    });
+  }
+  const lines=MM_PARTS.map(p=>`${p.k}（${p.n}）: ${parts[p.k].slice(0,4).join(' / ')||'14日間記録なし'}`).join('\n');
+  const sl=[1,2,3].map(i=>{const h=_pmSleepH(_pmDate(-i));return `${i}日前の夜: ${h==null?'記録なし':h.toFixed(1)+'時間'}`;}).join('、');
+  const tg=_pmTarget();
+  const ml=[-1,0].map(i=>{const m=_pmMeal(_pmDate(i));return `${i?'昨日':'今日（ここまで）'}: ${m?m.kcal+'kcal・たんぱく質'+m.p+'g':'記録なし'}`;}).join('、');
+  let ctx='';try{if(typeof lhProfileContext==='function')ctx+=lhProfileContext();if(typeof lhLightContext==='function')ctx+=lhLightContext();}catch(e){}
+  return `【部位ごとの直近14日のトレーニング】\n${lines}\n\n【睡眠】${sl}\n【食事】${ml}${tg?`（1日の目安 ${tg.kcal}kcal・たんぱく質${tg.protein}g）`:''}\n${ctx}
+次の考え方で、15部位それぞれの今日の回復状態を判定してください。
+・大きい筋肉（胸・背中・前もも・もも裏・お尻）は強く鍛えたあと48〜72時間、小さい筋肉（腕・肩・ふくらはぎ・お腹・前腕）は24〜48時間で回復するのが目安
+・セット数や重さが多いほど回復に時間がかかる。睡眠が6時間未満の日・たんぱく質が目安より少ない日は回復が遅れる
+・補助で使っただけの部位は回復が早い。14日間記録がない部位は "none"
+・st は rest（回復中）/ soon（もうすぐ）/ ready（鍛えてよい）/ none（記録なし）のどれか
+・why は判定の理由を20字以内で（例:「2日前に胸を12セット・睡眠5h」）
+・focus は今日鍛えるのにいちばん向いている部位のキー（最大3つ。休んだほうがよい日は空）
+・today は今日のおすすめを2文以内のタメ口で
+形式: {"parts":{"chest":{"st":"rest","why":"..."}, ...15部位すべて},"focus":["back"],"today":"..."}
+部位のキー: ${MM_PARTS.map(p=>p.k).join(', ')}`;
+}
+async function lhRunRecovery(force){
+  if(lhPremiumLocked()){lhShowPaywall({feature:'recovery'});return;}
+  if(!force&&lhMmAiToday()){renderMuscleMap();return;}
+  window._mmAiBusy=true;window._mmAiErr='';renderMuscleMap();
+  const r=await lhAiJson('recovery','あなたはスポーツ科学にくわしい筋トレのトレーナーです。記録から筋肉の回復を判定します。',lhRecoveryPrompt(),1500);
+  window._mmAiBusy=false;
+  if(r.data&&r.data.parts)_pmSet('lh_mm_ai',{date:todayStr(),data:r.data});
+  else window._mmAiErr=r.err||'判定できませんでした。もう一度試してください';
+  renderMuscleMap();
+  if(typeof renderMmHomeCard==='function')renderMmHomeCard();
+}
+// 分析 → 筋肉の下に出す AI 判定の欄
+function mmAiBoxHtml(){
+  const ai=lhMmAiToday();
+  if(window._mmAiBusy)return `<div class="card mm-ai-box loading"><span class="pw-tag">PREMIUM</span> AIが判定しています…<small>睡眠・食事・前回の量を見ています</small></div>`;
+  if(ai){
+    const focus=(ai.focus||[]).filter(k=>MM_PARTS.some(p=>p.k===k));
+    return `<div class="card mm-ai-box"><div class="mm-ai-head"><span class="pw-tag">PREMIUM</span><b>AIの判定（今日）</b><button type="button" class="mm-ai-redo" id="mm-ai-redo" aria-label="もう一度判定する">↺</button></div>
+      ${focus.length?`<div class="mm-ai-focus">${focus.map(k=>`<span>${esc(_mmNames([k])[0])}</span>`).join('')}</div>`:''}
+      ${ai.today?`<p class="mm-ai-today">${esc(ai.today)}</p>`:''}
+      <p class="mm-hint" style="margin:0">図の色はAIの判定です。部位をタップすると理由が出ます</p>
+      <button type="button" class="mm-ai-ask" id="mm-ai-ask">このおすすめでメニューをランに聞く</button></div>`;
+  }
+  return `${window._mmAiErr?`<p class="mm-ai-err">${esc(window._mmAiErr)}</p>`:''}<button type="button" class="mm-ai-btn" id="mm-ai-btn"><span class="pw-tag">PREMIUM</span> AIにくわしく判定してもらう<small>睡眠・食事・前回の量まで見て、15部位の回復と今日の鍛えどきを判定</small></button>`;
+}
+function mmAiBind(root){
+  root.querySelector('#mm-ai-btn')?.addEventListener('click',()=>lhRunRecovery(false));
+  root.querySelector('#mm-ai-redo')?.addEventListener('click',()=>lhRunRecovery(true));
+  root.querySelector('#mm-ai-ask')?.addEventListener('click',()=>{
+    const ai=lhMmAiToday()||{};
+    const f=_mmNames((ai.focus||[]).filter(k=>MM_PARTS.some(p=>p.k===k)));
+    lhAskRan(f.length?`筋肉の判定で今日は${f.join('・')}がやりごろだった。今日のメニューを組んで`:'筋肉の判定を見て、今日のメニュー（休むなら軽い内容）を組んで');
+  });
+}
+
+// ── ② ランからの提案（ホーム） ──
+async function renderAiSuggest(force){
+  const el=document.getElementById('ai-suggest-card');if(!el)return;
+  const f=db.settings.features||{};
+  if(window._LH_IS_NEW&&!db.userProfile){el.hidden=true;return;}
+  if(lhPremiumLocked()){
+    if(db.settings.hideSuggestTeaser||!lhPlanEnforced()){el.hidden=true;return;}
+    el.hidden=false;el.className='card ai-suggest-card teaser';
+    el.innerHTML=`<div class="ais-teaser"><span class="pw-tag">PREMIUM</span><span class="ais-t-txt"><b>ランからの提案</b><small>記録を見て、メニューや生活のおすすめをAIが毎日出します</small></span><button type="button" class="ais-t-go">くわしく</button><button type="button" class="ais-x" aria-label="閉じる">×</button></div>`;
+    el.querySelector('.ais-t-go').onclick=()=>lhShowPaywall({feature:'suggest'});
+    el.querySelector('.ais-x').onclick=()=>{db.settings.hideSuggestTeaser=true;save(db);el.hidden=true;};
+    return;
+  }
+  if(!aiConsented()||window._DEV_MODE){el.hidden=true;return;}
+  const today=todayStr();
+  let c=_pmGet('lh_ai_suggest');
+  if(force||!c||c.date!==today){
+    if(window._aisBusy)return;
+    window._aisBusy=true;
+    el.hidden=false;el.className='card ai-suggest-card loading';
+    el.innerHTML=`<div class="ais-head"><span class="ais-lbl">✦ ランからの提案</span></div><p class="ais-load">記録を見て考えています…</p>`;
+    const menu=(db.trainingMenus||{})[today];
+    const r=await lhAiJson('suggest','あなたはLifeWithのAIトレーナー「ラン」です。ユーザーに頼まれていなくても、記録を読んで役に立つ具体的な提案をします。タメ口で短く。',
+      `${_pmDataCtx()}\n【今日のトレーニングの予定】${menu?menu.replace(/\n/g,' / '):'まだない'}\n\n上のデータを読んで、今日のユーザーに役立つ提案を最大2つ出してください。
+・kind は menu（今日のトレーニングメニュー）/ sleep（睡眠）/ meal（食事）/ rest（休養）/ other のどれか
+・今日のトレーニングの予定がすでにあるなら menu は出さない。健康チェックで当てはまる項目があれば強い負荷は出さない
+・title は15字以内、body はデータの数字を根拠にした2文以内
+・menu のときだけ "menu" に、1行目にメニュー名、2行目から「種目名 セット数×回数」を1行ずつ（3〜6種目・使える器具だけ）
+・データが少なくて言えることがなければ items は空
+形式: {"items":[{"kind":"menu","title":"...","body":"...","menu":"背中の日\\nラットプルダウン 3×10"}]}`,1000,true);
+    window._aisBusy=false;
+    if(r.data&&Array.isArray(r.data.items)){c={date:today,items:r.data.items.slice(0,2),hide:[]};_pmSet('lh_ai_suggest',c);}
+    else{el.innerHTML=`<div class="ais-head"><span class="ais-lbl">✦ ランからの提案</span><button type="button" class="ais-redo" aria-label="もう一度">↺</button></div><p class="ais-load">${esc(r.err||'提案を作れませんでした')}</p>`;el.className='card ai-suggest-card';el.querySelector('.ais-redo').onclick=()=>renderAiSuggest(true);return;}
+  }
+  const items=(c.items||[]).map((x,i)=>Object.assign({i},x)).filter(x=>x&&x.title&&!(c.hide||[]).includes(x.i));
+  if(!items.length){el.hidden=true;return;}
+  const ic={menu:'💪',sleep:'😴',meal:'🍽',rest:'🛌',other:'✦'};
+  el.hidden=false;el.className='card ai-suggest-card';
+  el.innerHTML=`<div class="ais-head"><span class="ais-lbl">✦ ランからの提案</span><span class="pw-tag">PREMIUM</span></div>
+    ${items.map(x=>`<div class="ais-item" data-i="${x.i}"><span class="ais-ic" aria-hidden="true">${ic[x.kind]||'✦'}</span><div class="ais-main"><b>${esc(x.title)}</b><span>${esc(x.body||'')}</span>
+      ${x.kind==='menu'&&x.menu?`<pre class="ais-menu">${esc(String(x.menu).split('\n').slice(1).join('\n'))}</pre><button type="button" class="ais-act ais-add">今日の予定に入れる</button>`:`<button type="button" class="ais-act ais-ask">ランに相談</button>`}
+      </div><button type="button" class="ais-x" aria-label="この提案を消す">×</button></div>`).join('')}`;
+  el.querySelectorAll('.ais-item').forEach(row=>{
+    const x=items.find(y=>y.i===+row.dataset.i);
+    row.querySelector('.ais-x').onclick=()=>{c.hide=(c.hide||[]).concat(x.i);_pmSet('lh_ai_suggest',c);renderAiSuggest();};
+    row.querySelector('.ais-ask')?.addEventListener('click',()=>lhAskRan(`「${x.title}」の提案について、くわしく教えて`));
+    row.querySelector('.ais-add')?.addEventListener('click',()=>{
+      if(!db.trainingMenus)db.trainingMenus={};
+      if(db.trainingMenus[today]&&!confirm('今日のトレーニングの予定を、この提案に入れ替えますか？'))return;
+      db.trainingMenus[today]=String(x.menu).trim();save(db);
+      if(typeof renderStoicToday==='function')renderStoicToday();
+      showToast('今日の予定に入れました');
+      c.hide=(c.hide||[]).concat(x.i);_pmSet('lh_ai_suggest',c);renderAiSuggest();
+    });
+  });
+}
+document.addEventListener('lh-ai-consent',()=>{try{renderAiSuggest();}catch(e){}});
+
+// ── ③ 週のレポート ──
+function lhWeekStats(endOff){
+  const days=[];for(let i=6;i>=0;i--)days.push(_pmDate(endOff-i));
+  let tdays=0,sets=0,vol=0;const sl=[],kc=[],pr=[],st=[],wt=[];
+  days.forEach(ds=>{
+    const v=_pmVol(ds);if(v.sets){tdays++;sets+=v.sets;vol+=v.vol;}
+    const s=_pmSleepH(ds);if(s!=null)sl.push(s);
+    const m=_pmMeal(ds);if(m){if(m.kcal)kc.push(m.kcal);if(m.p)pr.push(m.p);}
+    const h=_pmH(ds);if(+h.steps)st.push(+h.steps);if(+h.weight)wt.push(+h.weight);
+  });
+  const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
+  return {from:days[0],to:days[6],tdays,sets,vol,sleep:avg(sl),kcal:avg(kc),protein:avg(pr),steps:avg(st),wFirst:wt.length?wt[0]:null,wLast:wt.length?wt[wt.length-1]:null,wN:wt.length};
+}
+function _pmPearson(xs,ys){
+  const n=xs.length;if(n<5)return null;
+  const mx=xs.reduce((a,b)=>a+b,0)/n,my=ys.reduce((a,b)=>a+b,0)/n;
+  let sxy=0,sxx=0,syy=0;for(let i=0;i<n;i++){const dx=xs[i]-mx,dy=ys[i]-my;sxy+=dx*dy;sxx+=dx*dx;syy+=dy*dy;}
+  if(!sxx||!syy)return null;return sxy/Math.sqrt(sxx*syy);
+}
+// 直近30日の体調との関係。{x, y, r, n, text}
+function lhCorrelations(){
+  const P=[
+    {x:'前の夜の睡眠',xu:'長い',y:'トレーニング量',yu:'多い',yd:'少ない',fx:d=>_pmSleepH(_pmDate(-1,d)),fy:d=>{const v=_pmVol(d);return v.sets?v.vol||v.sets:null;}},
+    {x:'前の夜の睡眠',xu:'長い',y:'歩数',yu:'多い',yd:'少ない',fx:d=>_pmSleepH(_pmDate(-1,d)),fy:d=>+_pmH(d).steps||null},
+    {x:'前の夜の睡眠',xu:'長い',y:'食べたカロリー',yu:'多い',yd:'少ない',fx:d=>_pmSleepH(_pmDate(-1,d)),fy:d=>{const m=_pmMeal(d);return m&&m.kcal?m.kcal:null;}},
+    {x:'前の日のたんぱく質',xu:'多い',y:'トレーニング量',yu:'多い',yd:'少ない',fx:d=>{const m=_pmMeal(_pmDate(-1,d));return m&&m.p?m.p:null;},fy:d=>{const v=_pmVol(d);return v.sets?v.vol||v.sets:null;}},
+    {x:'トレーニング量',xu:'多い',y:'その夜の睡眠',yu:'長い',yd:'短い',fx:d=>{const v=_pmVol(d);return v.sets?v.vol||v.sets:null;},fy:d=>_pmSleepH(d)}
+  ];
+  return P.map(p=>{
+    const xs=[],ys=[];
+    for(let i=0;i<30;i++){const d=_pmDate(-i);const x=p.fx(d),y=p.fy(d);if(x!=null&&y!=null&&isFinite(x)&&isFinite(y)){xs.push(x);ys.push(y);}}
+    const r=_pmPearson(xs,ys),n=xs.length;
+    let text,lvl='none';
+    if(r==null)text='記録が足りません（あと'+Math.max(1,5-n)+'日分）';
+    else{const a=Math.abs(r);lvl=a>=0.5?'strong':a>=0.3?'some':'none';text=lvl==='none'?'はっきりした関係はなさそう':`${p.x}が${p.xu}日ほど、${p.y}が${r>0?p.yu:p.yd}${lvl==='strong'?'（強め）':'（少し）'}`;}
+    return {x:p.x,y:p.y,r,n,lvl,text};
+  });
+}
+function _pmWeekKey(){const d=new Date(todayStr()+'T00:00:00');const w=(d.getDay()+6)%7;d.setDate(d.getDate()-w);return fmt(d);}
+function lhReportToday(){if(lhPremiumLocked())return null;const c=_pmGet('lh_ai_report');return c&&c.week===_pmWeekKey()&&c.data?c:null;}
+async function lhRunReport(){
+  if(lhPremiumLocked()){lhShowPaywall({feature:'report'});return;}
+  window._rpBusy=true;window._rpErr='';renderMuscleMap();
+  const a=lhWeekStats(0),b=lhWeekStats(-7),cr=lhCorrelations().filter(x=>x.r!=null);
+  const fmtS=s=>`トレーニング${s.tdays}日・${s.sets}セット・量${s.vol}kg / 平均睡眠${s.sleep==null?'記録なし':s.sleep.toFixed(1)+'h'} / 平均${s.kcal==null?'記録なし':Math.round(s.kcal)+'kcal'}・たんぱく質${s.protein==null?'記録なし':Math.round(s.protein)+'g'} / 歩数${s.steps==null?'記録なし':Math.round(s.steps)} / 体重${s.wN>=2?s.wFirst+'→'+s.wLast+'kg':s.wLast?s.wLast+'kg':'記録なし'}`;
+  const tg=_pmTarget();
+  const r=await lhAiJson('report','あなたはLifeWithのAIトレーナー「ラン」です。1週間の記録をふり返るレポートを書きます。タメ口で短く、数字を根拠に。',
+    `【直近7日（${a.from}〜${a.to}）】${fmtS(a)}\n【その前の7日】${fmtS(b)}\n${tg?`【1日の目安】${tg.kcal}kcal・たんぱく質${tg.protein}g\n`:''}【直近30日の体調との関係（相関係数）】\n${cr.length?cr.map(x=>`${x.x}と${x.y}: r=${x.r.toFixed(2)}（${x.n}日分）`).join('\n'):'記録が足りない'}\n${_pmDataCtx()}
+上のデータで週のレポートを書いてください。
+・summary: この1週間を2文以内で
+・good: よかったこと（最大3つ・各40字以内）
+・next: 来週やること（最大3つ・具体的に・各40字以内）
+・insight: 体調との関係からわかることを2文以内（関係が弱い・日数が少ないときはそう書く。因果関係とは言い切らない）
+形式: {"summary":"...","good":["..."],"next":["..."],"insight":"..."}`,1400);
+  window._rpBusy=false;
+  if(r.data&&r.data.summary)_pmSet('lh_ai_report',{week:_pmWeekKey(),date:todayStr(),data:r.data});
+  else window._rpErr=r.err||'レポートを作れませんでした。もう一度試してください';
+  renderMuscleMap();
+}
+function _pmDelta(a,b,unit,dig){
+  if(a==null)return '<span class="rp-v">—</span>';
+  const v=dig?a.toFixed(dig):Math.round(a).toLocaleString();
+  let d='';if(b!=null&&a!==b){const x=a-b;d=`<small class="${x>0?'up':'down'}">${x>0?'▲':'▼'}${dig?Math.abs(x).toFixed(dig):Math.round(Math.abs(x)).toLocaleString()}</small>`;}
+  return `<span class="rp-v">${v}<i>${unit}</i></span>${d}`;
+}
+function renderWeekReport(root){
+  const a=lhWeekStats(0),b=lhWeekStats(-7),locked=lhPremiumLocked();
+  const md=s=>s.slice(5).replace('-','/');
+  const w=a.wN>=2?a.wLast-a.wFirst:null;
+  const tiles=[['トレーニング',_pmDelta(a.tdays,b.tdays,'日')],['セット数',_pmDelta(a.sets,b.sets,'')],['量（重さ×回数）',_pmDelta(a.vol,b.vol,'kg')],['平均睡眠',_pmDelta(a.sleep,b.sleep,'h',1)],['平均カロリー',_pmDelta(a.kcal,b.kcal,'kcal')],['たんぱく質',_pmDelta(a.protein,b.protein,'g')],['歩数',_pmDelta(a.steps,b.steps,'歩')],['体重の変化',w==null?'<span class="rp-v">—</span>':`<span class="rp-v">${w>0?'+':''}${w.toFixed(1)}<i>kg</i></span>`]];
+  let prem='';
+  if(locked){
+    prem=`<div class="card rp-lock"><span class="pw-tag">PREMIUM</span><b>体調との関係とAIの週のレポート</b><small>「睡眠が長い日ほどトレーニング量が多い」など、直近30日の記録から体調との関係を見つけて、ランが1週間をふり返ります</small><button type="button" class="ob-btn" id="rp-pw">くわしく見る</button></div>`;
+  }else{
+    const cr=lhCorrelations();
+    const lv={strong:'強め',some:'少し',none:'—'};
+    prem=`<div class="rp-sec">体調との関係<small>直近30日</small></div>
+      <div class="card rp-cor">${cr.map(x=>`<div class="rp-c-row ${x.lvl}"><div class="rp-c-pair">${esc(x.x)} × ${esc(x.y)}</div><div class="rp-c-txt">${esc(x.text)}</div>${x.r!=null?`<div class="rp-c-meta">${x.lvl==='none'?'':lv[x.lvl]+'・'}${x.n}日分</div>`:''}</div>`).join('')}
+      <p class="mm-hint" style="margin:6px 0 0">関係があっても、片方が原因とは限りません</p></div>`;
+    const rp=lhReportToday();
+    prem+=`<div class="rp-sec">AIの週のレポート<span class="pw-tag">PREMIUM</span></div>`;
+    if(window._rpBusy)prem+=`<div class="card rp-ai loading">ランがレポートを書いています…</div>`;
+    else if(rp){const d=rp.data,li=a=>(Array.isArray(a)?a:[]).filter(Boolean).map(x=>`<li>${esc(x)}</li>`).join('');
+      prem+=`<div class="card rp-ai"><div class="rp-ai-head"><small>${esc(md(rp.date))}に作成</small><button type="button" class="mm-ai-redo" id="rp-redo" aria-label="作り直す">↺</button></div><p class="rp-sum">${esc(d.summary||'')}</p>${li(d.good)?`<div class="rp-lbl">よかったこと</div><ul class="rp-ul good">${li(d.good)}</ul>`:''}${li(d.next)?`<div class="rp-lbl">来週やること</div><ul class="rp-ul">${li(d.next)}</ul>`:''}${d.insight?`<div class="rp-lbl">体調との関係</div><p class="rp-ins">${esc(d.insight)}</p>`:''}<button type="button" class="mm-ai-ask" id="rp-ask">レポートについてランに聞く</button></div>`;}
+    else prem+=`${window._rpErr?`<p class="mm-ai-err">${esc(window._rpErr)}</p>`:''}<button type="button" class="ob-btn" id="rp-make">AIの週のレポートを作る</button>`;
+  }
+  root.innerHTML=`${mmAnaChips('report')}
+    <div class="rp-sec">この1週間<small>${md(a.from)}〜${md(a.to)}・▲▼はその前の7日とくらべて</small></div>
+    <div class="rp-grid">${tiles.map(([l,v])=>`<div class="rp-tile"><small>${esc(l)}</small><div>${v}</div></div>`).join('')}</div>
+    ${prem}`;
+  mmBindChips(root);
+  root.querySelector('#rp-pw')?.addEventListener('click',()=>lhShowPaywall({feature:'report'}));
+  root.querySelector('#rp-make')?.addEventListener('click',lhRunReport);
+  root.querySelector('#rp-redo')?.addEventListener('click',lhRunReport);
+  root.querySelector('#rp-ask')?.addEventListener('click',()=>lhAskRan('今週のレポートを見て、来週のトレーニングと生活をどうするか相談したい'));
+  if(typeof renderPlanRow==='function')renderPlanRow();
+}
+
+setTimeout(()=>{try{renderAiSuggest();}catch(e){}},1200);
 </script>
 <div id="lu-overlay" hidden style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;"></div>
 <div id="share-pv-modal" class="share-pv-modal" hidden>
