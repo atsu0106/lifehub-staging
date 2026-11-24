@@ -1686,6 +1686,52 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 .alb-tile img{width:100%;height:100%;object-fit:cover;display:block;}
 .alb-cap{position:absolute;left:0;right:0;bottom:0;padding:14px 6px 4px;background:linear-gradient(transparent,rgba(0,0,0,.65));color:#fff;text-align:left;display:flex;flex-direction:column;font-size:10px;line-height:1.3;}
 .alb-cap b{font-size:11px;}
+
+/* v2.109.0: ホームの上（やる気の出る数字・大きなタイル） */
+:root{--hh-train:#FFE8DC;--hh-train-b:#FDBA8C;--hh-ready:#E8E7FF;--hh-ready-b:#C7D2FE;--hh-meal:#FFF4D1;--hh-sleep:#EDE9FE;--hh-weight:#DCFCE7;}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--hh-train:#3B2418;--hh-train-b:#9A3412;--hh-ready:#25234A;--hh-ready-b:#4338CA;--hh-meal:#3A3217;--hh-sleep:#2B2550;--hh-weight:#15321F;}}
+:root[data-theme="dark"]{--hh-train:#3B2418;--hh-train-b:#9A3412;--hh-ready:#25234A;--hh-ready-b:#4338CA;--hh-meal:#3A3217;--hh-sleep:#2B2550;--hh-weight:#15321F;}
+.home-hero{margin:10px 12px 4px;display:flex;flex-direction:column;gap:10px;}
+.home-hero[hidden]{display:none;}
+:root[data-stoic] #home-hero{display:none!important;}
+:root:not([data-stoic]) body.has-hero #mm-home-card,:root:not([data-stoic]) body.has-hero #training-start-btn,:root:not([data-stoic]) body.has-hero .training-schedule-btn{display:none!important;}
+.hh-status{display:flex;gap:6px;flex-wrap:wrap;}
+.hh-pill{display:inline-flex;align-items:center;gap:4px;min-height:32px;padding:0 12px;border-radius:999px;background:var(--surface);border:1px solid var(--border);font-size:12px;font-weight:700;color:var(--fg2);position:relative;overflow:hidden;}
+.hh-pill b{font-size:15px;color:var(--fg);}
+.hh-fire{background:#1a1a2e;color:#FDBA74;border-color:#1a1a2e;}
+.hh-fire b{color:#fff;}
+.hh-week i{position:absolute;left:0;bottom:0;height:3px;width:var(--p);background:var(--accent);}
+.hh-week.done{border-color:#047857;}.hh-week.done i{background:#047857;}
+.hh-lv{background:var(--accent);border-color:var(--accent);color:#E0E7FF;}.hh-lv b{color:#fff;}
+.hh-grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+.hh-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+.hh-tile{position:relative;overflow:hidden;border:0;border-radius:20px;padding:12px 14px;text-align:left;font:inherit;color:var(--fg);cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;transition:transform .12s;}
+.hh-tile:active{transform:scale(.97);}
+.hh-train,.hh-ready{min-height:150px;}
+.hh-train{background:var(--hh-train);}
+.hh-ready{background:var(--hh-ready);}
+.hh-t-lbl{font-size:11px;font-weight:800;letter-spacing:.04em;color:#C2410C;position:relative;z-index:1;}
+.hh-ready .hh-t-lbl{color:var(--accent);}
+.hh-t-title{font-size:20px;font-weight:800;line-height:1.25;margin-top:2px;position:relative;z-index:1;max-width:100%;overflow-wrap:anywhere;}
+.hh-t-sub{font-size:11px;color:var(--fg2);margin-top:4px;position:relative;z-index:1;max-width:62%;line-height:1.4;}
+.hh-blob{position:absolute;right:-30px;bottom:-40px;width:120px;height:120px;border-radius:50%;background:var(--hh-train-b);opacity:.75;}
+.hh-ready .hh-blob{background:var(--hh-ready-b);}
+.hh-ran{position:absolute;right:-6px;bottom:-4px;width:70px;height:104px;object-fit:contain;object-position:bottom;}
+.hh-body{position:absolute;right:10px;bottom:6px;}
+.hh-body svg{display:block;}
+.hh-small{min-height:84px;padding:10px 12px;border-radius:18px;}
+.hh-meal{background:var(--hh-meal);}.hh-sleep{background:var(--hh-sleep);}.hh-weight{background:var(--hh-weight);}
+.hh-s-lbl{font-size:13px;font-weight:800;}
+.hh-s-val{margin-top:auto;display:flex;align-items:baseline;gap:2px;flex-wrap:wrap;position:relative;z-index:1;}
+.hh-s-val b{font-size:20px;font-weight:800;}
+.hh-s-val small{font-size:11px;color:var(--fg2);font-weight:700;}
+.hh-s-ic{position:absolute;right:8px;top:8px;font-size:20px;opacity:.9;}
+.hh-row{display:flex;gap:4px;overflow-x:auto;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:8px 4px;scrollbar-width:none;}
+.hh-row::-webkit-scrollbar{display:none;}
+.hh-sc{flex:1 0 64px;min-height:64px;border:0;background:none;font:inherit;color:var(--fg);display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;border-radius:12px;}
+.hh-sc:active{background:var(--surface2);}
+.hh-sc-ic{font-size:22px;}
+.hh-sc-l{font-size:11px;font-weight:700;line-height:1.25;text-align:center;color:var(--fg2);}
 </style>
 </head>
 <body>
@@ -1743,6 +1789,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
   </header>
 
   <section id="tab-cal" class="tab on">
+    <div id="home-hero" class="home-hero" hidden></div>
     <div id="tut-card" class="card tut-card" hidden></div>
     <div id="mm-home-card" class="card mm-home-card" hidden></div>
     <div id="ai-brief-card" class="ai-brief-card" hidden></div>
@@ -2541,7 +2588,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         <div class="st-about-note">動画の検索・表示に YouTube API Services を使っています。<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube利用規約</a>・<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Googleプライバシーポリシー</a>が適用されます。AIの答えは医療アドバイスではありません。</div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.108.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.109.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -3136,7 +3183,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='65785c7bc4'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='d2442e5618'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -3634,7 +3681,7 @@ function switchToTab(t){
   updateNavActive();
   if(t==='ana'&&typeof renderMuscleMap==='function')renderMuscleMap();
   if(t==='me')renderMeTab();
-  if(t==='cal'){if(typeof renderTutorial==='function')renderTutorial();if(typeof renderMmHomeCard==='function')renderMmHomeCard();renderGoals();renderCal();renderHealthAdvice();if(typeof renderTrendCard==='function')renderTrendCard();if(typeof lhCheckUnlocks==='function')setTimeout(lhCheckUnlocks,600);if(typeof renderStoicToday==='function')renderStoicToday();}
+  if(t==='cal'){if(typeof renderHomeHero==='function')renderHomeHero();if(typeof renderTutorial==='function')renderTutorial();if(typeof renderMmHomeCard==='function')renderMmHomeCard();renderGoals();renderCal();renderHealthAdvice();if(typeof renderTrendCard==='function')renderTrendCard();if(typeof lhCheckUnlocks==='function')setTimeout(lhCheckUnlocks,600);if(typeof renderStoicToday==='function')renderStoicToday();}
   if(t==='tasks')renderTasks();
   if(t==='other')renderOther();
 }
@@ -5795,6 +5842,7 @@ renderAiConsentRow();
 document.getElementById('st-plan-row')?.addEventListener('click',()=>lhShowPaywall({feature:'none'}));
 renderPlanRow();
 const CHANGELOG=[
+  {v:'v2.109.0',d:'ホームの上を新しく: 🔥何日連続・今週の回数・レベルと、大きな「トレーニング開始」「今日のやりごろ」、食事・睡眠・体重のタイル、よく使う場所への近道'},
   {v:'v2.108.0',d:'利用規約・特定商取引法に基づく表記を追加（設定 → このアプリについて）。今日のひとことに健康アドバイスをまとめた。プレミアム: 食事の写真アルバム（食事 → 📷 アルバム）。プレミアムの案内に見本'},
   {v:'v2.107.0',d:'プレミアム: 筋肉の回復をAIが判定（睡眠・食事・前回の量から）・ホームに「ランからの提案」・分析に「週のレポート」（数字は無料。体調との関係とAIのレポートはプレミアム）'},
   {v:'v2.106.1',d:'プロフィールから「質問に答えてプランを作る」をいつでも開けるように'},
@@ -7943,6 +7991,7 @@ document.getElementById('ml-next').onclick=()=>{const d=new Date(st.mlDate);d.se
       renderGoals();renderCal();renderTasks();renderHealthAdvice();
       if(typeof renderStoicToday==='function')renderStoicToday();
       if(typeof renderMmHomeCard==='function')renderMmHomeCard();
+      if(typeof renderHomeHero==='function')renderHomeHero();
       if(typeof renderTutorial==='function')renderTutorial();
       if(window._showCharIntro)window._showCharIntro();
     }
@@ -11227,6 +11276,63 @@ function openMealAlbum(){
   });
 }
 document.getElementById('ml-album-btn')?.addEventListener('click',openMealAlbum);
+// ── ホームの上（v2.109.0）: やる気の出る数字と、すぐ押せる大きなタイル ─────────
+// ※ビルドで1つのscriptに連結されるため、トップレベルに const/let を置かない（TDZ回避）
+function _hhGo(sub){st.otherSub=sub;switchToTab('other');}
+function _hhLatestWeight(){const ks=Object.keys(db.health||{}).filter(d=>+db.health[d].weight).sort();return ks.length?{w:+db.health[ks[ks.length-1]].weight,ds:ks[ks.length-1]}:null;}
+function renderHomeHero(){
+  const el=document.getElementById('home-hero');if(!el)return;
+  if(window._LH_IS_NEW&&!db.userProfile){el.hidden=true;return;}
+  const f=db.settings.features||{},t=todayStr();
+  el.hidden=false;document.body.classList.add('has-hero');
+  // やる気の出る数字
+  const pills=[];
+  const sk=typeof getStreaks==='function'?getStreaks():{};
+  const best=Math.max(sk.workout&&!sk.workout.unset?sk.workout.count:0,sk.meals?sk.meals.count:0,sk.sleep?sk.sleep.count:0);
+  pills.push(`<span class="hh-pill hh-fire">🔥 <b>${best}</b>日連続</span>`);
+  if(sk.workout&&!sk.workout.unset){const w=sk.workout,pct=Math.min(100,Math.round(w.thisWeek/w.freq*100));pills.push(`<span class="hh-pill hh-week${w.metThis?' done':''}">今週 <b>${w.thisWeek}</b>/${w.freq}回<i style="--p:${pct}%"></i></span>`);}
+  if(typeof lhUnlocked==='function'&&lhUnlocked('level')&&typeof calcGameStats==='function'){try{const g=calcGameStats();if(g&&g.level)pills.push(`<span class="hh-pill hh-lv">Lv.<b>${g.level}</b></span>`);}catch(e){}}
+  // トレーニング開始・今日のやりごろ
+  const menu=((db.trainingMenus||{})[t]||'').split('\n')[0];
+  const done=((db.workouts||{})[t]||[]).length;
+  const trainSub=done?`今日 ${done}種目 記録済み`:menu?`今日：${menu}`:'今日のメニューを選んで始める';
+  let readyHead='筋肉マップ',readySub='記録すると鍛えどきがわかる',fill={};
+  if(typeof mmState==='function'){
+    const s=mmState(),ready=MM_PARTS.filter(p=>p.main&&['ready','long'].includes(s[p.k].st)).sort((a,b)=>(s[b.k].days||0)-(s[a.k].days||0)).map(p=>p.n);
+    fill=_mmFill(s);
+    if(MM_PARTS.some(p=>s[p.k].last)){readyHead=ready.length?ready.slice(0,2).join('・'):'今日は休みでOK';readySub=ready.length?'がやりごろ':'回復中の部位が多い日';}
+  }
+  const ran={img:'assets/characters/01_Ran_pointing.png'}; // ランがAIトレーナーの顔
+  // 食事・睡眠・体重
+  const m=typeof _pmMeal==='function'?_pmMeal(t):null,tg=typeof _pmTarget==='function'?_pmTarget():null;
+  const yd=(()=>{const d=new Date(t+'T00:00:00');d.setDate(d.getDate()-1);return fmt(d);})();
+  const sh=typeof _pmSleepH==='function'?_pmSleepH(yd):null;
+  const wt=_hhLatestWeight();
+  const small=[];
+  if(f.meals!==false)small.push(['meals','hh-meal','食事',m&&m.kcal?`<b>${m.kcal.toLocaleString()}</b>${tg?`<small>/${tg.kcal.toLocaleString()}kcal</small>`:'<small>kcal</small>'}`:'<small>記録する</small>','🍱']);
+  if(f.sleep!==false)small.push(['sleep','hh-sleep','睡眠',sh!=null?`<b>${Math.floor(sh)}</b><small>時間${Math.round((sh%1)*60)?Math.round((sh%1)*60)+'分':''}</small>`:'<small>昨夜を記録</small>','😴']);
+  small.push(['health','hh-weight','体重',wt?`<b>${wt.w.toFixed(1)}</b><small>kg</small>`:'<small>記録する</small>','⚖️']);
+  const sc=[['ai','🤖','ランに話す'],['find','🔍','種目を探す'],['report','📊','週の<br>レポート'],['plan','📅','週間<br>プランナー'],['album','📷','食事の<br>アルバム']];
+  el.innerHTML=`<div class="hh-status">${pills.join('')}</div>
+    <div class="hh-grid2">
+      <button type="button" class="hh-tile hh-train" id="hh-train"><span class="hh-t-lbl">LET'S GO</span><span class="hh-t-title">トレーニング<br>開始</span><span class="hh-t-sub">${esc(trainSub)}</span><span class="hh-blob"></span><img class="hh-ran" src="${esc(ran.img)}" alt="" onerror="this.style.display='none'"></button>
+      <button type="button" class="hh-tile hh-ready" id="hh-ready"><span class="hh-t-lbl">今日のやりごろ</span><span class="hh-t-title">${esc(readyHead)}</span><span class="hh-t-sub">${esc(readySub)}</span><span class="hh-blob"></span><span class="hh-body">${typeof mmSvg==='function'?mmSvg('f',fill,44,92,'筋肉マップ'):''}</span></button>
+    </div>
+    <div class="hh-grid3">${small.map(([k,c,l,v,ic])=>`<button type="button" class="hh-tile hh-small ${c}" data-go="${k}"><span class="hh-s-lbl">${l}</span><span class="hh-s-val">${v}</span><span class="hh-s-ic" aria-hidden="true">${ic}</span></button>`).join('')}</div>
+    <div class="hh-row">${sc.map(([k,ic,l])=>`<button type="button" class="hh-sc" data-sc="${k}"><span class="hh-sc-ic" aria-hidden="true">${ic}</span><span class="hh-sc-l">${l}</span></button>`).join('')}</div>`;
+  el.querySelector('#hh-train').onclick=()=>startTraining();
+  el.querySelector('#hh-ready').onclick=()=>{window._anaView='muscle';switchToTab('ana');};
+  el.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>_hhGo(b.dataset.go));
+  el.querySelectorAll('[data-sc]').forEach(b=>b.onclick=()=>{
+    const k=b.dataset.sc;
+    if(k==='ai')switchToTab('ai');
+    else if(k==='find'){_hhGo('wo');setTimeout(()=>document.querySelector('.wo-vtab[data-v="find"]')?.click(),50);}
+    else if(k==='report'){window._anaView='report';switchToTab('ana');}
+    else if(k==='plan'){if(typeof openTrainingSchedule==='function')openTrainingSchedule();}
+    else if(k==='album'){if(typeof openMealAlbum==='function')openMealAlbum();}
+  });
+}
+renderHomeHero();
 </script>
 <div id="lu-overlay" hidden style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;"></div>
 <div id="share-pv-modal" class="share-pv-modal" hidden>
