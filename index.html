@@ -1545,6 +1545,62 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 .wl-btn{min-height:36px;padding:0 12px;border-radius:9px;border:0;background:#7C2D12;color:#fff;font:inherit;font-size:12px;font-weight:700;cursor:pointer;align-self:flex-start;}
 .wl-no,.wl-off{background:var(--surface);color:var(--fg);border:1px solid var(--border);}
 .wl-mini{min-height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--fg2);font:inherit;font-size:12px;font-weight:700;cursor:pointer;}
+
+/* v2.106.0: 最初の質問・はじめてガイド */
+#onboarding.wiz{align-items:flex-start;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+#onboarding.wiz .ob-inner{padding:calc(16px + env(safe-area-inset-top,0px)) 20px 32px;max-width:440px;}
+#onboarding.wiz .ob-title{font-size:1.1rem;margin:0 0 8px;align-self:flex-start;}
+.ob-wiz{width:100%;display:flex;flex-direction:column;gap:12px;}
+.ow-top{display:flex;align-items:center;gap:10px;}
+.ow-back{width:44px;height:44px;border-radius:50%;border:1px solid var(--border);background:var(--surface);font-size:22px;color:var(--fg);cursor:pointer;}
+.ow-back[hidden]{visibility:hidden;display:block;}
+.ow-dots{flex:1;display:flex;gap:4px;}
+.ow-dots i{flex:1;height:4px;border-radius:2px;background:var(--surface2);}
+.ow-dots i.on{background:var(--accent);}
+.ow-n{font-size:12px;color:var(--fg2);}
+.ow-body{display:flex;flex-direction:column;gap:10px;}
+.ow-q{font-size:20px;font-weight:800;margin:6px 0 0;color:var(--fg);}
+.ow-hint{font-size:12px;color:var(--fg2);margin:0;}
+.ow-lbl{font-size:13px;font-weight:700;color:var(--fg2);display:flex;flex-direction:column;gap:6px;}
+.ow-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;}
+.ow-grid.ow-lifts{grid-template-columns:2fr 1fr;}
+.ow-grid label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--fg2);font-weight:700;}
+.ow-grid .ob-input{padding:10px 12px;font-size:16px;min-width:0;}
+.ob-wiz .ob-chips{justify-content:flex-start;}
+.ob-wiz .ob-chip{padding:10px 14px;font-size:.95rem;}
+.ow-chains .ob-chip{font-size:.85rem;padding:8px 12px;}
+.ow-parq{display:flex;flex-direction:column;gap:6px;}
+.ow-pq{display:flex;gap:10px;align-items:flex-start;text-align:left;padding:10px 12px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface);font:inherit;font-size:13px;color:var(--fg);cursor:pointer;line-height:1.5;}
+.ow-pq.on{border-color:#B45309;background:#FFF7ED;}
+.ow-pq-box{width:20px;height:20px;border-radius:6px;border:2px solid var(--fg3);flex:none;margin-top:1px;box-sizing:border-box;}
+.ow-pq.on .ow-pq-box{background:#B45309;border-color:#B45309;}
+.ow-foot{display:flex;flex-direction:column;gap:6px;margin-top:6px;}
+.ow-warn{font-size:13px;line-height:1.6;padding:10px 12px;border-radius:12px;background:#FFF7ED;color:#7C2D12;}
+.ow-plan{border:1px solid var(--border);border-radius:14px;background:var(--surface);padding:10px 12px;}
+.ow-plan-head{font-weight:800;font-size:15px;display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;}
+.ow-plan-head small{font-size:12px;color:var(--fg2);font-weight:600;}
+.ow-day{display:flex;gap:10px;font-size:13px;padding:6px 0;border-top:1px solid var(--border);}
+.ow-day b{width:20px;flex:none;}
+.ow-day.rest span{color:var(--fg3);}
+.ow-nu{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.ow-nu>div{border:1px solid var(--border);border-radius:12px;padding:8px 12px;background:var(--surface);}
+.ow-nu small{display:block;font-size:11px;color:var(--fg2);}
+.ow-nu b{font-size:22px;}
+.ow-nu b span{font-size:12px;margin-left:2px;}
+.ow-pro{font-size:12px;line-height:1.6;color:var(--fg2);padding:8px 10px;border:1px dashed #C7D2FE;border-radius:12px;background:var(--accent-bg);}
+.ow-sheet{max-height:86vh;overflow-y:auto;}
+.tut-card{padding:10px 14px;border:1.5px solid var(--accent);}
+.tut-head{display:flex;align-items:center;gap:8px;margin-bottom:2px;}
+.tut-head b{font-size:15px;}
+.tut-head span{font-size:12px;color:var(--fg2);}
+.tut-close{margin-left:auto;min-height:32px;border:0;background:none;color:var(--fg3);font:inherit;font-size:12px;cursor:pointer;}
+.tut-item{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;padding:4px 0;background:none;border:0;border-top:1px solid var(--border);font:inherit;color:var(--fg);text-align:left;cursor:pointer;}
+.tut-item.done .sk-dot{background:var(--accent);border-color:var(--accent);}
+.tut-item.done b{color:var(--fg3);text-decoration:line-through;}
+.tut-txt{display:flex;flex-direction:column;}
+.tut-txt b{font-size:14px;}
+.tut-txt small{font-size:11px;color:var(--fg2);}
+.tut-flash{outline:3px solid var(--accent);outline-offset:2px;transition:outline .3s;}
 </style>
 </head>
 <body>
@@ -1586,30 +1642,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
       <input id="ob-name" class="ob-input" type="text" placeholder="例: 渡辺" maxlength="20" autocomplete="off">
       <button id="ob-next" class="ob-btn">次へ →</button>
     </div>
-    <div class="ob-form" id="ob-step2" hidden>
-      <label class="ob-label">何のために使いますか？（複数選択可）</label>
-      <div class="ob-chips">
-        <button class="ob-chip" data-val="study">📚 勉強・試験</button>
-        <button class="ob-chip" data-val="fitness">💪 筋トレ・体づくり</button>
-        <button class="ob-chip" data-val="diet">🍱 食事・ダイエット</button>
-        <button class="ob-chip" data-val="habit">📅 習慣管理</button>
-        <button class="ob-chip" data-val="goal">🎯 目標達成</button>
-        <button class="ob-chip" data-val="work">💼 仕事・秘書AI</button>
-      </div>
-      <button id="ob-start" class="ob-btn" style="margin-top:8px;">はじめる →</button>
-      <button id="ob-skip" class="ob-skip-btn">スキップ</button>
-    </div>
-    <div class="ob-form" id="ob-step3" hidden>
-      <label class="ob-label">いちばんよく使いそうなのはどれ？</label>
-      <p class="ob-hint">画面下のタブに置きます（あとで設定から変更できます）</p>
-      <div class="ob-chips">
-        <button class="ob-chip" data-hl="wo">🏋️ 筋トレ</button>
-        <button class="ob-chip" data-hl="meals">🍱 食事</button>
-        <button class="ob-chip" data-hl="sleep">😴 睡眠</button>
-        <button class="ob-chip" data-hl="health">❤️ 健康</button>
-      </div>
-      <button id="ob-skip3" class="ob-skip-btn">あとで決める</button>
-    </div>
+    <div class="ob-wiz" id="ob-wiz" hidden></div>
   </div>
 </div>
 
@@ -1625,6 +1658,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
   </header>
 
   <section id="tab-cal" class="tab on">
+    <div id="tut-card" class="card tut-card" hidden></div>
     <div id="mm-home-card" class="card mm-home-card" hidden></div>
     <div id="ai-brief-card" class="ai-brief-card" hidden></div>
     <div id="stoic-today" class="card stoic-today" hidden></div>
@@ -1707,6 +1741,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
     <div class="card me-list">
       <button type="button" class="me-row" data-me="plan"><span class="me-ic">👑</span><span class="me-lbl">プラン</span><span class="me-val" id="me-plan-val"></span><span class="me-go">›</span></button>
       <button type="button" class="me-row" data-me="profile"><span class="me-ic">🧍</span><span class="me-lbl">体のプロフィール</span><span class="me-go">›</span></button>
+      <button type="button" class="me-row" data-me="gym"><span class="me-ic">🏢</span><span class="me-lbl">ジムと器具</span><span class="me-val" id="me-gym-val"></span><span class="me-go">›</span></button>
       <button type="button" class="me-row" data-me="tasks"><span class="me-ic">✅</span><span class="me-lbl">タスク</span><span class="me-go">›</span></button>
       <button type="button" class="me-row" data-me="vlists"><span class="me-ic">📺</span><span class="me-lbl">マイ動画リスト</span><span class="me-go">›</span></button>
       <button type="button" class="me-row" data-me="settings"><span class="me-ic">⚙️</span><span class="me-lbl">設定</span><span class="me-go">›</span></button>
@@ -2408,7 +2443,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         <div class="st-about-note">動画の検索・表示に YouTube API Services を使っています。<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube利用規約</a>・<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Googleプライバシーポリシー</a>が適用されます。AIの答えは医療アドバイスではありません。</div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.105.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.106.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -3003,7 +3038,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='41f63c51ee'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='3999a82c64'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -3501,7 +3536,7 @@ function switchToTab(t){
   updateNavActive();
   if(t==='ana'&&typeof renderMuscleMap==='function')renderMuscleMap();
   if(t==='me')renderMeTab();
-  if(t==='cal'){if(typeof renderMmHomeCard==='function')renderMmHomeCard();renderGoals();renderCal();renderHealthAdvice();if(typeof renderTrendCard==='function')renderTrendCard();if(typeof lhCheckUnlocks==='function')setTimeout(lhCheckUnlocks,600);if(typeof renderStoicToday==='function')renderStoicToday();}
+  if(t==='cal'){if(typeof renderTutorial==='function')renderTutorial();if(typeof renderMmHomeCard==='function')renderMmHomeCard();renderGoals();renderCal();renderHealthAdvice();if(typeof renderTrendCard==='function')renderTrendCard();if(typeof lhCheckUnlocks==='function')setTimeout(lhCheckUnlocks,600);if(typeof renderStoicToday==='function')renderStoicToday();}
   if(t==='tasks')renderTasks();
   if(t==='other')renderOther();
 }
@@ -3514,6 +3549,7 @@ function renderMeTab(){
   const n=document.getElementById('me-name');if(n)n.textContent=nm||'あなた';
   const pv=document.getElementById('me-plan-val');if(pv)pv.textContent=(typeof lhPlanEnforced==='function'&&!lhPlanEnforced())?'プレミアム（Web版）':(typeof lhIsPro==='function'&&lhIsPro()?'プレミアム':'無料');
   const tk=document.querySelector('.me-row[data-me="tasks"]');if(tk)tk.hidden=db.settings.features?.tasks===false;
+  const gv=document.getElementById('me-gym-val');if(gv&&typeof lhGymLabel==='function')gv.textContent=lhGymLabel();
 }
 document.querySelectorAll('.me-row').forEach(b=>b.onclick=()=>{
   const k=b.dataset.me;
@@ -5651,6 +5687,7 @@ renderAiConsentRow();
 document.getElementById('st-plan-row')?.addEventListener('click',()=>lhShowPaywall({feature:'none'}));
 renderPlanRow();
 const CHANGELOG=[
+  {v:'v2.106.0',d:'はじめての人向けに、最初の質問（目的・体・場所とジム・器具・回数・経験・健康チェック）と、あなた専用のプラン・はじめてガイドを追加。プロフィール → ジムと器具'},
   {v:'v2.105.0',d:'トレーニングに🔍種目を探す（名前・部位から。種目の絵つき）。「今日は軽めで」（睡眠が短い日などは自動でおすすめ）。下のタブ「自分」を「プロフィール」に'},
   {v:'v2.104.0',d:'下のタブを5つに（ホーム・トレーニング・AI・分析・自分）。ホームに「今日やること」と「今日のやりごろ」、分析に💪筋肉マップ（15部位を鍛えてからの日数で色分け・おすすめの種目）'},
   {v:'v2.103.0',d:'iPhoneアプリ版に向けて、無料版とプレミアムの準備をしました（Web版はこれまでどおり全部使えます）'},
@@ -6983,6 +7020,10 @@ function woImportFile(file){
 function programTemplates(){
   const ex=(name,sets,reps)=>({name,sets,reps});
   return [
+    {id:'home3',name:'自宅 自重 全身',freq:3,level:'はじめて',note:'道具なし。AとBを交互に',days:[
+      {label:'自重A',exercises:[ex('スクワット',3,'15'),ex('腕立て伏せ',3,'10'),ex('グルートブリッジ',3,'15'),ex('プランク',3,'30秒')]},
+      {label:'自重B',exercises:[ex('ランジ',3,'10'),ex('腕立て伏せ',3,'10'),ex('バックエクステンション',3,'12'),ex('クランチ',3,'15')]},
+    ]},
     {id:'health2',name:'健康維持 全身',freq:2,level:'はじめて',note:'マシン中心で全身をまんべんなく',days:[
       {label:'全身',exercises:[ex('レッグプレス',3,'10-12'),ex('チェストプレス',3,'10-12'),ex('ラットプルダウン',3,'10-12'),ex('ショルダープレス',2,'10-12'),ex('プランク',3,'30秒')]},
     ]},
@@ -7086,7 +7127,7 @@ function aiPlanContext(){
     const ideal=Math.min(ds.length,Math.max(min,Math.ceil(need*ds.length/Math.max(1,ds.length+after))));
     return `・${dl(ds[0])}〜${dl(ds[ds.length-1])}（${i===0?'今週':'来週'}）: 済み${done}回・あと${need}回必要。この7日間より後に残るこの週の日数は${after}日 → この期間に最低${min}回、余裕を持つなら${ideal}回`;
   }).join('\n');
-  return {dates,text:`【今日】${dl(dates[0])}
+  return {dates,text:(typeof lhProfileContext==='function'?lhProfileContext():'')+`【今日】${dl(dates[0])}
 【筋トレの目標】${goalMap[hp.goal]||'未設定'}・週${freq}回${hp.weight?`・体重${hp.weight}kg`:''}${hp.age?`・${hp.age}歳`:''}
 【今週の状況】${wk}
 【週ごとに必要な回数（連続記録を守るため）】
@@ -7758,30 +7799,19 @@ document.getElementById('ml-next').onclick=()=>{const d=new Date(st.mlDate);d.se
     app.style.display='none';
     const inp=document.getElementById('ob-name');
     const nextBtn=document.getElementById('ob-next');
-    const startBtn=document.getElementById('ob-start');
-    const skipBtn=document.getElementById('ob-skip');
-    const step1=document.getElementById('ob-step1');
-    const step2=document.getElementById('ob-step2');
-    const step3=document.getElementById('ob-step3');
     function goToStep2(){
       const name=inp.value.trim()||'マイデータ';
       const profs=getProfs();
       if(profs[0])profs[0].name=name;
       saveProfs(profs);
-      step1.hidden=true;
-      step2.hidden=false;
+      window._onbName=inp.value.trim();
+      onbStart(finishOnboarding); // v2.106.0: 最初の質問（8画面）
     }
     nextBtn.addEventListener('click',goToStep2);
     inp.addEventListener('keydown',e=>{if(e.key==='Enter')goToStep2();});
-    step2.querySelectorAll('.ob-chip').forEach(chip=>{
-      chip.addEventListener('click',()=>chip.classList.toggle('active'));
-    });
-    // 用途選択 → マイタブ（下部タブ3つ目）の選択へ
-    function goToStep3(){step2.hidden=true;step3.hidden=false;}
-    function finishOnboarding(hlChoice){
-      const selected=[...step2.querySelectorAll('.ob-chip.active')].map(c=>c.dataset.val);
-      // マイタブ: 明示選択 > 用途からの推定（食事系のみなら食事、それ以外は筋トレ）
-      db.settings.highlightTab=hlChoice||(selected.includes('diet')&&!selected.includes('fitness')?'meals':'wo');
+    function finishOnboarding(selected){
+      selected=selected||[];
+      db.settings.highlightTab='wo';
       const savedName=inp.value.trim()||'マイデータ';
       db.userProfile={useCase:selected,setupAt:todayStr(),name:savedName};
       // v2.97.0: 新しく始める人はカレンダーとタスクを最初は隠す（設定の「表示する機能」でオン）
@@ -7796,14 +7826,11 @@ document.getElementById('ml-next').onclick=()=>{const d=new Date(st.mlDate);d.se
       applyFeatureVisibility();
       updateHlNav();
       renderGoals();renderCal();renderTasks();renderHealthAdvice();
+      if(typeof renderStoicToday==='function')renderStoicToday();
+      if(typeof renderMmHomeCard==='function')renderMmHomeCard();
+      if(typeof renderTutorial==='function')renderTutorial();
       if(window._showCharIntro)window._showCharIntro();
     }
-    startBtn.addEventListener('click',goToStep3);
-    skipBtn.addEventListener('click',goToStep3);
-    step3.querySelectorAll('.ob-chip[data-hl]').forEach(chip=>{
-      chip.addEventListener('click',()=>finishOnboarding(chip.dataset.hl));
-    });
-    document.getElementById('ob-skip3').addEventListener('click',()=>finishOnboarding());
     setTimeout(()=>inp.focus(),100);
   }
 })();
@@ -8244,7 +8271,7 @@ function calcGameStats(){
     if(hp.dislikes)hpParts.push(`苦手な食材:${hp.dislikes}`);
     const hpStats=hpParts.length?hpParts.join(' / '):'未設定';
     const streakStats=typeof streakSummaryText==='function'?streakSummaryText():'なし';
-    return (typeof lhLightContext==='function'?lhLightContext():'')+`【今日の日付】${today}\n【連続記録】${streakStats}\n【健康プロフィール】${hpStats}\n【使用目的】${useCaseStr}\n【今後14日間の予定】\n${evs}\n【未完了タスク】\n${tasks}\n【進行中の目標】\n${goals}\n【カレンダー一覧】\n${cals}\n【タスク達成状況】${taskStats}\n【筋トレ履歴（直近${AIDAYS}日${AIDAYS>7?'/最大90日遡及':''}）】\n${woStats}\n【睡眠記録（直近${AIDAYS}日統計）】\n${sleepStats}\n【食事記録（過去7日間）】\n${mealStats}\n【今日の健康データ】${healthStats}\n【タスクフィードバック履歴】\n${fbStats}\n【動画への本人の評価・コメント（本人とAIだけが見る。好みに合わせた提案に使う）】\n${typeof vnContextText==='function'?vnContextText():'なし'}`;
+    return (typeof lhProfileContext==='function'?lhProfileContext():'')+(typeof lhLightContext==='function'?lhLightContext():'')+`【今日の日付】${today}\n【連続記録】${streakStats}\n【健康プロフィール】${hpStats}\n【使用目的】${useCaseStr}\n【今後14日間の予定】\n${evs}\n【未完了タスク】\n${tasks}\n【進行中の目標】\n${goals}\n【カレンダー一覧】\n${cals}\n【タスク達成状況】${taskStats}\n【筋トレ履歴（直近${AIDAYS}日${AIDAYS>7?'/最大90日遡及':''}）】\n${woStats}\n【睡眠記録（直近${AIDAYS}日統計）】\n${sleepStats}\n【食事記録（過去7日間）】\n${mealStats}\n【今日の健康データ】${healthStats}\n【タスクフィードバック履歴】\n${fbStats}\n【動画への本人の評価・コメント（本人とAIだけが見る。好みに合わせた提案に使う）】\n${typeof vnContextText==='function'?vnContextText():'なし'}`;
   }
   async function executeTool(name,input){
     if(name==='add_event'){
@@ -10533,6 +10560,215 @@ function renderWoLight(){
 }
 // 軽めの日の重さ（2.5kg単位で切り下げ）
 function lhLightWeight(w){return Math.floor((+w||0)*0.8/2.5)*2.5;}
+// ── 最初の質問・健康チェック・ジム登録・プラン・はじめてガイド（v2.106.0） ─────────
+// ※ビルドで1つのscriptに連結されるため、トップレベルに const/let を置かない（TDZ回避）
+var ONB_PURPOSE=[['muscle','💪 筋肉をつけたい'],['lose','🔥 やせたい'],['health','🏃 体力・健康'],['look','✨ 見た目を整える'],['sport','🏅 競技・部活']];
+var ONB_PLACE=[['gym','🏢 ジム'],['home','🏠 自宅'],['both','🔁 両方'],['none','🌱 まだしていない']];
+var ONB_CHAINS=['エニタイムフィットネス','chocoZAP','ゴールドジム','JOYFIT','ティップネス','コナミスポーツ','セントラル','ルネサンス','公共の体育館・トレーニング室','大学のジム','その他'];
+var ONB_GYM_EQ=['バーベル','ダンベル','マシン','ケーブル','ベンチ','懸垂バー','スミスマシン'];
+var ONB_HOME_EQ=['道具なし','ダンベル','懸垂バー','ベンチ','チューブ','ケトルベル'];
+var ONB_EXP=[['new','はじめて'],['lt6m','半年未満'],['6m2y','半年〜2年'],['gt2y','2年以上']];
+// PAR-Q+ にならった7問（診断ではない）
+var ONB_PARQ=['医師から心臓の病気や高血圧があると言われたことがある','安静にしているとき・運動中・日常生活で、胸の痛みを感じることがある','この1年で、めまいでふらついたり、気を失ったりしたことがある','心臓・高血圧以外に、医師から言われている持病がある','持病のために薬を飲んでいる','運動すると悪くなりそうな骨・関節・筋肉の問題がある（腰・ひざなど）','医師から、医師の監督のもとでのみ運動するよう言われている'];
+function onbDefaultEquip(h){
+  const g=[],place=h.place;
+  if(place==='gym'||place==='both'){
+    const c=h.gym&&h.gym.chain;
+    if(c==='chocoZAP')g.push('マシン','ダンベル');
+    else if(c==='公共の体育館・トレーニング室')g.push('マシン','ダンベル','ベンチ');
+    else g.push(...ONB_GYM_EQ);
+  }
+  if(place==='home'||place==='both')g.push('道具なし');
+  if(place==='none'||!place)g.push('道具なし');
+  return [...new Set(g)];
+}
+function onbGoalOf(p){p=p||[];return p.includes('lose')?'cut':p.includes('look')?'recomp':p.includes('muscle')?'bulk':'maintain';}
+// 1日の目安カロリー（Mifflin-St Jeor × 活動量 ± 目的）とたんぱく質
+function onbNutrition(h){
+  const w=+h.weight,ht=+h.height,a=+h.age;
+  if(!(w>0&&ht>0&&a>0))return null;
+  const base=10*w+6.25*ht-5*a+(h.sex==='m'?5:h.sex==='f'?-161:-78);
+  const f=+h.gymFreq||0,act=f<=1?1.3:f<=3?1.45:f<=5?1.6:1.75;
+  const goal=h.goal||'maintain',minor=a<18;
+  const adj=goal==='cut'?(minor?0.95:0.85):goal==='bulk'?1.1:goal==='recomp'?0.95:1;
+  const kcal=Math.round(base*act*adj/10)*10;
+  const pPerKg=goal==='cut'||goal==='recomp'?2.0:goal==='bulk'?1.8:f>0?1.4:1.0;
+  return {kcal,protein:Math.round(w*pPerKg),minor};
+}
+// 回数・経験・場所から定番の型を選んで、1週間に並べる
+function onbPlan(h){
+  const freq=Math.min(7,Math.max(1,+h.gymFreq||3));
+  const eq=h.equipment||[];
+  const gymLike=(h.place==='gym'||h.place==='both')&&eq.some(x=>['バーベル','マシン','ダンベル','ケーブル'].includes(x));
+  const tpls=programTemplates();
+  let id;
+  if(!gymLike)id='home3';
+  else if(freq<=2)id='health2';
+  else if(freq===3)id=(h.exp==='6m2y'||h.exp==='gt2y')?'ppl':'full3';
+  else id='ul4';
+  const tpl=tpls.find(t=>t.id===id)||tpls[0];
+  const DAYS={1:[3],2:[2,5],3:[1,3,5],4:[1,2,4,5],5:[1,2,3,4,5],6:[1,2,3,4,5,6],7:[0,1,2,3,4,5,6]}[freq];
+  const t0=new Date(todayStr()+'T00:00:00'),out=[];let n=0;
+  for(let i=0;i<7;i++){
+    const d=new Date(t0);d.setDate(d.getDate()+i);
+    const ds=fmt(d),on=DAYS.includes(d.getDay());
+    const day=on?tpl.days[n++%tpl.days.length]:null;
+    out.push({ds,dow:'日月火水木金土'[d.getDay()],day});
+  }
+  return {tpl,days:out};
+}
+function onbPlanText(day){return day.label+'\n'+day.exercises.map(e=>`${e.name} ${e.sets}×${e.reps}`).join('\n');}
+
+// ── 質問の画面 ──
+window._onb=window._onb||{i:0,h:{}};
+var ONB_STEPS=['purpose','body','place','equip','freq','exp','parq','plan'];
+function onbStart(done){
+  window._onb={i:0,h:Object.assign({purposes:[],sex:'',equipment:null,parq:[]},db.settings.healthProfile||{}),done};
+  document.getElementById('ob-step1').hidden=true;
+  document.querySelector('#onboarding .ob-logo')?.setAttribute('hidden','');
+  document.querySelector('#onboarding .ob-sub')?.setAttribute('hidden','');
+  const w=document.getElementById('ob-wiz');w.hidden=false;
+  document.getElementById('onboarding').classList.add('wiz');
+  onbRender();
+}
+function _chip(on,attrs,label){return `<button type="button" class="ob-chip${on?' active':''}" ${attrs}>${label}</button>`;}
+function onbRender(){
+  const S=window._onb,h=S.h,k=ONB_STEPS[S.i],w=document.getElementById('ob-wiz');
+  let body='';
+  if(k==='purpose')body=`<h2 class="ow-q">LifeWithで、何をしたいですか？</h2><p class="ow-hint">いくつでも選べます</p><div class="ob-chips">${ONB_PURPOSE.map(([v,l])=>_chip((h.purposes||[]).includes(v),`data-p="${v}"`,l)).join('')}</div>`;
+  else if(k==='body')body=`<h2 class="ow-q">体のことを教えてください</h2><p class="ow-hint">目安のカロリーと、最初の重さの計算に使います</p>
+    <div class="ow-lbl">性別</div><div class="ob-chips">${[['m','男性'],['f','女性'],['x','答えない']].map(([v,l])=>_chip(h.sex===v,`data-sex="${v}"`,l)).join('')}</div>
+    <div class="ow-grid"><label>年齢<input class="ob-input" id="ow-age" type="number" inputmode="numeric" min="10" max="100" value="${h.age||''}"></label><label>身長 cm<input class="ob-input" id="ow-height" type="number" inputmode="decimal" min="100" max="230" value="${h.height||''}"></label><label>体重 kg<input class="ob-input" id="ow-weight" type="number" inputmode="decimal" min="25" max="250" step="0.1" value="${h.weight||''}"></label></div>`;
+  else if(k==='place')body=onbPlaceHtml(h);
+  else if(k==='equip')body=onbEquipHtml(h);
+  else if(k==='freq')body=`<h2 class="ow-q">週に何日、1回どれくらい？</h2><div class="ow-lbl">週の日数</div><div class="ob-chips">${[1,2,3,4,5,6,7].map(n=>_chip(+h.gymFreq===n,`data-freq="${n}"`,n+'日')).join('')}</div><div class="ow-lbl">1回の時間</div><div class="ob-chips">${[30,45,60,90].map(n=>_chip(+h.minutes===n,`data-min="${n}"`,n+'分')).join('')}</div>`;
+  else if(k==='exp')body=`<h2 class="ow-q">今の筋トレは？</h2><div class="ob-chips">${ONB_EXP.map(([v,l])=>_chip(h.exp===v,`data-exp="${v}"`,l)).join('')}</div><p class="ow-hint">わかれば、いつもの重さ×回数（なくても大丈夫）</p><div class="ow-grid ow-lifts"><label>ベンチプレス kg<input class="ob-input" id="ow-bw" type="number" inputmode="decimal" value="${h.lifts?.bench?.w||''}"></label><label>回数<input class="ob-input" id="ow-br" type="number" inputmode="numeric" value="${h.lifts?.bench?.r||''}"></label><label>スクワット kg<input class="ob-input" id="ow-sw" type="number" inputmode="decimal" value="${h.lifts?.squat?.w||''}"></label><label>回数<input class="ob-input" id="ow-sr" type="number" inputmode="numeric" value="${h.lifts?.squat?.r||''}"></label></div>`;
+  else if(k==='parq')body=`<h2 class="ow-q">運動を始める前の健康チェック</h2><p class="ow-hint">当てはまるものを選んでください。安全なメニューを組むためで、診断ではありません</p><div class="ow-parq">${ONB_PARQ.map((q,i)=>`<button type="button" class="ow-pq${(h.parq||[]).includes(i)?' on':''}" data-pq="${i}"><span class="ow-pq-box"></span><span>${esc(q)}</span></button>`).join('')}</div><p class="ow-hint">どれも当てはまらなければ、そのまま「次へ」</p>`;
+  else if(k==='plan')body=onbPlanHtml(h);
+  const last=k==='plan';
+  w.innerHTML=`<div class="ow-top"><button type="button" class="ow-back" ${S.i?'':'hidden'} aria-label="戻る">‹</button><div class="ow-dots">${ONB_STEPS.map((_,i)=>`<i class="${i<=S.i?'on':''}"></i>`).join('')}</div><span class="ow-n">${S.i+1}/${ONB_STEPS.length}</span></div>
+    <div class="ow-body">${body}</div>
+    ${last?'':`<div class="ow-foot"><button type="button" class="ob-btn" id="ow-next">次へ</button><button type="button" class="ob-skip-btn" id="ow-skip">スキップ</button></div>`}`;
+  onbBind(w,k);
+}
+function onbPlaceHtml(h){
+  const g=h.gym||{};
+  return `<h2 class="ow-q">どこでトレーニングしますか？</h2><div class="ob-chips">${ONB_PLACE.map(([v,l])=>_chip(h.place===v,`data-place="${v}"`,l)).join('')}</div>
+    ${h.place==='gym'||h.place==='both'?`<div class="ow-lbl">通っているジム</div><div class="ob-chips ow-chains">${ONB_CHAINS.map(c=>_chip(g.chain===c,`data-chain="${esc(c)}"`,esc(c))).join('')}</div><label class="ow-lbl">店舗名（わかれば）<input class="ob-input" id="ow-store" type="text" maxlength="30" placeholder="例：渋谷店" value="${esc(g.store||'')}"></label>`:''}`;
+}
+function onbEquipHtml(h){
+  if(!Array.isArray(h.equipment))h.equipment=onbDefaultEquip(h);
+  const list=[...new Set([...(h.place==='home'?[]:ONB_GYM_EQ),...ONB_HOME_EQ])];
+  return `<h2 class="ow-q">使える器具は？</h2><p class="ow-hint">${h.gym?.chain?esc(h.gym.chain)+'の一般的な器具を選んでおきました。':''}違っていたら直してください。そこにある器具だけでメニューを組みます</p><div class="ob-chips">${list.map(x=>_chip(h.equipment.includes(x),`data-eq="${esc(x)}"`,esc(x))).join('')}</div>`;
+}
+function onbPlanHtml(h){
+  h.goal=onbGoalOf(h.purposes);
+  const nu=onbNutrition(h),pl=onbPlan(h),pro=typeof lhIsPro==='function'&&lhIsPro(),canBuy=typeof lhCanPurchase==='function'&&lhCanPurchase();
+  const enforced=typeof lhPlanEnforced==='function'&&lhPlanEnforced();
+  return `<h2 class="ow-q">${esc(db.userProfile?.name||window._onbName||'')}さん専用のプラン</h2>
+    ${(h.parq||[]).length?`<div class="ow-warn">健康チェックで当てはまる項目がありました。<b>運動を始める前に、医師に相談してください。</b>LifeWithのAIは強い負荷を避けて提案します。</div>`:''}
+    <div class="ow-plan"><div class="ow-plan-head">${esc(pl.tpl.name)}<small>週${+h.gymFreq||3}日${h.minutes?'・1回'+h.minutes+'分':''}</small></div>
+    ${pl.days.map(x=>`<div class="ow-day${x.day?'':' rest'}"><b>${x.dow}</b><span>${x.day?esc(x.day.label)+'：'+esc(x.day.exercises.slice(0,3).map(e=>e.name).join('・'))+(x.day.exercises.length>3?' ほか':''):'休み'}</span></div>`).join('')}</div>
+    ${nu?`<div class="ow-nu"><div><small>1日の目安</small><b>${nu.kcal.toLocaleString()}<span>kcal</span></b></div><div><small>たんぱく質</small><b>${nu.protein}<span>g</span></b></div></div>${nu.minor?'<p class="ow-hint">18歳未満なので、食事は減らしすぎない目安にしています</p>':''}`:'<p class="ow-hint">体のことを入れると、1日の目安カロリーも出せます（プロフィールからいつでも）</p>'}
+    <div class="ow-pro"><span class="pw-tag">PREMIUM</span> プレミアムなら、ランが睡眠・食事・予定まで見て、このメニューを毎週あなたに合わせて組み直します</div>
+    <button type="button" class="ob-btn" id="ow-trial">${enforced&&!pro?(canBuy?'1か月無料でプレミアムを試す':'1か月無料で試す（iPhoneアプリで近日）'):'このプランではじめる'}</button>
+    <button type="button" class="ob-skip-btn" id="ow-free">${enforced&&!pro?'無料ではじめる':'あとで見直す'}</button>`;
+}
+function _onbReadInputs(k){
+  const h=window._onb.h,v=id=>{const e=document.getElementById(id);return e&&e.value!==''?+e.value:null;};
+  if(k==='body'){const a=v('ow-age'),ht=v('ow-height'),w=v('ow-weight');if(a)h.age=a;if(ht)h.height=ht;if(w)h.weight=w;}
+  if(k==='place'){const s=document.getElementById('ow-store');if(s&&h.gym)h.gym.store=s.value.trim();}
+  if(k==='exp'){const lifts={};const bw=v('ow-bw'),br=v('ow-br'),sw=v('ow-sw'),sr=v('ow-sr');if(bw)lifts.bench={w:bw,r:br||null};if(sw)lifts.squat={w:sw,r:sr||null};if(Object.keys(lifts).length)h.lifts=lifts;}
+}
+function onbBind(w,k){
+  const S=window._onb,h=S.h,re=()=>{_onbReadInputs(k);onbRender();};
+  w.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{const p=b.dataset.p,a=h.purposes||(h.purposes=[]);a.includes(p)?a.splice(a.indexOf(p),1):a.push(p);re();});
+  w.querySelectorAll('[data-sex]').forEach(b=>b.onclick=()=>{h.sex=b.dataset.sex;re();});
+  w.querySelectorAll('[data-place]').forEach(b=>b.onclick=()=>{h.place=b.dataset.place;if(h.place==='gym'||h.place==='both'){h.gym=h.gym||{};}else delete h.gym;h.equipment=null;re();});
+  w.querySelectorAll('[data-chain]').forEach(b=>b.onclick=()=>{h.gym=Object.assign(h.gym||{},{chain:b.dataset.chain});h.equipment=null;re();});
+  w.querySelectorAll('[data-eq]').forEach(b=>b.onclick=()=>{const x=b.dataset.eq,a=h.equipment;a.includes(x)?a.splice(a.indexOf(x),1):a.push(x);re();});
+  w.querySelectorAll('[data-freq]').forEach(b=>b.onclick=()=>{h.gymFreq=+b.dataset.freq;re();});
+  w.querySelectorAll('[data-min]').forEach(b=>b.onclick=()=>{h.minutes=+b.dataset.min;re();});
+  w.querySelectorAll('[data-exp]').forEach(b=>b.onclick=()=>{h.exp=b.dataset.exp;re();});
+  w.querySelectorAll('[data-pq]').forEach(b=>b.onclick=()=>{const i=+b.dataset.pq,a=h.parq||(h.parq=[]);a.includes(i)?a.splice(a.indexOf(i),1):a.push(i);re();});
+  w.querySelector('.ow-back')?.addEventListener('click',()=>{_onbReadInputs(k);S.i=Math.max(0,S.i-1);onbRender();});
+  const go=()=>{_onbReadInputs(k);S.i=Math.min(ONB_STEPS.length-1,S.i+1);onbRender();};
+  w.querySelector('#ow-next')?.addEventListener('click',go);
+  w.querySelector('#ow-skip')?.addEventListener('click',()=>{S.i=Math.min(ONB_STEPS.length-1,S.i+1);onbRender();});
+  w.querySelector('#ow-trial')?.addEventListener('click',()=>{onbFinish(true);});
+  w.querySelector('#ow-free')?.addEventListener('click',()=>onbFinish(false));
+}
+// 答えを保存して、プランを今週の予定に入れる
+function onbFinish(trial){
+  const S=window._onb,h=S.h;
+  h.goal=onbGoalOf(h.purposes);
+  if(!Array.isArray(h.equipment))h.equipment=onbDefaultEquip(h);
+  db.settings.healthProfile=Object.assign(db.settings.healthProfile||{},h);
+  const pl=onbPlan(h);
+  if(!db.trainingMenus)db.trainingMenus={};
+  pl.days.forEach(x=>{if(x.day&&!db.trainingMenus[x.ds])db.trainingMenus[x.ds]=onbPlanText(x.day);});
+  db.settings.tutorial={rec:false,map:false,ai:false};
+  save(db);
+  const useCase=[...new Set((h.purposes||[]).flatMap(p=>({muscle:['fitness'],lose:['diet','fitness'],health:['fitness','habit'],look:['fitness','diet'],sport:['fitness']})[p]||[]))];
+  if(typeof S.done==='function')S.done(useCase.length?useCase:['fitness']);
+  if(trial&&typeof lhPlanEnforced==='function'&&lhPlanEnforced()&&!lhIsPro())setTimeout(()=>lhShowPaywall({feature:'none'}),600);
+}
+// AIに渡すトレーニング環境と健康チェック
+function lhProfileContext(){
+  const h=db.settings.healthProfile||{};
+  const parts=[];
+  const placeL={gym:'ジム',home:'自宅',both:'ジムと自宅',none:'まだしていない'}[h.place];
+  if(placeL)parts.push('場所: '+placeL+(h.gym&&h.gym.chain?`（${h.gym.chain}${h.gym.store?' '+h.gym.store:''}）`:''));
+  if(Array.isArray(h.equipment)&&h.equipment.length)parts.push('使える器具: '+h.equipment.join('・')+'（これ以外の器具が必要な種目は出さない）');
+  if(h.gymFreq||h.minutes)parts.push(`週${h.gymFreq||'?'}日${h.minutes?'・1回'+h.minutes+'分':''}`);
+  const expL={'new':'はじめて','lt6m':'半年未満','6m2y':'半年〜2年','gt2y':'2年以上'}[h.exp];
+  if(expL)parts.push('筋トレ歴: '+expL);
+  if(h.lifts){const L=[];if(h.lifts.bench)L.push(`ベンチプレス${h.lifts.bench.w}kg${h.lifts.bench.r?'×'+h.lifts.bench.r:''}`);if(h.lifts.squat)L.push(`スクワット${h.lifts.squat.w}kg${h.lifts.squat.r?'×'+h.lifts.squat.r:''}`);if(L.length)parts.push('いつもの重さ: '+L.join('・'));}
+  if(h.sex)parts.push('性別: '+({m:'男性',f:'女性',x:'答えない'}[h.sex]||''));
+  let s=parts.length?`【トレーニング環境】${parts.join(' / ')}\n`:'';
+  if((h.parq||[]).length)s+=`【健康チェック】当てはまる項目あり: ${h.parq.map(i=>ONB_PARQ[i]).filter(Boolean).join('／')}。強い負荷・高強度は避け、運動を始める前に医師へ相談するよう勧める\n`;
+  if(+h.age&&+h.age<18)s+='【年齢】18歳未満。極端な減量・チートデイは提案しない\n';
+  return s;
+}
+
+// ── プロフィール → ジムと器具 ──
+function openGymSheet(){
+  const h=JSON.parse(JSON.stringify(db.settings.healthProfile||{}));
+  const ov=document.createElement('div');ov.className='aic-ov';ov.id='gym-ov';
+  const draw=()=>{
+    ov.innerHTML=`<div class="aic-sheet ow-sheet" role="dialog" aria-modal="true" aria-label="ジムと器具">${onbPlaceHtml(h)}${h.place?onbEquipHtml(h):''}<button type="button" class="aic-ok" id="gym-save">保存</button><button type="button" class="aic-no" id="gym-cancel">やめる</button></div>`;
+    const read=()=>{const s=ov.querySelector('#ow-store');if(s&&h.gym)h.gym.store=s.value.trim();};
+    ov.querySelectorAll('[data-place]').forEach(b=>b.onclick=()=>{read();h.place=b.dataset.place;if(h.place==='gym'||h.place==='both')h.gym=h.gym||{};else delete h.gym;h.equipment=null;draw();});
+    ov.querySelectorAll('[data-chain]').forEach(b=>b.onclick=()=>{read();h.gym=Object.assign(h.gym||{},{chain:b.dataset.chain});h.equipment=null;draw();});
+    ov.querySelectorAll('[data-eq]').forEach(b=>b.onclick=()=>{read();const x=b.dataset.eq;x&&h.equipment.includes(x)?h.equipment.splice(h.equipment.indexOf(x),1):h.equipment.push(x);draw();});
+    ov.querySelector('#gym-save').onclick=()=>{read();const hp=db.settings.healthProfile||(db.settings.healthProfile={});hp.place=h.place;if(h.gym)hp.gym=h.gym;else delete hp.gym;hp.equipment=h.equipment||onbDefaultEquip(h);save(db);ov.remove();if(typeof renderMeTab==='function')renderMeTab();};
+    ov.querySelector('#gym-cancel').onclick=()=>ov.remove();
+  };
+  draw();ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+  document.body.appendChild(ov);
+}
+function lhGymLabel(){const h=db.settings.healthProfile||{};if(h.gym&&h.gym.chain)return h.gym.chain+(h.gym.store?' '+h.gym.store:'');return {gym:'ジム',home:'自宅',both:'ジムと自宅',none:'未設定'}[h.place]||'未設定';}
+
+// ── はじめてガイド（ホーム） ──
+function renderTutorial(){
+  const el=document.getElementById('tut-card');if(!el)return;
+  const t=db.settings.tutorial;
+  if(!t||t.closed||(t.rec&&t.map&&t.ai)){el.hidden=true;return;}
+  const items=[['rec','今日やることを1つ記録する','体重や朝食をワンタップで'],['map','筋肉マップを見る','鍛えどきの部位がわかります'],['ai','ランに話しかける','「今日なにやればいい？」と聞いてみよう']];
+  const done=items.filter(([k])=>t[k]).length;
+  el.hidden=false;
+  el.innerHTML=`<div class="tut-head"><b>はじめてガイド</b><span>${done} / 3</span><button type="button" class="tut-close" aria-label="ガイドを閉じる">あとで</button></div>${items.map(([k,l,s])=>`<button type="button" class="tut-item${t[k]?' done':''}" data-tut="${k}"><span class="sk-dot"></span><span class="tut-txt"><b>${l}</b><small>${s}</small></span></button>`).join('')}`;
+  el.querySelector('.tut-close').onclick=()=>{t.closed=true;save(db);renderTutorial();};
+  el.querySelectorAll('.tut-item').forEach(b=>b.onclick=()=>{
+    const k=b.dataset.tut;t[k]=true;save(db);
+    if(k==='rec'){const st0=document.getElementById('stoic-today');st0?.scrollIntoView({behavior:'smooth',block:'start'});st0?.classList.add('tut-flash');setTimeout(()=>st0?.classList.remove('tut-flash'),1600);renderTutorial();}
+    else if(k==='map')switchToTab('ana');
+    else if(k==='ai'){switchToTab('ai');const inp=document.getElementById('ai-input');if(inp){inp.value='今日なにやればいい？';inp.dispatchEvent(new Event('input'));}}
+  });
+}
+document.querySelector('.me-row[data-me="gym"]')?.addEventListener('click',openGymSheet);
+
+renderTutorial();
 </script>
 <div id="lu-overlay" hidden style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;"></div>
 <div id="share-pv-modal" class="share-pv-modal" hidden>
