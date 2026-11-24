@@ -1511,6 +1511,40 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 .mm-ai-btn{display:flex;flex-direction:column;align-items:flex-start;gap:4px;width:100%;margin-top:10px;padding:12px 14px;border:1px dashed #C7D2FE;border-radius:14px;background:var(--accent-bg);font:inherit;font-size:14px;font-weight:700;color:var(--fg);text-align:left;cursor:pointer;}
 .mm-ai-btn small{font-size:11px;font-weight:400;color:var(--fg2);}
 #tab-other .other-subnav:not([hidden]){display:flex;}
+
+/* v2.105.0: 種目を探す・今日は軽めで */
+.exf-box{padding:10px 12px;}
+.exf-lbl{font-size:12px;font-weight:700;color:var(--fg2);display:block;}
+.exf-search{display:flex;align-items:center;gap:8px;margin-top:6px;border:1px solid var(--border);border-radius:12px;padding:0 10px;min-height:44px;background:var(--surface);color:var(--fg3);}
+.exf-search input{flex:1;border:0;outline:none;background:transparent;font:inherit;font-size:15px;color:var(--fg);min-width:0;}
+.exf-parts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-bottom:10px;}
+.exf-part{display:flex;flex-direction:column;align-items:flex-start;min-height:44px;padding:5px 8px;border:1px solid var(--border);border-radius:10px;background:var(--surface);font:inherit;color:var(--fg);text-align:left;cursor:pointer;}
+.exf-part b{font-size:13px;}
+.exf-part small{font-size:9px;color:var(--fg2);}
+.exf-part.on{border-color:var(--accent);background:var(--accent-bg);}
+.exf-res{padding:2px 10px;}
+.exf-row{display:flex;align-items:center;gap:10px;min-height:72px;border-bottom:1px solid var(--border);padding:6px 0;}
+.exf-row:last-child{border-bottom:0;}
+.exf-pic{flex:none;display:block;}
+.exf-pic-body{display:flex;align-items:center;justify-content:center;background:#FFF1F2;border-radius:14px;}
+.exf-main{flex:1;display:flex;flex-direction:column;min-width:0;}
+.exf-main b{font-size:14px;}
+.exf-mus{font-size:11px;color:var(--fg);}
+.exf-sub{color:var(--fg2);}
+.exf-unk{color:#B45309;}
+.exf-note{font-size:11px;color:var(--fg2);}
+.exf-acts{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+.exf-add,.exf-set{min-height:34px;padding:0 10px;border-radius:9px;border:0;background:var(--accent);color:#fff;font:inherit;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;}
+.exf-set{background:var(--surface2);color:var(--fg);}
+.exf-acts .mm-yt{min-height:28px;}
+.wo-light{margin-bottom:8px;}
+.wl-on,.wl-sug{display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:12px;background:#FFF7ED;color:#7C2D12;font-size:12px;}
+.wl-on{background:var(--accent-bg);color:var(--fg);}
+.wl-on b,.wl-sug b{font-size:14px;}
+.wl-btns{display:flex;gap:8px;margin-top:4px;}
+.wl-btn{min-height:36px;padding:0 12px;border-radius:9px;border:0;background:#7C2D12;color:#fff;font:inherit;font-size:12px;font-weight:700;cursor:pointer;align-self:flex-start;}
+.wl-no,.wl-off{background:var(--surface);color:var(--fg);border:1px solid var(--border);}
+.wl-mini{min-height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--fg2);font:inherit;font-size:12px;font-weight:700;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -1696,8 +1730,10 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
       <div class="wo-view-tabs">
         <button class="wo-vtab on" data-v="log">記録</button>
         <button class="wo-vtab" data-v="chart">📊 グラフ</button>
+        <button class="wo-vtab" data-v="find">🔍 種目を探す</button>
       </div>
       <div id="wo-log-view">
+        <div id="wo-light" class="wo-light" hidden></div>
         <div class="card" style="padding:10px 12px 8px;">
           <div class="wo-cat-row" id="wo-cat-row">
             <button class="wo-cat-btn on" data-c="weight">🏋️ウエイト</button>
@@ -1716,6 +1752,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         <button id="wo-timer-btn" class="wo-timer-fab">⏱ タイマー</button>
         <div id="wo-list"></div>
       </div>
+      <div id="wo-find-view" hidden></div>
       <div id="wo-chart-view" hidden>
         <div class="card chart-ctrl">
           <select id="chart-ex-sel"><option value="">— 種目を選択 —</option></select>
@@ -1866,7 +1903,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
     </button>
     <button class="nb" data-t="me" id="nav-me">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
-      <span>自分</span>
+      <span>プロフィール</span>
     </button>
     <button class="nb-add" id="fab-nav" hidden></button>
   </nav>
@@ -2371,7 +2408,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         <div class="st-about-note">動画の検索・表示に YouTube API Services を使っています。<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube利用規約</a>・<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Googleプライバシーポリシー</a>が適用されます。AIの答えは医療アドバイスではありません。</div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.104.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.105.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -2966,7 +3003,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='b6128bb767'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='41f63c51ee'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -3415,7 +3452,7 @@ function updateNavActive(){
   document.querySelectorAll('.nb').forEach(b=>b.classList.toggle('on',b.dataset.t===g));
   const key=st.tab==='other'?st.otherSub:st.tab;
   document.querySelectorAll('.dr-item[data-go]').forEach(b=>b.classList.toggle('on',b.dataset.go===key));
-  document.getElementById('hdr-title').textContent=st.tab==='cal'?'LifeWith':st.tab==='tasks'?'タスク':st.tab==='ana'?'分析':st.tab==='me'?'自分':(SCREEN_TITLES[st.otherSub]||'LifeWith');
+  document.getElementById('hdr-title').textContent=st.tab==='cal'?'LifeWith':st.tab==='tasks'?'タスク':st.tab==='ana'?'分析':st.tab==='me'?'プロフィール':(SCREEN_TITLES[st.otherSub]||'LifeWith');
   fabFloat.hidden=st.tab!=='cal'||db.settings.features?.calendar===false;
 }
 const SCREEN_TITLES={wo:'トレーニング',meals:'食事',sleep:'睡眠',health:'健康'};
@@ -5614,6 +5651,7 @@ renderAiConsentRow();
 document.getElementById('st-plan-row')?.addEventListener('click',()=>lhShowPaywall({feature:'none'}));
 renderPlanRow();
 const CHANGELOG=[
+  {v:'v2.105.0',d:'トレーニングに🔍種目を探す（名前・部位から。種目の絵つき）。「今日は軽めで」（睡眠が短い日などは自動でおすすめ）。下のタブ「自分」を「プロフィール」に'},
   {v:'v2.104.0',d:'下のタブを5つに（ホーム・トレーニング・AI・分析・自分）。ホームに「今日やること」と「今日のやりごろ」、分析に💪筋肉マップ（15部位を鍛えてからの日数で色分け・おすすめの種目）'},
   {v:'v2.103.0',d:'iPhoneアプリ版に向けて、無料版とプレミアムの準備をしました（Web版はこれまでどおり全部使えます）'},
   {v:'v2.102.1',d:'AIの返事に「**」などの記号がそのまま出ることがあったのを修正'},
@@ -6500,6 +6538,7 @@ function buildExCard(ex,xi,ds){
 }
 
 function renderWo(){
+  if(typeof renderWoLight==='function')renderWoLight(); // v2.105.0 今日は軽めで
   const ds=st.woDate;
   document.getElementById('wo-date').textContent=jpDate(ds);
   const exs=db.workouts[ds]||[];
@@ -6777,7 +6816,9 @@ function woPrevLine(name,ds,cat){
 function woInitialSet(name,cat){
   const p=woPrevSession(name,'9999-12-31');
   const s=p&&p.ex.sets&&p.ex.sets[0];
-  if(cat==='weight')return {w:s?.w??0,r:s?.r??10};
+  // v2.105.0: 今日は軽めの日なら、前回の8割から
+  const light=typeof lhLightInfo==='function'&&lhLightInfo().on&&(!st.woDate||st.woDate===todayStr());
+  if(cat==='weight')return {w:light&&s?.w?lhLightWeight(s.w):(s?.w??0),r:s?.r??10};
   if(cat==='bodyweight')return {r:s?.r??10};
   return null;
 }
@@ -6968,7 +7009,10 @@ function applyTemplateDay(tplId,dayIdx,ds){
   const tpl=programTemplates().find(t=>t.id===tplId);if(!tpl)return;
   const day=tpl.days[dayIdx];if(!day)return;
   if(!db.workouts[ds])db.workouts[ds]=[];
-  day.exercises.forEach(e=>{
+  // v2.105.0: 今日は軽めの日ならセット数を1つ減らす
+  const light=ds===todayStr()&&typeof lhLightInfo==='function'&&lhLightInfo().on;
+  day.exercises.forEach(e0=>{
+    const e=light?{...e0,sets:Math.max(1,e0.sets-1)}:e0;
     if(_isTimed(e.reps)){db.workouts[ds].push({id:uid(),name:e.name,category:'stretch',sets:Array.from({length:e.sets},()=>({time:null}))});return;}
     const prev=typeof woInitialSet==='function'?woInitialSet(e.name,'weight'):null;
     const w=prev?.w||0;
@@ -7323,6 +7367,7 @@ function renderOther(){
     document.getElementById('wo-datebar').style.display='';
     document.getElementById('wo-log-view').hidden=false;
     document.getElementById('wo-chart-view').hidden=true;
+    const fv=document.getElementById('wo-find-view');if(fv)fv.hidden=true; // v2.105.0
     renderWo();
   } else if(st.otherSub==='meals') renderMeals();
   else if(st.otherSub==='sleep') renderSleepTab();
@@ -8199,7 +8244,7 @@ function calcGameStats(){
     if(hp.dislikes)hpParts.push(`苦手な食材:${hp.dislikes}`);
     const hpStats=hpParts.length?hpParts.join(' / '):'未設定';
     const streakStats=typeof streakSummaryText==='function'?streakSummaryText():'なし';
-    return `【今日の日付】${today}\n【連続記録】${streakStats}\n【健康プロフィール】${hpStats}\n【使用目的】${useCaseStr}\n【今後14日間の予定】\n${evs}\n【未完了タスク】\n${tasks}\n【進行中の目標】\n${goals}\n【カレンダー一覧】\n${cals}\n【タスク達成状況】${taskStats}\n【筋トレ履歴（直近${AIDAYS}日${AIDAYS>7?'/最大90日遡及':''}）】\n${woStats}\n【睡眠記録（直近${AIDAYS}日統計）】\n${sleepStats}\n【食事記録（過去7日間）】\n${mealStats}\n【今日の健康データ】${healthStats}\n【タスクフィードバック履歴】\n${fbStats}\n【動画への本人の評価・コメント（本人とAIだけが見る。好みに合わせた提案に使う）】\n${typeof vnContextText==='function'?vnContextText():'なし'}`;
+    return (typeof lhLightContext==='function'?lhLightContext():'')+`【今日の日付】${today}\n【連続記録】${streakStats}\n【健康プロフィール】${hpStats}\n【使用目的】${useCaseStr}\n【今後14日間の予定】\n${evs}\n【未完了タスク】\n${tasks}\n【進行中の目標】\n${goals}\n【カレンダー一覧】\n${cals}\n【タスク達成状況】${taskStats}\n【筋トレ履歴（直近${AIDAYS}日${AIDAYS>7?'/最大90日遡及':''}）】\n${woStats}\n【睡眠記録（直近${AIDAYS}日統計）】\n${sleepStats}\n【食事記録（過去7日間）】\n${mealStats}\n【今日の健康データ】${healthStats}\n【タスクフィードバック履歴】\n${fbStats}\n【動画への本人の評価・コメント（本人とAIだけが見る。好みに合わせた提案に使う）】\n${typeof vnContextText==='function'?vnContextText():'なし'}`;
   }
   async function executeTool(name,input){
     if(name==='add_event'){
@@ -10299,6 +10344,9 @@ function renderMmHomeCard(){
   if(!any){head='筋トレを記録すると、鍛えどきの部位がわかります';sub='分析 → 筋肉で、15部位の回復の様子を見られます';}
   else if(ready.length){head=_mmNames(ready.slice(0,3)).join('・');sub=rest.length?_mmNames(rest.slice(0,3)).join('・')+'は回復中':'しっかり回復しています';}
   else{head='今日は休みか、軽めでOK';sub=rest.length?_mmNames(rest.slice(0,3)).join('・')+'は回復中':'もうすぐ回復する部位が多い日です';}
+  // v2.105.0: 軽めの日・軽めがおすすめの日はひとこと添える
+  const li=typeof lhLightInfo==='function'?lhLightInfo():{};
+  if(li.on)sub+='・今日は軽めの日';else if(li.reason&&!li.dismissed)sub+='・今日は軽めがおすすめ';
   el.hidden=false;
   el.innerHTML=`<button type="button" class="mm-home-btn">${mmSvg('f',_mmFill(s),40,84,'体の前側の筋肉マップ（小）')}<span class="mm-home-txt"><span class="mm-home-lbl">${any&&ready.length?'今日のやりごろ':'筋肉マップ'}</span><span class="mm-home-head">${esc(head)}</span><span class="mm-home-sub">${esc(sub)}</span></span><span class="mm-home-go" aria-hidden="true">›</span></button>`;
   el.querySelector('.mm-home-btn').onclick=()=>switchToTab('ana');
@@ -10356,6 +10404,135 @@ function mmDetailHtml(p,o){
 
 // 初回の表示
 renderMmHomeCard();
+// ── 種目を探す・種目の絵・部位の設定・今日は軽めで（v2.105.0） ─────────────
+// ※ビルドで1つのscriptに連結されるため、トップレベルに const/let を置かない（TDZ回避）
+
+// 種目の絵（オリジナルの線の絵。効く場所を赤 #E11D48）。viewBox 0 0 64 64
+var EX_PICS={
+  'ベンチプレス':'<rect x="9" y="39" width="38" height="4" rx="2" fill="#9CA3AF"/><g stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round"><path d="M14 43V55M42 43V55"/></g><circle cx="25" cy="19" r="6" fill="none" stroke="#374151" stroke-width="3"/><circle cx="13" cy="35" r="4.5" fill="#374151"/><g stroke="#374151" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M25 36V20M38 36L47 45L47 55M28 36H38"/></g><path d="M18 35.5H28" stroke="#E11D48" stroke-width="7" stroke-linecap="round"/>',
+  'ラットプルダウン':'<g stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round" fill="none"><path d="M12 58V7H40M34 7V13"/></g><path d="M21 14H47" stroke="#374151" stroke-width="3" stroke-linecap="round"/><rect x="27" y="44" width="16" height="4" rx="2" fill="#9CA3AF"/><circle cx="34" cy="24" r="4.5" fill="#374151"/><g stroke="#374151" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M34 31L26 23L24 15M34 31L42 23L44 15M34 43L44 44L44 56"/></g><path d="M34 30V43" stroke="#E11D48" stroke-width="7" stroke-linecap="round"/>',
+  'スクワット':'<circle cx="27" cy="19" r="6" fill="none" stroke="#374151" stroke-width="3"/><circle cx="31" cy="11" r="4.5" fill="#374151"/><g stroke="#374151" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M29 18L25 34M28 21L35 24L31 19M38 39L35 53L42 53"/></g><path d="M25 34L38 39" stroke="#E11D48" stroke-width="7" stroke-linecap="round"/><path d="M9 57H55" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round"/>',
+  'デッドリフト':'<circle cx="22" cy="18" r="4.5" fill="#374151"/><path d="M26 22L38 34" stroke="#E11D48" stroke-width="7" stroke-linecap="round"/><g stroke="#374151" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M29 26L34 44M38 34L40 46L40 56"/></g><circle cx="35" cy="47" r="6" fill="none" stroke="#374151" stroke-width="3"/><path d="M9 57H55" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round"/>',
+  'ショルダープレス':'<path d="M21 18V48" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round"/><rect x="21" y="44" width="18" height="4" rx="2" fill="#9CA3AF"/><circle cx="30" cy="17" r="4.5" fill="#374151"/><g stroke="#374151" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M30 23V43M22 22L22 10M38 22L38 10M30 43L40 44L40 56"/></g><path d="M30 26L22 22M30 26L38 22" stroke="#E11D48" stroke-width="6" stroke-linecap="round"/><g fill="#374151"><rect x="18" y="6" width="8" height="4" rx="1.5"/><rect x="34" y="6" width="8" height="4" rx="1.5"/></g>',
+  'アームカール':'<circle cx="30" cy="12" r="4.5" fill="#374151"/><g stroke="#374151" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M30 17V36M30 36L26 56M30 36L34 56M32 32L40 24"/></g><path d="M30 20L32 32" stroke="#E11D48" stroke-width="6" stroke-linecap="round"/><rect x="38" y="20" width="4" height="8" rx="1.5" fill="#374151"/><path d="M9 57H55" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round"/>'
+};
+// 名前の言い換え（絵を共通にする）
+var EX_PIC_ALIAS=[[/ベンチ|チェストプレス|ダンベルプレス/,'ベンチプレス'],[/ラットプル|懸垂|チンニング|プルアップ/,'ラットプルダウン'],[/スクワット|レッグプレス|ランジ/,'スクワット'],[/デッドリフト|ルーマニアン/,'デッドリフト'],[/ショルダープレス|オーバーヘッドプレス|ミリタリー/,'ショルダープレス'],[/カール/,'アームカール']];
+function exPicKey(name){if(EX_PICS[name])return name;const a=EX_PIC_ALIAS.find(([re])=>re.test(name));return a?a[1]:null;}
+// 種目の絵。絵がない種目は、小さな体の図で効く部位を示す
+function exPicHtml(name,size){
+  size=size||52;
+  const k=exPicKey(name);
+  if(k)return `<svg class="exf-pic" width="${size}" height="${size}" viewBox="0 0 64 64" role="img" aria-label="${esc(name)}の絵"><rect width="64" height="64" rx="14" fill="#EEF2FF"/>${EX_PICS[k]}</svg>`;
+  const m=mmMusclesOf(name),fill={};
+  m.sub.forEach(x=>{fill[x]='#FDA4AF';});m.main.forEach(x=>{fill[x]='#E11D48';});
+  const first=MM_PARTS.find(p=>p.k===m.main[0]);
+  const side=first&&first.side==='b'?'b':'f';
+  return `<span class="exf-pic exf-pic-body" style="width:${size}px;height:${size}px">${mmSvg(side,fill,Math.round(size*0.48),size,(name||'種目')+'で効く部位')}</span>`;
+}
+function _exKana(s){return String(s||'').replace(/[ぁ-ゖ]/g,c=>String.fromCharCode(c.charCodeAt(0)+0x60)).toLowerCase();}
+// 種目の一覧（部位ごとのおすすめ＋自分が記録した種目）
+function exCatalog(){
+  const map=new Map();
+  Object.values(MM_LIB).forEach(arr=>arr.forEach(([n,tool,note])=>{if(!map.has(n))map.set(n,{name:n,tool,note});}));
+  (typeof getAllExerciseNames==='function'?getAllExerciseNames():[]).forEach(n=>{if(n&&!map.has(n))map.set(n,{name:n,tool:'',note:'自分の記録',mine:true});});
+  return [...map.values()];
+}
+window._exfPart=window._exfPart||'';
+function _exPartNames(keys){return keys.map(k=>(MM_PARTS.find(p=>p.k===k)||{}).n).filter(Boolean).join('・');}
+function renderExFind(){
+  const box=document.getElementById('wo-find-view');if(!box)return;
+  if(!box.dataset.built){
+    box.dataset.built='1';
+    box.innerHTML=`<div class="card exf-box"><label for="exf-q" class="exf-lbl">種目の名前で探す</label><div class="exf-search"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="exf-q" type="search" placeholder="例：ベンチ、すくわっと" autocomplete="off"></div></div>
+      <div class="exf-lbl" style="margin:4px 2px 6px">部位から探す</div>
+      <div class="exf-parts" id="exf-parts"></div>
+      <div id="exf-list"></div>`;
+    document.getElementById('exf-q').addEventListener('input',renderExFindList);
+  }
+  const parts=document.getElementById('exf-parts');
+  parts.innerHTML=[['','すべて','']].concat(MM_PARTS.map(p=>[p.k,p.n,p.f])).map(([k,n,f])=>`<button type="button" class="exf-part${window._exfPart===k?' on':''}" data-k="${k}"><b>${esc(n)}</b>${f?`<small>${esc(f)}</small>`:''}</button>`).join('');
+  parts.querySelectorAll('.exf-part').forEach(b=>b.onclick=()=>{window._exfPart=b.dataset.k;renderExFind();});
+  renderExFindList();
+}
+function renderExFindList(){
+  const el=document.getElementById('exf-list');if(!el)return;
+  const q=_exKana(document.getElementById('exf-q')?.value.trim());
+  const part=window._exfPart;
+  let list=exCatalog().map(e=>({...e,m:mmMusclesOf(e.name)}));
+  if(q)list=list.filter(e=>_exKana(e.name).includes(q));
+  if(part)list=list.filter(e=>e.m.main.includes(part)||e.m.sub.includes(part)).sort((a,b)=>(b.m.main.includes(part)?1:0)-(a.m.main.includes(part)?1:0));
+  const yt=n=>'https://www.youtube.com/results?search_query='+encodeURIComponent(n+' やり方');
+  el.innerHTML=list.length?`<div class="card exf-res">${list.slice(0,40).map((e,i)=>{
+    const known=e.m.main.length>0;
+    const mus=known?`${esc(_exPartNames(e.m.main))}${e.m.sub.length?`<span class="exf-sub">／補助：${esc(_exPartNames(e.m.sub))}</span>`:''}`:'<span class="exf-unk">部位がわかりません</span>';
+    return `<div class="exf-row">${exPicHtml(e.name)}<div class="exf-main"><b>${esc(e.name)}</b><span class="exf-mus">${mus}</span>${e.note?`<span class="exf-note">${esc(e.note)}</span>`:''}</div><div class="exf-acts">${e.tool?`<span class="mm-tool">${esc(e.tool)}</span>`:''}<button type="button" class="exf-add" data-i="${i}">記録に追加</button>${known?`<a class="mm-yt" href="${yt(e.name)}" target="_blank" rel="noopener">動画</a>`:`<button type="button" class="exf-set" data-i="${i}">部位を設定</button>`}</div></div>`;}).join('')}</div>`
+    :`<p class="mm-hint">見つかりませんでした。名前を変えて探すか、記録の画面で新しい種目として追加できます</p>`;
+  const shown=list.slice(0,40);
+  el.querySelectorAll('.exf-add').forEach(b=>b.onclick=()=>{
+    const e=shown[+b.dataset.i];
+    if(typeof woCatSel!=='undefined')woCatSel=e.tool==='道具なし'?'bodyweight':'weight';
+    if(!st.woDate)st.woDate=todayStr();
+    exAddAndClose(e.name);
+    document.querySelector('.wo-vtab[data-v="log"]')?.click();
+  });
+  el.querySelectorAll('.exf-set').forEach(b=>b.onclick=()=>openExMuscleSheet(shown[+b.dataset.i].name));
+}
+// 部位を自分で設定（db.settings.exMuscle[種目名] = {main:[...], sub:[]}）
+function openExMuscleSheet(name){
+  const cur=new Set(mmMusclesOf(name).main);
+  const ov=document.createElement('div');ov.className='aic-ov';ov.id='exm-ov';
+  const draw=()=>{ov.innerHTML=`<div class="aic-sheet" role="dialog" aria-modal="true" aria-labelledby="exm-title"><h3 id="exm-title" style="margin:0 0 4px">「${esc(name)}」で鍛える部位</h3><p class="aic-sub" style="margin:0 0 10px">当てはまる部位を選んでください（いくつでも）。筋肉マップに反映されます</p><div class="exf-parts">${MM_PARTS.map(p=>`<button type="button" class="exf-part${cur.has(p.k)?' on':''}" data-k="${p.k}"><b>${esc(p.n)}</b><small>${esc(p.f)}</small></button>`).join('')}</div><button type="button" class="aic-ok" id="exm-save">保存</button><button type="button" class="aic-no" id="exm-cancel">やめる</button></div>`;
+    ov.querySelectorAll('.exf-part').forEach(b=>b.onclick=()=>{const k=b.dataset.k;cur.has(k)?cur.delete(k):cur.add(k);draw();});
+    ov.querySelector('#exm-save').onclick=()=>{if(!db.settings.exMuscle)db.settings.exMuscle={};if(cur.size)db.settings.exMuscle[name]={main:[...cur],sub:[]};else delete db.settings.exMuscle[name];save(db);ov.remove();renderExFindList();};
+    ov.querySelector('#exm-cancel').onclick=()=>ov.remove();
+  };
+  draw();ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+  document.body.appendChild(ov);
+}
+// 記録・グラフ・種目を探す の切り替え
+document.querySelectorAll('.wo-vtab').forEach(btn=>btn.addEventListener('click',()=>{
+  const v=btn.dataset.v,fv=document.getElementById('wo-find-view');
+  if(fv)fv.hidden=v!=='find';
+  if(v==='find')renderExFind();
+}));
+
+// ── 今日は軽めで ──
+function _lhSleepMin(rec){
+  if(!rec||!rec.bedtime||!rec.wakeTime)return null;
+  const [bh,bm]=rec.bedtime.split(':').map(Number),[wh,wm]=rec.wakeTime.split(':').map(Number);
+  let d=(wh*60+wm)-(bh*60+bm);if(d<0)d+=1440;return d;
+}
+// {on:今日は軽めの日か, reason:自動でおすすめする理由（なければ空）}
+function lhLightInfo(){
+  const t=todayStr(),set=(db.settings.lightDays||{})[t];
+  const y=(()=>{const d=new Date(t+'T00:00:00');d.setDate(d.getDate()-1);return fmt(d);})();
+  const reasons=[];
+  const sm=_lhSleepMin(db.sleep&&db.sleep[y]);
+  if(sm!=null&&sm<360)reasons.push(`昨夜の睡眠が${Math.floor(sm/60)}時間${sm%60?sm%60+'分':''}`);
+  const past=Object.keys(db.workouts||{}).filter(d=>d<t&&(db.workouts[d]||[]).length).sort();
+  if(past.length){const gap=Math.round((new Date(t+'T00:00:00')-new Date(past[past.length-1]+'T00:00:00'))/86400000);if(gap>=7)reasons.push(`前回のトレーニングから${gap}日あいた`);}
+  return {on:set===true,dismissed:set===false,reason:reasons.join('・')};
+}
+function lhSetLight(on){const t=todayStr();if(!db.settings.lightDays)db.settings.lightDays={};db.settings.lightDays[t]=on;
+  // 古い日の記録は残さない
+  Object.keys(db.settings.lightDays).forEach(d=>{if(d<t)delete db.settings.lightDays[d];});
+  save(db);renderWoLight();if(typeof renderMmHomeCard==='function')renderMmHomeCard();}
+function lhLightContext(){const i=lhLightInfo();return i.on?`【今日の調子】本人が「今日は軽めで」を選んだ日${i.reason?'（'+i.reason+'）':''}。重さは前回の8割・セット数は少なめで提案する\n`:i.reason&&!i.dismissed?`【今日の調子】軽めがよさそうな日（${i.reason}）\n`:'';}
+function renderWoLight(){
+  const el=document.getElementById('wo-light');if(!el)return;
+  const i=lhLightInfo();
+  if(st.woDate&&st.woDate!==todayStr()){el.hidden=true;return;}
+  el.hidden=false;
+  if(i.on)el.innerHTML=`<div class="wl-on"><b>今日は軽めの日</b><span>重さは前回の8割から・定番メニューはセット数を1つ少なく${i.reason?'（'+esc(i.reason)+'）':''}</span><button type="button" class="wl-btn wl-off">いつもどおりに戻す</button></div>`;
+  else if(i.reason&&!i.dismissed)el.innerHTML=`<div class="wl-sug"><b>今日は軽めがおすすめ</b><span>${esc(i.reason)}</span><div class="wl-btns"><button type="button" class="wl-btn wl-yes">軽めにする</button><button type="button" class="wl-btn wl-no">いつもどおり</button></div></div>`;
+  else el.innerHTML=`<button type="button" class="wl-mini wl-yes">今日は軽めで</button>`;
+  el.querySelector('.wl-yes')?.addEventListener('click',()=>lhSetLight(true));
+  el.querySelector('.wl-no')?.addEventListener('click',()=>lhSetLight(false));
+  el.querySelector('.wl-off')?.addEventListener('click',()=>lhSetLight(false));
+}
+// 軽めの日の重さ（2.5kg単位で切り下げ）
+function lhLightWeight(w){return Math.floor((+w||0)*0.8/2.5)*2.5;}
 </script>
 <div id="lu-overlay" hidden style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;"></div>
 <div id="share-pv-modal" class="share-pv-modal" hidden>
