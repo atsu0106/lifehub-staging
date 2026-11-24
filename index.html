@@ -1732,6 +1732,31 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 .hh-sc:active{background:var(--surface2);}
 .hh-sc-ic{font-size:22px;}
 .hh-sc-l{font-size:11px;font-weight:700;line-height:1.25;text-align:center;color:var(--fg2);}
+
+/* v2.110.0: トレーニングの今日のメニュー */
+.wo-menu-card{padding:12px 14px;margin-bottom:8px;display:flex;flex-direction:column;gap:6px;text-align:left;}
+.wm-head{display:flex;align-items:center;gap:8px;}
+.wm-lbl{font-size:12px;font-weight:800;color:#C2410C;letter-spacing:.03em;}
+.wm-count{font-size:12px;color:var(--fg2);}
+.wm-count b{font-size:15px;color:var(--fg);}
+.wm-edit{margin-left:auto;min-height:36px;padding:0 12px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--fg2);font:inherit;font-size:12px;font-weight:700;cursor:pointer;}
+.wm-title{font-size:17px;font-weight:800;}
+.wm-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;}
+.wm-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--border);}
+.wm-row:first-child{border-top:0;}
+.wm-row .exf-pic{flex:none;}
+.wm-nm{flex:1;min-width:0;display:flex;flex-direction:column;}
+.wm-nm b{font-size:14px;}
+.wm-nm small{font-size:12px;color:var(--fg2);}
+.wm-row.done .wm-nm b{color:var(--fg3);text-decoration:line-through;}
+.wm-ok{width:44px;text-align:center;font-size:18px;font-weight:800;color:#047857;}
+.wm-add{width:44px;height:44px;flex:none;border-radius:50%;border:0;background:var(--accent);color:#fff;font-size:22px;font-weight:700;cursor:pointer;}
+.wm-all{min-height:44px;border-radius:12px;border:0;background:#F97316;color:#fff;font:inherit;font-size:14px;font-weight:800;cursor:pointer;margin-top:2px;}
+.wm-note{margin:0;font-size:12px;color:var(--fg2);line-height:1.6;}
+.wm-done{margin:0;font-size:13px;font-weight:700;color:#047857;}
+.wm-empty{margin:0;font-size:13px;color:var(--fg2);}
+.wm-btns{display:flex;gap:8px;flex-wrap:wrap;}
+.wm-btn{min-height:40px;padding:0 14px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--fg);font:inherit;font-size:13px;font-weight:700;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -1903,6 +1928,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
       </div>
       <div id="wo-log-view">
         <div id="wo-light" class="wo-light" hidden></div>
+        <div id="wo-menu-card" class="card wo-menu-card" hidden></div>
         <div class="card" style="padding:10px 12px 8px;">
           <div class="wo-cat-row" id="wo-cat-row">
             <button class="wo-cat-btn on" data-c="weight">🏋️ウエイト</button>
@@ -2588,7 +2614,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         <div class="st-about-note">動画の検索・表示に YouTube API Services を使っています。<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube利用規約</a>・<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Googleプライバシーポリシー</a>が適用されます。AIの答えは医療アドバイスではありません。</div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.109.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.110.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -3183,7 +3209,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='d2442e5618'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='aa41d60d58'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -5096,6 +5122,7 @@ function saveTrainingMenu(){
   if(!db.trainingMenus)db.trainingMenus={};
   db.trainingMenus[todayStr()]=document.getElementById('training-menu-text').value.trim();
   save(db);closeTrainingMenu();
+  if(typeof renderWoMenu==='function')renderWoMenu();if(typeof renderHomeHero==='function')renderHomeHero();
 }
 function openTrainingLog(){
   const sheet=document.getElementById('mo-training-log-sheet');if(!sheet)return;
@@ -5842,6 +5869,7 @@ renderAiConsentRow();
 document.getElementById('st-plan-row')?.addEventListener('click',()=>lhShowPaywall({feature:'none'}));
 renderPlanRow();
 const CHANGELOG=[
+  {v:'v2.110.0',d:'トレーニング → 記録の一番上に「今日のメニュー」。種目ごとに＋で記録に入れたり、まとめて入れたりできる'},
   {v:'v2.109.0',d:'ホームの上を新しく: 🔥何日連続・今週の回数・レベルと、大きな「トレーニング開始」「今日のやりごろ」、食事・睡眠・体重のタイル、よく使う場所への近道'},
   {v:'v2.108.0',d:'利用規約・特定商取引法に基づく表記を追加（設定 → このアプリについて）。今日のひとことに健康アドバイスをまとめた。プレミアム: 食事の写真アルバム（食事 → 📷 アルバム）。プレミアムの案内に見本'},
   {v:'v2.107.0',d:'プレミアム: 筋肉の回復をAIが判定（睡眠・食事・前回の量から）・ホームに「ランからの提案」・分析に「週のレポート」（数字は無料。体調との関係とAIのレポートはプレミアム）'},
@@ -6736,6 +6764,7 @@ function buildExCard(ex,xi,ds){
 
 function renderWo(){
   if(typeof renderWoLight==='function')renderWoLight(); // v2.105.0 今日は軽めで
+  if(typeof renderWoMenu==='function')renderWoMenu(); // v2.110.0 今日のメニュー
   const ds=st.woDate;
   document.getElementById('wo-date').textContent=jpDate(ds);
   const exs=db.workouts[ds]||[];
@@ -11333,6 +11362,58 @@ function renderHomeHero(){
   });
 }
 renderHomeHero();
+// ── トレーニング → 記録の「今日のメニュー」（v2.110.0） ─────────────
+// db.trainingMenus[日付] のテキスト（1行目にメニュー名、続けて「種目名 セット×回数」）を種目ごとに出す
+// ※ビルドで1つのscriptに連結されるため、トップレベルに const/let を置かない（TDZ回避）
+function lhParseMenu(text){
+  const out={title:'',items:[],notes:[]};
+  String(text||'').split('\n').map(l=>l.trim()).filter(Boolean).forEach((l,i)=>{
+    const m=l.replace(/^[・\-•\s]+/,'').match(/^(.+?)[\s　]+(\d+)\s*[×xX]\s*(.+)$/);
+    if(m)out.items.push({name:m[1].trim(),sets:+m[2],reps:m[3].trim()});
+    else if(i===0&&!out.title)out.title=l.replace(/^【|】.*$/g,'').trim()||l;
+    else out.notes.push(l);
+  });
+  return out;
+}
+function _wmTool(name){for(const arr of Object.values(MM_LIB||{}))for(const [n,tool] of arr)if(n===name)return tool;return '';}
+function lhAddMenuEx(e,ds,light){
+  if(!db.workouts[ds])db.workouts[ds]=[];
+  const sets=light?Math.max(1,e.sets-1):e.sets;
+  const reps=String(e.reps),r=(reps.match(/\d+/)||[10])[0]*1;
+  if(/秒|分/.test(reps)){db.workouts[ds].push({id:uid(),name:e.name,category:'stretch',sets:Array.from({length:sets},()=>({time:null}))});return;}
+  if(_wmTool(e.name)==='道具なし'||/腕立て|プッシュアップ|懸垂|チンニング|プランク|クランチ|シットアップ|レッグレイズ|ディップス|自重/.test(e.name)){db.workouts[ds].push({id:uid(),name:e.name,category:'bodyweight',sets:Array.from({length:sets},()=>({r}))});return;}
+  const prev=typeof woInitialSet==='function'?woInitialSet(e.name,'weight'):null;
+  const w=prev&&prev.w!=null?prev.w:0;
+  db.workouts[ds].push({id:uid(),name:e.name,category:'weight',sets:Array.from({length:sets},()=>({w,r}))});
+}
+function renderWoMenu(){
+  const el=document.getElementById('wo-menu-card');if(!el)return;
+  const ds=st.woDate||todayStr(),isToday=ds===todayStr();
+  const text=(db.trainingMenus||{})[ds]||'';
+  const lbl=isToday?'今日のメニュー':`${+ds.slice(5,7)}/${+ds.slice(8)}のメニュー`;
+  el.hidden=false;
+  if(!text.trim()){
+    el.className='card wo-menu-card empty';
+    el.innerHTML=`<div class="wm-head"><span class="wm-lbl">${lbl}</span></div><p class="wm-empty">${isToday?'今日のメニューはまだありません':'この日のメニューはありません'}</p><div class="wm-btns"><button type="button" class="wm-btn wm-plan">週間プランナーで作る</button>${isToday?'<button type="button" class="wm-btn wm-ask">ランに組んでもらう</button>':''}</div>`;
+  }else{
+    const p=lhParseMenu(text),recs=(db.workouts||{})[ds]||[];
+    const done=it=>recs.some(r=>r.name===it.name);
+    const left=p.items.filter(it=>!done(it)).length;
+    const light=isToday&&typeof lhLightInfo==='function'&&lhLightInfo().on;
+    el.className='card wo-menu-card';
+    el.innerHTML=`<div class="wm-head"><span class="wm-lbl">${lbl}</span>${p.items.length?`<span class="wm-count"><b>${p.items.length-left}</b>/${p.items.length}</span>`:''}<button type="button" class="wm-edit">直す</button></div>
+      ${p.title?`<div class="wm-title">${esc(p.title)}</div>`:''}
+      ${p.items.length?`<ul class="wm-list">${p.items.map((it,i)=>`<li class="wm-row${done(it)?' done':''}">${typeof exPicHtml==='function'?exPicHtml(it.name,40):''}<span class="wm-nm"><b>${esc(it.name)}</b><small>${it.sets}セット × ${esc(it.reps)}${light?'（軽めの日は1セット少なく）':''}</small></span>${done(it)?'<span class="wm-ok" aria-label="記録済み">✓</span>':`<button type="button" class="wm-add" data-i="${i}" aria-label="${esc(it.name)}を記録に入れる">＋</button>`}</li>`).join('')}</ul>`:''}
+      ${p.notes.length?`<p class="wm-note">${p.notes.map(esc).join('<br>')}</p>`:''}
+      ${left?`<button type="button" class="wm-all">まだの${left}種目をまとめて記録に入れる</button>`:p.items.length?'<p class="wm-done">メニューの種目はぜんぶ記録しました 💪</p>':''}`;
+    const addOne=it=>{lhAddMenuEx(it,ds,light);};
+    el.querySelectorAll('.wm-add').forEach(b=>b.onclick=()=>{addOne(p.items[+b.dataset.i]);save(db);renderWo();window._missionHook?.('log_workout');});
+    el.querySelector('.wm-all')?.addEventListener('click',()=>{const todo=p.items.filter(it=>!done(it));todo.forEach(addOne);save(db);renderWo();showToast(`${todo.length}種目を記録に入れました。重さと回数を確かめてね`);window._missionHook?.('log_workout');});
+    el.querySelector('.wm-edit').onclick=()=>{if(isToday&&typeof openTrainingMenu==='function')openTrainingMenu();else if(typeof openTrainingSchedule==='function')openTrainingSchedule();};
+  }
+  el.querySelector('.wm-plan')?.addEventListener('click',()=>{if(typeof openTrainingSchedule==='function')openTrainingSchedule();});
+  el.querySelector('.wm-ask')?.addEventListener('click',()=>{if(typeof lhAskRan==='function')lhAskRan('今日のトレーニングメニューを組んで。今日のメニューに入れて');});
+}
 </script>
 <div id="lu-overlay" hidden style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;"></div>
 <div id="share-pv-modal" class="share-pv-modal" hidden>
