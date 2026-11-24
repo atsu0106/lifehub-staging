@@ -1784,6 +1784,61 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 .fr-exp.over{background:#FEE2E2;color:#B91C1C;}
 .fr-del{width:44px;height:44px;flex:none;border:0;background:none;color:var(--fg3);font-size:18px;cursor:pointer;}
 .ai-done-note{font-size:12px;color:#047857;background:#ECFDF5;border-radius:10px;padding:6px 10px;align-self:flex-start;}
+
+/* v2.115.0: 続けたくなる仕組み */
+.lh-fb-pop{position:fixed;left:12px;right:12px;bottom:calc(var(--nav-h,64px) + 20px + env(safe-area-inset-bottom,0px));z-index:9500;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:#1a1a2e;color:#fff;box-shadow:0 10px 30px rgba(0,0,0,.25);transition:opacity .3s,transform .3s;max-width:480px;margin:0 auto;}
+.lh-fb-pop.out{opacity:0;transform:translateY(10px);}
+.fb-score{display:flex;align-items:baseline;gap:1px;flex:none;}
+.fb-score b{font-size:30px;font-weight:800;color:#FDBA74;}
+.fb-score small{font-size:12px;color:#FDBA74;}
+.fb-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.fb-nums{font-size:12px;color:#C7D2FE;font-weight:700;}
+.fb-msg{font-size:13px;line-height:1.5;}
+.fb-x{width:36px;height:36px;flex:none;border:0;background:none;color:#9CA3AF;font-size:18px;cursor:pointer;}
+.coach-line{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:6px 12px 10px;padding:6px 10px;border-radius:10px;background:var(--accent-bg,#EEF2FF);font-size:12px;color:var(--fg);}
+.coach-up{color:#047857;font-size:12px;}
+.hh-cond{cursor:pointer;font:inherit;font-size:12px;}
+.hh-cond small{font-size:11px;font-weight:700;margin-left:2px;}
+.hh-cond.good{background:#047857;border-color:#047857;color:#D1FAE5;}.hh-cond.good b{color:#fff;}
+.hh-cond.mid{background:#F59E0B;border-color:#F59E0B;color:#FFFBEB;}.hh-cond.mid b{color:#fff;}
+.hh-cond.low{background:#B45309;border-color:#B45309;color:#FFEDD5;}.hh-cond.low b{color:#fff;}
+.hh-prom{color:#4338CA;}
+.cond-big{display:flex;align-items:baseline;gap:10px;margin:4px 0 10px;}
+.cond-big b{font-size:44px;font-weight:800;}
+.cond-big span{font-size:15px;font-weight:700;color:var(--fg2);}
+.cond-list{list-style:none;margin:0 0 10px;padding:0;display:flex;flex-direction:column;gap:8px;}
+.cond-list li{display:grid;grid-template-columns:44px 1fr 48px;align-items:center;gap:8px;}
+.cond-list small{grid-column:2/4;font-size:12px;color:var(--fg2);margin-top:-4px;}
+.cond-k{font-size:13px;font-weight:700;}
+.cond-bar{height:8px;border-radius:4px;background:var(--surface2);overflow:hidden;}
+.cond-bar i{display:block;height:100%;background:var(--accent);}
+.cond-v{font-size:12px;color:var(--fg2);text-align:right;}
+.sl-promise{margin-bottom:8px;}
+.sp-lbl{color:#4338CA;}
+.sp-edit{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;}
+.sp-edit label{display:flex;flex-direction:column;gap:2px;font-size:12px;color:var(--fg2);font-weight:700;}
+.sp-edit input{padding:8px 10px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);color:var(--fg);font:inherit;font-size:16px;}
+.sp-week{display:flex;gap:4px;}
+.sp-day{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;border-radius:10px;background:var(--surface2);font-size:15px;font-weight:800;color:var(--fg3);}
+.sp-day small{font-size:10px;font-weight:700;}
+.sp-day.ok{background:#E0E7FF;color:#4338CA;}
+.sp-day.ng{background:#FFF7ED;color:#B45309;}
+.stk-frz{font-size:11px;color:#0369A1;margin-left:4px;}
+.mla-fav{margin:6px 0 2px;}
+.fav-lbl{font-size:12px;font-weight:700;color:var(--fg2);margin-bottom:4px;}
+.fav-chips{display:flex;gap:6px;flex-wrap:wrap;}
+.fav-chip{min-height:36px;padding:0 12px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--fg);font:inherit;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;}
+.fav-chip small{font-size:11px;color:var(--fg3);}
+.ml-same{min-height:36px;padding:0 12px;margin-left:6px;border-radius:999px;border:1px dashed var(--border);background:none;color:var(--fg2);font:inherit;font-size:12px;cursor:pointer;}
+.ml-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 8px;}
+.ml-tool{flex:1;min-height:44px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--fg);font:inherit;font-size:13px;font-weight:700;cursor:pointer;}
+.fr-tools{display:flex;gap:8px;margin-bottom:8px;}
+.fr-tools .wm-btn{flex:1;}
+.shop-ck{flex:1;min-width:0;display:flex;align-items:center;gap:10px;cursor:pointer;}
+.shop-ck input{width:20px;height:20px;flex:none;}
+.shop-row.done .fr-nm b{text-decoration:line-through;color:var(--fg3);}
+.shop-for{color:var(--fg3)!important;}
+.nt-time{padding:6px 8px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--fg);font:inherit;font-size:14px;margin-right:8px;}
 </style>
 </head>
 <body>
@@ -2000,8 +2055,6 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         <button id="ml-prev">‹</button>
         <span id="ml-date" style="flex:1;text-align:center;"></span>
         <button id="ml-next">›</button>
-        <button id="ml-fridge-btn" class="ml-nut-btn" style="margin-left:8px;">🧊 冷蔵庫</button>
-        <button id="ml-album-btn" class="ml-nut-btn" style="margin-left:6px;">📷 アルバム</button>
         <button id="ml-nut-btn" class="ml-nut-btn" style="margin-left:6px;">⚙ 栄養素</button>
       </div>
       <div class="wo-view-tabs">
@@ -2011,6 +2064,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
       <div id="ml-log-view">
         <div id="ml-plan-card" class="card wo-menu-card ml-plan-card" hidden></div>
         <button class="rcp-open-btn" id="rcp-open">🍳 食材からメニューを考える</button>
+        <div class="ml-tools"><button type="button" class="ml-tool" id="ml-fridge-btn">🧊 冷蔵庫</button><button type="button" class="ml-tool" id="ml-shop-btn">🛒 買い物リスト</button><button type="button" class="ml-tool" id="ml-eatout-btn">🏪 外食・コンビニ</button><button type="button" class="ml-tool" id="ml-album-btn">📷 アルバム</button></div>
         <div id="ml-list"></div>
         <div id="ml-video-card" class="card lv-card" hidden></div>
       </div>
@@ -2035,6 +2089,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         <span id="sl-date" style="flex:1;text-align:center;"></span>
         <button id="sl-next">›</button>
       </div>
+      <div id="sl-promise" class="card wo-menu-card sl-promise"></div>
       <div class="card sleep-card">
         <div class="sleep-head">😴 睡眠記録</div>
         <div class="sl-quick-btns">
@@ -2361,6 +2416,10 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         </div>
       </div>
 
+      <!-- 通知（v2.115.0） -->
+      <div class="st-sec">通知</div>
+      <div class="st-card" id="st-notify"></div>
+
       <!-- 外観 -->
       <div class="st-sec">外観</div>
       <div class="st-card">
@@ -2682,7 +2741,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         <div class="st-about-note">動画の検索・表示に YouTube API Services を使っています。<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube利用規約</a>・<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Googleプライバシーポリシー</a>が適用されます。AIの答えは医療アドバイスではありません。</div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.114.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.115.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -3010,6 +3069,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
       <button type="button" id="mla-photo-btn" style="width:100%;padding:10px 12px;background:var(--surface2);border:1.5px dashed var(--border);border-radius:var(--r-s);color:var(--fg2);font-size:13px;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">📷 写真で自動入力（AI推定）</button>
       <input type="file" id="mla-photo-input" accept="image/*" capture="environment" style="display:none;">
       <div id="mla-photo-status" style="font-size:11px;color:var(--accent);margin-top:4px;text-align:center;min-height:14px;"></div>
+      <div id="mla-fav" class="mla-fav" hidden></div>
     </div>
     <div class="m-field">
       <label>食品名</label>
@@ -3277,7 +3337,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='d317dca232'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='8bd07b75ba'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -4313,11 +4373,18 @@ function streakHasMeal(ds){const dm=db.meals?.[ds];return !!dm&&['breakfast','lu
 function streakHasSleep(ds){const s=db.sleep?.[ds];return !!s&&!!(s.bedtime||s.wakeTime);}
 
 // 日単位: 今日記録済みなら今日から、未記録なら昨日から遡って数える（今日は途切れ扱いにしない）
-function streakDaily(has){
+function streakDaily(has,kind){
   const today=_stToday();
   const doneToday=has(_stDs(today));
   let d=doneToday?today:_stAddDays(today,-1),n=0;
-  while(n<1000&&has(_stDs(d))){n++;d=_stAddDays(d,-1);}
+  while(n<1000){
+    const ds=_stDs(d);
+    if(has(ds)){n++;d=_stAddDays(d,-1);continue;}
+    // v2.115.0: 1日だけ抜けた日は「お休み」で途切れない（月2回まで）
+    const prev=_stAddDays(d,-1);
+    if(kind&&typeof lhUseFreeze==='function'&&has(_stDs(prev))&&lhUseFreeze(kind,ds)){d=prev;continue;}
+    break;
+  }
   return {count:n,doneToday};
 }
 // 筋トレ: 判定は週単位（先週以前は各週で目標回数を達成している必要あり。今週は週が終わるまで途切れない）
@@ -4351,8 +4418,8 @@ function getStreaks(){
     const freq=hp.gymFreq||null;
     out.workout=freq?{...streakWeekly(freq),goal:hp.goal||null}:{unset:true};
   }
-  if(f.meals!==false)out.meals=streakDaily(streakHasMeal);
-  if(f.sleep!==false)out.sleep=streakDaily(streakHasSleep);
+  if(f.meals!==false)out.meals=streakDaily(streakHasMeal,'meals');
+  if(f.sleep!==false)out.sleep=streakDaily(streakHasSleep,'sleep');
   return out;
 }
 // AIに渡す要約
@@ -4416,7 +4483,7 @@ function renderStreaks(){
       <div class="stk-ic">${ic}</div>
       <div class="stk-body">
         <div class="stk-title">${label} <b>${flame(v.count)} ${v.count}日連続</b></div>
-        <div class="stk-sub">${v.doneToday?'<span class="stk-ok">今日の記録OK</span>':'今日はまだ記録していません'}</div>
+        <div class="stk-sub">${v.doneToday?'<span class="stk-ok">今日の記録OK</span>':'今日はまだ記録していません'}${typeof lhFreezeLeft==='function'?` <span class="stk-frz">🧊お休み 残り${lhFreezeLeft(key)}回</span>`:''}</div>
       </div><div class="stk-arrow">›</div></div>`);};
   daily('meals','🍱','食事','meals');
   daily('sleep','😴','睡眠','sleep');
@@ -5836,9 +5903,9 @@ function legalUrl(name){const base=(typeof lhIsStaging==='function'&&lhIsStaging
 var LH_DEV_KEY='lh_dev',LH_QUOTA_KEY='lh_quota';
 var LH_PRICE={month:'1,200円',year:'9,800円',yearPerMonth:'約817円'};
 var LH_FREE_LIMITS={chat:10,photo:2,recipe:1,feedback:3};
-var LH_FEATURE_NAMES={chat:'AIチャット',think:'💭じっくり考えるモード',photo:'食事写真の分析',recipe:'食材からメニュー',feedback:'タスクのふり返り',plan:'AIの週間トレーニングメニュー',goal:'目標のAI判定',progress:'進捗のAI評価',recovery:'筋肉の回復のAI判定',album:'食事の写真アルバム',suggest:'AIからの提案',report:'週のAIレポート',brief:'今日のひとこと',mission:'今日のミッション',advice:'健康アドバイス'};
+var LH_FEATURE_NAMES={chat:'AIチャット',think:'💭じっくり考えるモード',photo:'食事写真の分析',recipe:'食材からメニュー',feedback:'タスクのふり返り',plan:'AIの週間トレーニングメニュー',goal:'目標のAI判定',progress:'進捗のAI評価',recovery:'筋肉の回復のAI判定',shopping:'買い物リスト（AI）',fridgephoto:'写真で冷蔵庫に登録',album:'食事の写真アルバム',suggest:'AIからの提案',report:'週のAIレポート',brief:'今日のひとこと',mission:'今日のミッション',advice:'健康アドバイス'};
 // 自分で押して使う機能だけ、回数切れで案内画面を出す（ひとことなど自動のものは出さない）
-var LH_USER_FEATURES=['chat','think','photo','recipe','feedback','plan','progress','recovery','report'];
+var LH_USER_FEATURES=['chat','think','photo','recipe','feedback','plan','progress','recovery','report','shopping','fridgephoto'];
 function lhDeviceId(){
   try{
     let d=localStorage.getItem(LH_DEV_KEY);
@@ -5962,6 +6029,7 @@ renderAiConsentRow();
 document.getElementById('st-plan-row')?.addEventListener('click',()=>lhShowPaywall({feature:'none'}));
 renderPlanRow();
 const CHANGELOG=[
+  {v:'v2.115.0',d:'記録した直後の点数とひとこと・トレーニングの「前回→今日の目安」・ホームに今日の調子・睡眠に「ねむりの約束」・連続記録のお休み（月2回）・よく食べるもの／昨日と同じ・通知の設定・買い物リスト（AI）・写真で冷蔵庫・外食とコンビニ選び・話して記録'},
   {v:'v2.114.0',d:'AIトレーナーを落ち着いた丁寧な口調に。頼めばすぐ記録・保存するように（確認は消す・書き換える時だけ）。AIと決めた食事のメニューが食事の画面に出る。食事 → 🧊 冷蔵庫 で食材と期限を保存（AIも使う）'},
   {v:'v2.113.0',d:'種目の絵を30個に（腕立て伏せ・ヒップスラスト・プランク・ランジ など24個を追加）'},
   {v:'v2.112.0',d:'画面の「ラン」を「AI」に（AIからの提案・AIに聞く・AIに相談 など）。わかりやすくした'},
@@ -6878,6 +6946,7 @@ function renderWo(){
   } else {
     exs.forEach((ex,xi)=>{
       const card=buildExCard(ex,xi,ds);
+      if(typeof lhCoachLine==='function'){const c=lhCoachLine(ex,ds);if(c)card.appendChild(c);} // v2.115.0 コーチ
       list.appendChild(card);
     });
 
@@ -7537,7 +7606,7 @@ function renderMeals(){
       </div>
       <div class="meal-items">${ihtml}</div>
       <div class="ml-add-simple">
-        <button class="ml-open-add" data-k="${mt.k}">＋ 追加</button>
+        <button class="ml-open-add" data-k="${mt.k}">＋ 追加</button>${(((db.meals||{})[(()=>{const d=new Date(ds+'T00:00:00');d.setDate(d.getDate()-1);return fmt(d);})()]||{})[mt.k]||[]).length?`<button class="ml-same" data-k="${mt.k}">昨日と同じ</button>`:''}
       </div>`;
     if(!dp[mt.k])dp[mt.k]=[];
     const strip=makePhotoStrip(
@@ -7571,6 +7640,7 @@ function renderMeals(){
   con.querySelectorAll('.ml-open-add').forEach(btn=>{
     btn.onclick=()=>openMlAdd(btn.dataset.k);
   });
+  con.querySelectorAll('.ml-same').forEach(btn=>{btn.onclick=()=>{if(typeof lhSameAsYesterday==='function')lhSameAsYesterday(btn.dataset.k);};});
   if(typeof renderMealVideos==='function')renderMealVideos();
 }
 
@@ -7620,6 +7690,7 @@ function renderNaps(){
 }
 function renderSleepTab(){
   const ds=st.slDate;
+  if(typeof renderSleepPromise==='function')renderSleepPromise(); // v2.115.0 ねむりの約束
   document.getElementById('sl-date').textContent=jpDate(ds);
   if(!db.sleep[ds])db.sleep[ds]={};
   const sl=db.sleep[ds];
@@ -7959,6 +8030,7 @@ function _fillMlModal(k,item){
       fieldsEl.querySelector(`#mla-nut-${n.id}`).value=item.nutrients[n.id];
   });
   document.getElementById('mo-ml-add').hidden=false;
+  if(typeof lhRenderFav==='function')lhRenderFav(); // v2.115.0 よく食べるもの
   setTimeout(()=>document.getElementById('mla-name').focus(),50);
 }
 function openMlAdd(k){
@@ -8035,6 +8107,7 @@ document.getElementById('mla-ok').onclick=()=>{
     if(item){item.name=name;item.kcal=parseInt(document.getElementById('mla-kcal').value)||0;item.nutrients=nutVals;}
   } else {
     dm[addingMealK].push({id:uid(),name,kcal:parseInt(document.getElementById('mla-kcal').value)||0,nutrients:nutVals});
+    window._mlFbPending=true; // v2.115.0 記録直後の反応
     const pf=window._mlaFile,pd=st.mlDate,pk=addingMealK;window._mlaFile=null;
     if(pf)processFiles([pf],p=>{if(!db.mlPhotos[pd])db.mlPhotos[pd]={breakfast:[],lunch:[],dinner:[],snack:[]};(db.mlPhotos[pd][pk]=db.mlPhotos[pd][pk]||[]).push(p);save(db);renderMeals();});
   }
@@ -8042,6 +8115,7 @@ document.getElementById('mla-ok').onclick=()=>{
   document.getElementById('mo-ml-add').hidden=true;
   editingMealId=null;
   renderMeals();
+  if(window._mlFbPending){window._mlFbPending=false;if(typeof lhMealFeedback==='function')lhMealFeedback(st.mlDate);}
 };
 document.getElementById('mla-name').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('mla-ok').click();});
 
@@ -10883,6 +10957,7 @@ function lhLightInfo(){
   const t=todayStr(),set=(db.settings.lightDays||{})[t];
   const y=(()=>{const d=new Date(t+'T00:00:00');d.setDate(d.getDate()-1);return fmt(d);})();
   const reasons=[];
+  const busy=typeof lhBusyToday==='function'?lhBusyToday():'';if(busy)reasons.push(`今日は「${busy}」の日`); // v2.115.0
   const sm=_lhSleepMin(db.sleep&&db.sleep[y]);
   if(sm!=null&&sm<360)reasons.push(`昨夜の睡眠が${Math.floor(sm/60)}時間${sm%60?sm%60+'分':''}`);
   const past=Object.keys(db.workouts||{}).filter(d=>d<t&&(db.workouts[d]||[]).length).sort();
@@ -11463,10 +11538,12 @@ function renderHomeHero(){
   el.hidden=false;document.body.classList.add('has-hero');
   // やる気の出る数字
   const pills=[];
+  if(typeof lhCondition==='function'){const c=lhCondition();pills.push(`<button type="button" class="hh-pill hh-cond ${c.score>=80?'good':c.score>=60?'mid':'low'}" id="hh-cond">調子 <b>${c.score}</b><small>${esc(c.label)}</small></button>`);}
   const sk=typeof getStreaks==='function'?getStreaks():{};
   const best=Math.max(sk.workout&&!sk.workout.unset?sk.workout.count:0,sk.meals?sk.meals.count:0,sk.sleep?sk.sleep.count:0);
   pills.push(`<span class="hh-pill hh-fire">🔥 <b>${best}</b>日連続</span>`);
   if(sk.workout&&!sk.workout.unset){const w=sk.workout,pct=Math.min(100,Math.round(w.thisWeek/w.freq*100));pills.push(`<span class="hh-pill hh-week${w.metThis?' done':''}">今週 <b>${w.thisWeek}</b>/${w.freq}回<i style="--p:${pct}%"></i></span>`);}
+  if(typeof lhPromiseKept==='function'){const k=lhPromiseKept((()=>{const d=new Date(t+'T00:00:00');d.setDate(d.getDate()-1);return fmt(d);})());if(k===true)pills.push('<span class="hh-pill hh-prom">🌙 約束 ✓</span>');}
   if(typeof lhUnlocked==='function'&&lhUnlocked('level')&&typeof calcGameStats==='function'){try{const g=calcGameStats();if(g&&g.level)pills.push(`<span class="hh-pill hh-lv">Lv.<b>${g.level}</b></span>`);}catch(e){}}
   // トレーニング開始・今日のやりごろ
   const menu=((db.trainingMenus||{})[t]||'').split('\n')[0];
@@ -11488,7 +11565,7 @@ function renderHomeHero(){
   if(f.meals!==false)small.push(['meals','hh-meal','食事',m&&m.kcal?`<b>${m.kcal.toLocaleString()}</b>${tg?`<small>/${tg.kcal.toLocaleString()}kcal</small>`:'<small>kcal</small>'}`:'<small>記録する</small>','🍱']);
   if(f.sleep!==false)small.push(['sleep','hh-sleep','睡眠',sh!=null?`<b>${Math.floor(sh)}</b><small>時間${Math.round((sh%1)*60)?Math.round((sh%1)*60)+'分':''}</small>`:'<small>昨夜を記録</small>','😴']);
   small.push(['health','hh-weight','体重',wt?`<b>${wt.w.toFixed(1)}</b><small>kg</small>`:'<small>記録する</small>','⚖️']);
-  const sc=[['ai','🤖','AIに聞く'],['find','🔍','種目を探す'],['report','📊','週の<br>レポート'],['plan','📅','週間<br>プランナー'],['album','📷','食事の<br>アルバム']];
+  const sc=[['voice','🎤','話して<br>記録'],['ai','🤖','AIに聞く'],['find','🔍','種目を探す'],['report','📊','週の<br>レポート'],['plan','📅','週間<br>プランナー'],['album','📷','食事の<br>アルバム']];
   el.innerHTML=`<div class="hh-status">${pills.join('')}</div>
     <div class="hh-grid2">
       <button type="button" class="hh-tile hh-train" id="hh-train"><span class="hh-t-lbl">LET'S GO</span><span class="hh-t-title">トレーニング<br>開始</span><span class="hh-t-sub">${esc(trainSub)}</span><span class="hh-blob"></span><img class="hh-ran" src="${esc(ran.img)}" alt="" onerror="this.style.display='none'"></button>
@@ -11497,11 +11574,13 @@ function renderHomeHero(){
     <div class="hh-grid3">${small.map(([k,c,l,v,ic])=>`<button type="button" class="hh-tile hh-small ${c}" data-go="${k}"><span class="hh-s-lbl">${l}</span><span class="hh-s-val">${v}</span><span class="hh-s-ic" aria-hidden="true">${ic}</span></button>`).join('')}</div>
     <div class="hh-row">${sc.map(([k,ic,l])=>`<button type="button" class="hh-sc" data-sc="${k}"><span class="hh-sc-ic" aria-hidden="true">${ic}</span><span class="hh-sc-l">${l}</span></button>`).join('')}</div>`;
   el.querySelector('#hh-train').onclick=()=>startTraining();
+  el.querySelector('#hh-cond')?.addEventListener('click',()=>{if(typeof openConditionSheet==='function')openConditionSheet();});
   el.querySelector('#hh-ready').onclick=()=>{window._anaView='muscle';switchToTab('ana');};
   el.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>_hhGo(b.dataset.go));
   el.querySelectorAll('[data-sc]').forEach(b=>b.onclick=()=>{
     const k=b.dataset.sc;
-    if(k==='ai')switchToTab('ai');
+    if(k==='voice'){if(typeof lhVoiceLog==='function')lhVoiceLog();}
+    else if(k==='ai')switchToTab('ai');
     else if(k==='find'){_hhGo('wo');setTimeout(()=>document.querySelector('.wo-vtab[data-v="find"]')?.click(),50);}
     else if(k==='report'){window._anaView='report';switchToTab('ana');}
     else if(k==='plan'){if(typeof openTrainingSchedule==='function')openTrainingSchedule();}
@@ -11541,7 +11620,7 @@ function renderWoMenu(){
   el.hidden=false;
   if(!text.trim()){
     el.className='card wo-menu-card empty';
-    el.innerHTML=`<div class="wm-head"><span class="wm-lbl">${lbl}</span></div><p class="wm-empty">${isToday?'今日のメニューはまだありません':'この日のメニューはありません'}</p><div class="wm-btns"><button type="button" class="wm-btn wm-plan">週間プランナーで作る</button>${isToday?'<button type="button" class="wm-btn wm-ask">AIに組んでもらう</button>':''}</div>`;
+    el.innerHTML=`<div class="wm-head"><span class="wm-lbl">${lbl}</span></div><p class="wm-empty">${isToday?'今日のメニューはまだありません':'この日のメニューはありません'}</p>${isToday&&typeof lhMissedYesterdayMenu==='function'&&lhMissedYesterdayMenu()?`<div class="wm-btns"><button type="button" class="wm-all wm-move">昨日のメニュー（${esc(lhMissedYesterdayMenu().split('\n')[0])}）を今日に移す</button></div>`:''}<div class="wm-btns"><button type="button" class="wm-btn wm-plan">週間プランナーで作る</button>${isToday?'<button type="button" class="wm-btn wm-ask">AIに組んでもらう</button>':''}</div>`;
   }else{
     const p=lhParseMenu(text),recs=(db.workouts||{})[ds]||[];
     const done=it=>recs.some(r=>r.name===it.name);
@@ -11558,6 +11637,7 @@ function renderWoMenu(){
     el.querySelector('.wm-all')?.addEventListener('click',()=>{const todo=p.items.filter(it=>!done(it));todo.forEach(addOne);save(db);renderWo();showToast(`${todo.length}種目を記録に入れました。重さと回数を確かめてね`);window._missionHook?.('log_workout');});
     el.querySelector('.wm-edit').onclick=()=>{if(isToday&&typeof openTrainingMenu==='function')openTrainingMenu();else if(typeof openTrainingSchedule==='function')openTrainingSchedule();};
   }
+  el.querySelector('.wm-move')?.addEventListener('click',()=>lhMoveYesterdayMenu());
   el.querySelector('.wm-plan')?.addEventListener('click',()=>{if(typeof openTrainingSchedule==='function')openTrainingSchedule();});
   el.querySelector('.wm-ask')?.addEventListener('click',()=>{if(typeof lhAskRan==='function')lhAskRan('今日のトレーニングメニューを組んで。今日のメニューに入れて');});
 }
@@ -11595,7 +11675,7 @@ function renderMlPlan(){
       const k=b.dataset.k,t=plan[k];
       if(!db.meals[ds])db.meals[ds]={breakfast:[],lunch:[],dinner:[],snack:[]};
       (db.meals[ds][k]=db.meals[ds][k]||[]).push({id:uid(),name:_mpName(t)||t.slice(0,60),kcal:_mpKcal(t),nutrients:{},fromPlan:true});
-      save(db);renderMeals();showToast('記録に入れました。量が違えば ✎ で直せます');
+      save(db);renderMeals();if(typeof lhMealFeedback==='function')lhMealFeedback(ds);else showToast('記録に入れました');
     });
   }
   el.querySelector('.mp-plan')?.addEventListener('click',()=>{if(typeof openTrainingSchedule==='function')openTrainingSchedule();});
@@ -11636,6 +11716,7 @@ function openFridge(){
   const el=_vlSheet('fr-sheet',`
     <div class="training-sheet-title">🧊 冷蔵庫<button class="training-sheet-close" data-x>✕</button></div>
     <p class="fr-lead">買ったものを入れておくと、AIがメニューを考えるときに使います。使い切ったら × で消します</p>
+    <div class="fr-tools"><button type="button" class="wm-btn" id="fr-photo">📷 写真から入れる</button><button type="button" class="wm-btn" id="fr-shop">🛒 買い物リスト</button></div>
     <div class="fr-add"><input id="fr-name" type="text" maxlength="30" placeholder="食材（例: 卵）" autocomplete="off"><input id="fr-qty" type="text" maxlength="20" placeholder="量（例: 6個）"><label class="fr-exp-in">期限<input id="fr-exp" type="date"></label><button type="button" id="fr-add-btn">入れる</button></div>
     ${L.length?`<ul class="fr-list">${L.map(f=>`<li class="fr-row"><span class="fr-nm"><b>${esc(f.name)}</b>${f.qty?`<small>${esc(f.qty)}</small>`:''}</span>${badge(f)}<button type="button" class="fr-del" data-id="${f.id}" aria-label="${esc(f.name)}を消す">×</button></li>`).join('')}</ul>
       <button type="button" class="vl-import-btn primary" id="fr-cook">冷蔵庫の食材でメニューを考える</button>`
@@ -11647,6 +11728,8 @@ function openFridge(){
     openFridge();setTimeout(()=>document.getElementById('fr-name')?.focus(),50);
   };
   el.querySelector('#fr-add-btn').onclick=add;
+  el.querySelector('#fr-photo').onclick=()=>{if(typeof lhFridgePhoto==='function')lhFridgePhoto();};
+  el.querySelector('#fr-shop').onclick=()=>{el.remove();if(typeof openShopping==='function')openShopping();};
   el.querySelector('#fr-name').addEventListener('keydown',e=>{if(e.key==='Enter')add();});
   el.querySelectorAll('.fr-del').forEach(b=>b.onclick=()=>{db.fridge=lhFridgeList().filter(f=>f.id!==b.dataset.id);save(db);openFridge();});
   el.querySelector('#fr-cook')?.addEventListener('click',()=>{
@@ -11656,6 +11739,332 @@ function openFridge(){
   });
 }
 document.getElementById('ml-fridge-btn')?.addEventListener('click',openFridge);
+// ── 続けたくなる仕組みとAIの新機能（v2.115.0） ─────────────
+// 記録直後の反応・今日の調子・ねむりの約束・連続記録のお休み・よく食べるもの・通知の設定・
+// 試験の日・昨日のメニューを移す・買い物リスト（AI）・写真で冷蔵庫（AI）・外食とコンビニ・話して記録
+// ※ビルドで1つのscriptに連結されるため、トップレベルに const/let を置かない（TDZ回避）
+var LH_FREEZE_FROM='2026-11-25',LH_FREEZE_PER_MONTH=2;
+function _egDs(off,base){const d=new Date((base||todayStr())+'T00:00:00');d.setDate(d.getDate()+off);return fmt(d);}
+function _egMin(t){if(!t||!/^\d{1,2}:\d{2}$/.test(t))return null;const [h,m]=t.split(':').map(Number);return h*60+m;}
+
+// ── 食事の点数と記録直後の反応 ──
+function lhMealScore(ds){
+  const m=typeof _pmMeal==='function'?_pmMeal(ds):null;if(!m)return null;
+  const tg=typeof _pmTarget==='function'?_pmTarget():null;
+  const dm=(db.meals||{})[ds]||{};
+  const meals=['breakfast','lunch','dinner'].filter(k=>(dm[k]||[]).length).length;
+  const isToday=ds===todayStr(),h=new Date().getHours();
+  const expected=isToday?(h<10?1:h<15?2:3):3;
+  let s=0;
+  // 食事の回数（30点）
+  s+=Math.min(30,Math.round(30*Math.min(meals,expected)/expected));
+  // たんぱく質（40点）: 目安があれば目安に対する割合、なければカロリーに占める割合
+  if(tg&&tg.protein){const exp=isToday?tg.protein*Math.min(1,expected/3):tg.protein;s+=Math.round(40*Math.min(1,m.p/(exp||1)));}
+  else if(m.kcal){const share=m.p*4/m.kcal;s+=share>=0.15?40:Math.round(40*share/0.15);}
+  // カロリー（30点）: 目安を超えすぎていない・（過去の日は）足りている
+  if(tg&&tg.kcal&&m.kcal){const r=m.kcal/tg.kcal;s+=r>1.15?Math.max(0,Math.round(30-(r-1.15)*100)):(!isToday&&r<0.75)?18:30;}
+  else s+=m.kcal?24:15;
+  return {score:Math.max(0,Math.min(100,s)),kcal:m.kcal,p:m.p,tg};
+}
+function lhMealAdvice(ds,sc){
+  const tg=sc.tg,h=new Date().getHours(),isToday=ds===todayStr();
+  if(tg&&tg.kcal&&sc.kcal>tg.kcal*1.1)return `目安を${Math.round(sc.kcal-tg.kcal)}kcal超えています。次の食事は野菜と汁物を中心に軽めにすると調整できます`;
+  if(tg&&tg.protein){const left=Math.round(tg.protein-sc.p);if(left>=20&&(!isToday||h>=11))return `たんぱく質があと${left}gです。鶏むね肉100g（約23g）や卵2個（約12g）で補えます`;}
+  if(isToday&&h<11)return '朝食を記録できました。昼食でたんぱく質と野菜をとると、バランスが整います';
+  if(tg&&tg.kcal&&isToday&&h>=19&&sc.kcal<tg.kcal*0.7)return `目安まであと${Math.round(tg.kcal-sc.kcal)}kcalです。食べすぎない範囲で、夕食をしっかりとりましょう`;
+  return 'バランスよく食べられています。この調子で続けましょう';
+}
+function lhMealFeedback(ds){
+  const sc=lhMealScore(ds||todayStr());if(!sc)return;
+  document.getElementById('lh-fb-pop')?.remove();
+  const el=document.createElement('div');el.id='lh-fb-pop';el.className='lh-fb-pop';el.setAttribute('role','status');
+  const tg=sc.tg;
+  el.innerHTML=`<div class="fb-score"><b>${sc.score}</b><small>点</small></div><div class="fb-body"><div class="fb-nums">${tg?`${sc.kcal.toLocaleString()} / ${tg.kcal.toLocaleString()}kcal・たんぱく質 ${sc.p} / ${tg.protein}g`:`${sc.kcal.toLocaleString()}kcal・たんぱく質 ${sc.p}g`}</div><div class="fb-msg">${esc(lhMealAdvice(ds||todayStr(),sc))}</div></div><button type="button" class="fb-x" aria-label="閉じる">×</button>`;
+  document.body.appendChild(el);
+  const close=()=>el.remove();
+  el.querySelector('.fb-x').onclick=close;
+  setTimeout(()=>{if(el.isConnected)el.classList.add('out');setTimeout(close,400);},7000);
+}
+
+// ── トレーニング中のコーチ（前回との比較と、今日の目安） ──
+function lhCoachLine(ex,ds){
+  const cat=ex.category||'weight';if(cat!=='weight'&&cat!=='bodyweight')return null;
+  const dates=Object.keys(db.workouts||{}).filter(d=>d<ds).sort().reverse();
+  let prev=null,pd=null;
+  for(const d of dates){const e=(db.workouts[d]||[]).find(x=>x.name===ex.name&&(x.sets||[]).length);if(e){prev=e;pd=d;break;}}
+  if(!prev)return null;
+  const top=s=>(s||[]).reduce((a,b)=>((+b.w||0)>(+a.w||0)||((+b.w||0)===(+a.w||0)&&(+b.r||0)>(+a.r||0)))?b:a,{w:0,r:0});
+  const pt=top(prev.sets),ct=top(ex.sets);
+  const md=pd.slice(5).replace('-','/');
+  let target,txt;
+  if(cat==='weight'){
+    const allDone=prev.sets.every(s=>(+s.r||0)>=(+pt.r||0));
+    target=(+pt.r||0)>=8&&allDone?{w:(+pt.w||0)+2.5,r:+pt.r||8}:{w:+pt.w||0,r:(+pt.r||0)+1};
+    txt=`前回 ${pt.w||0}kg×${pt.r||0}（${md}）→ 今日の目安 ${target.w}kg×${target.r}`;
+  }else{
+    target={r:(+pt.r||0)+1};txt=`前回 ${pt.r||0}回（${md}）→ 今日の目安 ${target.r}回`;
+  }
+  let up='';
+  if(cat==='weight'&&(+ct.w||0)>(+pt.w||0))up=`前回より +${Math.round(((+ct.w)-(+pt.w))*10)/10}kg`;
+  else if((+ct.w||0)===(+pt.w||0)&&(+ct.r||0)>(+pt.r||0))up=`前回より +${(+ct.r)-(+pt.r)}回`;
+  const el=document.createElement('div');el.className='coach-line';
+  el.innerHTML=`<span class="coach-ic" aria-hidden="true">📈</span><span>${esc(txt)}</span>${up?`<b class="coach-up">${esc(up)}</b>`:''}`;
+  return el;
+}
+
+// ── 今日の調子スコア ──
+function lhCondition(){
+  const t=todayStr(),y=_egDs(-1),y2=_egDs(-2);
+  const parts=[];
+  const sh=typeof _pmSleepH==='function'?_pmSleepH(y):null;
+  if(sh!=null)parts.push({k:'睡眠',v:sh>=7?40:sh>=6?30:sh>=5?18:8,max:40,note:`昨夜 ${Math.floor(sh)}時間${Math.round((sh%1)*60)?Math.round((sh%1)*60)+'分':''}`});
+  const sets=[y,y2].reduce((a,d)=>a+((db.workouts||{})[d]||[]).reduce((b,e)=>b+(e.sets||[]).length,0),0);
+  parts.push({k:'回復',v:sets===0?30:sets<=15?25:sets<=30?18:12,max:30,note:sets?`この2日で${sets}セット`:'この2日はトレーニングなし'});
+  const m=typeof _pmMeal==='function'?_pmMeal(y):null,tg=typeof _pmTarget==='function'?_pmTarget():null;
+  if(m){let v=10;if(tg&&tg.kcal){const r=m.kcal/tg.kcal;v=r>=0.8&&r<=1.15?20:10;if(tg.protein&&m.p>=tg.protein*0.8)v+=10;}else v=m.p>=60?25:18;parts.push({k:'食事',v,max:30,note:`昨日 ${m.kcal.toLocaleString()}kcal・たんぱく質${m.p}g`});}
+  const sum=parts.reduce((a,p)=>a+p.v,0),max=parts.reduce((a,p)=>a+p.max,0);
+  const score=Math.round(sum/max*100);
+  const label=score>=80?'攻める日':score>=60?'いつもどおり':'軽めの日がおすすめ';
+  return {score,label,parts,partial:parts.length<3};
+}
+function openConditionSheet(){
+  const c=lhCondition();
+  const el=_vlSheet('cond-sheet',`
+    <div class="training-sheet-title">今日の調子<button class="training-sheet-close" data-x>✕</button></div>
+    <div class="cond-big"><b>${c.score}</b><span>${esc(c.label)}</span></div>
+    <ul class="cond-list">${c.parts.map(p=>`<li><span class="cond-k">${p.k}</span><span class="cond-bar"><i style="width:${Math.round(p.v/p.max*100)}%"></i></span><span class="cond-v">${p.v}/${p.max}</span><small>${esc(p.note)}</small></li>`).join('')}</ul>
+    <p class="fr-lead">${c.partial?'睡眠や食事を記録すると、もっと正確になります。':''}睡眠・この2日のトレーニング量・昨日の食事から計算した目安です。体調が悪いときは無理をしないでください</p>
+    ${c.score<60?'<button type="button" class="vl-import-btn primary" id="cond-light">今日は軽めにする</button>':''}`);
+  el.querySelector('[data-x]').onclick=()=>el.remove();
+  el.querySelector('#cond-light')?.addEventListener('click',()=>{if(typeof lhSetLight==='function')lhSetLight(true);el.remove();showToast('今日は軽めの日にしました');if(typeof renderHomeHero==='function')renderHomeHero();});
+}
+
+// ── ねむりの約束 ──
+function lhSleepPromise(){return db.settings.sleepPromise||null;}
+// その日の夜（db.sleep[日付]）に約束を守れたか。true/false/null（記録なし）
+function lhPromiseKept(ds){
+  const p=lhSleepPromise(),s=(db.sleep||{})[ds];if(!p||!s||!s.bedtime)return null;
+  const norm=x=>{const v=_egMin(x);return v==null?null:(v<12*60?v+1440:v);}; // 0時を過ぎた就寝は翌日扱い
+  const b=norm(s.bedtime),pb=norm(p.bed);if(b==null||pb==null)return null;
+  let ok=b<=pb+15;
+  if(ok&&p.wake&&s.wakeTime){const w=_egMin(s.wakeTime),pw=_egMin(p.wake);if(w!=null&&pw!=null&&w>pw+30)ok=false;}
+  return ok;
+}
+function renderSleepPromise(){
+  const el=document.getElementById('sl-promise');if(!el)return;
+  const p=lhSleepPromise();
+  if(!p){
+    el.innerHTML=`<div class="wm-head"><span class="wm-lbl sp-lbl">ねむりの約束</span></div><p class="wm-empty">寝る時刻と起きる時刻を決めておくと、守れた日に ✓ が付きます</p><div class="sp-edit"><label>寝る<input type="time" id="sp-bed" value="23:30"></label><label>起きる<input type="time" id="sp-wake" value="06:30"></label><button type="button" class="wm-btn" id="sp-save">約束する</button></div>`;
+  }else{
+    const days=[];for(let i=7;i>=1;i--){const d=_egDs(-i);days.push([d,lhPromiseKept(d)]);}
+    const kept=days.filter(x=>x[1]===true).length;
+    el.innerHTML=`<div class="wm-head"><span class="wm-lbl sp-lbl">ねむりの約束</span><span class="wm-count">寝る <b>${esc(p.bed)}</b>・起きる <b>${esc(p.wake||'—')}</b></span><button type="button" class="wm-edit" id="sp-change">変える</button></div>
+      <div class="sp-week">${days.map(([d,k])=>`<span class="sp-day ${k===true?'ok':k===false?'ng':''}"><small>${['日','月','火','水','木','金','土'][new Date(d+'T00:00:00').getDay()]}</small>${k===true?'✓':k===false?'×':'・'}</span>`).join('')}</div>
+      <p class="wm-note">この7日で <b>${kept}日</b> 守れました${kept>=5?'。よく続いています':''}</p>
+      <div class="sp-edit" hidden><label>寝る<input type="time" id="sp-bed" value="${esc(p.bed)}"></label><label>起きる<input type="time" id="sp-wake" value="${esc(p.wake||'')}"></label><button type="button" class="wm-btn" id="sp-save">保存</button></div>`;
+    el.querySelector('#sp-change').onclick=()=>{el.querySelector('.sp-edit').hidden=false;};
+  }
+  el.querySelector('#sp-save').onclick=()=>{
+    const bed=document.getElementById('sp-bed').value,wake=document.getElementById('sp-wake').value;if(!bed)return;
+    db.settings.sleepPromise={bed,wake};save(db);renderSleepPromise();lhApplyNotify();showToast('約束しました');
+  };
+}
+
+// ── 連続記録のお休み（食事・睡眠。月2回まで・自動） ──
+function lhUseFreeze(kind,ds){
+  if(ds<LH_FREEZE_FROM)return false;
+  const F=db.settings.freeze||(db.settings.freeze={});
+  const list=F[kind]||(F[kind]=[]);
+  if(list.includes(ds))return true;
+  if(list.filter(x=>x.slice(0,7)===ds.slice(0,7)).length>=LH_FREEZE_PER_MONTH)return false;
+  list.push(ds);save(db);return true;
+}
+function lhFreezeLeft(kind){const m=todayStr().slice(0,7);return LH_FREEZE_PER_MONTH-((db.settings.freeze||{})[kind]||[]).filter(x=>x.slice(0,7)===m).length;}
+
+// ── よく食べるもの・昨日と同じ ──
+function lhFavFoods(){
+  const cnt=new Map();
+  for(let i=0;i<30;i++){const dm=(db.meals||{})[_egDs(-i)];if(!dm)continue;['breakfast','lunch','dinner','snack'].forEach(k=>(dm[k]||[]).forEach(it=>{if(!it.name)return;const c=cnt.get(it.name)||{n:0,it};c.n++;cnt.set(it.name,c);}));}
+  return [...cnt.values()].filter(c=>c.n>=2).sort((a,b)=>b.n-a.n).slice(0,8).map(c=>c.it);
+}
+function lhRenderFav(){
+  const el=document.getElementById('mla-fav');if(!el)return;
+  const L=lhFavFoods();
+  if(!L.length||editingMealId){el.hidden=true;return;}
+  el.hidden=false;
+  el.innerHTML=`<div class="fav-lbl">よく食べるもの</div><div class="fav-chips">${L.map((it,i)=>`<button type="button" class="fav-chip" data-i="${i}">${esc(it.name)}${it.kcal?`<small>${it.kcal}</small>`:''}</button>`).join('')}</div>`;
+  el.querySelectorAll('.fav-chip').forEach(b=>b.onclick=()=>{
+    const it=L[+b.dataset.i];
+    document.getElementById('mla-name').value=it.name;
+    document.getElementById('mla-kcal').value=it.kcal||'';
+    (db.nutrients||[]).forEach(n=>{const f=document.getElementById('mla-nut-'+n.id);if(f)f.value=it.nutrients&&it.nutrients[n.id]!=null?it.nutrients[n.id]:'';});
+  });
+}
+function lhSameAsYesterday(k){
+  const ds=st.mlDate,yd=_egDs(-1,ds);
+  const src=((db.meals||{})[yd]||{})[k]||[];if(!src.length)return;
+  if(!db.meals[ds])db.meals[ds]={breakfast:[],lunch:[],dinner:[],snack:[]};
+  src.forEach(it=>(db.meals[ds][k]=db.meals[ds][k]||[]).push({id:uid(),name:it.name,kcal:it.kcal||0,nutrients:Object.assign({},it.nutrients||{})}));
+  save(db);renderMeals();lhMealFeedback(ds);
+}
+
+// ── 通知の設定（届くのはiPhoneアプリ版） ──
+function lhNotifySettings(){return Object.assign({bed:true,gym:false,gymTime:'18:00',meal:true,mealTime:'20:30'},db.settings.notify||{});}
+function lhNotifyList(){
+  const n=lhNotifySettings(),L=[];
+  const p=lhSleepPromise();
+  if(n.bed&&p&&p.bed){const m=(_egMin(p.bed)-30+1440)%1440;L.push({id:'bed',time:`${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`,title:'そろそろ寝る準備を',body:`ねむりの約束は ${p.bed} です`});}
+  if(n.gym&&n.gymTime)L.push({id:'gym',time:n.gymTime,title:'今日のトレーニング',body:'今日のメニューを確認しましょう'});
+  if(n.meal&&n.mealTime)L.push({id:'meal',time:n.mealTime,title:'食事の記録',body:'今日の食事を記録しておきましょう'});
+  return L;
+}
+function lhApplyNotify(){
+  try{if(window.LH_NATIVE&&typeof window.LH_NATIVE.scheduleNotifications==='function')window.LH_NATIVE.scheduleNotifications(lhNotifyList());}catch(e){}
+}
+function renderNotifySettings(){
+  const el=document.getElementById('st-notify');if(!el)return;
+  const n=lhNotifySettings(),p=lhSleepPromise(),native=!!(window.LH_NATIVE&&window.LH_NATIVE.scheduleNotifications);
+  const row=(k,ic,lbl,sub,time)=>`<div class="st-row st-row-toggle"><span class="st-ic" style="background:#6366f1;">${ic}</span><div style="flex:1;min-width:0;"><div class="st-label">${lbl}</div><div style="font-size:11px;color:var(--fg3);">${sub}</div></div>${time?`<input type="time" class="nt-time" data-t="${time}" value="${esc(n[time])}">`:''}<label class="toggle"><input type="checkbox" data-nt="${k}" ${n[k]?'checked':''}><span class="toggle-slider"></span></label></div>`;
+  el.innerHTML=row('bed','🌙','寝る前',p?`約束（${esc(p.bed)}）の30分前`:'睡眠の画面で「ねむりの約束」を決めると届きます')+row('gym','🏋️','ジムの時間','今日のメニューのお知らせ','gymTime')+row('meal','🍽','食事の記録忘れ','記録がない日の夜に','mealTime')+`<div class="st-about-note">${native?'通知は端末に設定しました。':'通知はiPhoneアプリ版で届きます（Web版では設定だけ保存します）。'}</div>`;
+  const saveN=()=>{const v=lhNotifySettings();el.querySelectorAll('[data-nt]').forEach(c=>{v[c.dataset.nt]=c.checked;});el.querySelectorAll('.nt-time').forEach(i=>{if(i.value)v[i.dataset.t]=i.value;});db.settings.notify=v;save(db);lhApplyNotify();};
+  el.querySelectorAll('[data-nt],.nt-time').forEach(i=>i.onchange=saveN);
+}
+
+// ── 昨日のメニューを今日に移す ──
+function lhMissedYesterdayMenu(){
+  const y=_egDs(-1),t=todayStr();
+  const m=(db.trainingMenus||{})[y];if(!m||((db.workouts||{})[y]||[]).length||(db.trainingMenus||{})[t])return null;
+  return m;
+}
+function lhMoveYesterdayMenu(){
+  const m=lhMissedYesterdayMenu();if(!m)return;
+  if(!db.trainingMenus)db.trainingMenus={};
+  db.trainingMenus[todayStr()]=m;save(db);
+  if(typeof renderWoMenu==='function')renderWoMenu();if(typeof renderHomeHero==='function')renderHomeHero();
+  showToast('昨日のメニューを今日に移しました');
+}
+// 試験・実習の日
+function lhBusyToday(){
+  const t=todayStr(),re=/試験|テスト|実習|OSCE|CBT|国試|発表|レポート締切/;
+  const ev=(db.events||[]).find(e=>e.date===t&&re.test(e.title||''));
+  return ev?ev.title:'';
+}
+
+// ── 買い物リスト（AI） ──
+function lhShoppingList(){return Array.isArray(db.shopping)?db.shopping:[];}
+async function lhMakeShopping(){
+  const days=[];for(let i=0;i<7;i++){const d=_egDs(i),mp=(db.mealPlans||{})[d];if(mp)days.push(`${d}: `+['breakfast','lunch','dinner','snack'].filter(k=>mp[k]).map(k=>mp[k]).join(' / '));}
+  if(!days.length){showToast('先に食事のメニューを決めてください（AIに頼むか、週間プランナーで）');return {err:'none'};}
+  const fridge=(typeof lhFridgeList==='function'?lhFridgeList():[]).map(f=>f.name+(f.qty?` ${f.qty}`:'')).join('、')||'なし';
+  const hp=db.settings.healthProfile||{};
+  const r=await lhAiJson('shopping','あなたはLifeWithのAIトレーナーです。食事のメニューから、買い物に必要な食材を整理します。',
+    `【これからの食事のメニュー】\n${days.join('\n')}\n【冷蔵庫にあるもの】${fridge}\n${hp.allergies?`【アレルギー】${hp.allergies}（入れない）\n`:''}
+上のメニューを作るのに必要で、冷蔵庫にない食材の買い物リストを作ってください。
+・調味料や家に普通あるもの（塩・こしょう・油・しょうゆ など）は入れない
+・同じ食材はまとめて、量の目安（例: 300g、1パック、6個）を書く
+・for はどのメニューに使うかを15字以内で
+形式: {"items":[{"name":"鶏むね肉","qty":"300g","for":"照り焼き"}]}`,900);
+  if(r.data&&Array.isArray(r.data.items)){
+    const cur=lhShoppingList().filter(x=>!x.done);
+    r.data.items.slice(0,30).forEach(it=>{const name=String(it.name||'').trim().slice(0,30);if(!name||cur.some(c=>c.name===name))return;cur.push({id:uid(),name,qty:String(it.qty||'').slice(0,20),for:String(it.for||'').slice(0,20),done:false});});
+    db.shopping=cur;save(db);
+  }
+  return r;
+}
+function openShopping(){
+  const L=lhShoppingList();
+  const el=_vlSheet('shop-sheet',`
+    <div class="training-sheet-title">🛒 買い物リスト<button class="training-sheet-close" data-x>✕</button></div>
+    <button type="button" class="vl-import-btn primary" id="shop-ai">食事のメニューから作る（AI）</button>
+    <div id="shop-msg" class="fr-lead"></div>
+    <div class="fr-add"><input id="shop-name" type="text" maxlength="30" placeholder="足すもの（例: 牛乳）" autocomplete="off"><button type="button" id="shop-add">足す</button></div>
+    ${L.length?`<ul class="fr-list">${L.map(x=>`<li class="fr-row shop-row${x.done?' done':''}"><label class="shop-ck"><input type="checkbox" data-id="${x.id}" ${x.done?'checked':''}><span class="fr-nm"><b>${esc(x.name)}</b>${x.qty?`<small>${esc(x.qty)}</small>`:''}${x.for?`<small class="shop-for">${esc(x.for)}</small>`:''}</span></label><button type="button" class="fr-del" data-del="${x.id}" aria-label="${esc(x.name)}を消す">×</button></li>`).join('')}</ul>
+      <button type="button" class="vl-import-btn" id="shop-done">チェックしたもの（買ったもの）を冷蔵庫へ</button>`:'<p class="mm-hint">まだ何もありません</p>'}`);
+  el.querySelector('[data-x]').onclick=()=>el.remove();
+  el.querySelector('#shop-ai').onclick=async()=>{
+    const b=el.querySelector('#shop-ai');b.disabled=true;b.textContent='AIが作っています…';
+    const r=await lhMakeShopping();
+    if(r&&r.err&&r.err!=='none'){b.disabled=false;b.textContent='食事のメニューから作る（AI）';el.querySelector('#shop-msg').textContent=r.err;return;}
+    openShopping();
+  };
+  const add=()=>{const v=document.getElementById('shop-name').value.trim();if(!v)return;db.shopping=lhShoppingList().concat({id:uid(),name:v.slice(0,30),qty:'',for:'',done:false});save(db);openShopping();};
+  el.querySelector('#shop-add').onclick=add;
+  el.querySelector('#shop-name').addEventListener('keydown',e=>{if(e.key==='Enter')add();});
+  el.querySelectorAll('input[type=checkbox][data-id]').forEach(c=>c.onchange=()=>{const x=lhShoppingList().find(y=>y.id===c.dataset.id);if(x){x.done=c.checked;save(db);c.closest('.shop-row').classList.toggle('done',c.checked);}});
+  el.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{db.shopping=lhShoppingList().filter(x=>x.id!==b.dataset.del);save(db);openShopping();});
+  el.querySelector('#shop-done')?.addEventListener('click',()=>{
+    const done=lhShoppingList().filter(x=>x.done);if(!done.length){showToast('買ったものにチェックを入れてください');return;}
+    if(typeof lhUpdateFridge==='function')lhUpdateFridge({add:done.map(x=>({name:x.name,qty:x.qty}))});
+    db.shopping=lhShoppingList().filter(x=>!x.done);save(db);showToast(`${done.length}個を冷蔵庫に入れました`);openShopping();
+  });
+}
+
+// ── 写真で冷蔵庫に登録（AI） ──
+function lhFridgePhoto(){
+  let inp=document.getElementById('fr-photo-in');
+  if(!inp){inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.id='fr-photo-in';inp.hidden=true;document.body.appendChild(inp);}
+  inp.value='';
+  inp.onchange=async()=>{
+    const file=inp.files[0];if(!file)return;
+    if(!aiConsented()&&!(await aiRequireConsent()))return;
+    const msg=document.querySelector('#fr-sheet .fr-lead');if(msg)msg.textContent='📷 写真を読み取っています…';
+    try{
+      const {data,mediaType}=await fileToAIImage(file);
+      const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({lh_feature:'fridgephoto',model:'claude-haiku-5-5',max_tokens:800,thinking:{type:'disabled'},
+        system:'あなたは写真から食材を読み取るアシスタントです。出力はJSONだけ。',
+        messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:mediaType,data}},{type:'text',text:`この写真（レシート・冷蔵庫の中・買い物袋など）に写っている食材を読み取ってください。調味料・飲み物以外の日用品は入れない。賞味期限が読めれば exp に YYYY-MM-DD で（今日は${todayStr()}）。\n形式: {"items":[{"name":"卵","qty":"6個","exp":""}]}`}]}]})});
+      const d=await res.json();
+      if(d.error)throw new Error(aiErrorText(d)||'読み取れませんでした');
+      const t=(d.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('');
+      const m=t.match(/\{[\s\S]*\}/);const items=m?(JSON.parse(m[0]).items||[]):[];
+      if(!items.length)throw new Error('食材が見つかりませんでした。明るい場所でもう一度撮ってください');
+      lhFridgePhotoConfirm(items.slice(0,30));
+    }catch(e){if(msg)msg.textContent='⚠ '+(e.message||'読み取れませんでした');}
+  };
+  inp.click();
+}
+function lhFridgePhotoConfirm(items){
+  const el=_vlSheet('frp-sheet',`
+    <div class="training-sheet-title">写真から見つけた食材<button class="training-sheet-close" data-x>✕</button></div>
+    <p class="fr-lead">冷蔵庫に入れるものを選んでください</p>
+    <ul class="fr-list">${items.map((x,i)=>`<li class="fr-row"><label class="shop-ck"><input type="checkbox" data-i="${i}" checked><span class="fr-nm"><b>${esc(x.name||'')}</b>${x.qty?`<small>${esc(x.qty)}</small>`:''}${x.exp?`<small>期限 ${esc(String(x.exp).slice(5).replace('-','/'))}</small>`:''}</span></label></li>`).join('')}</ul>
+    <button type="button" class="vl-import-btn primary" id="frp-ok">選んだものを冷蔵庫へ</button>`);
+  el.querySelector('[data-x]').onclick=()=>el.remove();
+  el.querySelector('#frp-ok').onclick=()=>{
+    const pick=[...el.querySelectorAll('input[data-i]')].filter(c=>c.checked).map(c=>items[+c.dataset.i]);
+    if(typeof lhUpdateFridge==='function')lhUpdateFridge({add:pick});
+    el.remove();showToast(`${pick.length}個を冷蔵庫に入れました`);if(typeof openFridge==='function')openFridge();
+  };
+}
+
+// ── 外食・コンビニで選ぶ ──
+function openEatOut(){
+  const shops=['セブン-イレブン','ファミリーマート','ローソン','牛丼チェーン','定食屋','ファストフード','ファミレス','学食'];
+  const el=_vlSheet('eat-sheet',`
+    <div class="training-sheet-title">🏪 外食・コンビニで選ぶ<button class="training-sheet-close" data-x>✕</button></div>
+    <p class="fr-lead">お店を選ぶと、今日の目安と食べた分から、AIが組み合わせを提案します</p>
+    <div class="fav-chips">${shops.map(s=>`<button type="button" class="fav-chip eat-shop">${s}</button>`).join('')}</div>
+    <div class="fr-add" style="margin-top:10px"><input id="eat-other" type="text" maxlength="30" placeholder="ほかのお店（例: サイゼリヤ）"><button type="button" id="eat-go">聞く</button></div>`);
+  el.querySelector('[data-x]').onclick=()=>el.remove();
+  const ask=s=>{el.remove();lhAskRan(`今から${s}で食べるものを選びたいです。今日の目安と、今日すでに食べた分をふまえて、おすすめの組み合わせを2つ（商品名・カロリーとたんぱく質の目安つき）教えてください。私が選んだら、食事メニューに保存してください`);};
+  el.querySelectorAll('.eat-shop').forEach(b=>b.onclick=()=>ask(b.textContent));
+  el.querySelector('#eat-go').onclick=()=>{const v=document.getElementById('eat-other').value.trim();if(v)ask(v);};
+}
+
+// ── 話して記録 ──
+function lhVoiceLog(){
+  switchToTab('ai');
+  setTimeout(()=>{
+    const inp=document.getElementById('ai-input');
+    if(inp){inp.dataset.ph0=inp.dataset.ph0||inp.placeholder;inp.placeholder='例: 昼は牛丼の並、ベンチプレス60kgを8回3セット';}
+    const mic=document.getElementById('ai-mic');
+    if(mic&&mic.style.display!=='none')mic.click();else inp?.focus();
+  },250);
+}
+
+document.getElementById('ml-shop-btn')?.addEventListener('click',openShopping);
+document.getElementById('ml-eatout-btn')?.addEventListener('click',openEatOut);
+document.getElementById('hdr-settings')?.addEventListener('click',()=>{try{renderNotifySettings();}catch(e){}});
 </script>
 <div id="lu-overlay" hidden style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;"></div>
 <div id="share-pv-modal" class="share-pv-modal" hidden>
