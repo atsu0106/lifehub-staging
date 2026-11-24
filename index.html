@@ -2741,7 +2741,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         <div class="st-about-note">動画の検索・表示に YouTube API Services を使っています。<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube利用規約</a>・<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Googleプライバシーポリシー</a>が適用されます。AIの答えは医療アドバイスではありません。</div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.116.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.117.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -3337,7 +3337,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='dd9b4d19a0'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='8b073ed2fe'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -6029,6 +6029,7 @@ renderAiConsentRow();
 document.getElementById('st-plan-row')?.addEventListener('click',()=>lhShowPaywall({feature:'none'}));
 renderPlanRow();
 const CHANGELOG=[
+  {v:'v2.117.0',d:'ねむりの約束: 約束の時間を含んで眠れた日、または約束の長さ以上眠れた日は ✓ に（早く寝て遅く起きた日も達成）'},
   {v:'v2.116.0',d:'AIとの会話を必ず丁寧語に。「ベンチプレス 60kg」のように種目名と重さを送るだけで、今日の記録に追加（追加の前に確認します）'},
   {v:'v2.115.0',d:'記録した直後の点数とひとこと・トレーニングの「前回→今日の目安」・ホームに今日の調子・睡眠に「ねむりの約束」・連続記録のお休み（月2回）・よく食べるもの／昨日と同じ・通知の設定・買い物リスト（AI）・写真で冷蔵庫・外食とコンビニ選び・話して記録'},
   {v:'v2.114.0',d:'AIトレーナーを落ち着いた丁寧な口調に。頼めばすぐ記録・保存するように（確認は消す・書き換える時だけ）。AIと決めた食事のメニューが食事の画面に出る。食事 → 🧊 冷蔵庫 で食材と期限を保存（AIも使う）'},
@@ -11847,9 +11848,11 @@ function lhPromiseKept(ds){
   const p=lhSleepPromise(),s=(db.sleep||{})[ds];if(!p||!s||!s.bedtime)return null;
   const norm=x=>{const v=_egMin(x);return v==null?null:(v<12*60?v+1440:v);}; // 0時を過ぎた就寝は翌日扱い
   const b=norm(s.bedtime),pb=norm(p.bed);if(b==null||pb==null)return null;
-  let ok=b<=pb+15;
-  if(ok&&p.wake&&s.wakeTime){const w=_egMin(s.wakeTime),pw=_egMin(p.wake);if(w!=null&&pw!=null&&w>pw+30)ok=false;}
-  return ok;
+  const after=(x,base)=>{let v=_egMin(x);if(v==null)return null;while(v<=base)v+=1440;return v;}; // 寝た時刻より後の起きた時刻
+  const w=s.wakeTime?after(s.wakeTime,b):null,pw=p.wake?after(p.wake,pb):null;
+  if(w==null||pw==null)return b<=pb+15; // 起きた時刻（または約束の起きる時刻）がない日は、寝た時刻だけで判定
+  // v2.117.0: ①約束の時間を含んで眠れた ②約束の長さ以上眠れた、のどちらかで ✓
+  return (b<=pb&&w>=pw)||(w-b)>=(pw-pb);
 }
 function renderSleepPromise(){
   const el=document.getElementById('sl-promise');if(!el)return;
@@ -11861,7 +11864,7 @@ function renderSleepPromise(){
     const kept=days.filter(x=>x[1]===true).length;
     el.innerHTML=`<div class="wm-head"><span class="wm-lbl sp-lbl">ねむりの約束</span><span class="wm-count">寝る <b>${esc(p.bed)}</b>・起きる <b>${esc(p.wake||'—')}</b></span><button type="button" class="wm-edit" id="sp-change">変える</button></div>
       <div class="sp-week">${days.map(([d,k])=>`<span class="sp-day ${k===true?'ok':k===false?'ng':''}"><small>${['日','月','火','水','木','金','土'][new Date(d+'T00:00:00').getDay()]}</small>${k===true?'✓':k===false?'×':'・'}</span>`).join('')}</div>
-      <p class="wm-note">この7日で <b>${kept}日</b> 守れました${kept>=5?'。よく続いています':''}</p>
+      <p class="wm-note">この7日で <b>${kept}日</b> 守れました${kept>=5?'。よく続いています':''}<br><small>約束の時間を含んで眠れた日、または約束の長さ（${(()=>{const a=_egMin(p.bed),z=_egMin(p.wake);if(a==null||z==null)return '—';let d=z-a;if(d<=0)d+=1440;return Math.floor(d/60)+'時間'+(d%60?d%60+'分':'');})()}）以上眠れた日が ✓ です</small></p>
       <div class="sp-edit" hidden><label>寝る<input type="time" id="sp-bed" value="${esc(p.bed)}"></label><label>起きる<input type="time" id="sp-wake" value="${esc(p.wake||'')}"></label><button type="button" class="wm-btn" id="sp-save">保存</button></div>`;
     el.querySelector('#sp-change').onclick=()=>{el.querySelector('.sp-edit').hidden=false;};
   }
