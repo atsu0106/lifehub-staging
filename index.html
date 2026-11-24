@@ -1444,6 +1444,73 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 .pw-legal{font-size:10px;color:var(--fg3);line-height:1.5;margin-top:8px;}
 .pw-tag{font-size:9px;font-weight:800;letter-spacing:.08em;color:#fff;background:#111;padding:2px 5px;border-radius:4px;vertical-align:middle;}
 #st-plan-row[hidden],.pw-tag[hidden]{display:none!important;}
+
+/* v2.104.0: 下の5つのタブ・自分タブ・筋肉マップ */
+#hdr-menu[hidden]{display:none!important;}
+.ai-fab{display:none!important;}
+.nav.nav5 .nb{padding:0 2px;}
+.nav.nav5 .nb span{white-space:nowrap;}
+.nav.nav5 .nb-ai.on{background:none;}
+.nb-ai-circle{width:44px;height:44px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;margin-top:-14px;box-shadow:0 4px 12px rgba(79,70,229,.35);}
+.nav .nb-ai svg{stroke:#fff!important;width:24px!important;height:24px!important;}
+.nb-ai span:last-child{color:var(--accent);}
+#tab-other .other-subnav[hidden]{display:none!important;}
+.me-head{display:flex;align-items:center;gap:12px;padding:14px;}
+.me-avatar{width:48px;height:48px;border-radius:50%;color:#fff;font-weight:800;font-size:20px;display:flex;align-items:center;justify-content:center;flex:none;}
+.me-name{display:block;font-size:18px;font-weight:800;color:var(--fg);}
+.me-sub{display:block;font-size:12px;color:var(--fg2);}
+.me-list{padding:4px 0;}
+.me-row{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;padding:0 14px;background:none;border:0;border-bottom:1px solid var(--border);font:inherit;color:var(--fg);text-align:left;cursor:pointer;}
+.me-row:last-child{border-bottom:0;}
+.me-row[hidden]{display:none!important;}
+.me-ic{width:24px;text-align:center;}
+.me-lbl{flex:1;font-size:15px;font-weight:600;}
+.me-val{font-size:12px;color:var(--fg2);}
+.me-go{color:var(--fg3);font-size:18px;}
+.mm-home-card{padding:0;overflow:hidden;}
+.mm-home-btn{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;background:none;border:0;font:inherit;color:var(--fg);text-align:left;cursor:pointer;}
+.mm-home-txt{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0;}
+.mm-home-lbl{font-size:12px;font-weight:700;color:#B45309;}
+.mm-home-head{font-size:17px;font-weight:800;}
+.mm-home-sub{font-size:12px;color:var(--fg2);}
+.mm-home-go{font-size:22px;color:var(--fg3);}
+.ana-chips{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 10px;}
+.ana-chip{min-height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--fg);font:inherit;font-size:13px;font-weight:700;cursor:pointer;}
+.ana-chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg);}
+.mm-seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--surface2);border-radius:12px;padding:4px;margin-bottom:10px;}
+.mm-side{min-height:38px;border:0;border-radius:9px;background:transparent;font:inherit;font-size:14px;font-weight:700;color:var(--fg2);cursor:pointer;}
+.mm-side.on{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.08);}
+.mm-card{display:flex;gap:6px;align-items:center;padding:10px;}
+.mm-fig{flex:none;}
+.mm-svg [data-k]{cursor:pointer;}
+.mm-list{flex:1;display:flex;flex-direction:column;min-width:0;}
+.mm-row{display:flex;align-items:center;gap:6px;min-height:34px;padding:2px 4px;border:0;border-radius:8px;background:none;font:inherit;color:var(--fg);text-align:left;cursor:pointer;}
+.mm-row.on{background:var(--accent-bg);}
+.mm-dot{width:10px;height:10px;border-radius:3px;flex:none;}
+.mm-nm{flex:1;display:flex;flex-direction:column;line-height:1.2;min-width:0;}
+.mm-nm b{font-size:12px;}
+.mm-nm small{font-size:9px;color:var(--fg2);}
+.mm-days{font-size:11px;color:var(--fg2);white-space:nowrap;}
+.mm-legend{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:11px;color:var(--fg2);margin:8px 2px;}
+.mm-legend span{display:inline-flex;align-items:center;gap:4px;}
+.mm-legend i{width:10px;height:10px;border-radius:3px;display:inline-block;}
+.mm-hint{font-size:12px;color:var(--fg2);margin:6px 2px;}
+.mm-detail{padding:12px 14px;}
+.mm-d-head{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;}
+.mm-d-head b{font-size:17px;}
+.mm-d-head small{font-size:11px;color:var(--fg2);}
+.mm-d-st{margin-left:auto;font-size:13px;font-weight:700;}
+.mm-d-last{font-size:12px;color:var(--fg2);margin-top:4px;}
+.mm-d-lbl{font-size:12px;font-weight:700;margin:10px 0 4px;}
+.mm-ex{display:flex;align-items:center;gap:8px;min-height:48px;border-top:1px solid var(--border);}
+.mm-ex-nm{flex:1;display:flex;flex-direction:column;min-width:0;}
+.mm-ex-nm b{font-size:14px;}
+.mm-ex-nm small{font-size:11px;color:var(--fg2);}
+.mm-tool{font-size:11px;font-weight:700;background:var(--surface2);color:var(--fg);border-radius:6px;padding:3px 7px;white-space:nowrap;}
+.mm-yt{font-size:12px;font-weight:700;color:var(--accent);text-decoration:none;min-height:44px;display:inline-flex;align-items:center;}
+.mm-ai-btn{display:flex;flex-direction:column;align-items:flex-start;gap:4px;width:100%;margin-top:10px;padding:12px 14px;border:1px dashed #C7D2FE;border-radius:14px;background:var(--accent-bg);font:inherit;font-size:14px;font-weight:700;color:var(--fg);text-align:left;cursor:pointer;}
+.mm-ai-btn small{font-size:11px;font-weight:400;color:var(--fg2);}
+#tab-other .other-subnav:not([hidden]){display:flex;}
 </style>
 </head>
 <body>
@@ -1514,7 +1581,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 
 <div id="app">
   <header class="hdr">
-    <button class="hdr-menu-btn" id="hdr-menu" aria-label="メニュー"><svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
+    <button class="hdr-menu-btn" id="hdr-menu" aria-label="メニュー" hidden><svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
     <span class="hdr-logo" id="hdr-title">LifeWith</span>
     <span class="hdr-date" id="hdr-date"></span>
     <button class="prof-btn" id="prof-btn" title="プロフィール切り替え">
@@ -1524,8 +1591,9 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
   </header>
 
   <section id="tab-cal" class="tab on">
-    <div id="stoic-today" class="card stoic-today" hidden></div>
+    <div id="mm-home-card" class="card mm-home-card" hidden></div>
     <div id="ai-brief-card" class="ai-brief-card" hidden></div>
+    <div id="stoic-today" class="card stoic-today" hidden></div>
     <div id="daily-mission-card" class="daily-mission-card" hidden></div>
     <div id="streak-card" class="card streak-card" hidden></div>
     <div id="goal-card" class="goal-card"></div>
@@ -1596,9 +1664,24 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
     <div id="tk-list"></div>
   </section>
 
+  <section id="tab-ana" class="tab">
+    <div id="mm-root"></div>
+  </section>
+
+  <section id="tab-me" class="tab">
+    <div class="card me-head"><span class="me-avatar" id="me-avatar">?</span><span><span class="me-name" id="me-name"></span><span class="me-sub">プロフィール・プラン・設定</span></span></div>
+    <div class="card me-list">
+      <button type="button" class="me-row" data-me="plan"><span class="me-ic">👑</span><span class="me-lbl">プラン</span><span class="me-val" id="me-plan-val"></span><span class="me-go">›</span></button>
+      <button type="button" class="me-row" data-me="profile"><span class="me-ic">🧍</span><span class="me-lbl">体のプロフィール</span><span class="me-go">›</span></button>
+      <button type="button" class="me-row" data-me="tasks"><span class="me-ic">✅</span><span class="me-lbl">タスク</span><span class="me-go">›</span></button>
+      <button type="button" class="me-row" data-me="vlists"><span class="me-ic">📺</span><span class="me-lbl">マイ動画リスト</span><span class="me-go">›</span></button>
+      <button type="button" class="me-row" data-me="settings"><span class="me-ic">⚙️</span><span class="me-lbl">設定</span><span class="me-go">›</span></button>
+    </div>
+  </section>
+
   <section id="tab-other" class="tab">
     <div class="other-subnav">
-      <button class="other-sub-btn" data-s="wo"><span class="osb-icon">🏋️</span>トレーニング</button>
+      <button class="other-sub-btn" data-s="muscle"><span class="osb-icon">💪</span>筋肉</button>
       <button class="other-sub-btn on" data-s="meals"><span class="osb-icon">🍱</span>食事</button>
       <button class="other-sub-btn" data-s="sleep"><span class="osb-icon">😴</span>睡眠</button>
       <button class="other-sub-btn" data-s="health"><span class="osb-icon">❤️</span>健康</button>
@@ -1764,18 +1847,26 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
     </div>
   </section>
 
-  <nav class="nav" id="main-nav">
-    <button class="nb on" data-t="cal">
-      <svg viewBox="0 0 24 24" id="nav-cal-svg"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-      <span id="nav-cal-label">カレンダー</span>
-    </button>
-    <button class="nb" data-t="tasks">
-      <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      タスク
+  <nav class="nav nav5" id="main-nav">
+    <button class="nb on" data-t="cal" id="nav-home">
+      <svg viewBox="0 0 24 24" id="nav-cal-svg"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>
+      <span id="nav-cal-label">ホーム</span>
     </button>
     <button class="nb" data-t="other" data-sub="wo" id="nav-hl">
       <svg viewBox="0 0 24 24" id="nav-hl-svg"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/></svg>
-      <span id="nav-hl-label">筋トレ</span>
+      <span id="nav-hl-label">トレーニング</span>
+    </button>
+    <button class="nb nb-ai" data-t="ai" id="nav-ai" aria-label="AIトレーナー">
+      <span class="nb-ai-circle"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M18 15l.8 2.2L21 18l-2.2.8L18 21l-.8-2.2L15 18l2.2-.8z"/></svg></span>
+      <span>AI</span>
+    </button>
+    <button class="nb" data-t="ana" id="nav-ana">
+      <svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+      <span>分析</span>
+    </button>
+    <button class="nb" data-t="me" id="nav-me">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+      <span>自分</span>
     </button>
     <button class="nb-add" id="fab-nav" hidden></button>
   </nav>
@@ -2008,7 +2099,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
             <button class="st-opt" data-pos="bl">左下</button>
           </div>
         </div>
-        <div class="st-row st-row-toggle">
+        <div class="st-row st-row-toggle" hidden>
           <span class="st-ic" style="background:#f59e0b;">⭐</span>
           <span class="st-label" style="flex:0 0 auto;margin-right:8px;">下のタブ</span>
           <div class="st-opts" style="justify-content:flex-end;">
@@ -2280,7 +2371,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         <div class="st-about-note">動画の検索・表示に YouTube API Services を使っています。<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube利用規約</a>・<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Googleプライバシーポリシー</a>が適用されます。AIの答えは医療アドバイスではありません。</div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.103.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.104.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -2875,7 +2966,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='8a67701d2a'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='b6128bb767'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -3243,8 +3334,8 @@ function applyFeatureVisibility(){
   document.body.classList.toggle('no-health-extra',f.healthExtra!==true);
   document.body.classList.toggle('no-profiles',f.profiles===false);
   const calLbl=calOn&&!db.settings.stoic; // v2.100.0: ストイックではカレンダーを出さない
-  const cl=document.getElementById('nav-cal-label');if(cl)cl.textContent=calLbl?'カレンダー':'ホーム';
-  const cs=document.getElementById('nav-cal-svg');if(cs)cs.innerHTML=calLbl?'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>':'<path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>';
+  void calLbl; // v2.104.0: 下のタブは常に「ホーム」（カレンダーはホームの中）
+  const tkRow=document.querySelector('.me-row[data-me="tasks"]');if(tkRow)tkRow.hidden=f.tasks===false;
   if(window._hlReady){ // ui.js・calendar.js の読込後だけ（const の初期化前に触らない）
     applyAddBtnPos();
     if(!tasksOn&&st.tab==='tasks')switchToTab('cal');
@@ -3313,15 +3404,18 @@ fabNav.onclick=openEvModalAndSetup;
 fabFloat.onclick=openEvModalAndSetup;
 // legacy reference
 const fab={onclick:null};
+// v2.104.0: 下の5つのタブ（ホーム・トレーニング・AI・分析・自分）。食事・睡眠・健康は「分析」の中
+function navGroup(){
+  if(document.getElementById('ai-modal')?.classList.contains('open'))return 'ai';
+  if(st.tab==='other')return st.otherSub==='wo'?'other':'ana';
+  return st.tab;
+}
 function updateNavActive(){
-  const aiOpen=!!(document.getElementById('ai-modal')?.classList.contains('open'));
-  document.querySelectorAll('.nb').forEach(b=>{
-    const match=b.dataset.t===st.tab&&(!b.dataset.sub||b.dataset.sub===st.otherSub);
-    b.classList.toggle('on',!aiOpen&&match);
-  });
+  const g=navGroup();
+  document.querySelectorAll('.nb').forEach(b=>b.classList.toggle('on',b.dataset.t===g));
   const key=st.tab==='other'?st.otherSub:st.tab;
   document.querySelectorAll('.dr-item[data-go]').forEach(b=>b.classList.toggle('on',b.dataset.go===key));
-  document.getElementById('hdr-title').textContent=st.tab==='cal'?'LifeWith':st.tab==='tasks'?'タスク':(SCREEN_TITLES[st.otherSub]||'LifeWith');
+  document.getElementById('hdr-title').textContent=st.tab==='cal'?'LifeWith':st.tab==='tasks'?'タスク':st.tab==='ana'?'分析':st.tab==='me'?'自分':(SCREEN_TITLES[st.otherSub]||'LifeWith');
   fabFloat.hidden=st.tab!=='cal'||db.settings.features?.calendar===false;
 }
 const SCREEN_TITLES={wo:'トレーニング',meals:'食事',sleep:'睡眠',health:'健康'};
@@ -3368,10 +3462,30 @@ function switchToTab(t){
   tabEl.classList.add('on');
   tabEl.scrollTop=0;
   updateNavActive();
-  if(t==='cal'){renderGoals();renderCal();renderHealthAdvice();if(typeof renderTrendCard==='function')renderTrendCard();if(typeof lhCheckUnlocks==='function')setTimeout(lhCheckUnlocks,600);if(typeof renderStoicToday==='function')renderStoicToday();}
+  if(t==='ana'&&typeof renderMuscleMap==='function')renderMuscleMap();
+  if(t==='me')renderMeTab();
+  if(t==='cal'){if(typeof renderMmHomeCard==='function')renderMmHomeCard();renderGoals();renderCal();renderHealthAdvice();if(typeof renderTrendCard==='function')renderTrendCard();if(typeof lhCheckUnlocks==='function')setTimeout(lhCheckUnlocks,600);if(typeof renderStoicToday==='function')renderStoicToday();}
   if(t==='tasks')renderTasks();
   if(t==='other')renderOther();
 }
+// 自分タブ
+function renderMeTab(){
+  const profs=getProfs();
+  const active=profs.find(p=>p.id===window._LH_PID)||profs[0]||{name:db.userProfile?.name||'?',color:'#4F46E5'};
+  const nm=db.userProfile?.name||active.name||'';
+  const av=document.getElementById('me-avatar');if(av){av.style.background=active.color||'#4F46E5';av.textContent=(nm||'?')[0];}
+  const n=document.getElementById('me-name');if(n)n.textContent=nm||'あなた';
+  const pv=document.getElementById('me-plan-val');if(pv)pv.textContent=(typeof lhPlanEnforced==='function'&&!lhPlanEnforced())?'プレミアム（Web版）':(typeof lhIsPro==='function'&&lhIsPro()?'プレミアム':'無料');
+  const tk=document.querySelector('.me-row[data-me="tasks"]');if(tk)tk.hidden=db.settings.features?.tasks===false;
+}
+document.querySelectorAll('.me-row').forEach(b=>b.onclick=()=>{
+  const k=b.dataset.me;
+  if(k==='plan'){if(typeof lhShowPaywall==='function')lhShowPaywall({feature:'none'});}
+  else if(k==='tasks')switchToTab('tasks');
+  else if(k==='vlists'){if(typeof openVideoLists==='function')openVideoLists();}
+  else if(k==='profile'){document.getElementById('hdr-settings').click();setTimeout(()=>document.getElementById('hp-height')?.scrollIntoView({block:'center'}),300);}
+  else if(k==='settings')document.getElementById('hdr-settings').click();
+});
 document.querySelectorAll('.nb').forEach(btn=>{
   btn.addEventListener('click',()=>{
     if(btn.dataset.sub)st.otherSub=btn.dataset.sub;
@@ -4412,13 +4526,9 @@ function fixHighlightTab(){
 }
 function updateHlNav(){
   const hl=fixHighlightTab();
-  const c=HL_NAV[hl];
+  // v2.104.0: 下の5つのタブにしたので、2つ目は「トレーニング」で固定（マイタブは使わない）
   const btn=document.getElementById('nav-hl');
-  const svgEl=document.getElementById('nav-hl-svg');
-  const labelEl=document.getElementById('nav-hl-label');
-  if(btn)btn.dataset.sub=hl;
-  if(svgEl)svgEl.innerHTML=c.svg;
-  if(labelEl)labelEl.textContent=c.label;
+  if(btn)btn.dataset.sub='wo';
   document.querySelectorAll('.st-opt[data-hl]').forEach(b=>{b.hidden=!hlAvailable(b.dataset.hl);b.classList.toggle('on',b.dataset.hl===hl);});
   updateNavActive();
 }
@@ -5504,6 +5614,7 @@ renderAiConsentRow();
 document.getElementById('st-plan-row')?.addEventListener('click',()=>lhShowPaywall({feature:'none'}));
 renderPlanRow();
 const CHANGELOG=[
+  {v:'v2.104.0',d:'下のタブを5つに（ホーム・トレーニング・AI・分析・自分）。ホームに「今日やること」と「今日のやりごろ」、分析に💪筋肉マップ（15部位を鍛えてからの日数で色分け・おすすめの種目）'},
   {v:'v2.103.0',d:'iPhoneアプリ版に向けて、無料版とプレミアムの準備をしました（Web版はこれまでどおり全部使えます）'},
   {v:'v2.102.1',d:'AIの返事に「**」などの記号がそのまま出ることがあったのを修正'},
   {v:'v2.102.0',d:'ストイックモードに昼（白・黒・赤）と夜（黒・白・赤）。設定 → 外観のテーマで切り替え'},
@@ -7202,6 +7313,7 @@ function renderOther(){
     b.hidden=false;
     b.classList.toggle('on',b.dataset.s===st.otherSub);
   });
+  const subnav=document.querySelector('#tab-other .other-subnav');if(subnav)subnav.hidden=st.otherSub==='wo'; // v2.104.0
   document.getElementById('other-wo').hidden=st.otherSub!=='wo';
   document.getElementById('other-meals').hidden=st.otherSub!=='meals';
   document.getElementById('other-sleep').hidden=st.otherSub!=='sleep';
@@ -7219,7 +7331,7 @@ function renderOther(){
 }
 function renderOtherSub(s){st.otherSub=s;renderOther();}
 document.querySelectorAll('.other-sub-btn').forEach(btn=>{
-  btn.onclick=()=>renderOtherSub(btn.dataset.s);
+  btn.onclick=()=>{if(btn.dataset.s==='muscle')switchToTab('ana');else renderOtherSub(btn.dataset.s);};
 });
 
 // ── Health ────────────────────────────────────────────────
@@ -10020,7 +10132,7 @@ function stoicTodayItems(){
 }
 function renderStoicToday(){
   const el=document.getElementById('stoic-today');if(!el)return;
-  if(!lhStoic()){el.hidden=true;el.innerHTML='';return;}
+  // v2.104.0: 通常モードでもホームに「今日やること」を出す（記録はここからワンタップ）
   const items=stoicTodayItems(),done=items.filter(i=>i.done).length;
   el.hidden=false;
   el.innerHTML=`<div class="sk-head"><span class="sk-title">今日やること</span><span class="sk-count"><b>${done}</b> / ${items.length}</span></div>
@@ -10043,6 +10155,207 @@ document.getElementById('st-stoic-toggle')?.addEventListener('change',function()
   if(!this.checked&&typeof renderTrendCard==='function'){renderTrendCard();}
 });
 lhApplyStoic();
+// ── 筋肉マップ（v2.104.0） ─────────────────────────────
+// 種目名 → 部位（メイン/補助）を判定し、最後に鍛えてからの日数で 15 部位を色分けする
+// ※ビルドで1つのscriptに連結されるため、トップレベルに const/let を置かない（TDZ回避）
+var MM_PARTS=[
+  {k:'chest',n:'胸',f:'大胸筋',side:'f',main:true},
+  {k:'back',n:'背中',f:'広背筋',side:'b',main:true},
+  {k:'shoulder',n:'肩',f:'三角筋',side:'fb',main:true},
+  {k:'biceps',n:'力こぶ',f:'上腕二頭筋',side:'f',main:true},
+  {k:'triceps',n:'腕の裏',f:'上腕三頭筋',side:'b',main:true},
+  {k:'glutes',n:'お尻',f:'大臀筋',side:'b',main:true},
+  {k:'quads',n:'前もも',f:'大腿四頭筋',side:'f',main:true},
+  {k:'hams',n:'もも裏',f:'ハムストリングス',side:'b',main:true},
+  {k:'abs',n:'お腹',f:'腹筋',side:'f',main:true},
+  {k:'abductor',n:'お尻の横',f:'外転筋（中臀筋）',side:'fb',main:false},
+  {k:'adductor',n:'内もも',f:'内転筋',side:'f',main:false},
+  {k:'calves',n:'ふくらはぎ',f:'下腿三頭筋',side:'fb',main:false},
+  {k:'traps',n:'首の付け根',f:'僧帽筋上部',side:'b',main:false},
+  {k:'lowback',n:'腰',f:'脊柱起立筋',side:'b',main:false},
+  {k:'forearm',n:'前腕',f:'前腕筋群',side:'fb',main:false}
+];
+// 上から順に見て、最初に当てはまったものを使う（細かいものを先に）
+var MM_RULES=[
+  [/ナローベンチ|クローズグリップ/,['triceps'],['chest','shoulder']],
+  [/レッグカール/,['hams'],[]],
+  [/リストカール|リバースカール|前腕|グリップ|ファーマーズ/,['forearm'],[]],
+  [/ハンマーカール/,['biceps','forearm'],[]],
+  [/カール|curl/i,['biceps'],['forearm']],
+  [/フェイスプル|リアレイズ|リアデルト|リバースフライ/,['shoulder'],['traps','back']],
+  [/インクライン.*(プレス|ベンチ|フライ)/,['chest','shoulder'],['triceps']],
+  [/ベンチプレス|チェストプレス|ダンベルプレス|腕立て|プッシュアップ|フライ|ケーブルクロス|ディップス|ペックデック|bench/i,['chest'],['shoulder','triceps']],
+  [/シュラッグ/,['traps'],[]],
+  [/ショルダープレス|オーバーヘッドプレス|ミリタリー|サイドレイズ|フロントレイズ|アップライトロー|アーノルド/,['shoulder'],['triceps','traps']],
+  [/ヒップスラスト|グルートブリッジ|ヒップリフト|グルートキックバック/,['glutes'],['hams']],
+  [/トライセプス|プッシュダウン|フレンチプレス|スカルクラッシャー|キックバック|ライイングエクステンション|オーバーヘッドエクステンション/,['triceps'],[]],
+  [/ルーマニアン|RDL|スティッフ|グッドモーニング/i,['hams','glutes'],['lowback']],
+  [/デッドリフト|deadlift/i,['back','lowback','glutes','hams'],['traps','forearm']],
+  [/ラットプル|懸垂|チンニング|プルアップ|チンアップ|ローイング|ベントオーバー|シーテッドロー|ワンハンドロー|ケーブルロー|Tバー|プルオーバー|ロー$/,['back'],['biceps','traps']],
+  [/バックエクステンション|ハイパーエクステンション|背筋/,['lowback'],['glutes']],
+  [/アダクション|内転|ワイドスクワット|スモウ/,['adductor'],['glutes','quads']],
+  [/アブダクション|外転|クラムシェル|サイドライイング/,['abductor'],['glutes']],
+  [/カーフ|かかと上げ/,['calves'],[]],
+  [/レッグエクステンション/,['quads'],[]],
+  [/スクワット|レッグプレス|ランジ|ブルガリアン|ステップアップ|squat/i,['quads','glutes'],['adductor','hams']],
+  [/クランチ|腹筋|シットアップ|プランク|レッグレイズ|アブ|ロシアンツイスト|ハンギング|ドラゴンフラッグ/,['abs'],[]]
+];
+// 部位ごとのおすすめ種目（器具・ひとこと）
+var MM_LIB={
+  chest:[['ベンチプレス','バーベル','胸の全体。肩・腕の裏も使う'],['ダンベルプレス','ダンベル','胸を深く伸ばせる'],['チェストプレス','マシン','はじめてでも安全'],['腕立て伏せ','道具なし','家でできる']],
+  back:[['ラットプルダウン','マシン','背中の広いところ'],['懸垂','バー','自分の体重で背中全体'],['シーテッドロー','マシン','背中の厚み'],['ワンハンドロー','ダンベル','左右を別々に鍛える']],
+  shoulder:[['ショルダープレス','ダンベル','肩の前と横'],['サイドレイズ','ダンベル','肩の横。軽い重さで丁寧に'],['フェイスプル','ケーブル','肩の後ろ。姿勢がよくなる']],
+  biceps:[['アームカール','ダンベル','力こぶの基本'],['ハンマーカール','ダンベル','力こぶ＋前腕'],['ケーブルカール','ケーブル','最後まで力が抜けない']],
+  triceps:[['プッシュダウン','ケーブル','腕の裏の基本'],['フレンチプレス','ダンベル','腕の裏を伸ばして鍛える'],['ディップス','道具なし','胸と腕の裏']],
+  glutes:[['ヒップスラスト','バーベル','お尻をいちばん使う'],['ブルガリアンスクワット','ダンベル','お尻と前もも'],['グルートブリッジ','道具なし','家でできる']],
+  quads:[['スクワット','バーベル','脚の基本。お尻も使う'],['レッグプレス','マシン','重くても安全'],['レッグエクステンション','マシン','前ももだけを狙う'],['ランジ','ダンベル','バランスも鍛える']],
+  hams:[['ルーマニアンデッドリフト','バーベル','もも裏とお尻'],['レッグカール','マシン','もも裏だけを狙う']],
+  abs:[['クランチ','道具なし','お腹の前'],['プランク','道具なし','体幹全体'],['レッグレイズ','道具なし','お腹の下のほう'],['アブローラー','ローラー','強めに効く']],
+  abductor:[['アブダクション','マシン','お尻の横'],['サイドライイングレッグレイズ','道具なし','寝転んで脚を横に上げる']],
+  adductor:[['アダクション','マシン','内もも'],['ワイドスクワット','道具なし','足を広げてしゃがむ']],
+  calves:[['カーフレイズ','マシン','ふくらはぎ。段差でもできる']],
+  traps:[['シュラッグ','ダンベル','肩をすくめる'],['フェイスプル','ケーブル','首の付け根と肩の後ろ']],
+  lowback:[['バックエクステンション','ベンチ','腰まわり'],['デッドリフト','バーベル','背中・腰・脚の全体']],
+  forearm:[['リストカール','ダンベル','握る力'],['ファーマーズウォーク','ダンベル','重りを持って歩く']]
+};
+var MM_ST={rest:{c:'#4F46E5',l:'回復中'},soon:{c:'#A5B4FC',l:'もうすぐ'},ready:{c:'#F59E0B',l:'やりごろ'},long:{c:'#B45309',l:'ご無沙汰'},none:{c:'#E5E7EB',l:'記録なし'}};
+window._mmSide=window._mmSide||'f';
+window._mmSel=window._mmSel||null;
+
+function mmMusclesOf(name){
+  const s=String(name||'');
+  const ov=db.settings&&db.settings.exMuscle&&db.settings.exMuscle[s];
+  if(ov&&Array.isArray(ov.main))return {main:ov.main,sub:ov.sub||[]};
+  for(const [re,main,sub] of MM_RULES)if(re.test(s))return {main,sub};
+  return {main:[],sub:[]};
+}
+function _mmDays(a,b){return Math.round((new Date(b+'T00:00:00')-new Date(a+'T00:00:00'))/86400000);}
+// 部位ごとに最後に鍛えた日（今日から90日さかのぼる）と、その日の種目
+function mmState(){
+  const t=todayStr(),cut=(()=>{const d=new Date(t+'T00:00:00');d.setDate(d.getDate()-90);return fmt(d);})();
+  const dates=Object.keys(db.workouts||{}).filter(d=>d<=t&&d>=cut).sort().reverse();
+  const out={};
+  MM_PARTS.forEach(p=>{out[p.k]={last:null,days:null,st:'none',ex:[]};});
+  dates.forEach(d=>{
+    (db.workouts[d]||[]).forEach(e=>{
+      const m=mmMusclesOf(e.name);
+      [...m.main,...m.sub].forEach(k=>{
+        const o=out[k];if(!o)return;
+        if(!o.last)o.last=d;
+        if(o.last===d&&!o.ex.includes(e.name))o.ex.push(e.name);
+      });
+    });
+  });
+  MM_PARTS.forEach(p=>{
+    const o=out[p.k];if(!o.last)return;
+    o.days=_mmDays(o.last,t);
+    o.st=o.days<=1?'rest':o.days<=3?'soon':o.days<=6?'ready':'long';
+  });
+  return out;
+}
+function mmDaysText(o){return o.days==null?'記録なし':o.days===0?'今日':o.days+'日前';}
+// 体の図（前 f / 後ろ b）。fill はキー → 色
+function mmSvg(side,fill,w,h,label){
+  const c=k=>fill[k]||'#E5E7EB',g='#E5E7EB';
+  const parts=side==='f'?`
+    <circle cx="60" cy="18" r="13" fill="${g}"/><rect x="54" y="30" width="12" height="10" rx="3" fill="${g}"/>
+    <ellipse data-k="shoulder" cx="34" cy="54" rx="11" ry="11" fill="${c('shoulder')}"/><ellipse data-k="shoulder" cx="86" cy="54" rx="11" ry="11" fill="${c('shoulder')}"/>
+    <rect data-k="chest" x="40" y="45" width="19.5" height="24" rx="7" fill="${c('chest')}"/><rect data-k="chest" x="60.5" y="45" width="19.5" height="24" rx="7" fill="${c('chest')}"/>
+    <rect data-k="abs" x="45" y="72" width="30" height="44" rx="7" fill="${c('abs')}"/>
+    <path d="M60 75V113M47 87H73M47 100H73" stroke="#fff" stroke-width="1.5" pointer-events="none"/>
+    <ellipse data-k="biceps" cx="27" cy="82" rx="7" ry="15" fill="${c('biceps')}"/><ellipse data-k="biceps" cx="93" cy="82" rx="7" ry="15" fill="${c('biceps')}"/>
+    <ellipse data-k="forearm" cx="23" cy="114" rx="5.5" ry="14" fill="${c('forearm')}"/><ellipse data-k="forearm" cx="97" cy="114" rx="5.5" ry="14" fill="${c('forearm')}"/>
+    <ellipse data-k="abductor" cx="40" cy="128" rx="5" ry="10" fill="${c('abductor')}"/><ellipse data-k="abductor" cx="80" cy="128" rx="5" ry="10" fill="${c('abductor')}"/>
+    <ellipse data-k="quads" cx="49" cy="162" rx="11" ry="30" fill="${c('quads')}"/><ellipse data-k="quads" cx="71" cy="162" rx="11" ry="30" fill="${c('quads')}"/>
+    <ellipse data-k="adductor" cx="56" cy="146" rx="3.5" ry="15" fill="${c('adductor')}"/><ellipse data-k="adductor" cx="64" cy="146" rx="3.5" ry="15" fill="${c('adductor')}"/>
+    <ellipse data-k="calves" cx="49" cy="218" rx="7" ry="22" fill="${c('calves')}"/><ellipse data-k="calves" cx="71" cy="218" rx="7" ry="22" fill="${c('calves')}"/>`:`
+    <circle cx="60" cy="18" r="13" fill="${g}"/>
+    <path data-k="traps" d="M46 36 L60 31 L74 36 L78 46 L42 46 Z" fill="${c('traps')}"/>
+    <ellipse data-k="shoulder" cx="34" cy="54" rx="11" ry="11" fill="${c('shoulder')}"/><ellipse data-k="shoulder" cx="86" cy="54" rx="11" ry="11" fill="${c('shoulder')}"/>
+    <path data-k="back" d="M41 48 Q60 45 79 48 L74 96 Q60 100 46 96 Z" fill="${c('back')}"/>
+    <rect data-k="lowback" x="49" y="96" width="22" height="18" rx="5" fill="${c('lowback')}"/>
+    <path d="M60 50V112" stroke="#fff" stroke-width="1.5" pointer-events="none"/>
+    <ellipse data-k="triceps" cx="27" cy="82" rx="7" ry="15" fill="${c('triceps')}"/><ellipse data-k="triceps" cx="93" cy="82" rx="7" ry="15" fill="${c('triceps')}"/>
+    <ellipse data-k="forearm" cx="23" cy="114" rx="5.5" ry="14" fill="${c('forearm')}"/><ellipse data-k="forearm" cx="97" cy="114" rx="5.5" ry="14" fill="${c('forearm')}"/>
+    <ellipse data-k="abductor" cx="41" cy="118" rx="5" ry="9" fill="${c('abductor')}"/><ellipse data-k="abductor" cx="79" cy="118" rx="5" ry="9" fill="${c('abductor')}"/>
+    <ellipse data-k="glutes" cx="51" cy="128" rx="10" ry="11" fill="${c('glutes')}"/><ellipse data-k="glutes" cx="69" cy="128" rx="10" ry="11" fill="${c('glutes')}"/>
+    <ellipse data-k="hams" cx="49" cy="168" rx="10" ry="26" fill="${c('hams')}"/><ellipse data-k="hams" cx="71" cy="168" rx="10" ry="26" fill="${c('hams')}"/>
+    <ellipse data-k="calves" cx="49" cy="218" rx="8" ry="22" fill="${c('calves')}"/><ellipse data-k="calves" cx="71" cy="218" rx="8" ry="22" fill="${c('calves')}"/>`;
+  return `<svg class="mm-svg" width="${w}" height="${h}" viewBox="0 0 120 250" role="img" aria-label="${esc(label||'筋肉マップ')}">${parts}</svg>`;
+}
+function _mmFill(state){const f={};MM_PARTS.forEach(p=>{f[p.k]=MM_ST[state[p.k].st].c;});return f;}
+function _mmNames(keys){return keys.map(k=>(MM_PARTS.find(p=>p.k===k)||{}).n).filter(Boolean);}
+
+// ホーム: 今日のやりごろ
+function renderMmHomeCard(){
+  const el=document.getElementById('mm-home-card');if(!el)return;
+  const f=db.settings.features||{};
+  if(f.workout===false){el.hidden=true;return;}
+  const s=mmState();
+  const any=MM_PARTS.some(p=>s[p.k].last);
+  const ready=MM_PARTS.filter(p=>p.main&&['ready','long'].includes(s[p.k].st)).sort((a,b)=>s[b.k].days-s[a.k].days).map(p=>p.k);
+  const rest=MM_PARTS.filter(p=>p.main&&s[p.k].st==='rest').map(p=>p.k);
+  let head,sub;
+  if(!any){head='筋トレを記録すると、鍛えどきの部位がわかります';sub='分析 → 筋肉で、15部位の回復の様子を見られます';}
+  else if(ready.length){head=_mmNames(ready.slice(0,3)).join('・');sub=rest.length?_mmNames(rest.slice(0,3)).join('・')+'は回復中':'しっかり回復しています';}
+  else{head='今日は休みか、軽めでOK';sub=rest.length?_mmNames(rest.slice(0,3)).join('・')+'は回復中':'もうすぐ回復する部位が多い日です';}
+  el.hidden=false;
+  el.innerHTML=`<button type="button" class="mm-home-btn">${mmSvg('f',_mmFill(s),40,84,'体の前側の筋肉マップ（小）')}<span class="mm-home-txt"><span class="mm-home-lbl">${any&&ready.length?'今日のやりごろ':'筋肉マップ'}</span><span class="mm-home-head">${esc(head)}</span><span class="mm-home-sub">${esc(sub)}</span></span><span class="mm-home-go" aria-hidden="true">›</span></button>`;
+  el.querySelector('.mm-home-btn').onclick=()=>switchToTab('ana');
+}
+
+// 分析の上の切り替え（筋肉・食事・睡眠・体重と健康）
+function mmAnaChips(cur){
+  return `<div class="ana-chips" role="tablist">${[['muscle','筋肉'],['meals','食事'],['sleep','睡眠'],['health','体重・健康']].map(([k,l])=>`<button type="button" class="ana-chip${k===cur?' on':''}" data-ana="${k}">${l}</button>`).join('')}</div>`;
+}
+function mmBindChips(root){
+  root.querySelectorAll('.ana-chip').forEach(b=>b.onclick=()=>{
+    const k=b.dataset.ana;
+    if(k==='muscle')switchToTab('ana');
+    else{st.otherSub=k;switchToTab('other');}
+  });
+}
+
+// 分析 → 筋肉
+function renderMuscleMap(){
+  const root=document.getElementById('mm-root');if(!root)return;
+  const s=mmState(),side=window._mmSide==='b'?'b':'f';
+  const list=MM_PARTS.filter(p=>p.side.includes(side));
+  const sel=window._mmSel&&MM_PARTS.find(p=>p.k===window._mmSel);
+  root.innerHTML=`${mmAnaChips('muscle')}
+    <div class="mm-seg" role="tablist"><button type="button" class="mm-side${side==='f'?' on':''}" data-side="f">前</button><button type="button" class="mm-side${side==='b'?' on':''}" data-side="b">後ろ</button></div>
+    <div class="card mm-card">
+      <div class="mm-fig">${mmSvg(side,_mmFill(s),150,312,side==='f'?'体の前側の筋肉マップ':'体の後ろ側の筋肉マップ')}</div>
+      <div class="mm-list">${list.map(p=>{const o=s[p.k];return `<button type="button" class="mm-row${sel&&sel.k===p.k?' on':''}" data-k="${p.k}"><span class="mm-dot" style="background:${MM_ST[o.st].c}"></span><span class="mm-nm"><b>${esc(p.n)}</b><small>${esc(p.f)}</small></span><span class="mm-days">${mmDaysText(o)}</span></button>`;}).join('')}</div>
+    </div>
+    <div class="mm-legend">${Object.values(MM_ST).map((v,i)=>`<span><i style="background:${v.c}"></i>${v.l}${[' 0〜1日',' 2〜3日',' 4〜6日',' 7日以上',''][i]}</span>`).join('')}</div>
+    <div id="mm-detail">${sel?mmDetailHtml(sel,s[sel.k]):'<p class="mm-hint">部位をタップすると、前回の記録とおすすめの種目が出ます</p>'}</div>
+    <button type="button" class="mm-ai-btn" id="mm-ai-btn"><span class="pw-tag">PREMIUM</span> AIにくわしく判定してもらう<small>睡眠・食事・その日の量まで見て、今日の鍛えどきを判定</small></button>`;
+  root.querySelectorAll('.mm-side').forEach(b=>b.onclick=()=>{window._mmSide=b.dataset.side;renderMuscleMap();});
+  root.querySelectorAll('.mm-row').forEach(b=>b.onclick=()=>{window._mmSel=b.dataset.k;renderMuscleMap();});
+  root.querySelectorAll('.mm-svg [data-k]').forEach(e=>e.addEventListener('click',()=>{window._mmSel=e.getAttribute('data-k');renderMuscleMap();}));
+  mmBindChips(root);
+  document.getElementById('mm-ai-btn').onclick=()=>{
+    if(typeof lhIsPro==='function'&&!lhIsPro()){lhShowPaywall({feature:'none'});return;}
+    switchToTab('ai');
+    const inp=document.getElementById('ai-input');
+    if(inp){inp.value='筋肉マップを見て、今日どこを鍛えるのがいいか判定して。睡眠・食事・前回の量も踏まえて、くわしく教えて';inp.dispatchEvent(new Event('input'));}
+  };
+  if(typeof renderPlanRow==='function')renderPlanRow();
+}
+function mmDetailHtml(p,o){
+  const lib=MM_LIB[p.k]||[];
+  const yt=q=>'https://www.youtube.com/results?search_query='+encodeURIComponent(q+' やり方');
+  return `<div class="card mm-detail">
+    <div class="mm-d-head"><b>${esc(p.n)}</b><small>${esc(p.f)}</small><span class="mm-d-st" style="color:${o.st==='none'?'var(--fg3)':MM_ST[o.st].c}">${mmDaysText(o)}${o.st!=='none'?'・'+MM_ST[o.st].l:''}</span></div>
+    ${o.last?`<div class="mm-d-last">前回 ${esc(o.last.slice(5).replace('-','/'))}：${esc(o.ex.slice(0,3).join('、'))}</div>`:''}
+    <div class="mm-d-lbl">おすすめの種目</div>
+    ${lib.map(([n,tool,note])=>`<div class="mm-ex"><span class="mm-ex-nm"><b>${esc(n)}</b><small>${esc(note)}</small></span><span class="mm-tool">${esc(tool)}</span><a class="mm-yt" href="${yt(n)}" target="_blank" rel="noopener">動画</a></div>`).join('')}
+  </div>`;
+}
+
+// 初回の表示
+renderMmHomeCard();
 </script>
 <div id="lu-overlay" hidden style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;"></div>
 <div id="share-pv-modal" class="share-pv-modal" hidden>
