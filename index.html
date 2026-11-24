@@ -1668,6 +1668,24 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 .ai-suggest-card,.mm-ai-box,.rp-lock,.rp-cor,.rp-ai{padding:12px 14px;}
 .ai-suggest-card{gap:4px;}
 .ai-suggest-card.teaser{padding:8px 4px 8px 14px;}
+
+/* v2.108.0 */
+.pw-sample{margin:0 0 12px;border:1px solid var(--border);border-radius:12px;padding:0 10px;}
+.pw-sample summary{min-height:44px;display:flex;align-items:center;font-weight:700;font-size:14px;cursor:pointer;color:var(--accent);}
+.pw-s-note{font-size:11px;color:var(--fg3);margin:0 0 6px;}
+.pw-s-card{display:flex;flex-direction:column;gap:2px;padding:8px 10px;border-radius:10px;background:var(--surface2);font-size:12px;color:var(--fg2);margin-bottom:8px;line-height:1.6;}
+.pw-s-card b{font-size:13px;color:var(--fg);}
+.pw-s-h{font-size:11px;font-weight:800;color:var(--accent);}
+.pw-s-menu{color:var(--fg);}
+.pw-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle;}
+.alb-sheet{max-height:85vh;overflow-y:auto;}
+.alb-head{display:flex;align-items:center;justify-content:space-between;}
+.alb-head h3{margin:0;}
+.alb-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:8px;}
+.alb-tile{position:relative;aspect-ratio:1;border:0;padding:0;border-radius:10px;overflow:hidden;background:var(--surface2);cursor:pointer;}
+.alb-tile img{width:100%;height:100%;object-fit:cover;display:block;}
+.alb-cap{position:absolute;left:0;right:0;bottom:0;padding:14px 6px 4px;background:linear-gradient(transparent,rgba(0,0,0,.65));color:#fff;text-align:left;display:flex;flex-direction:column;font-size:10px;line-height:1.3;}
+.alb-cap b{font-size:11px;}
 </style>
 </head>
 <body>
@@ -1882,7 +1900,8 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         <button id="ml-prev">‹</button>
         <span id="ml-date" style="flex:1;text-align:center;"></span>
         <button id="ml-next">›</button>
-        <button id="ml-nut-btn" class="ml-nut-btn" style="margin-left:8px;">⚙ 栄養素</button>
+        <button id="ml-album-btn" class="ml-nut-btn" style="margin-left:8px;">📷 アルバム</button>
+        <button id="ml-nut-btn" class="ml-nut-btn" style="margin-left:6px;">⚙ 栄養素</button>
       </div>
       <div class="wo-view-tabs">
         <button class="ml-vtab on" data-v="log">記録</button>
@@ -2504,6 +2523,16 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
           <span class="st-label">プライバシーポリシー</span>
           <span class="st-arrow">›</span>
         </a>
+        <a class="st-row" id="st-link-terms" href="#" target="_blank" rel="noopener" style="text-decoration:none;">
+          <span class="st-ic" style="background:#64748b;">📄</span>
+          <span class="st-label">利用規約</span>
+          <span class="st-arrow">›</span>
+        </a>
+        <a class="st-row" id="st-link-tokushoho" href="#" target="_blank" rel="noopener" style="text-decoration:none;">
+          <span class="st-ic" style="background:#64748b;">🧾</span>
+          <span class="st-label">特定商取引法に基づく表記</span>
+          <span class="st-arrow">›</span>
+        </a>
         <a class="st-row" id="st-link-support" href="#" target="_blank" rel="noopener" style="text-decoration:none;">
           <span class="st-ic" style="background:#0ea5e9;">💬</span>
           <span class="st-label">サポート・お問い合わせ</span>
@@ -2512,7 +2541,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         <div class="st-about-note">動画の検索・表示に YouTube API Services を使っています。<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube利用規約</a>・<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Googleプライバシーポリシー</a>が適用されます。AIの答えは医療アドバイスではありません。</div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.107.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.108.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -3107,7 +3136,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='6473d9bc05'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='65785c7bc4'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -5640,7 +5669,7 @@ function legalUrl(name){const base=(typeof lhIsStaging==='function'&&lhIsStaging
 var LH_DEV_KEY='lh_dev',LH_QUOTA_KEY='lh_quota';
 var LH_PRICE={month:'1,200円',year:'9,800円',yearPerMonth:'約817円'};
 var LH_FREE_LIMITS={chat:10,photo:2,recipe:1,feedback:3};
-var LH_FEATURE_NAMES={chat:'AIチャット',think:'💭じっくり考えるモード',photo:'食事写真の分析',recipe:'食材からメニュー',feedback:'タスクのふり返り',plan:'AIの週間トレーニングメニュー',goal:'目標のAI判定',progress:'進捗のAI評価',recovery:'筋肉の回復のAI判定',suggest:'ランからの提案',report:'週のAIレポート',brief:'今日のひとこと',mission:'今日のミッション',advice:'健康アドバイス'};
+var LH_FEATURE_NAMES={chat:'AIチャット',think:'💭じっくり考えるモード',photo:'食事写真の分析',recipe:'食材からメニュー',feedback:'タスクのふり返り',plan:'AIの週間トレーニングメニュー',goal:'目標のAI判定',progress:'進捗のAI評価',recovery:'筋肉の回復のAI判定',album:'食事の写真アルバム',suggest:'ランからの提案',report:'週のAIレポート',brief:'今日のひとこと',mission:'今日のミッション',advice:'健康アドバイス'};
 // 自分で押して使う機能だけ、回数切れで案内画面を出す（ひとことなど自動のものは出さない）
 var LH_USER_FEATURES=['chat','think','photo','recipe','feedback','plan','progress','recovery','report'];
 function lhDeviceId(){
@@ -5698,14 +5727,21 @@ function lhShowPaywall(opt){
       <li><b>💭じっくり考えるモード</b><span>より賢いAIで深く考えて答えます</span></li>
       <li><b>ランからの提案</b><span>頼まなくても、記録を見てメニューや生活のおすすめを毎日</span></li>
       <li><b>筋肉の回復をAIが判定</b><span>前回の量・睡眠・食事から、15部位の鍛えどきを判定（無料は日数で色分け）</span></li>
+      <li><b>食事の写真アルバム</b><span>食べたものを写真で一覧。カロリーつきでふり返れます</span></li>
       <li><b>週のAIレポート・体調との関係</b><span>「睡眠が長い日ほどトレーニング量が多い」などを見つけて、1週間をふり返ります</span></li>
     </ul>
+    <details class="pw-sample"><summary>見本を見る</summary>
+      <p class="pw-s-note">表示の例です（実際の内容はあなたの記録から作ります）</p>
+      <div class="pw-s-card"><div class="pw-s-h">✦ ランからの提案</div><b>背中の日にしよう</b><span>背中が5日空いてて、昨夜は7時間寝られてる。攻めどきだ</span><span class="pw-s-menu">ラットプルダウン 3×10 ／ シーテッドロー 3×10 ／ フェイスプル 3×15</span></div>
+      <div class="pw-s-card"><div class="pw-s-h">💪 筋肉のAI判定</div><span><i class="pw-dot" style="background:#4F46E5"></i>胸：回復中（2日前に12セット・睡眠5時間）</span><span><i class="pw-dot" style="background:#F59E0B"></i>背中・もも裏：やりごろ</span></div>
+      <div class="pw-s-card"><div class="pw-s-h">📊 週のレポート</div><b>4日トレーニングできた、いい週だ</b><span>体調との関係：前の夜の睡眠が長い日ほど、トレーニング量が多い（強め・16日分）</span><span>来週：睡眠を7時間に・脚の日を1回入れる</span></div>
+    </details>
     <div class="pw-price"><div><b>${LH_PRICE.month}</b> / 月</div><div><b>${LH_PRICE.year}</b> / 年<small>（1か月あたり${LH_PRICE.yearPerMonth}）</small></div></div>
     <div class="pw-trial">最初の1か月は無料</div>
     <button class="aic-ok pw-buy" type="button" ${native?'':'disabled'}>${native?'1か月無料で始める':'iPhoneアプリ版で近日開始'}</button>
     ${native?'<button class="aic-no pw-restore" type="button">購入を復元</button>':''}
     <button class="aic-no pw-close" type="button">閉じる</button>
-    <p class="pw-legal">無料期間が終わると自動で更新され、料金がかかります。無料期間の終わる24時間前までに解約すれば料金はかかりません。確認・解約は iPhone の「設定」→ 自分の名前 →「サブスクリプション」から。記録の機能は無料のまま使えます。<a href="${legalUrl('privacy')}" target="_blank" rel="noopener">プライバシーポリシー</a></p>
+    <p class="pw-legal">無料期間が終わると自動で更新され、料金がかかります。無料期間の終わる24時間前までに解約すれば料金はかかりません。確認・解約は iPhone の「設定」→ 自分の名前 →「サブスクリプション」から。記録の機能は無料のまま使えます。<a href="${legalUrl('terms')}" target="_blank" rel="noopener">利用規約</a>・<a href="${legalUrl('tokushoho')}" target="_blank" rel="noopener">特定商取引法に基づく表記</a>・<a href="${legalUrl('privacy')}" target="_blank" rel="noopener">プライバシーポリシー</a></p>
   </div>`;
   const close=()=>ov.remove();
   ov.querySelector('.pw-close').onclick=close;
@@ -5754,11 +5790,12 @@ document.getElementById('st-ai-consent-row')?.addEventListener('click',async()=>
     const card=document.getElementById('ai-brief-card');if(card)card.hidden=true;
   }else{await aiRequireConsent();}
 });
-['privacy','support'].forEach(n=>{const a=document.getElementById('st-link-'+n);if(a)a.href=legalUrl(n);});
+['privacy','support','terms','tokushoho'].forEach(n=>{const a=document.getElementById('st-link-'+n);if(a)a.href=legalUrl(n);});
 renderAiConsentRow();
 document.getElementById('st-plan-row')?.addEventListener('click',()=>lhShowPaywall({feature:'none'}));
 renderPlanRow();
 const CHANGELOG=[
+  {v:'v2.108.0',d:'利用規約・特定商取引法に基づく表記を追加（設定 → このアプリについて）。今日のひとことに健康アドバイスをまとめた。プレミアム: 食事の写真アルバム（食事 → 📷 アルバム）。プレミアムの案内に見本'},
   {v:'v2.107.0',d:'プレミアム: 筋肉の回復をAIが判定（睡眠・食事・前回の量から）・ホームに「ランからの提案」・分析に「週のレポート」（数字は無料。体調との関係とAIのレポートはプレミアム）'},
   {v:'v2.106.1',d:'プロフィールから「質問に答えてプランを作る」をいつでも開けるように'},
   {v:'v2.106.0',d:'はじめての人向けに、最初の質問（目的・体・場所とジム・器具・回数・経験・健康チェック）と、あなた専用のプラン・はじめてガイドを追加。プロフィール → ジムと器具'},
@@ -5980,6 +6017,7 @@ function saveAdviceFeedback(rating){
 }
 async function renderHealthAdvice(force){
   const el=document.getElementById('health-advice-card');if(!el)return;
+  if(!force){el.hidden=true;return;} // v2.108.0: 今日のひとことにまとめた
   const hp=db.settings.healthProfile||{};
   if(!hp.height&&!hp.weight&&!hp.goal){el.hidden=true;return;}
   if(!aiConsented()){el.hidden=true;return;} // v2.97.0: 未同意ならAIに送らない
@@ -7749,7 +7787,7 @@ function _fillMlModal(k,item){
   setTimeout(()=>document.getElementById('mla-name').focus(),50);
 }
 function openMlAdd(k){
-  editingMealId=null;
+  editingMealId=null;window._mlaFile=null;
   document.getElementById('mla-title').textContent=(MEAL_DEF.find(m=>m.k===k)?.l||'食事')+'に追加';
   document.getElementById('mla-name').value='';
   document.getElementById('mla-kcal').value='';
@@ -7767,6 +7805,7 @@ document.getElementById('mla-photo-input').onchange=()=>analyzePhotoMeal();
 async function analyzePhotoMeal(){
   const file=document.getElementById('mla-photo-input').files[0];
   if(!file)return;
+  window._mlaFile=file; // v2.108.0: 追加したとき食事の写真にも残す
   if(!await aiRequireConsent()){document.getElementById('mla-photo-input').value='';return;} // v2.97.0
   const statusEl=document.getElementById('mla-photo-status');
   const btn=document.getElementById('mla-photo-btn');
@@ -7821,6 +7860,8 @@ document.getElementById('mla-ok').onclick=()=>{
     if(item){item.name=name;item.kcal=parseInt(document.getElementById('mla-kcal').value)||0;item.nutrients=nutVals;}
   } else {
     dm[addingMealK].push({id:uid(),name,kcal:parseInt(document.getElementById('mla-kcal').value)||0,nutrients:nutVals});
+    const pf=window._mlaFile,pd=st.mlDate,pk=addingMealK;window._mlaFile=null;
+    if(pf)processFiles([pf],p=>{if(!db.mlPhotos[pd])db.mlPhotos[pd]={breakfast:[],lunch:[],dinner:[],snack:[]};(db.mlPhotos[pd][pk]=db.mlPhotos[pd][pk]||[]).push(p);save(db);renderMeals();});
   }
   save(db);
   document.getElementById('mo-ml-add').hidden=true;
@@ -8844,7 +8885,7 @@ function calcGameStats(){
       }
       let ctx='';
       try{ctx=getContext();}catch(e){console.warn('[brief] getContext failed:',e);card.hidden=true;return;}
-      const prompt='以下はユーザーの今日のライフデータです。\n\n'+ctx+'\n\n上記データを踏まえて、今日のユーザーへの「ひとこと」を2〜3文で書いてください。予定・タスク・筋トレ状況を絡めて、具体的に、明るく親しみやすい言葉で。余計な前置きなしで本文だけ返してください。';
+      const prompt='以下はユーザーの今日のライフデータです。\n\n'+ctx+'\n\n上記データを踏まえて、今日のユーザーへの「ひとこと」を2〜3文で書いてください。予定・タスク・筋トレ状況を絡めて、体のこと（睡眠・食事・体重の目標）から今日の健康のための行動を1つ入れて、具体的に、明るく親しみやすい言葉で。余計な前置きなしで本文だけ返してください。';
       const stoicBrief=lhStoic(); // v2.100.0: ストイックは事実と数字だけ・1〜2文
       const promptX=stoicBrief?'以下はユーザーの今日のライフデータです。\n\n'+ctx+'\n\n今日やるべきことを、事実と数字だけで1〜2文、合計60字以内で書いてください。励ましの言葉・絵文字・感嘆符は使わない。本文だけ返してください。':prompt;
       const body=JSON.stringify({lh_feature:'brief',model:'claude-haiku-5-5',max_tokens:400,thinking:{type:'disabled'},system:stoicBrief?'あなたはLifeWithのAIトレーナーです。キャラクターは演じず、事実と数字だけを簡潔な常体の日本語で伝えます。':'あなたはLifeWithのAIアシスタントです。ユーザーの生活データを把握している、身近な友達のような存在です。です・ます調は使わず、自然でやわらかいタメ口の日本語で短く話します。',messages:[{role:'user',content:promptX}]});
@@ -10891,7 +10932,8 @@ function _pmKey(k){return k+'_'+(window._LH_PID||'');}
 function _pmGet(k){try{return JSON.parse(localStorage.getItem(_pmKey(k))||'null');}catch(e){return null;}}
 function _pmSet(k,v){try{localStorage.setItem(_pmKey(k),JSON.stringify(v));}catch(e){}}
 function _pmVol(ds){let sets=0,vol=0;((db.workouts&&db.workouts[ds])||[]).forEach(e=>(e.sets||[]).forEach(s=>{sets++;if(s.w!=null&&s.r!=null)vol+=(+s.w||0)*(+s.r||0);}));return {sets,vol:Math.round(vol)};}
-function _pmMeal(ds){const m=db.meals&&db.meals[ds];if(!m)return null;let kcal=0,p=0,n=0;['breakfast','lunch','dinner','snack'].forEach(k=>(m[k]||[]).forEach(it=>{n++;kcal+=+it.kcal||0;p+=+it.protein||0;}));return n?{kcal:Math.round(kcal),p:Math.round(p)}:null;}
+function _pmProtId(){const n=(db.nutrients||[]).find(x=>/タンパク|たんぱく|protein/i.test(x.name||''));return n?n.id:null;}
+function _pmMeal(ds){const m=db.meals&&db.meals[ds];if(!m)return null;const pid=_pmProtId();let kcal=0,p=0,n=0;['breakfast','lunch','dinner','snack'].forEach(k=>(m[k]||[]).forEach(it=>{n++;kcal+=+it.kcal||0;p+=+(it.protein!=null?it.protein:pid&&it.nutrients?it.nutrients[pid]:0)||0;}));return n?{kcal:Math.round(kcal),p:Math.round(p)}:null;}
 function _pmSleepH(ds){const m=typeof _lhSleepMin==='function'?_lhSleepMin(db.sleep&&db.sleep[ds]):null;return m==null?null:m/60;}
 function _pmH(ds){return (db.health&&db.health[ds])||{};}
 function lhPremiumLocked(){return typeof lhIsPro==='function'&&!lhIsPro();}
@@ -11153,6 +11195,38 @@ function renderWeekReport(root){
 }
 
 setTimeout(()=>{try{renderAiSuggest();}catch(e){}},1200);
+
+// ── ④ 食事の写真アルバム（v2.108.0・プレミアム） ──
+function lhMealAlbumList(){
+  const L={breakfast:'朝食',lunch:'昼食',dinner:'夕食',snack:'間食'},out=[];
+  Object.keys(db.mlPhotos||{}).sort().reverse().forEach(ds=>{
+    const day=db.mlPhotos[ds]||{};
+    ['dinner','snack','lunch','breakfast'].forEach(k=>(day[k]||[]).slice().reverse().forEach(p=>{
+      if(!p||!p.id)return;
+      const items=((db.meals&&db.meals[ds]&&db.meals[ds][k])||[]);
+      out.push({ds,k,label:L[k],p,kcal:items.reduce((s,i)=>s+(+i.kcal||0),0),names:items.map(i=>i.name).slice(0,2).join('・')});
+    }));
+  });
+  return out;
+}
+function openMealAlbum(){
+  if(lhPremiumLocked()){lhShowPaywall({feature:'album'});return;}
+  const list=lhMealAlbumList();
+  const ov=document.createElement('div');ov.className='aic-ov';ov.id='alb-ov';
+  ov.innerHTML=`<div class="aic-sheet alb-sheet" role="dialog" aria-modal="true" aria-labelledby="alb-title"><div class="alb-head"><h3 id="alb-title">食事の写真アルバム</h3><button type="button" class="ais-x alb-x" aria-label="閉じる">×</button></div>
+    ${list.length?`<div class="alb-grid">${list.slice(0,200).map((x,i)=>`<button type="button" class="alb-tile" data-i="${i}"><img alt="${esc(x.names||x.label)}"><span class="alb-cap"><b>${esc(x.ds.slice(5).replace('-','/'))} ${esc(x.label)}</b>${x.kcal?`<small>${x.kcal}kcal</small>`:''}</span></button>`).join('')}</div>`
+      :'<p class="mm-hint">まだ写真がありません。食事の「📷 フォト」や「写真で自動入力」で撮ると、ここに並びます</p>'}</div>`;
+  document.body.appendChild(ov);
+  const close=()=>ov.remove();
+  ov.querySelector('.alb-x').onclick=close;
+  ov.addEventListener('click',e=>{if(e.target===ov)close();});
+  ov.querySelectorAll('.alb-tile').forEach(b=>{
+    const x=list[+b.dataset.i],img=b.querySelector('img');
+    if(x.p.data)img.src=x.p.data;else _photoDB.get(x.p.id).then(d=>{if(d)img.src=d;}).catch(()=>{});
+    b.onclick=()=>{if(typeof openMediaViewer==='function')openMediaViewer(x.p);};
+  });
+}
+document.getElementById('ml-album-btn')?.addEventListener('click',openMealAlbum);
 </script>
 <div id="lu-overlay" hidden style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;"></div>
 <div id="share-pv-modal" class="share-pv-modal" hidden>
