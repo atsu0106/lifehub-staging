@@ -2656,7 +2656,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         <div class="st-about-note">動画の検索・表示に YouTube API Services を使っています。<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube利用規約</a>・<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Googleプライバシーポリシー</a>が適用されます。AIの答えは医療アドバイスではありません。</div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.111.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.112.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -3251,7 +3251,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='0a52c4a32d'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='4d04f92324'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -5808,7 +5808,7 @@ function legalUrl(name){const base=(typeof lhIsStaging==='function'&&lhIsStaging
 var LH_DEV_KEY='lh_dev',LH_QUOTA_KEY='lh_quota';
 var LH_PRICE={month:'1,200円',year:'9,800円',yearPerMonth:'約817円'};
 var LH_FREE_LIMITS={chat:10,photo:2,recipe:1,feedback:3};
-var LH_FEATURE_NAMES={chat:'AIチャット',think:'💭じっくり考えるモード',photo:'食事写真の分析',recipe:'食材からメニュー',feedback:'タスクのふり返り',plan:'AIの週間トレーニングメニュー',goal:'目標のAI判定',progress:'進捗のAI評価',recovery:'筋肉の回復のAI判定',album:'食事の写真アルバム',suggest:'ランからの提案',report:'週のAIレポート',brief:'今日のひとこと',mission:'今日のミッション',advice:'健康アドバイス'};
+var LH_FEATURE_NAMES={chat:'AIチャット',think:'💭じっくり考えるモード',photo:'食事写真の分析',recipe:'食材からメニュー',feedback:'タスクのふり返り',plan:'AIの週間トレーニングメニュー',goal:'目標のAI判定',progress:'進捗のAI評価',recovery:'筋肉の回復のAI判定',album:'食事の写真アルバム',suggest:'AIからの提案',report:'週のAIレポート',brief:'今日のひとこと',mission:'今日のミッション',advice:'健康アドバイス'};
 // 自分で押して使う機能だけ、回数切れで案内画面を出す（ひとことなど自動のものは出さない）
 var LH_USER_FEATURES=['chat','think','photo','recipe','feedback','plan','progress','recovery','report'];
 function lhDeviceId(){
@@ -5864,14 +5864,14 @@ function lhShowPaywall(opt){
       <li><b>あなた専用の週間トレーニングメニュー</b><span>予定・過去の重量・睡眠に合わせてAIが組みます（無料は定番メニュー）</span></li>
       <li><b>目標のAI判定・進捗のAI評価</b></li>
       <li><b>💭じっくり考えるモード</b><span>より賢いAIで深く考えて答えます</span></li>
-      <li><b>ランからの提案</b><span>頼まなくても、記録を見てメニューや生活のおすすめを毎日</span></li>
+      <li><b>AIからの提案</b><span>頼まなくても、記録を見てメニューや生活のおすすめを毎日</span></li>
       <li><b>筋肉の回復をAIが判定</b><span>前回の量・睡眠・食事から、15部位の鍛えどきを判定（無料は日数で色分け）</span></li>
       <li><b>食事の写真アルバム</b><span>食べたものを写真で一覧。カロリーつきでふり返れます</span></li>
       <li><b>週のAIレポート・体調との関係</b><span>「睡眠が長い日ほどトレーニング量が多い」などを見つけて、1週間をふり返ります</span></li>
     </ul>
     <details class="pw-sample"><summary>見本を見る</summary>
       <p class="pw-s-note">表示の例です（実際の内容はあなたの記録から作ります）</p>
-      <div class="pw-s-card"><div class="pw-s-h">✦ ランからの提案</div><b>背中の日にしよう</b><span>背中が5日空いてて、昨夜は7時間寝られてる。攻めどきだ</span><span class="pw-s-menu">ラットプルダウン 3×10 ／ シーテッドロー 3×10 ／ フェイスプル 3×15</span></div>
+      <div class="pw-s-card"><div class="pw-s-h">✦ AIからの提案</div><b>背中の日にしよう</b><span>背中が5日空いてて、昨夜は7時間寝られてる。攻めどきだ</span><span class="pw-s-menu">ラットプルダウン 3×10 ／ シーテッドロー 3×10 ／ フェイスプル 3×15</span></div>
       <div class="pw-s-card"><div class="pw-s-h">💪 筋肉のAI判定</div><span><i class="pw-dot" style="background:#4F46E5"></i>胸：回復中（2日前に12セット・睡眠5時間）</span><span><i class="pw-dot" style="background:#F59E0B"></i>背中・もも裏：やりごろ</span></div>
       <div class="pw-s-card"><div class="pw-s-h">📊 週のレポート</div><b>4日トレーニングできた、いい週だ</b><span>体調との関係：前の夜の睡眠が長い日ほど、トレーニング量が多い（強め・16日分）</span><span>来週：睡眠を7時間に・脚の日を1回入れる</span></div>
     </details>
@@ -5898,7 +5898,7 @@ function aiRequireConsent(){
     const ov=document.createElement('div');ov.className='aic-ov';ov.id='aic-ov';
     ov.innerHTML=`<div class="aic-sheet" role="dialog" aria-modal="true" aria-labelledby="aic-title">
       <div class="aic-head"><img src="assets/characters/01_Ran_pointing.png" alt="" onerror="this.style.display='none'"><h3 id="aic-title">AIトレーナーを使う前に</h3></div>
-      <p class="aic-lead">ランの返事を作るために、次の内容をAIに送るよ。</p>
+      <p class="aic-lead">AIの返事を作るために、次の内容をAIに送るよ。</p>
       <dl class="aic-list">
         <dt>送り先</dt><dd>Anthropic社（米国）のAI「Claude」。LifeWithのサーバーを経由して送ります</dd>
         <dt>送る内容</dt><dd>AIに入力した文章・写真と、アプリに記録した内容（筋トレ・食事・睡眠・体重、健康プロフィール、アレルギー、目標、予定など）</dd>
@@ -5934,6 +5934,7 @@ renderAiConsentRow();
 document.getElementById('st-plan-row')?.addEventListener('click',()=>lhShowPaywall({feature:'none'}));
 renderPlanRow();
 const CHANGELOG=[
+  {v:'v2.112.0',d:'画面の「ラン」を「AI」に（AIからの提案・AIに聞く・AIに相談 など）。わかりやすくした'},
   {v:'v2.111.0',d:'体のプロフィール（身長・体重・目標・アレルギー・サプリ・ジムと器具）を設定から分けて、プロフィール → 体のプロフィール に'},
   {v:'v2.110.0',d:'トレーニング → 記録の一番上に「今日のメニュー」。種目ごとに＋で記録に入れたり、まとめて入れたりできる'},
   {v:'v2.109.0',d:'ホームの上を新しく: 🔥何日連続・今週の回数・レベルと、大きな「トレーニング開始」「今日のやりごろ」、食事・睡眠・体重のタイル、よく使う場所への近道'},
@@ -9424,12 +9425,12 @@ async function renderLifeVideoCard(elId,topic,opts){
   if(!topic||lhStoic()){el.hidden=true;return;} // v2.100.0: ストイックはおすすめ動画を出さない
   el.hidden=false;
   if(opts&&opts.night){
-    el.innerHTML=_lvHead('ランのおすすめ動画')+`<div class="lv-note">🌙 寝る前の動画は眠りを浅くする。今日はもう休め。おすすめは朝に出す</div>`;
+    el.innerHTML=_lvHead('おすすめ動画')+`<div class="lv-note">🌙 寝る前の動画は眠りを浅くする。今日はもう休め。おすすめは朝に出す</div>`;
     return;
   }
   const token=topic.key+'|'+todayStr();
   el.dataset.token=token;
-  el.innerHTML=_lvHead('ランのおすすめ動画')+`<div class="lv-reason">${esc(topic.reason)}</div><div class="lv-list"><div class="lv-note">動画を探し中…</div></div>`;
+  el.innerHTML=_lvHead('おすすめ動画')+`<div class="lv-reason">${esc(topic.reason)}</div><div class="lv-list"><div class="lv-note">動画を探し中…</div></div>`;
   if(window._DEV_MODE){el.querySelector('.lv-list').innerHTML='<div class="lv-note">[DEVモード] 動画は本番のみ</div>';return;}
   const list=await _lvFetch(topic.key,topic.q,2);
   const box=el.querySelector('.lv-list');
@@ -9481,7 +9482,7 @@ async function renderTrendCard(){
   el.hidden=false;
   const kws=(d.keywords||[]).map(k=>`<button class="tr-kw${s.kw===k?' on':''}" data-kw="${_vidEsc(k)}">#${_vidEsc(k)}</button>`).join('');
   const tabs=Object.keys(TREND_CAT_LABEL).map(c=>`<button class="tr-tab${!s.kw&&s.cat===c?' on':''}" data-cat="${c}">${TREND_CAT_LABEL[c]}</button>`).join('');
-  el.innerHTML=_lvHead('ランの今週の話題')
+  el.innerHTML=_lvHead('今週の話題')
     +`<div class="tr-intro">${esc(d.intro||'')}</div>`
     +`<div class="tr-kws">${kws}</div>`
     +`<div class="tr-tabs">${tabs}</div>`
@@ -10937,7 +10938,7 @@ function onbPlanHtml(h){
     <div class="ow-plan"><div class="ow-plan-head">${esc(pl.tpl.name)}<small>週${+h.gymFreq||3}日${h.minutes?'・1回'+h.minutes+'分':''}</small></div>
     ${pl.days.map(x=>`<div class="ow-day${x.day?'':' rest'}"><b>${x.dow}</b><span>${x.day?esc(x.day.label)+'：'+esc(x.day.exercises.slice(0,3).map(e=>e.name).join('・'))+(x.day.exercises.length>3?' ほか':''):'休み'}</span></div>`).join('')}</div>
     ${nu?`<div class="ow-nu"><div><small>1日の目安</small><b>${nu.kcal.toLocaleString()}<span>kcal</span></b></div><div><small>たんぱく質</small><b>${nu.protein}<span>g</span></b></div></div>${nu.minor?'<p class="ow-hint">18歳未満なので、食事は減らしすぎない目安にしています</p>':''}`:'<p class="ow-hint">体のことを入れると、1日の目安カロリーも出せます（プロフィールからいつでも）</p>'}
-    <div class="ow-pro"><span class="pw-tag">PREMIUM</span> プレミアムなら、ランが睡眠・食事・予定まで見て、このメニューを毎週あなたに合わせて組み直します</div>
+    <div class="ow-pro"><span class="pw-tag">PREMIUM</span> プレミアムなら、AIが睡眠・食事・予定まで見て、このメニューを毎週あなたに合わせて組み直します</div>
     <button type="button" class="ob-btn" id="ow-trial">${enforced&&!pro?(canBuy?'1か月無料でプレミアムを試す':'1か月無料で試す（iPhoneアプリで近日）'):'このプランではじめる'}</button>
     <button type="button" class="ob-skip-btn" id="ow-free">${enforced&&!pro?'無料ではじめる':'あとで見直す'}</button>`;
 }
@@ -11052,7 +11053,7 @@ function renderTutorial(){
   const el=document.getElementById('tut-card');if(!el)return;
   const t=db.settings.tutorial;
   if(!t||t.closed||(t.rec&&t.map&&t.ai)){el.hidden=true;return;}
-  const items=[['rec','今日やることを1つ記録する','体重や朝食をワンタップで'],['map','筋肉マップを見る','鍛えどきの部位がわかります'],['ai','ランに話しかける','「今日なにやればいい？」と聞いてみよう']];
+  const items=[['rec','今日やることを1つ記録する','体重や朝食をワンタップで'],['map','筋肉マップを見る','鍛えどきの部位がわかります'],['ai','AIに話しかける','「今日なにやればいい？」と聞いてみよう']];
   const done=items.filter(([k])=>t[k]).length;
   el.hidden=false;
   el.innerHTML=`<div class="tut-head"><b>はじめてガイド</b><span>${done} / 3</span><button type="button" class="tut-close" aria-label="ガイドを閉じる">あとで</button></div>${items.map(([k,l,s])=>`<button type="button" class="tut-item${t[k]?' done':''}" data-tut="${k}"><span class="sk-dot"></span><span class="tut-txt"><b>${l}</b><small>${s}</small></span></button>`).join('')}`;
@@ -11168,7 +11169,7 @@ function mmAiBoxHtml(){
       ${focus.length?`<div class="mm-ai-focus">${focus.map(k=>`<span>${esc(_mmNames([k])[0])}</span>`).join('')}</div>`:''}
       ${ai.today?`<p class="mm-ai-today">${esc(ai.today)}</p>`:''}
       <p class="mm-hint" style="margin:0">図の色はAIの判定です。部位をタップすると理由が出ます</p>
-      <button type="button" class="mm-ai-ask" id="mm-ai-ask">このおすすめでメニューをランに聞く</button></div>`;
+      <button type="button" class="mm-ai-ask" id="mm-ai-ask">このおすすめでAIにメニューを聞く</button></div>`;
   }
   return `${window._mmAiErr?`<p class="mm-ai-err">${esc(window._mmAiErr)}</p>`:''}<button type="button" class="mm-ai-btn" id="mm-ai-btn"><span class="pw-tag">PREMIUM</span> AIにくわしく判定してもらう<small>睡眠・食事・前回の量まで見て、15部位の回復と今日の鍛えどきを判定</small></button>`;
 }
@@ -11190,7 +11191,7 @@ async function renderAiSuggest(force){
   if(lhPremiumLocked()){
     if(db.settings.hideSuggestTeaser||!lhPlanEnforced()){el.hidden=true;return;}
     el.hidden=false;el.className='card ai-suggest-card teaser';
-    el.innerHTML=`<div class="ais-teaser"><span class="pw-tag">PREMIUM</span><span class="ais-t-txt"><b>ランからの提案</b><small>記録を見て、メニューや生活のおすすめをAIが毎日出します</small></span><button type="button" class="ais-t-go">くわしく</button><button type="button" class="ais-x" aria-label="閉じる">×</button></div>`;
+    el.innerHTML=`<div class="ais-teaser"><span class="pw-tag">PREMIUM</span><span class="ais-t-txt"><b>AIからの提案</b><small>記録を見て、メニューや生活のおすすめをAIが毎日出します</small></span><button type="button" class="ais-t-go">くわしく</button><button type="button" class="ais-x" aria-label="閉じる">×</button></div>`;
     el.querySelector('.ais-t-go').onclick=()=>lhShowPaywall({feature:'suggest'});
     el.querySelector('.ais-x').onclick=()=>{db.settings.hideSuggestTeaser=true;save(db);el.hidden=true;};
     return;
@@ -11202,7 +11203,7 @@ async function renderAiSuggest(force){
     if(window._aisBusy)return;
     window._aisBusy=true;
     el.hidden=false;el.className='card ai-suggest-card loading';
-    el.innerHTML=`<div class="ais-head"><span class="ais-lbl">✦ ランからの提案</span></div><p class="ais-load">記録を見て考えています…</p>`;
+    el.innerHTML=`<div class="ais-head"><span class="ais-lbl">✦ AIからの提案</span></div><p class="ais-load">記録を見て考えています…</p>`;
     const menu=(db.trainingMenus||{})[today];
     const r=await lhAiJson('suggest','あなたはLifeWithのAIトレーナー「ラン」です。ユーザーに頼まれていなくても、記録を読んで役に立つ具体的な提案をします。タメ口で短く。',
       `${_pmDataCtx()}\n【今日のトレーニングの予定】${menu?menu.replace(/\n/g,' / '):'まだない'}\n\n上のデータを読んで、今日のユーザーに役立つ提案を最大2つ出してください。
@@ -11214,15 +11215,15 @@ async function renderAiSuggest(force){
 形式: {"items":[{"kind":"menu","title":"...","body":"...","menu":"背中の日\\nラットプルダウン 3×10"}]}`,1000,true);
     window._aisBusy=false;
     if(r.data&&Array.isArray(r.data.items)){c={date:today,items:r.data.items.slice(0,2),hide:[]};_pmSet('lh_ai_suggest',c);}
-    else{el.innerHTML=`<div class="ais-head"><span class="ais-lbl">✦ ランからの提案</span><button type="button" class="ais-redo" aria-label="もう一度">↺</button></div><p class="ais-load">${esc(r.err||'提案を作れませんでした')}</p>`;el.className='card ai-suggest-card';el.querySelector('.ais-redo').onclick=()=>renderAiSuggest(true);return;}
+    else{el.innerHTML=`<div class="ais-head"><span class="ais-lbl">✦ AIからの提案</span><button type="button" class="ais-redo" aria-label="もう一度">↺</button></div><p class="ais-load">${esc(r.err||'提案を作れませんでした')}</p>`;el.className='card ai-suggest-card';el.querySelector('.ais-redo').onclick=()=>renderAiSuggest(true);return;}
   }
   const items=(c.items||[]).map((x,i)=>Object.assign({i},x)).filter(x=>x&&x.title&&!(c.hide||[]).includes(x.i));
   if(!items.length){el.hidden=true;return;}
   const ic={menu:'💪',sleep:'😴',meal:'🍽',rest:'🛌',other:'✦'};
   el.hidden=false;el.className='card ai-suggest-card';
-  el.innerHTML=`<div class="ais-head"><span class="ais-lbl">✦ ランからの提案</span><span class="pw-tag">PREMIUM</span></div>
+  el.innerHTML=`<div class="ais-head"><span class="ais-lbl">✦ AIからの提案</span><span class="pw-tag">PREMIUM</span></div>
     ${items.map(x=>`<div class="ais-item" data-i="${x.i}"><span class="ais-ic" aria-hidden="true">${ic[x.kind]||'✦'}</span><div class="ais-main"><b>${esc(x.title)}</b><span>${esc(x.body||'')}</span>
-      ${x.kind==='menu'&&x.menu?`<pre class="ais-menu">${esc(String(x.menu).split('\n').slice(1).join('\n'))}</pre><button type="button" class="ais-act ais-add">今日の予定に入れる</button>`:`<button type="button" class="ais-act ais-ask">ランに相談</button>`}
+      ${x.kind==='menu'&&x.menu?`<pre class="ais-menu">${esc(String(x.menu).split('\n').slice(1).join('\n'))}</pre><button type="button" class="ais-act ais-add">今日の予定に入れる</button>`:`<button type="button" class="ais-act ais-ask">AIに相談</button>`}
       </div><button type="button" class="ais-x" aria-label="この提案を消す">×</button></div>`).join('')}`;
   el.querySelectorAll('.ais-item').forEach(row=>{
     const x=items.find(y=>y.i===+row.dataset.i);
@@ -11312,7 +11313,7 @@ function renderWeekReport(root){
   const tiles=[['トレーニング',_pmDelta(a.tdays,b.tdays,'日')],['セット数',_pmDelta(a.sets,b.sets,'')],['量（重さ×回数）',_pmDelta(a.vol,b.vol,'kg')],['平均睡眠',_pmDelta(a.sleep,b.sleep,'h',1)],['平均カロリー',_pmDelta(a.kcal,b.kcal,'kcal')],['たんぱく質',_pmDelta(a.protein,b.protein,'g')],['歩数',_pmDelta(a.steps,b.steps,'歩')],['体重の変化',w==null?'<span class="rp-v">—</span>':`<span class="rp-v">${w>0?'+':''}${w.toFixed(1)}<i>kg</i></span>`]];
   let prem='';
   if(locked){
-    prem=`<div class="card rp-lock"><span class="pw-tag">PREMIUM</span><b>体調との関係とAIの週のレポート</b><small>「睡眠が長い日ほどトレーニング量が多い」など、直近30日の記録から体調との関係を見つけて、ランが1週間をふり返ります</small><button type="button" class="ob-btn" id="rp-pw">くわしく見る</button></div>`;
+    prem=`<div class="card rp-lock"><span class="pw-tag">PREMIUM</span><b>体調との関係とAIの週のレポート</b><small>「睡眠が長い日ほどトレーニング量が多い」など、直近30日の記録から体調との関係を見つけて、AIが1週間をふり返ります</small><button type="button" class="ob-btn" id="rp-pw">くわしく見る</button></div>`;
   }else{
     const cr=lhCorrelations();
     const lv={strong:'強め',some:'少し',none:'—'};
@@ -11321,9 +11322,9 @@ function renderWeekReport(root){
       <p class="mm-hint" style="margin:6px 0 0">関係があっても、片方が原因とは限りません</p></div>`;
     const rp=lhReportToday();
     prem+=`<div class="rp-sec">AIの週のレポート<span class="pw-tag">PREMIUM</span></div>`;
-    if(window._rpBusy)prem+=`<div class="card rp-ai loading">ランがレポートを書いています…</div>`;
+    if(window._rpBusy)prem+=`<div class="card rp-ai loading">AIがレポートを書いています…</div>`;
     else if(rp){const d=rp.data,li=a=>(Array.isArray(a)?a:[]).filter(Boolean).map(x=>`<li>${esc(x)}</li>`).join('');
-      prem+=`<div class="card rp-ai"><div class="rp-ai-head"><small>${esc(md(rp.date))}に作成</small><button type="button" class="mm-ai-redo" id="rp-redo" aria-label="作り直す">↺</button></div><p class="rp-sum">${esc(d.summary||'')}</p>${li(d.good)?`<div class="rp-lbl">よかったこと</div><ul class="rp-ul good">${li(d.good)}</ul>`:''}${li(d.next)?`<div class="rp-lbl">来週やること</div><ul class="rp-ul">${li(d.next)}</ul>`:''}${d.insight?`<div class="rp-lbl">体調との関係</div><p class="rp-ins">${esc(d.insight)}</p>`:''}<button type="button" class="mm-ai-ask" id="rp-ask">レポートについてランに聞く</button></div>`;}
+      prem+=`<div class="card rp-ai"><div class="rp-ai-head"><small>${esc(md(rp.date))}に作成</small><button type="button" class="mm-ai-redo" id="rp-redo" aria-label="作り直す">↺</button></div><p class="rp-sum">${esc(d.summary||'')}</p>${li(d.good)?`<div class="rp-lbl">よかったこと</div><ul class="rp-ul good">${li(d.good)}</ul>`:''}${li(d.next)?`<div class="rp-lbl">来週やること</div><ul class="rp-ul">${li(d.next)}</ul>`:''}${d.insight?`<div class="rp-lbl">体調との関係</div><p class="rp-ins">${esc(d.insight)}</p>`:''}<button type="button" class="mm-ai-ask" id="rp-ask">レポートについてAIに聞く</button></div>`;}
     else prem+=`${window._rpErr?`<p class="mm-ai-err">${esc(window._rpErr)}</p>`:''}<button type="button" class="ob-btn" id="rp-make">AIの週のレポートを作る</button>`;
   }
   root.innerHTML=`${mmAnaChips('report')}
@@ -11407,7 +11408,7 @@ function renderHomeHero(){
   if(f.meals!==false)small.push(['meals','hh-meal','食事',m&&m.kcal?`<b>${m.kcal.toLocaleString()}</b>${tg?`<small>/${tg.kcal.toLocaleString()}kcal</small>`:'<small>kcal</small>'}`:'<small>記録する</small>','🍱']);
   if(f.sleep!==false)small.push(['sleep','hh-sleep','睡眠',sh!=null?`<b>${Math.floor(sh)}</b><small>時間${Math.round((sh%1)*60)?Math.round((sh%1)*60)+'分':''}</small>`:'<small>昨夜を記録</small>','😴']);
   small.push(['health','hh-weight','体重',wt?`<b>${wt.w.toFixed(1)}</b><small>kg</small>`:'<small>記録する</small>','⚖️']);
-  const sc=[['ai','🤖','ランに話す'],['find','🔍','種目を探す'],['report','📊','週の<br>レポート'],['plan','📅','週間<br>プランナー'],['album','📷','食事の<br>アルバム']];
+  const sc=[['ai','🤖','AIに聞く'],['find','🔍','種目を探す'],['report','📊','週の<br>レポート'],['plan','📅','週間<br>プランナー'],['album','📷','食事の<br>アルバム']];
   el.innerHTML=`<div class="hh-status">${pills.join('')}</div>
     <div class="hh-grid2">
       <button type="button" class="hh-tile hh-train" id="hh-train"><span class="hh-t-lbl">LET'S GO</span><span class="hh-t-title">トレーニング<br>開始</span><span class="hh-t-sub">${esc(trainSub)}</span><span class="hh-blob"></span><img class="hh-ran" src="${esc(ran.img)}" alt="" onerror="this.style.display='none'"></button>
@@ -11460,7 +11461,7 @@ function renderWoMenu(){
   el.hidden=false;
   if(!text.trim()){
     el.className='card wo-menu-card empty';
-    el.innerHTML=`<div class="wm-head"><span class="wm-lbl">${lbl}</span></div><p class="wm-empty">${isToday?'今日のメニューはまだありません':'この日のメニューはありません'}</p><div class="wm-btns"><button type="button" class="wm-btn wm-plan">週間プランナーで作る</button>${isToday?'<button type="button" class="wm-btn wm-ask">ランに組んでもらう</button>':''}</div>`;
+    el.innerHTML=`<div class="wm-head"><span class="wm-lbl">${lbl}</span></div><p class="wm-empty">${isToday?'今日のメニューはまだありません':'この日のメニューはありません'}</p><div class="wm-btns"><button type="button" class="wm-btn wm-plan">週間プランナーで作る</button>${isToday?'<button type="button" class="wm-btn wm-ask">AIに組んでもらう</button>':''}</div>`;
   }else{
     const p=lhParseMenu(text),recs=(db.workouts||{})[ds]||[];
     const done=it=>recs.some(r=>r.name===it.name);
