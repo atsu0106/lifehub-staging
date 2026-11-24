@@ -1757,6 +1757,9 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 .wm-empty{margin:0;font-size:13px;color:var(--fg2);}
 .wm-btns{display:flex;gap:8px;flex-wrap:wrap;}
 .wm-btn{min-height:40px;padding:0 14px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--fg);font:inherit;font-size:13px;font-weight:700;cursor:pointer;}
+
+/* v2.111.0: 体のプロフィール */
+.body-lead{font-size:12px;color:var(--fg2);margin:0 2px 4px;line-height:1.6;}
 </style>
 </head>
 <body>
@@ -1899,7 +1902,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
     <div class="card me-list">
       <button type="button" class="me-row" data-me="plan"><span class="me-ic">👑</span><span class="me-lbl">プラン</span><span class="me-val" id="me-plan-val"></span><span class="me-go">›</span></button>
       <button type="button" class="me-row" data-me="onb"><span class="me-ic">📝</span><span class="me-lbl">質問に答えてプランを作る</span><span class="me-go">›</span></button>
-      <button type="button" class="me-row" data-me="profile"><span class="me-ic">🧍</span><span class="me-lbl">体のプロフィール</span><span class="me-go">›</span></button>
+      <button type="button" class="me-row" data-me="profile"><span class="me-ic">🧍</span><span class="me-lbl">体のプロフィール</span><span class="me-val" id="me-body-val"></span><span class="me-go">›</span></button>
       <button type="button" class="me-row" data-me="gym"><span class="me-ic">🏢</span><span class="me-lbl">ジムと器具</span><span class="me-val" id="me-gym-val"></span><span class="me-go">›</span></button>
       <button type="button" class="me-row" data-me="tasks"><span class="me-ic">✅</span><span class="me-lbl">タスク</span><span class="me-go">›</span></button>
       <button type="button" class="me-row" data-me="vlists"><span class="me-ic">📺</span><span class="me-lbl">マイ動画リスト</span><span class="me-go">›</span></button>
@@ -2217,18 +2220,17 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
   </div>
 </div>
 
-<div class="overlay" id="mo-settings" hidden>
+<!-- v2.111.0: 体のプロフィール（設定から分けた） -->
+<div class="overlay" id="mo-body" hidden>
   <div class="modal settings-modal">
-    <!-- ヘッダー -->
     <div class="settings-hdr">
-      <span class="settings-hdr-title">設定</span>
-      <button class="settings-close-btn" id="settings-close-top">✕</button>
+      <span class="settings-hdr-title">体のプロフィール</span>
+      <button class="settings-close-btn" id="body-close-top" aria-label="閉じる">✕</button>
     </div>
-    <!-- スクロール本体 -->
     <div class="settings-body">
-
+      <p class="body-lead">ここの内容をもとに、AIがメニュー・食事の目安・筋肉の回復を判定します。記録は端末の中だけに保存されます</p>
       <!-- 健康プロフィール -->
-      <div class="st-sec">健康プロフィール</div>
+      <div class="st-sec">体のこと・目標</div>
       <div class="st-card">
         <div class="st-row" style="align-items:flex-start;gap:10px;">
           <span class="st-ic" style="background:#ef4444;flex-shrink:0;">❤️</span>
@@ -2279,6 +2281,57 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
             <input type="text" id="hp-dislikes" class="hp-text" maxlength="100" placeholder="苦手な食材（例: セロリ）" style="margin-top:6px;">
             <div style="font-size:11px;color:var(--fg3);margin-top:4px;">メニュー提案とAIトレーナーが避けます。読点（、）で区切って入力</div>
           </div>
+        </div>
+      </div>
+
+
+      <div class="st-sec">トレーニングの環境</div>
+      <div class="st-card">
+        <div class="st-row" id="body-open-gym" style="cursor:pointer;">
+          <span class="st-ic" style="background:#0ea5e9;">🏢</span>
+          <span class="st-label">ジムと器具</span>
+          <span class="st-val" id="body-gym-val" style="font-size:12px;color:var(--fg3);"></span>
+          <span class="st-arrow">›</span>
+        </div>
+        <div class="st-row" id="body-open-onb" style="cursor:pointer;">
+          <span class="st-ic" style="background:#f97316;">📝</span>
+          <span class="st-label">質問に答えてプランを作り直す</span>
+          <span class="st-arrow">›</span>
+        </div>
+      </div>
+
+      <!-- サプリメント -->
+      <div class="st-sec">サプリメント</div>
+      <div class="st-card">
+        <div id="supp-list"></div>
+        <div class="st-row" id="supp-add-btn" style="cursor:pointer;">
+          <span class="st-ic" style="background:#10b981;">＋</span>
+          <span class="st-label">サプリメントを追加</span>
+          <span class="st-arrow">›</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="mo-settings" hidden>
+  <div class="modal settings-modal">
+    <!-- ヘッダー -->
+    <div class="settings-hdr">
+      <span class="settings-hdr-title">設定</span>
+      <button class="settings-close-btn" id="settings-close-top">✕</button>
+    </div>
+    <!-- スクロール本体 -->
+    <div class="settings-body">
+
+      <!-- 体のプロフィール（v2.111.0: 別の画面に分けた） -->
+      <div class="st-sec">体のプロフィール</div>
+      <div class="st-card">
+        <div class="st-row" id="st-open-body" style="cursor:pointer;">
+          <span class="st-ic" style="background:#ef4444;">🧍</span>
+          <span class="st-label">身長・体重・目標・アレルギー・サプリ</span>
+          <span class="st-arrow">›</span>
         </div>
       </div>
 
@@ -2469,17 +2522,6 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         </div>
       </div>
 
-      <!-- サプリメント -->
-      <div class="st-sec">サプリメント</div>
-      <div class="st-card">
-        <div id="supp-list"></div>
-        <div class="st-row" id="supp-add-btn" style="cursor:pointer;">
-          <span class="st-ic" style="background:#10b981;">＋</span>
-          <span class="st-label">サプリメントを追加</span>
-          <span class="st-arrow">›</span>
-        </div>
-      </div>
-
       <!-- AI・連携 -->
       <div class="st-sec">AI・連携</div>
       <div class="st-card">
@@ -2614,7 +2656,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         <div class="st-about-note">動画の検索・表示に YouTube API Services を使っています。<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube利用規約</a>・<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Googleプライバシーポリシー</a>が適用されます。AIの答えは医療アドバイスではありません。</div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.110.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.111.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -3209,7 +3251,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='aa41d60d58'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='0a52c4a32d'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -3720,6 +3762,7 @@ function renderMeTab(){
   const n=document.getElementById('me-name');if(n)n.textContent=nm||'あなた';
   const pv=document.getElementById('me-plan-val');if(pv)pv.textContent=(typeof lhPlanEnforced==='function'&&!lhPlanEnforced())?'プレミアム（Web版）':(typeof lhIsPro==='function'&&lhIsPro()?'プレミアム':'無料');
   const tk=document.querySelector('.me-row[data-me="tasks"]');if(tk)tk.hidden=db.settings.features?.tasks===false;
+  const bv=document.getElementById('me-body-val');if(bv){const h=db.settings.healthProfile||{};bv.textContent=[h.height?h.height+'cm':'',h.weight?h.weight+'kg':''].filter(Boolean).join('・');}
   const gv=document.getElementById('me-gym-val');if(gv&&typeof lhGymLabel==='function')gv.textContent=lhGymLabel();
 }
 document.querySelectorAll('.me-row').forEach(b=>b.onclick=()=>{
@@ -3728,7 +3771,7 @@ document.querySelectorAll('.me-row').forEach(b=>b.onclick=()=>{
   else if(k==='onb'){if(typeof onbReopen==='function')onbReopen();}
   else if(k==='tasks')switchToTab('tasks');
   else if(k==='vlists'){if(typeof openVideoLists==='function')openVideoLists();}
-  else if(k==='profile'){document.getElementById('hdr-settings').click();setTimeout(()=>document.getElementById('hp-height')?.scrollIntoView({block:'center'}),300);}
+  else if(k==='profile'){if(typeof openBodyProfile==='function')openBodyProfile();} // v2.111.0
   else if(k==='settings')document.getElementById('hdr-settings').click();
 });
 document.querySelectorAll('.nb').forEach(btn=>{
@@ -5280,6 +5323,28 @@ document.querySelectorAll('.st-opt[data-hp-gym]').forEach(btn=>{
     document.querySelectorAll('.st-opt[data-hp-gym]').forEach(b=>b.classList.toggle('on',b.dataset.hpGym===btn.dataset.hpGym));
   };
 });
+
+// ── 体のプロフィール（v2.111.0: 設定から分けた画面） ──
+function openBodyProfile(){
+  const hp=db.settings.healthProfile||{};
+  ['height','weight','age'].forEach(k=>{const el=document.getElementById('hp-'+k);if(el)el.value=hp[k]||'';});
+  ['allergies','dislikes'].forEach(k=>{const el=document.getElementById('hp-'+k);if(el)el.value=hp[k]||'';});
+  document.querySelectorAll('.st-opt[data-hp-goal]').forEach(b=>b.classList.toggle('on',b.dataset.hpGoal===hp.goal));
+  document.querySelectorAll('.st-opt[data-hp-gym]').forEach(b=>b.classList.toggle('on',b.dataset.hpGym===String(hp.gymFreq||'')));
+  const gv=document.getElementById('body-gym-val');if(gv&&typeof lhGymLabel==='function')gv.textContent=lhGymLabel();
+  renderSuppList();
+  document.getElementById('mo-body').hidden=false;
+}
+function closeBodyProfile(){
+  save(db);document.getElementById('mo-body').hidden=true;
+  if(typeof renderMeTab==='function')renderMeTab();
+  if(typeof renderHomeHero==='function')renderHomeHero();
+}
+document.getElementById('body-close-top').onclick=closeBodyProfile;
+document.getElementById('mo-body').onclick=e=>{if(e.target===e.currentTarget)closeBodyProfile();};
+document.getElementById('st-open-body').onclick=()=>{closeSettings();openBodyProfile();};
+document.getElementById('body-open-gym').onclick=()=>{if(typeof openGymSheet==='function')openGymSheet();};
+document.getElementById('body-open-onb').onclick=()=>{closeBodyProfile();if(typeof onbReopen==='function')onbReopen();};
 // ── ICSインポート ─────────────────────────────────────────
 (function(){
   const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2);
@@ -5869,6 +5934,7 @@ renderAiConsentRow();
 document.getElementById('st-plan-row')?.addEventListener('click',()=>lhShowPaywall({feature:'none'}));
 renderPlanRow();
 const CHANGELOG=[
+  {v:'v2.111.0',d:'体のプロフィール（身長・体重・目標・アレルギー・サプリ・ジムと器具）を設定から分けて、プロフィール → 体のプロフィール に'},
   {v:'v2.110.0',d:'トレーニング → 記録の一番上に「今日のメニュー」。種目ごとに＋で記録に入れたり、まとめて入れたりできる'},
   {v:'v2.109.0',d:'ホームの上を新しく: 🔥何日連続・今週の回数・レベルと、大きな「トレーニング開始」「今日のやりごろ」、食事・睡眠・体重のタイル、よく使う場所への近道'},
   {v:'v2.108.0',d:'利用規約・特定商取引法に基づく表記を追加（設定 → このアプリについて）。今日のひとことに健康アドバイスをまとめた。プレミアム: 食事の写真アルバム（食事 → 📷 アルバム）。プレミアムの案内に見本'},
