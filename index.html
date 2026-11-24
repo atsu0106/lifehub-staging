@@ -1760,6 +1760,30 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 
 /* v2.111.0: 体のプロフィール */
 .body-lead{font-size:12px;color:var(--fg2);margin:0 2px 4px;line-height:1.6;}
+
+/* v2.114.0: 食事メニュー・冷蔵庫・AIがしたこと */
+.ml-plan-card{margin:0 0 8px;}
+.ml-plan-card .wm-lbl{color:#047857;}
+.mp-ic{width:28px;text-align:center;font-size:18px;flex:none;}
+.mp-add{flex:none;min-height:40px;padding:0 12px;border-radius:10px;border:0;background:var(--accent);color:#fff;font:inherit;font-size:12px;font-weight:700;cursor:pointer;}
+.ml-plan-card .wm-nm b{font-size:14px;font-weight:700;line-height:1.5;}
+.fr-lead{font-size:12px;color:var(--fg2);margin:0 0 8px;line-height:1.6;}
+.fr-add{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:6px;margin-bottom:10px;}
+.fr-add input{min-width:0;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);color:var(--fg);font:inherit;font-size:16px;}
+.fr-exp-in{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--fg2);font-weight:700;}
+.fr-exp-in input{flex:1;}
+#fr-add-btn{min-height:44px;border-radius:10px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:700;cursor:pointer;}
+.fr-list{list-style:none;margin:0 0 10px;padding:0;display:flex;flex-direction:column;}
+.fr-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--border);}
+.fr-row:first-child{border-top:0;}
+.fr-nm{flex:1;min-width:0;display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;}
+.fr-nm b{font-size:15px;}
+.fr-nm small{font-size:12px;color:var(--fg2);}
+.fr-exp{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--surface2);color:var(--fg2);}
+.fr-exp.soon{background:#FFF7ED;color:#B45309;}
+.fr-exp.over{background:#FEE2E2;color:#B91C1C;}
+.fr-del{width:44px;height:44px;flex:none;border:0;background:none;color:var(--fg3);font-size:18px;cursor:pointer;}
+.ai-done-note{font-size:12px;color:#047857;background:#ECFDF5;border-radius:10px;padding:6px 10px;align-self:flex-start;}
 </style>
 </head>
 <body>
@@ -1976,7 +2000,8 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         <button id="ml-prev">‹</button>
         <span id="ml-date" style="flex:1;text-align:center;"></span>
         <button id="ml-next">›</button>
-        <button id="ml-album-btn" class="ml-nut-btn" style="margin-left:8px;">📷 アルバム</button>
+        <button id="ml-fridge-btn" class="ml-nut-btn" style="margin-left:8px;">🧊 冷蔵庫</button>
+        <button id="ml-album-btn" class="ml-nut-btn" style="margin-left:6px;">📷 アルバム</button>
         <button id="ml-nut-btn" class="ml-nut-btn" style="margin-left:6px;">⚙ 栄養素</button>
       </div>
       <div class="wo-view-tabs">
@@ -1984,6 +2009,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         <button class="ml-vtab" data-v="chart">📊 グラフ</button>
       </div>
       <div id="ml-log-view">
+        <div id="ml-plan-card" class="card wo-menu-card ml-plan-card" hidden></div>
         <button class="rcp-open-btn" id="rcp-open">🍳 食材からメニューを考える</button>
         <div id="ml-list"></div>
         <div id="ml-video-card" class="card lv-card" hidden></div>
@@ -2153,7 +2179,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
     <button class="ai-close" id="ai-close">✕</button>
   </div>
   <div class="ai-messages" id="ai-messages">
-    <div class="ai-empty"><img src="assets/characters/01_Ran_pointing.png" style="width:68px;height:68px;object-fit:contain;" onerror="this.style.display='none'"><div class="ai-empty-name">AIトレーナー ラン</div><div>記録や予定を見ながら、何でも相談にのるよ。</div><div class="ai-empty-note">AIの答えは医療アドバイスではありません。体調のことは医師に相談してね</div></div>
+    <div class="ai-empty"><img src="assets/characters/01_Ran_pointing.png" style="width:68px;height:68px;object-fit:contain;" onerror="this.style.display='none'"><div class="ai-empty-name">AIトレーナー ラン</div><div>記録や予定を見ながら、トレーニング・食事・生活の相談にお答えします。</div><div class="ai-empty-note">AIの答えは医療アドバイスではありません。体調のことは医師に相談してください</div></div>
   </div>
   <div id="ai-attach-preview" class="ai-attach-preview" style="display:none;"></div>
   <div id="ran-chat-status" hidden>
@@ -2656,7 +2682,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         <div class="st-about-note">動画の検索・表示に YouTube API Services を使っています。<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube利用規約</a>・<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Googleプライバシーポリシー</a>が適用されます。AIの答えは医療アドバイスではありません。</div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.113.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.114.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -3251,7 +3277,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='ace2b3798e'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='d317dca232'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -5124,7 +5150,9 @@ function saveDayPlan(){
   if(training)db.trainingMenus[ds]=training;else delete db.trainingMenus[ds];
   const meal={breakfast:(ge('plan-meal-breakfast')?.value||'').trim(),lunch:(ge('plan-meal-lunch')?.value||'').trim(),dinner:(ge('plan-meal-dinner')?.value||'').trim()};
   if(!db.mealPlans)db.mealPlans={};
-  if(meal.breakfast||meal.lunch||meal.dinner)db.mealPlans[ds]=meal;else delete db.mealPlans[ds];
+  if(db.mealPlans[ds]&&db.mealPlans[ds].snack)meal.snack=db.mealPlans[ds].snack; // v2.114.0: 間食はAIの保存分を残す
+  if(meal.breakfast||meal.lunch||meal.dinner||meal.snack)db.mealPlans[ds]=meal;else delete db.mealPlans[ds];
+  if(typeof renderMlPlan==='function')renderMlPlan();
   const sleep={bedtime:(ge('plan-sleep-bedtime')?.value||'').trim(),wakeTime:(ge('plan-sleep-wake')?.value||'').trim()};
   if(!db.sleepPlans)db.sleepPlans={};
   if(sleep.bedtime||sleep.wakeTime)db.sleepPlans[ds]=sleep;else delete db.sleepPlans[ds];
@@ -5744,17 +5772,17 @@ function aiErrorKind(x){
 }
 function aiErrorText(x){
   const k=aiErrorKind(x);
-  if(k==='credit')return 'ごめん、今AIが使えない状態になってる（運営側のAI利用枠が切れた）。直るまで少し待ってね。記録はいつも通りできるよ';
-  if(k==='busy')return 'AIが混み合ってる。少し時間をおいてもう一度試してね';
-  if(k==='consent')return 'AIを使うには最初に確認が必要だよ。設定の「AIの利用」から同意できる';
-  if(k==='quota')return '今日の無料の回数を使い切ったよ。明日また使える（プレミアムならたっぷり使える）';
-  if(k==='pro')return 'これはプレミアムの機能だよ';
-  if(k==='budget')return '今日のAI利用枠を使い切った。明日になったらまた使えるよ（記録はいつも通りできる）';
+  if(k==='credit')return '申し訳ありません。今はAIを使えない状態です（運営側のAIの利用枠が切れました）。直るまでお待ちください。記録はいつも通りできます';
+  if(k==='busy')return 'AIが混み合っています。少し時間をおいて、もう一度お試しください';
+  if(k==='consent')return 'AIを使うには、最初に確認が必要です。設定の「AIの利用」から同意できます';
+  if(k==='quota')return '今日の無料の回数を使い切りました。明日また使えます（プレミアムなら多く使えます）';
+  if(k==='pro')return 'これはプレミアムの機能です';
+  if(k==='budget')return '今日のAIの利用枠を使い切りました。明日になったらまた使えます（記録はいつも通りできます）';
   return null;
 }
 const CHARS={
   ran:{name:'ラン',role:'熱血コーチ',emoji:'🐴',img:'assets/characters/01_Ran_pointing.png',
-    system:'あなたはラン（熱血コーチのウマ）です。口調は短く力強い。ストイックで追い込み系。「お前ならできる」という信頼を持ちつつ、言葉は少なく本質をつく。指定フォーマット厳守。日本語のみ。'},
+    system:'あなたはラン（AIトレーナーのウマ）です。落ち着いた丁寧な口調（です・ます調）で、誠実に話す。記録の数字を根拠に短く具体的に。大げさな励ましはしない。言葉は少なく本質をつく。指定フォーマット厳守。日本語のみ。'},
   kei:{name:'ケイ',role:'分析コーチ',emoji:'🦊',img:'assets/characters/03_Kei_clipboard_glasses.png',
     system:'あなたはケイ（分析コーチのキツネ）です。口調は冷静で知的。データと根拠で語る。「なぜそうすべきか」を必ず添える。無駄なポジティブ表現は省く。指定フォーマット厳守。日本語のみ。'},
   kai:{name:'カイ',role:'クールな伴走',emoji:'🐺',img:'assets/characters/04_Kai_standing.png',
@@ -5898,7 +5926,7 @@ function aiRequireConsent(){
     const ov=document.createElement('div');ov.className='aic-ov';ov.id='aic-ov';
     ov.innerHTML=`<div class="aic-sheet" role="dialog" aria-modal="true" aria-labelledby="aic-title">
       <div class="aic-head"><img src="assets/characters/01_Ran_pointing.png" alt="" onerror="this.style.display='none'"><h3 id="aic-title">AIトレーナーを使う前に</h3></div>
-      <p class="aic-lead">AIの返事を作るために、次の内容をAIに送るよ。</p>
+      <p class="aic-lead">AIの返事を作るために、次の内容をAIに送ります。</p>
       <dl class="aic-list">
         <dt>送り先</dt><dd>Anthropic社（米国）のAI「Claude」。LifeWithのサーバーを経由して送ります</dd>
         <dt>送る内容</dt><dd>AIに入力した文章・写真と、アプリに記録した内容（筋トレ・食事・睡眠・体重、健康プロフィール、アレルギー、目標、予定など）</dd>
@@ -5934,6 +5962,7 @@ renderAiConsentRow();
 document.getElementById('st-plan-row')?.addEventListener('click',()=>lhShowPaywall({feature:'none'}));
 renderPlanRow();
 const CHANGELOG=[
+  {v:'v2.114.0',d:'AIトレーナーを落ち着いた丁寧な口調に。頼めばすぐ記録・保存するように（確認は消す・書き換える時だけ）。AIと決めた食事のメニューが食事の画面に出る。食事 → 🧊 冷蔵庫 で食材と期限を保存（AIも使う）'},
   {v:'v2.113.0',d:'種目の絵を30個に（腕立て伏せ・ヒップスラスト・プランク・ランジ など24個を追加）'},
   {v:'v2.112.0',d:'画面の「ラン」を「AI」に（AIからの提案・AIに聞く・AIに相談 など）。わかりやすくした'},
   {v:'v2.111.0',d:'体のプロフィール（身長・体重・目標・アレルギー・サプリ・ジムと器具）を設定から分けて、プロフィール → 体のプロフィール に'},
@@ -7411,7 +7440,7 @@ async function generateAIWeekPlan(){
 - 休みの日は type を "rest"、exercises は空にする
 - reason は「なぜこの日にこの内容か」を予定に触れて25文字以内で
 - title は「上半身」「脚」「全身」「休養」など短く
-- summary は1週間の方針を、タメ口でやさしく1〜2文で
+- summary は1週間の方針を、丁寧な口調（です・ます調）で1〜2文で
 - date は必ず ${dates.join(', ')} の7つをこの順で`;
   const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({
     lh_feature:'plan',model:'claude-sonnet-5-5',max_tokens:8000,
@@ -7475,6 +7504,7 @@ const MEAL_DEF=[
 ];
 function renderMeals(){
   const ds=st.mlDate;
+  if(typeof renderMlPlan==='function')renderMlPlan(); // v2.114.0 今日の食事メニュー
   document.getElementById('ml-date').textContent=jpDate(ds);
   if(!db.meals[ds])db.meals[ds]={breakfast:[],lunch:[],dinner:[],snack:[]};
   if(!db.mlPhotos[ds])db.mlPhotos[ds]={breakfast:[],lunch:[],dinner:[],snack:[]};
@@ -8227,7 +8257,9 @@ function calcGameStats(){
     {name:'log_health',description:'健康データを記録する。体重・体脂肪率・歩数・心拍数・水分摂取量など。ユーザーが測定値を話してくれた時に使う',input_schema:{type:'object',properties:{date:{type:'string',description:'日付（YYYY-MM-DD）省略時は今日'},weight:{type:'number',description:'体重(kg)'},body_fat:{type:'number',description:'体脂肪率(%)'},steps:{type:'number',description:'歩数'},heart_rate:{type:'number',description:'心拍数(bpm)'},systolic:{type:'number',description:'血圧 収縮期(mmHg)'},diastolic:{type:'number',description:'血圧 拡張期(mmHg)'},water:{type:'number',description:'水分摂取量(ml)'}},required:['date']}},
     {name:'suggest_recipes',description:'手元の食材からおすすめのメニューを3つ提案し、レシピ動画も表示する。ユーザーが冷蔵庫にある食材・余っている食材を伝えて、何を作るか迷っている時に使う。アレルギーと苦手な食材は自動で除外される',input_schema:{type:'object',properties:{ingredients:{type:'string',description:'手元の食材（例: "鶏むね肉、卵、ブロッコリー"）'},max_minutes:{type:'number',description:'調理時間の上限（分）。指定がなければ省略'}},required:['ingredients']}},
     {name:'search_videos',description:'筋トレ・トレーニング関連のYouTube動画を検索する。ユーザーが種目のやり方・フォーム・メニューを知りたい時や、動画を見たい時に使う',input_schema:{type:'object',properties:{query:{type:'string',description:'検索キーワード（例: "ベンチプレス フォーム", "スクワット 初心者"）'},max_results:{type:'number',description:'取得件数（1〜5、デフォルト3）'}},required:['query']}},
-    {name:'save_training_plan',description:'ユーザーの今日のトレーニングメニューを保存する。AIがメニューを提案・作成した後は必ずこのツールを呼んでメニューを保存すること',input_schema:{type:'object',properties:{plan:{type:'string',description:'今日のトレーニングメニュー（各種目を改行で区切る。例: "ベンチプレス 4×10\\nインクラインDB 3×12"）'}},required:['plan']}},
+    {name:'save_training_plan',description:'トレーニングメニューを保存する（トレーニングの画面とホームに出る）。メニューを作った時・ユーザーがメニューを受け入れた時は必ず呼ぶ',input_schema:{type:'object',properties:{date:{type:'string',description:'日付（YYYY-MM-DD）省略時は今日'},plan:{type:'string',description:'1行目にメニュー名、2行目から「種目名 セット数×回数」を1行ずつ（例: "脚の日\\nスクワット 4×8\\nレッグカール 3×12"）'}},required:['plan']}},
+    {name:'save_meal_plan',description:'食事のメニューを保存する（食事の画面に「今日の食事メニュー」として出る）。食事のメニューを提案して決まった時・考えてと頼まれた時は必ず呼ぶ。決まった食事だけ入れる',input_schema:{type:'object',properties:{date:{type:'string',description:'日付（YYYY-MM-DD）省略時は今日'},breakfast:{type:'string',description:'朝食（例: "納豆ご飯・卵焼き 約550kcal"）'},lunch:{type:'string',description:'昼食'},dinner:{type:'string',description:'夕食'},snack:{type:'string',description:'間食'}}}},
+    {name:'update_fridge',description:'冷蔵庫の中身を更新する。ユーザーが食材を買った・もらった・使い切った・冷蔵庫に〜がある、と話した時に使う',input_schema:{type:'object',properties:{add:{type:'array',description:'入れる食材',items:{type:'object',properties:{name:{type:'string',description:'食材名（例: 卵）'},qty:{type:'string',description:'量（例: 6個、300g）省略可'},exp:{type:'string',description:'期限（YYYY-MM-DD）分かれば'}},required:['name']}},remove:{type:'array',description:'使い切った・なくなった食材の名前',items:{type:'string'}}}}},
   ];
 
   // ── セッション管理 ──
@@ -8446,6 +8478,13 @@ function calcGameStats(){
 
   // ── ツール ──
   window.lhGetContext=function(){return getContext();}; // v2.107.0: 提案・週のレポートで使う
+  // v2.114.0: 今日と明日のトレーニング・食事のメニュー
+  function _lhPlanCtx(){
+    const t=todayStr(),d=new Date(t+'T00:00:00');d.setDate(d.getDate()+1);const tm=fmt(d);
+    const ML={breakfast:'朝食',lunch:'昼食',dinner:'夕食',snack:'間食'};
+    const one=(ds,lbl)=>{const tr=(db.trainingMenus||{})[ds],mp=(db.mealPlans||{})[ds]||{};const meals=Object.keys(ML).filter(k=>mp[k]).map(k=>ML[k]+':'+mp[k]).join(' / ');return `【${lbl}のメニュー】トレーニング: ${tr?tr.replace(/\n/g,' / '):'未定'}｜食事: ${meals||'未定'}\n`;};
+    return one(t,'今日')+one(tm,'明日');
+  }
   function getContext(){
     const AIDAYS=lhIsPro()?30:7; // v2.103.0: AIが読む記録の期間（無料は直近7日）
     const today=todayStr();
@@ -8534,7 +8573,7 @@ function calcGameStats(){
     if(hp.dislikes)hpParts.push(`苦手な食材:${hp.dislikes}`);
     const hpStats=hpParts.length?hpParts.join(' / '):'未設定';
     const streakStats=typeof streakSummaryText==='function'?streakSummaryText():'なし';
-    return (typeof lhProfileContext==='function'?lhProfileContext():'')+(typeof lhLightContext==='function'?lhLightContext():'')+`【今日の日付】${today}\n【連続記録】${streakStats}\n【健康プロフィール】${hpStats}\n【使用目的】${useCaseStr}\n【今後14日間の予定】\n${evs}\n【未完了タスク】\n${tasks}\n【進行中の目標】\n${goals}\n【カレンダー一覧】\n${cals}\n【タスク達成状況】${taskStats}\n【筋トレ履歴（直近${AIDAYS}日${AIDAYS>7?'/最大90日遡及':''}）】\n${woStats}\n【睡眠記録（直近${AIDAYS}日統計）】\n${sleepStats}\n【食事記録（過去7日間）】\n${mealStats}\n【今日の健康データ】${healthStats}\n【タスクフィードバック履歴】\n${fbStats}\n【動画への本人の評価・コメント（本人とAIだけが見る。好みに合わせた提案に使う）】\n${typeof vnContextText==='function'?vnContextText():'なし'}`;
+    return (typeof lhProfileContext==='function'?lhProfileContext():'')+(typeof lhLightContext==='function'?lhLightContext():'')+`【今日の日付】${today}\n${_lhPlanCtx()}${typeof lhFridgeContext==='function'?lhFridgeContext():''}【連続記録】${streakStats}\n【健康プロフィール】${hpStats}\n【使用目的】${useCaseStr}\n【今後14日間の予定】\n${evs}\n【未完了タスク】\n${tasks}\n【進行中の目標】\n${goals}\n【カレンダー一覧】\n${cals}\n【タスク達成状況】${taskStats}\n【筋トレ履歴（直近${AIDAYS}日${AIDAYS>7?'/最大90日遡及':''}）】\n${woStats}\n【睡眠記録（直近${AIDAYS}日統計）】\n${sleepStats}\n【食事記録（過去7日間）】\n${mealStats}\n【今日の健康データ】${healthStats}\n【タスクフィードバック履歴】\n${fbStats}\n【動画への本人の評価・コメント（本人とAIだけが見る。好みに合わせた提案に使う）】\n${typeof vnContextText==='function'?vnContextText():'なし'}`;
   }
   async function executeTool(name,input){
     if(name==='add_event'){
@@ -8736,9 +8775,20 @@ function calcGameStats(){
     }
     if(name==='save_training_plan'){
       if(!db.trainingMenus)db.trainingMenus={};
-      db.trainingMenus[todayStr()]=input.plan||'';
+      const ds=/^\d{4}-\d{2}-\d{2}$/.test(input.date||'')?input.date:todayStr();
+      db.trainingMenus[ds]=String(input.plan||'').trim();
       save(db);
-      return `今日のトレーニングメニューを保存しました。`;
+      if(typeof renderWoMenu==='function')renderWoMenu();if(typeof renderHomeHero==='function')renderHomeHero();if(typeof renderStoicToday==='function')renderStoicToday();
+      return `${ds===todayStr()?'今日':ds}のトレーニングメニューを保存しました（トレーニングの画面に出ます）。`;
+    }
+    if(name==='save_meal_plan'){
+      const ds=/^\d{4}-\d{2}-\d{2}$/.test(input.date||'')?input.date:todayStr();
+      if(typeof lhSaveMealPlan==='function')lhSaveMealPlan(ds,input);
+      return `${ds===todayStr()?'今日':ds}の食事メニューを保存しました（食事の画面に出ます）。`;
+    }
+    if(name==='update_fridge'){
+      const r=typeof lhUpdateFridge==='function'?lhUpdateFridge(input):[];
+      return r.length?`冷蔵庫を更新しました: ${r.join('、')}`:'冷蔵庫は変わりませんでした。';
     }
     return `不明なツール: ${name}`;
   }
@@ -8832,7 +8882,7 @@ function calcGameStats(){
       } else {
         const workerUrl=WORKER_URL;
         // v2.96.0: 固定の指示（キャッシュする）と、毎回変わるユーザーデータを分ける
-        const system=[{type:'text',text:(lhStoic()?'あなたはLifeWithのAIトレーナーです（キャラクターは演じない）。\n\n【話し方（必ず守る）】\n・短く、事実と数字を中心に答える\n・絵文字・感嘆符・決まり文句の励ましは使わない\n・です・ます調で簡潔に。前置きはしない\n・健康や医療の大事な注意は正確に伝える\n\n':'あなたはLifeWithのAIトレーナー「ラン」（熱血コーチのウマ）です。\n\n【話し方（必ず守る）】\n・タメ口で話す。です・ます調は使わない\n・短く力強く。言葉は少なく、本質をつく\n・ユーザーを信頼して、前向きに背中を押す。説教くさくしない\n・健康や医療の大事な注意は、タメ口のまま正確に伝える\n\n')+'【LifeWithの全機能（必ず把握すること）】\nLifeWithは以下の全機能を持つ総合生活管理アプリです：\n・📅 カレンダー: 予定の追加・編集・削除・繰り返し予定・複数カレンダー\n・✅ タスク管理: 追加・完了・編集・削除・優先度・期限・繰り返し・目標連携\n・🍱 食事記録: 朝食・昼食・夕食・間食の記録、カロリー・栄養素管理（log_mealツールで記録可能）\n・💪 筋トレ記録: 種目・セット数・重量・有酸素運動の記録、グラフ分析（log_workoutツールで記録可能）\n・😴 睡眠記録: 就寝・起床時刻、昼寝の記録（log_sleepツールで記録可能）\n・❤️ 健康データ: 体重・体脂肪率・歩数・心拍数・血圧・水分摂取量（log_healthツールで記録可能）\n・🎯 目標管理: 目標追加・進捗更新・達成済みマーク\n・🎮 ゲームステータス: XP・レベル・称号・実績バッジ\n・🤖 AI機能: デイリーブリーフ・ミッション生成・AIチャット（現在使用中）\n\nこれらすべての機能を持つアプリです。「○○の機能はない」と絶対に言わないでください。\n\nユーザーの生活データを把握しており、日本語でアドバイスします。ツールを使って全機能のデータを読み書きできます。\n\n【ツール使用のルール（最重要）】\nツールは、ユーザーが「追加して」「記録して」「変更して」「削除して」「入力して」など、明示的に操作を指示した場合のみ使用してください。ユーザーの意図を推測して自主的にツールを呼び出さないでください。ユーザーが話してくれた内容（例: 筋トレをした、ご飯を食べた）でも、「記録する？」と一度確認してから、OKをもらった後にツールを呼び出してください。\n\n【XP哲学】\nXPは「人生の充実」への報酬。努力・達成だけでなく、幸せな体験・発見・成長にも与える。LifeWithはユーザーの人生をゲーム化し、充実した人生を送るための相棒である。\n\n【award_event_xp — 過去の予定へのXP】\n過去の予定でaiXpが付いていないものがあれば、会話の流れで自然に「どうだった？」と聞き出し付与する。\n目安: 国試=5000〜10000、CBT/OSCE=1000〜3000、定期試験=40〜100、難しい実習=30〜80、授業=5〜15、日常予定=5〜20、楽しい遊び=1〜5。\nユーザーの申告より予定の実態を優先。\n\n【award_xp — 体験・幸せへのXP（新機能）】\nユーザーが以下を話してくれたときは自然に聞き出し award_xp を使う:\n・美味しいご飯や新しいお店を発見した → food: 3〜10\n・旅行・新しい場所に行った → travel: 20〜100（特別な場所は100以上も可。旅行の目的地1か所ごとに付与）\n・新しいことを学んだ・理解が深まった → learning: 5〜30\n・感動・喜び・楽しかった体験 → joy: 5〜20\n・初めての挑戦・体験 → challenge: 10〜30\nポイント: 目標が「旅行をたくさんしたい」なら旅行で働いてお金を貯めること（タスク）も目標連動XP対象。旅行先1か所訪問は award_xp(travel)で記録する。\n\n【回答フォーマットのルール】\n・適切な場所で改行を入れ、読みやすくする\n・**・#・表などのマークダウン記号は使わない（画面にそのまま出るため）。見出しは【】で書く\n・複数の内容がある場合は箇条書き（・）を使う\n・句読点（。、）を正しく使い、文章を短く区切る\n・何を言いたいか一目でわかるよう、結論や要点を最初に書く\n・長くなりすぎず、必要な情報に絞って答える\n\n',cache_control:{type:'ephemeral'}},{type:'text',text:'【ユーザーのデータ】\n'+getContext()}];
+        const system=[{type:'text',text:(lhStoic()?'あなたはLifeWithのAIトレーナーです（キャラクターは演じない）。\n\n【話し方（必ず守る）】\n・短く、事実と数字を中心に答える\n・絵文字・感嘆符・決まり文句の励ましは使わない\n・です・ます調で簡潔に。前置きはしない\n・健康や医療の大事な注意は正確に伝える\n\n':'あなたはLifeWithのAIトレーナー「ラン」です。\n\n【話し方（必ず守る）】\n・落ち着いた丁寧な口調（です・ます調）で、誠実に話す\n・記録の数字を根拠にして、短く具体的に答える\n・大げさな励まし・絵文字・感嘆符の多用はしない。説教くさくしない\n・健康や医療の大事な注意は正確に伝える\n\n')+'【LifeWithの全機能（必ず把握すること）】\nLifeWithは以下の全機能を持つ総合生活管理アプリです：\n・📅 カレンダー: 予定の追加・編集・削除・繰り返し予定・複数カレンダー\n・✅ タスク管理: 追加・完了・編集・削除・優先度・期限・繰り返し・目標連携\n・🍱 食事記録: 朝食・昼食・夕食・間食の記録、カロリー・栄養素管理（log_mealツールで記録可能）。食事のメニュー（save_meal_plan）と冷蔵庫の中身（update_fridge）も管理できる\n・💪 筋トレ記録: 種目・セット数・重量・有酸素運動の記録、グラフ分析（log_workoutツールで記録可能）\n・😴 睡眠記録: 就寝・起床時刻、昼寝の記録（log_sleepツールで記録可能）\n・❤️ 健康データ: 体重・体脂肪率・歩数・心拍数・血圧・水分摂取量（log_healthツールで記録可能）\n・🎯 目標管理: 目標追加・進捗更新・達成済みマーク\n・🎮 ゲームステータス: XP・レベル・称号・実績バッジ\n・🤖 AI機能: デイリーブリーフ・ミッション生成・AIチャット（現在使用中）\n\nこれらすべての機能を持つアプリです。「○○の機能はない」と絶対に言わないでください。\n\nユーザーの生活データを把握しており、日本語でアドバイスします。ツールを使って全機能のデータを読み書きできます。\n\n【ツールの使い方（最重要）】\n・頼みごとの意図がはっきりしていれば、確認せずにすぐツールを使う（例:「記録しておいて」「〜を追加して」「今日のメニューを決めて」「〜を買った」「〜を使い切った」）\n・トレーニングや食事のメニューを作ってと頼まれた時、または提案したメニューをユーザーが受け入れた時（「それでいく」「いいね」「お願い」など）は、save_training_plan / save_meal_plan で必ず保存する。日付の指定がなければ今日\n・「〜を食べた」「〜をやった」と話しただけの時は、記録してよいかを1回だけ聞く。「うん」「お願い」と返されたら、聞き直さずにすぐ記録する\n・食材を買った・もらった・使い切ったという話は、update_fridge で冷蔵庫を更新する\n・何を作るか迷っている時は、冷蔵庫の中身を使って suggest_recipes を使う\n・削除・書き換え・完了は、ユーザーが頼んだ時だけ使う\n・ツールを使ったら、何をしたかを1文で伝える\n・「明日」「今夜」「昨日」は、データにある今日の日付をもとに正しい日付に直す\n・ユーザーの記録（ユーザーのデータ）を先に読み、すでに分かることは聞き返さない\n\n【XP哲学】\nXPは「人生の充実」への報酬。努力・達成だけでなく、幸せな体験・発見・成長にも与える。LifeWithはユーザーの人生をゲーム化し、充実した人生を送るための相棒である。\n\n【award_event_xp — 過去の予定へのXP】\n過去の予定でaiXpが付いていないものがあれば、会話の流れで自然に「どうだった？」と聞き出し付与する。\n目安: 国試=5000〜10000、CBT/OSCE=1000〜3000、定期試験=40〜100、難しい実習=30〜80、授業=5〜15、日常予定=5〜20、楽しい遊び=1〜5。\nユーザーの申告より予定の実態を優先。\n\n【award_xp — 体験・幸せへのXP（新機能）】\nユーザーが以下を話してくれたときは自然に聞き出し award_xp を使う:\n・美味しいご飯や新しいお店を発見した → food: 3〜10\n・旅行・新しい場所に行った → travel: 20〜100（特別な場所は100以上も可。旅行の目的地1か所ごとに付与）\n・新しいことを学んだ・理解が深まった → learning: 5〜30\n・感動・喜び・楽しかった体験 → joy: 5〜20\n・初めての挑戦・体験 → challenge: 10〜30\nポイント: 目標が「旅行をたくさんしたい」なら旅行で働いてお金を貯めること（タスク）も目標連動XP対象。旅行先1か所訪問は award_xp(travel)で記録する。\n\n【回答フォーマットのルール】\n・適切な場所で改行を入れ、読みやすくする\n・**・#・表などのマークダウン記号は使わない（画面にそのまま出るため）。見出しは【】で書く\n・複数の内容がある場合は箇条書き（・）を使う\n・句読点（。、）を正しく使い、文章を短く区切る\n・何を言いたいか一目でわかるよう、結論や要点を最初に書く\n・長くなりすぎず、必要な情報に絞って答える\n\n',cache_control:{type:'ephemeral'}},{type:'text',text:'【ユーザーのデータ】\n'+getContext()}];
         const apiMessages=aiHistory.slice(0,-2).filter(m=>m.role==='user'||m.role==='assistant').map(m=>({role:m.role,content:m.content}));
         const userContent=buildApiContent(text,attachments);
         apiMessages.push({role:'user',content:userContent});
@@ -8867,10 +8917,14 @@ function calcGameStats(){
           const toolUseBlocks=data.content?.filter(c=>c.type==='tool_use')||[];
           if(data.stop_reason==='tool_use'&&toolUseBlocks.length>0){
             apiMessages.push({role:'assistant',content:data.content});
-            thinkingEl.textContent='確認が必要です';thinkingEl.className='ai-msg ai';
-            const confirmed=await showToolConfirm(toolUseBlocks);
+            // v2.114.0: 確認は消す・書き換える・完了だけ（ほかはすぐ実行）
+            const needConfirm=toolUseBlocks.filter(t=>/^(delete_|edit_)|^(complete_task|achieve_goal)$/.test(t.name));
+            let confirmed=true;
+            if(needConfirm.length){thinkingEl.textContent='確認が必要です';thinkingEl.className='ai-msg ai';confirmed=await showToolConfirm(needConfirm);}
+            const autoT=toolUseBlocks.filter(t=>!needConfirm.includes(t)&&!/^(search_videos|suggest_recipes)$/.test(t.name));
+            if(autoT.length){const AL={add_event:'📅 予定を追加',add_task:'✅ タスクを追加',add_goal:'🎯 目標を追加',award_event_xp:'⭐ XPを付与',award_xp:'🌟 XPを付与',log_workout:'💪 筋トレを記録',update_goal_progress:'📊 目標の進み具合を更新',log_sleep:'💤 睡眠を記録',log_meal:'🍱 食事を記録',log_health:'❤️ 体のデータを記録',save_training_plan:'📋 トレーニングメニューを保存',save_meal_plan:'🍽 食事メニューを保存',update_fridge:'🧊 冷蔵庫を更新'};const n=document.createElement('div');n.className='ai-msg ai ai-done-note';n.textContent=autoT.map(t=>AL[t.name]||t.name).join('・')+'しました';thinkingEl.before(n);}
             thinkingEl.innerHTML='<div class="ran-inline-state"><img class="ran-inline-img" src="assets/characters/Ran_thinking.png" onerror="this.style.display=\'none\'"><span class="ran-inline-label">考え中…</span></div>';thinkingEl.className='ai-msg ai thinking';
-            const toolResults=await Promise.all(toolUseBlocks.map(async tool=>({type:'tool_result',tool_use_id:tool.id,content:confirmed?await executeTool(tool.name,tool.input):'ユーザーがキャンセルしました'})));
+            const toolResults=await Promise.all(toolUseBlocks.map(async tool=>({type:'tool_result',tool_use_id:tool.id,content:(confirmed||!needConfirm.includes(tool))?await executeTool(tool.name,tool.input):'ユーザーがキャンセルしました'})));
             apiMessages.push({role:'user',content:toolResults});
             reqBody.messages=apiMessages;reqBody.lh_feature='chat_tool'; // v2.103.0: 同じ質問の中のツールの続きは回数に数えない
           } else {
@@ -9031,10 +9085,10 @@ function calcGameStats(){
       }
       let ctx='';
       try{ctx=getContext();}catch(e){console.warn('[brief] getContext failed:',e);card.hidden=true;return;}
-      const prompt='以下はユーザーの今日のライフデータです。\n\n'+ctx+'\n\n上記データを踏まえて、今日のユーザーへの「ひとこと」を2〜3文で書いてください。予定・タスク・筋トレ状況を絡めて、体のこと（睡眠・食事・体重の目標）から今日の健康のための行動を1つ入れて、具体的に、明るく親しみやすい言葉で。余計な前置きなしで本文だけ返してください。';
+      const prompt='以下はユーザーの今日のライフデータです。\n\n'+ctx+'\n\n上記データを踏まえて、今日のユーザーへの「ひとこと」を2〜3文で書いてください。予定・タスク・筋トレ状況を絡めて、体のこと（睡眠・食事・体重の目標）から今日の健康のための行動を1つ入れて、具体的に、落ち着いた丁寧な言葉（です・ます調）で。余計な前置きなしで本文だけ返してください。';
       const stoicBrief=lhStoic(); // v2.100.0: ストイックは事実と数字だけ・1〜2文
       const promptX=stoicBrief?'以下はユーザーの今日のライフデータです。\n\n'+ctx+'\n\n今日やるべきことを、事実と数字だけで1〜2文、合計60字以内で書いてください。励ましの言葉・絵文字・感嘆符は使わない。本文だけ返してください。':prompt;
-      const body=JSON.stringify({lh_feature:'brief',model:'claude-haiku-5-5',max_tokens:400,thinking:{type:'disabled'},system:stoicBrief?'あなたはLifeWithのAIトレーナーです。キャラクターは演じず、事実と数字だけを簡潔な常体の日本語で伝えます。':'あなたはLifeWithのAIアシスタントです。ユーザーの生活データを把握している、身近な友達のような存在です。です・ます調は使わず、自然でやわらかいタメ口の日本語で短く話します。',messages:[{role:'user',content:promptX}]});
+      const body=JSON.stringify({lh_feature:'brief',model:'claude-haiku-5-5',max_tokens:400,thinking:{type:'disabled'},system:stoicBrief?'あなたはLifeWithのAIトレーナーです。キャラクターは演じず、事実と数字だけを簡潔な常体の日本語で伝えます。':'あなたはLifeWithのAIトレーナーです。ユーザーの生活データを把握していて、落ち着いた丁寧な口調（です・ます調）で、誠実に短く話します。大げさな励ましや絵文字は使いません。',messages:[{role:'user',content:promptX}]});
       let lastErr='';
       // Workerは上流のエラー（混雑・回数制限）もHTTP 200で返すため、本文の有無で成否を判定する
       for(let attempt=0;attempt<3;attempt++){
@@ -9829,9 +9883,9 @@ ${rcpContext()}
 - uses は使う手元の食材、extra は追加で必要な材料
 - steps は手順を3〜5個、各30字以内
 - kcal・protein・fat・carbs は1人前の推定値
-- reason はこの人の目標・今日の状況に合う理由を、タメ口で40字以内
+- reason はこの人の目標・今日の状況に合う理由を、丁寧な口調（です・ます調）で40字以内
 - query はこの料理のレシピ動画を YouTube で探すための日本語の検索語（料理名＋主な食材）
-- comment はランとして3つ全体へのひとこと。タメ口で30字以内`;
+- comment はAIトレーナーとして3つ全体へのひとこと。丁寧な口調（です・ます調）で30字以内`;
   const res=await fetch(WORKER_URL,{method:'POST',headers:{'content-type':'text/plain'},body:JSON.stringify({
     lh_feature:'recipe',model:'claude-haiku-5-5',max_tokens:2500,thinking:{type:'disabled'},
     system:'あなたはLifeWithの食事コーチ「ラン」。筋トレする人の自炊を、手軽さと栄養の両方から提案する。アレルギーの指定は最優先で守る。医学的に一般的な範囲の内容にする。日本語のみ。',
@@ -11170,7 +11224,7 @@ function lhRecoveryPrompt(){
 ・st は rest（回復中）/ soon（もうすぐ）/ ready（鍛えてよい）/ none（記録なし）のどれか
 ・why は判定の理由を20字以内で（例:「2日前に胸を12セット・睡眠5h」）
 ・focus は今日鍛えるのにいちばん向いている部位のキー（最大3つ。休んだほうがよい日は空）
-・today は今日のおすすめを2文以内のタメ口で
+・today は今日のおすすめを2文以内の丁寧な口調（です・ます調）で
 形式: {"parts":{"chest":{"st":"rest","why":"..."}, ...15部位すべて},"focus":["back"],"today":"..."}
 部位のキー: ${MM_PARTS.map(p=>p.k).join(', ')}`;
 }
@@ -11231,7 +11285,7 @@ async function renderAiSuggest(force){
     el.hidden=false;el.className='card ai-suggest-card loading';
     el.innerHTML=`<div class="ais-head"><span class="ais-lbl">✦ AIからの提案</span></div><p class="ais-load">記録を見て考えています…</p>`;
     const menu=(db.trainingMenus||{})[today];
-    const r=await lhAiJson('suggest','あなたはLifeWithのAIトレーナー「ラン」です。ユーザーに頼まれていなくても、記録を読んで役に立つ具体的な提案をします。タメ口で短く。',
+    const r=await lhAiJson('suggest','あなたはLifeWithのAIトレーナー「ラン」です。ユーザーに頼まれていなくても、記録を読んで役に立つ具体的な提案をします。落ち着いた丁寧な口調（です・ます調）で短く。',
       `${_pmDataCtx()}\n【今日のトレーニングの予定】${menu?menu.replace(/\n/g,' / '):'まだない'}\n\n上のデータを読んで、今日のユーザーに役立つ提案を最大2つ出してください。
 ・kind は menu（今日のトレーニングメニュー）/ sleep（睡眠）/ meal（食事）/ rest（休養）/ other のどれか
 ・今日のトレーニングの予定がすでにあるなら menu は出さない。健康チェックで当てはまる項目があれば強い負荷は出さない
@@ -11313,7 +11367,7 @@ async function lhRunReport(){
   const a=lhWeekStats(0),b=lhWeekStats(-7),cr=lhCorrelations().filter(x=>x.r!=null);
   const fmtS=s=>`トレーニング${s.tdays}日・${s.sets}セット・量${s.vol}kg / 平均睡眠${s.sleep==null?'記録なし':s.sleep.toFixed(1)+'h'} / 平均${s.kcal==null?'記録なし':Math.round(s.kcal)+'kcal'}・たんぱく質${s.protein==null?'記録なし':Math.round(s.protein)+'g'} / 歩数${s.steps==null?'記録なし':Math.round(s.steps)} / 体重${s.wN>=2?s.wFirst+'→'+s.wLast+'kg':s.wLast?s.wLast+'kg':'記録なし'}`;
   const tg=_pmTarget();
-  const r=await lhAiJson('report','あなたはLifeWithのAIトレーナー「ラン」です。1週間の記録をふり返るレポートを書きます。タメ口で短く、数字を根拠に。',
+  const r=await lhAiJson('report','あなたはLifeWithのAIトレーナー「ラン」です。1週間の記録をふり返るレポートを書きます。落ち着いた丁寧な口調（です・ます調）で短く、数字を根拠に。',
     `【直近7日（${a.from}〜${a.to}）】${fmtS(a)}\n【その前の7日】${fmtS(b)}\n${tg?`【1日の目安】${tg.kcal}kcal・たんぱく質${tg.protein}g\n`:''}【直近30日の体調との関係（相関係数）】\n${cr.length?cr.map(x=>`${x.x}と${x.y}: r=${x.r.toFixed(2)}（${x.n}日分）`).join('\n'):'記録が足りない'}\n${_pmDataCtx()}
 上のデータで週のレポートを書いてください。
 ・summary: この1週間を2文以内で
@@ -11507,6 +11561,101 @@ function renderWoMenu(){
   el.querySelector('.wm-plan')?.addEventListener('click',()=>{if(typeof openTrainingSchedule==='function')openTrainingSchedule();});
   el.querySelector('.wm-ask')?.addEventListener('click',()=>{if(typeof lhAskRan==='function')lhAskRan('今日のトレーニングメニューを組んで。今日のメニューに入れて');});
 }
+// ── 食事のメニュー（今日の食事メニュー）と冷蔵庫（v2.114.0） ─────────────
+// db.mealPlans[日付] = {breakfast, lunch, dinner, snack}（文字。週間プランナー・AIとの会話で入る）
+// db.fridge = [{id, name, qty, exp(YYYY-MM-DD|''), added}]
+// ※ビルドで1つのscriptに連結されるため、トップレベルに const/let を置かない（TDZ回避）
+var LH_MEAL_K=[['breakfast','朝食','🌅'],['lunch','昼食','☀️'],['dinner','夕食','🌙'],['snack','間食','🍪']];
+function _mpKcal(t){const m=String(t||'').match(/(\d{2,4})\s*kcal/i);return m?+m[1]:0;}
+function _mpName(t){return String(t||'').replace(/[（(]?\s*約?\s*\d{2,4}\s*kcal\s*[)）]?/ig,'').replace(/\s+/g,' ').trim().slice(0,60);}
+// AIの道具・週間プランナーから: 食事のメニューを保存（空でない食事だけ上書き）
+function lhSaveMealPlan(ds,plan){
+  if(!db.mealPlans)db.mealPlans={};
+  const cur=Object.assign({},db.mealPlans[ds]||{});
+  LH_MEAL_K.forEach(([k])=>{if(plan&&typeof plan[k]==='string'&&plan[k].trim())cur[k]=plan[k].trim();});
+  if(LH_MEAL_K.some(([k])=>cur[k]))db.mealPlans[ds]=cur;
+  save(db);
+  if(typeof renderMlPlan==='function')renderMlPlan();
+}
+function renderMlPlan(){
+  const el=document.getElementById('ml-plan-card');if(!el)return;
+  const ds=st.mlDate||todayStr(),isToday=ds===todayStr();
+  const plan=(db.mealPlans||{})[ds]||{};
+  const rows=LH_MEAL_K.filter(([k])=>plan[k]);
+  const lbl=isToday?'今日の食事メニュー':`${+ds.slice(5,7)}/${+ds.slice(8)}の食事メニュー`;
+  el.hidden=false;
+  if(!rows.length){
+    el.innerHTML=`<div class="wm-head"><span class="wm-lbl">${lbl}</span></div><p class="wm-empty">${isToday?'今日の食事メニューはまだありません':'この日の食事メニューはありません'}</p><div class="wm-btns">${isToday?'<button type="button" class="wm-btn mp-ask">AIに考えてもらう</button>':''}<button type="button" class="wm-btn mp-plan">週間プランナーで作る</button></div>`;
+  }else{
+    const dm=(db.meals||{})[ds]||{};
+    const done=k=>(dm[k]||[]).some(i=>i.fromPlan);
+    el.innerHTML=`<div class="wm-head"><span class="wm-lbl">${lbl}</span><button type="button" class="wm-edit mp-plan">直す</button></div>
+      <ul class="wm-list">${rows.map(([k,l,ic])=>`<li class="wm-row${done(k)?' done':''}"><span class="mp-ic" aria-hidden="true">${ic}</span><span class="wm-nm"><small>${l}</small><b>${esc(plan[k])}</b></span>${done(k)?'<span class="wm-ok" aria-label="記録済み">✓</span>':`<button type="button" class="mp-add" data-k="${k}">記録に入れる</button>`}</li>`).join('')}</ul>`;
+    el.querySelectorAll('.mp-add').forEach(b=>b.onclick=()=>{
+      const k=b.dataset.k,t=plan[k];
+      if(!db.meals[ds])db.meals[ds]={breakfast:[],lunch:[],dinner:[],snack:[]};
+      (db.meals[ds][k]=db.meals[ds][k]||[]).push({id:uid(),name:_mpName(t)||t.slice(0,60),kcal:_mpKcal(t),nutrients:{},fromPlan:true});
+      save(db);renderMeals();showToast('記録に入れました。量が違えば ✎ で直せます');
+    });
+  }
+  el.querySelector('.mp-plan')?.addEventListener('click',()=>{if(typeof openTrainingSchedule==='function')openTrainingSchedule();});
+  el.querySelector('.mp-ask')?.addEventListener('click',()=>{if(typeof lhAskRan==='function')lhAskRan('今日の食事メニューを考えて、決まったら食事メニューに保存して'+(lhFridgeList().length?'。冷蔵庫の食材を優先して':''));});
+}
+
+// ── 冷蔵庫 ──
+function lhFridgeList(){return Array.isArray(db.fridge)?db.fridge:[];}
+function _frDays(exp){if(!exp)return null;return Math.round((new Date(exp+'T00:00:00')-new Date(todayStr()+'T00:00:00'))/86400000);}
+function lhFridgeContext(){
+  const L=lhFridgeList();if(!L.length)return '';
+  return '【冷蔵庫の中身】'+L.map(f=>`${f.name}${f.qty?' '+f.qty:''}${f.exp?`（期限${f.exp.slice(5).replace('-','/')}${_frDays(f.exp)<=2?'・早めに使う':''}）`:''}`).join('、')+'\n';
+}
+// AIの道具: {add:[{name,qty,exp}], remove:[name]}
+function lhUpdateFridge(input){
+  if(!Array.isArray(db.fridge))db.fridge=[];
+  const out=[];
+  (input&&input.add||[]).forEach(a=>{
+    const name=String(a&&a.name||'').trim().slice(0,30);if(!name)return;
+    const cur=db.fridge.find(f=>f.name===name);
+    const exp=/^\d{4}-\d{2}-\d{2}$/.test(a.exp||'')?a.exp:'';
+    if(cur){if(a.qty)cur.qty=String(a.qty).slice(0,20);if(exp)cur.exp=exp;}
+    else db.fridge.push({id:uid(),name,qty:String(a.qty||'').slice(0,20),exp,added:todayStr()});
+    out.push('＋'+name);
+  });
+  (input&&input.remove||[]).forEach(n=>{
+    const name=String(n||'').trim();if(!name)return;
+    const i=db.fridge.findIndex(f=>f.name===name||f.name.includes(name)||name.includes(f.name));
+    if(i>=0){out.push('−'+db.fridge[i].name);db.fridge.splice(i,1);}
+  });
+  save(db);
+  if(document.getElementById('fr-sheet'))openFridge();
+  return out;
+}
+function openFridge(){
+  const L=lhFridgeList().slice().sort((a,b)=>(a.exp||'9999')<(b.exp||'9999')?-1:1);
+  const badge=f=>{const d=_frDays(f.exp);if(d==null)return '';const c=d<0?'over':d<=3?'soon':'';return `<span class="fr-exp ${c}">${d<0?'期限切れ':d===0?'今日まで':`あと${d}日`}</span>`;};
+  const el=_vlSheet('fr-sheet',`
+    <div class="training-sheet-title">🧊 冷蔵庫<button class="training-sheet-close" data-x>✕</button></div>
+    <p class="fr-lead">買ったものを入れておくと、AIがメニューを考えるときに使います。使い切ったら × で消します</p>
+    <div class="fr-add"><input id="fr-name" type="text" maxlength="30" placeholder="食材（例: 卵）" autocomplete="off"><input id="fr-qty" type="text" maxlength="20" placeholder="量（例: 6個）"><label class="fr-exp-in">期限<input id="fr-exp" type="date"></label><button type="button" id="fr-add-btn">入れる</button></div>
+    ${L.length?`<ul class="fr-list">${L.map(f=>`<li class="fr-row"><span class="fr-nm"><b>${esc(f.name)}</b>${f.qty?`<small>${esc(f.qty)}</small>`:''}</span>${badge(f)}<button type="button" class="fr-del" data-id="${f.id}" aria-label="${esc(f.name)}を消す">×</button></li>`).join('')}</ul>
+      <button type="button" class="vl-import-btn primary" id="fr-cook">冷蔵庫の食材でメニューを考える</button>`
+      :'<p class="mm-hint">まだ何も入っていません</p>'}`);
+  el.querySelector('[data-x]').onclick=()=>el.remove();
+  const add=()=>{
+    const name=document.getElementById('fr-name').value.trim();if(!name)return;
+    lhUpdateFridge({add:[{name,qty:document.getElementById('fr-qty').value.trim(),exp:document.getElementById('fr-exp').value}]});
+    openFridge();setTimeout(()=>document.getElementById('fr-name')?.focus(),50);
+  };
+  el.querySelector('#fr-add-btn').onclick=add;
+  el.querySelector('#fr-name').addEventListener('keydown',e=>{if(e.key==='Enter')add();});
+  el.querySelectorAll('.fr-del').forEach(b=>b.onclick=()=>{db.fridge=lhFridgeList().filter(f=>f.id!==b.dataset.id);save(db);openFridge();});
+  el.querySelector('#fr-cook')?.addEventListener('click',()=>{
+    const names=lhFridgeList().slice().sort((a,b)=>(a.exp||'9999')<(b.exp||'9999')?-1:1).map(f=>f.name).join('、');
+    el.remove();
+    if(typeof openRecipeSheet==='function'){openRecipeSheet();const t=document.getElementById('rcp-in');if(t)t.value=names.slice(0,200);}
+  });
+}
+document.getElementById('ml-fridge-btn')?.addEventListener('click',openFridge);
 </script>
 <div id="lu-overlay" hidden style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;"></div>
 <div id="share-pv-modal" class="share-pv-modal" hidden>
