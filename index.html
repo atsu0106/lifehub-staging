@@ -879,7 +879,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
 }
 
 /* Onboarding */
-#onboarding{position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;align-items:center;justify-content:center;}
+#onboarding{position:fixed;inset:0;background:var(--bg);z-index:9000;display:flex;align-items:center;justify-content:center;}
 .ob-inner{display:flex;flex-direction:column;align-items:center;gap:0;padding:0 32px;width:100%;max-width:360px;}
 .ob-logo{font-size:56px;margin-bottom:12px;}
 .ob-title{font-size:2rem;font-weight:700;color:var(--fg);margin:0 0 6px;}
@@ -1740,6 +1740,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
     <div class="card me-head"><span class="me-avatar" id="me-avatar">?</span><span><span class="me-name" id="me-name"></span><span class="me-sub">プロフィール・プラン・設定</span></span></div>
     <div class="card me-list">
       <button type="button" class="me-row" data-me="plan"><span class="me-ic">👑</span><span class="me-lbl">プラン</span><span class="me-val" id="me-plan-val"></span><span class="me-go">›</span></button>
+      <button type="button" class="me-row" data-me="onb"><span class="me-ic">📝</span><span class="me-lbl">質問に答えてプランを作る</span><span class="me-go">›</span></button>
       <button type="button" class="me-row" data-me="profile"><span class="me-ic">🧍</span><span class="me-lbl">体のプロフィール</span><span class="me-go">›</span></button>
       <button type="button" class="me-row" data-me="gym"><span class="me-ic">🏢</span><span class="me-lbl">ジムと器具</span><span class="me-val" id="me-gym-val"></span><span class="me-go">›</span></button>
       <button type="button" class="me-row" data-me="tasks"><span class="me-ic">✅</span><span class="me-lbl">タスク</span><span class="me-go">›</span></button>
@@ -2443,7 +2444,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         <div class="st-about-note">動画の検索・表示に YouTube API Services を使っています。<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube利用規約</a>・<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Googleプライバシーポリシー</a>が適用されます。AIの答えは医療アドバイスではありません。</div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.106.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.106.1 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -3038,7 +3039,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='3999a82c64'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='3c8999f837'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -3554,6 +3555,7 @@ function renderMeTab(){
 document.querySelectorAll('.me-row').forEach(b=>b.onclick=()=>{
   const k=b.dataset.me;
   if(k==='plan'){if(typeof lhShowPaywall==='function')lhShowPaywall({feature:'none'});}
+  else if(k==='onb'){if(typeof onbReopen==='function')onbReopen();}
   else if(k==='tasks')switchToTab('tasks');
   else if(k==='vlists'){if(typeof openVideoLists==='function')openVideoLists();}
   else if(k==='profile'){document.getElementById('hdr-settings').click();setTimeout(()=>document.getElementById('hp-height')?.scrollIntoView({block:'center'}),300);}
@@ -5687,6 +5689,7 @@ renderAiConsentRow();
 document.getElementById('st-plan-row')?.addEventListener('click',()=>lhShowPaywall({feature:'none'}));
 renderPlanRow();
 const CHANGELOG=[
+  {v:'v2.106.1',d:'プロフィールから「質問に答えてプランを作る」をいつでも開けるように'},
   {v:'v2.106.0',d:'はじめての人向けに、最初の質問（目的・体・場所とジム・器具・回数・経験・健康チェック）と、あなた専用のプラン・はじめてガイドを追加。プロフィール → ジムと器具'},
   {v:'v2.105.0',d:'トレーニングに🔍種目を探す（名前・部位から。種目の絵つき）。「今日は軽めで」（睡眠が短い日などは自動でおすすめ）。下のタブ「自分」を「プロフィール」に'},
   {v:'v2.104.0',d:'下のタブを5つに（ホーム・トレーニング・AI・分析・自分）。ホームに「今日やること」と「今日のやりごろ」、分析に💪筋肉マップ（15部位を鍛えてからの日数で色分け・おすすめの種目）'},
@@ -7845,6 +7848,7 @@ if(!window._LH_IS_NEW){
 
 // Passcode boot
 window._pcBoot();
+setTimeout(onbAutoAsk,400); // v2.106.1: 既存の人にも最初の質問を1回
 
 // Passcode settings buttons
 document.getElementById('btn-pc-set').onclick=()=>{
@@ -10622,8 +10626,8 @@ function onbPlanText(day){return day.label+'\n'+day.exercises.map(e=>`${e.name} 
 // ── 質問の画面 ──
 window._onb=window._onb||{i:0,h:{}};
 var ONB_STEPS=['purpose','body','place','equip','freq','exp','parq','plan'];
-function onbStart(done){
-  window._onb={i:0,h:Object.assign({purposes:[],sex:'',equipment:null,parq:[]},db.settings.healthProfile||{}),done};
+function onbStart(done,reopen){
+  window._onb={i:0,h:Object.assign({purposes:[],sex:'',equipment:null,parq:[]},JSON.parse(JSON.stringify(db.settings.healthProfile||{}))),done,reopen:!!reopen};
   document.getElementById('ob-step1').hidden=true;
   document.querySelector('#onboarding .ob-logo')?.setAttribute('hidden','');
   document.querySelector('#onboarding .ob-sub')?.setAttribute('hidden','');
@@ -10646,7 +10650,7 @@ function onbRender(){
   else if(k==='parq')body=`<h2 class="ow-q">運動を始める前の健康チェック</h2><p class="ow-hint">当てはまるものを選んでください。安全なメニューを組むためで、診断ではありません</p><div class="ow-parq">${ONB_PARQ.map((q,i)=>`<button type="button" class="ow-pq${(h.parq||[]).includes(i)?' on':''}" data-pq="${i}"><span class="ow-pq-box"></span><span>${esc(q)}</span></button>`).join('')}</div><p class="ow-hint">どれも当てはまらなければ、そのまま「次へ」</p>`;
   else if(k==='plan')body=onbPlanHtml(h);
   const last=k==='plan';
-  w.innerHTML=`<div class="ow-top"><button type="button" class="ow-back" ${S.i?'':'hidden'} aria-label="戻る">‹</button><div class="ow-dots">${ONB_STEPS.map((_,i)=>`<i class="${i<=S.i?'on':''}"></i>`).join('')}</div><span class="ow-n">${S.i+1}/${ONB_STEPS.length}</span></div>
+  w.innerHTML=`<div class="ow-top"><button type="button" class="ow-back" ${S.i?'':'hidden'} aria-label="戻る">‹</button><div class="ow-dots">${ONB_STEPS.map((_,i)=>`<i class="${i<=S.i?'on':''}"></i>`).join('')}</div><span class="ow-n">${S.i+1}/${ONB_STEPS.length}</span>${S.reopen?'<button type="button" class="ow-back ow-close" aria-label="やめる">×</button>':''}</div>
     <div class="ow-body">${body}</div>
     ${last?'':`<div class="ow-foot"><button type="button" class="ob-btn" id="ow-next">次へ</button><button type="button" class="ob-skip-btn" id="ow-skip">スキップ</button></div>`}`;
   onbBind(w,k);
@@ -10691,7 +10695,8 @@ function onbBind(w,k){
   w.querySelectorAll('[data-min]').forEach(b=>b.onclick=()=>{h.minutes=+b.dataset.min;re();});
   w.querySelectorAll('[data-exp]').forEach(b=>b.onclick=()=>{h.exp=b.dataset.exp;re();});
   w.querySelectorAll('[data-pq]').forEach(b=>b.onclick=()=>{const i=+b.dataset.pq,a=h.parq||(h.parq=[]);a.includes(i)?a.splice(a.indexOf(i),1):a.push(i);re();});
-  w.querySelector('.ow-back')?.addEventListener('click',()=>{_onbReadInputs(k);S.i=Math.max(0,S.i-1);onbRender();});
+  w.querySelector('.ow-back:not(.ow-close)')?.addEventListener('click',()=>{_onbReadInputs(k);S.i=Math.max(0,S.i-1);onbRender();});
+  w.querySelector('.ow-close')?.addEventListener('click',onbClose);
   const go=()=>{_onbReadInputs(k);S.i=Math.min(ONB_STEPS.length-1,S.i+1);onbRender();};
   w.querySelector('#ow-next')?.addEventListener('click',go);
   w.querySelector('#ow-skip')?.addEventListener('click',()=>{S.i=Math.min(ONB_STEPS.length-1,S.i+1);onbRender();});
@@ -10707,11 +10712,41 @@ function onbFinish(trial){
   const pl=onbPlan(h);
   if(!db.trainingMenus)db.trainingMenus={};
   pl.days.forEach(x=>{if(x.day&&!db.trainingMenus[x.ds])db.trainingMenus[x.ds]=onbPlanText(x.day);});
-  db.settings.tutorial={rec:false,map:false,ai:false};
+  if(!S.reopen)db.settings.tutorial={rec:false,map:false,ai:false};
+  onbMarkAsked();
   save(db);
   const useCase=[...new Set((h.purposes||[]).flatMap(p=>({muscle:['fitness'],lose:['diet','fitness'],health:['fitness','habit'],look:['fitness','diet'],sport:['fitness']})[p]||[]))];
   if(typeof S.done==='function')S.done(useCase.length?useCase:['fitness']);
   if(trial&&typeof lhPlanEnforced==='function'&&lhPlanEnforced()&&!lhIsPro())setTimeout(()=>lhShowPaywall({feature:'none'}),600);
+}
+// v2.106.1: すでに使っている人が、プロフィールから質問を開き直す
+function onbReopen(){
+  document.getElementById('onboarding').hidden=false;
+  document.getElementById('app').style.display='none';
+  onbStart(function(){
+    onbClose();
+    if(typeof renderMeTab==='function')renderMeTab();
+    if(typeof renderMmHomeCard==='function')renderMmHomeCard();
+    if(typeof renderStoicToday==='function')renderStoicToday();
+    if(typeof showToast==='function')showToast('答えを保存しました');
+  },true);
+}
+function onbClose(){
+  onbMarkAsked();save(db);
+  const ob=document.getElementById('onboarding');
+  ob.hidden=true;ob.classList.remove('wiz');
+  document.getElementById('app').style.display='';
+}
+// 一度出したら（答えた・閉じた）次からは自動で出さない
+function onbAsked(){try{if(localStorage.getItem('lh_onb_asked'))return true;}catch(e){}return !!db.settings.onbAsked;}
+function onbMarkAsked(){db.settings.onbAsked=true;try{localStorage.setItem('lh_onb_asked','1');}catch(e){}}
+// すでに使っている人にも、アップデート後の最初の起動で1回だけ出す（パスコードのあと）
+function onbAutoAsk(){
+  if(window._LH_IS_NEW||onbAsked())return;
+  const go=()=>{if(!onbAsked()&&document.getElementById('onboarding').hidden)onbReopen();};
+  const pc=document.getElementById('pc-screen');
+  if(!pc||pc.hidden){go();return;}
+  const t=setInterval(()=>{if(pc.hidden){clearInterval(t);go();}},300);
 }
 // AIに渡すトレーニング環境と健康チェック
 function lhProfileContext(){
