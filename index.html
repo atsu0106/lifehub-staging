@@ -1839,6 +1839,33 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 .shop-row.done .fr-nm b{text-decoration:line-through;color:var(--fg3);}
 .shop-for{color:var(--fg3)!important;}
 .nt-time{padding:6px 8px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--fg);font:inherit;font-size:14px;margin-right:8px;}
+
+/* v2.118.0: 点数と履歴 */
+.sc-row{display:flex;align-items:center;gap:12px;padding:10px 14px;margin-bottom:8px;}
+.sc-badge{display:flex;align-items:baseline;justify-content:center;gap:1px;min-width:68px;padding:0 6px;box-sizing:border-box;height:48px;border-radius:12px;font-size:22px;font-weight:800;color:#fff;align-items:center;}
+.sc-badge small{font-size:11px;font-weight:700;}
+.sc-badge.good{background:#047857;}.sc-badge.mid{background:#D97706;}.sc-badge.low{background:#B45309;}
+.sc-txt{display:flex;flex-direction:column;min-width:0;}
+.sc-txt b{font-size:14px;}
+.sc-txt small{font-size:12px;color:var(--fg2);}
+.sh-card{padding:12px 14px;margin-top:8px;}
+.sh-title{font-size:14px;font-weight:800;margin-bottom:6px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}
+.sh-title small{font-size:11px;font-weight:400;color:var(--fg3);}
+.sh-list{list-style:none;margin:0;padding:0;}
+.sh-row{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;border:0;border-top:1px solid var(--border);background:none;font:inherit;color:var(--fg);cursor:pointer;text-align:left;padding:4px 0;}
+.sh-list li:first-child .sh-row{border-top:0;}
+.sh-date{width:72px;flex:none;font-size:12px;color:var(--fg2);font-variant-numeric:tabular-nums;}
+.sh-bar{flex:1;height:8px;border-radius:4px;background:var(--surface2);overflow:hidden;}
+.sh-bar i{display:block;height:100%;}
+.sh-bar i.good,.sh-num.good{background:#047857;}.sh-bar i.mid{background:#D97706;}.sh-bar i.low{background:#B45309;}
+.sh-num{width:30px;text-align:right;font-size:15px;font-variant-numeric:tabular-nums;}
+.sh-num.good,.sh-num.mid,.sh-num.low{background:none;}
+.sh-num.good{color:#047857;}.sh-num.mid{color:#D97706;}.sh-num.low{color:#B45309;}
+.sh-sub{width:96px;flex:none;font-size:11px;color:var(--fg3);text-align:right;}
+.sh-time{flex:1;font-size:13px;font-variant-numeric:tabular-nums;display:flex;gap:6px;align-items:baseline;}
+.sh-time small{font-size:11px;color:var(--fg3);}
+.sh-prom{width:16px;color:#4338CA;font-weight:800;}
+.sh-none{flex:1;font-size:12px;color:var(--fg3);}
 </style>
 </head>
 <body>
@@ -2065,6 +2092,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         <div id="ml-plan-card" class="card wo-menu-card ml-plan-card" hidden></div>
         <button class="rcp-open-btn" id="rcp-open">🍳 食材からメニューを考える</button>
         <div class="ml-tools"><button type="button" class="ml-tool" id="ml-fridge-btn">🧊 冷蔵庫</button><button type="button" class="ml-tool" id="ml-shop-btn">🛒 買い物リスト</button><button type="button" class="ml-tool" id="ml-eatout-btn">🏪 外食・コンビニ</button><button type="button" class="ml-tool" id="ml-album-btn">📷 アルバム</button></div>
+        <div id="ml-score-row" class="card sc-row" hidden></div>
         <div id="ml-list"></div>
         <div id="ml-video-card" class="card lv-card" hidden></div>
       </div>
@@ -2081,6 +2109,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
           <svg id="ml-chart-svg" viewBox="0 0 320 175" width="100%" style="display:block;overflow:visible;"></svg>
           <div id="ml-chart-empty" hidden class="empty" style="padding:24px 0;"><div class="empty-icon">📊</div><p>この期間のデータはありません</p></div>
         </div>
+        <div id="ml-score-hist" class="card sh-card"></div>
       </div>
     </div>
     <div id="other-sleep" hidden>
@@ -2105,6 +2134,8 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         <button id="sl-add-nap" class="sl-add-nap-btn">＋ 昼寝を追加</button>
         <div id="sl-total-row" class="sleep-total" hidden></div>
       </div>
+      <div id="sl-score-row" class="card sc-row" hidden></div>
+      <div id="sl-hist" class="card sh-card"></div>
       <div id="sl-video-card" class="card lv-card" hidden></div>
     </div>
     <div id="other-health" hidden>
@@ -2741,7 +2772,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         <div class="st-about-note">動画の検索・表示に YouTube API Services を使っています。<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube利用規約</a>・<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Googleプライバシーポリシー</a>が適用されます。AIの答えは医療アドバイスではありません。</div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.117.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.118.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -3337,7 +3368,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='8b073ed2fe'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='52c896a004'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -5920,7 +5951,7 @@ function lhProToken(){try{return (window.LH_NATIVE&&window.LH_NATIVE.proToken)||
 function lhIsPro(){if(!lhPlanEnforced())return true;try{return !!((window.LH_NATIVE&&window.LH_NATIVE.pro)||localStorage.getItem('lh_pro_test'));}catch(e){return false;}}
 function lhCanPurchase(){return !!(window.LH_NATIVE&&typeof window.LH_NATIVE.purchase==='function');}
 function lhQuotaToday(){
-  const today=typeof todayStr==='function'?todayStr():new Date().toISOString().slice(0,10);
+  const today=typeof todayStr==='function'?todayStr():fmt(new Date());
   try{const q=JSON.parse(localStorage.getItem(LH_QUOTA_KEY)||'null');if(q&&q.day===today)return q;}catch(e){}
   return {day:today,used:{},limit:{}};
 }
@@ -6029,6 +6060,7 @@ renderAiConsentRow();
 document.getElementById('st-plan-row')?.addEventListener('click',()=>lhShowPaywall({feature:'none'}));
 renderPlanRow();
 const CHANGELOG=[
+  {v:'v2.118.0',d:'AIが日付を1日まちがえる不具合を直した（「11/25の昼食」も正しく）。睡眠にも点数。食事の点数の履歴（グラフの画面）と睡眠の履歴。AIトレーナーに筋トレ・栄養・睡眠の知識と受け答えの型を追加'},
   {v:'v2.117.0',d:'ねむりの約束: 約束の時間を含んで眠れた日、または約束の長さ以上眠れた日は ✓ に（早く寝て遅く起きた日も達成）'},
   {v:'v2.116.0',d:'AIとの会話を必ず丁寧語に。「ベンチプレス 60kg」のように種目名と重さを送るだけで、今日の記録に追加（追加の前に確認します）'},
   {v:'v2.115.0',d:'記録した直後の点数とひとこと・トレーニングの「前回→今日の目安」・ホームに今日の調子・睡眠に「ねむりの約束」・連続記録のお休み（月2回）・よく食べるもの／昨日と同じ・通知の設定・買い物リスト（AI）・写真で冷蔵庫・外食とコンビニ選び・話して記録'},
@@ -6277,9 +6309,9 @@ async function renderHealthAdvice(force){
   if(hp.age)hpParts.push(`${hp.age}歳`);
   if(hp.goal)hpParts.push(`目標:${goalMap[hp.goal]||hp.goal}`);
   if(hp.gymFreq)hpParts.push(`ジム目標:週${hp.gymFreq}回`);
-  const cut7=new Date();cut7.setDate(cut7.getDate()-7);const cut7s=cut7.toISOString().slice(0,10);
+  const cut7=new Date();cut7.setDate(cut7.getDate()-7);const cut7s=fmt(cut7);
   const thisWeekWo=Object.keys(db.workouts||{}).filter(d=>d<=today&&d>=cut7s).length;
-  const yd=new Date();yd.setDate(yd.getDate()-1);const yds=yd.toISOString().slice(0,10);
+  const yd=new Date();yd.setDate(yd.getDate()-1);const yds=fmt(yd);
   const sl=db.sleep?.[yds]||{};let sleepInfo='記録なし';
   if(sl.bedtime&&sl.wakeTime){const[bh,bm]=sl.bedtime.split(':').map(Number);const[wh,wm]=sl.wakeTime.split(':').map(Number);let dur=(wh*60+wm)-(bh*60+bm);if(dur<0)dur+=1440;sleepInfo=`${(dur/60).toFixed(1)}時間`;}
   const ydWo=(db.workouts?.[yds]||[]).map(e=>e.name);
@@ -6556,7 +6588,7 @@ function calcTaskScore(task){
   if(!task.repeat&&task.done)return 100;
   if(task.repeat){
     const cut=new Date();cut.setDate(cut.getDate()-30);
-    const cutStr=cut.toISOString().slice(0,10);
+    const cutStr=fmt(cut);
     const recent=(task.completedDates||[]).filter(d=>d>=cutStr).length;
     const expected={daily:30,weekly:4,monthly:1}[task.repeat]||4;
     return Math.min(100,Math.round(recent/expected*100));
@@ -6606,7 +6638,7 @@ async function estimateProgressWithAI(manual){
   const status=document.getElementById('tk-prg-status');
   if(btn)btn.disabled=true;
   if(status)status.textContent='🤖 AIが進捗を評価中...';
-  const cut=new Date();cut.setDate(cut.getDate()-14);const cutStr=cut.toISOString().slice(0,10);
+  const cut=new Date();cut.setDate(cut.getDate()-14);const cutStr=fmt(cut);
   const recentChat=(db.aiChats||[]).slice(0,5).flatMap(c=>c.messages||[]).filter(m=>m.role==='user').map(m=>m.content).join('\n').slice(0,800);
   const taskList=targets.map(t=>{
     const memos=Object.entries(t.dailyMemos||{}).filter(([d])=>d>=cutStr).sort(([a],[b])=>b.localeCompare(a)).map(([d,m])=>`${d}: ${m}`).join('\n');
@@ -7576,6 +7608,7 @@ const MEAL_DEF=[
 function renderMeals(){
   const ds=st.mlDate;
   if(typeof renderMlPlan==='function')renderMlPlan(); // v2.114.0 今日の食事メニュー
+  if(typeof renderMlScore==='function')setTimeout(renderMlScore,0); // v2.118.0 点数と履歴
   document.getElementById('ml-date').textContent=jpDate(ds);
   if(!db.meals[ds])db.meals[ds]={breakfast:[],lunch:[],dinner:[],snack:[]};
   if(!db.mlPhotos[ds])db.mlPhotos[ds]={breakfast:[],lunch:[],dinner:[],snack:[]};
@@ -7693,6 +7726,7 @@ function renderNaps(){
 function renderSleepTab(){
   const ds=st.slDate;
   if(typeof renderSleepPromise==='function')renderSleepPromise(); // v2.115.0 ねむりの約束
+  if(typeof renderSlScore==='function')setTimeout(renderSlScore,0); // v2.118.0 点数と履歴
   document.getElementById('sl-date').textContent=jpDate(ds);
   if(!db.sleep[ds])db.sleep[ds]={};
   const sl=db.sleep[ds];
@@ -7805,7 +7839,7 @@ function renderHealthCharts(){
   // last 30 days
   const days=30;
   const dates=[];
-  for(let i=days-1;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);dates.push(d.toISOString().slice(0,10));}
+  for(let i=days-1;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);dates.push(fmt(d));}
   const style=getComputedStyle(document.documentElement);
   const accent=style.getPropertyValue('--accent').trim()||'#4F46E5';
   const fg2=style.getPropertyValue('--fg2').trim()||'#6B7280';
@@ -7916,11 +7950,11 @@ document.querySelectorAll('.health-in').forEach(el=>{
 document.getElementById('hlt-chart-toggle').onclick=()=>{healthChartOpen=!healthChartOpen;renderHealth();};
 document.getElementById('hlt-prev').onclick=()=>{
   const d=new Date(healthDs);d.setDate(d.getDate()-1);
-  healthDs=d.toISOString().slice(0,10);renderHealth();
+  healthDs=fmt(d);renderHealth();
 };
 document.getElementById('hlt-next').onclick=()=>{
   const d=new Date(healthDs);d.setDate(d.getDate()+1);
-  healthDs=d.toISOString().slice(0,10);renderHealth();
+  healthDs=fmt(d);renderHealth();
 };
 
 // ── Meal Graph ────────────────────────────────────────────
@@ -8334,6 +8368,7 @@ function calcGameStats(){
     {name:'suggest_recipes',description:'手元の食材からおすすめのメニューを3つ提案し、レシピ動画も表示する。ユーザーが冷蔵庫にある食材・余っている食材を伝えて、何を作るか迷っている時に使う。アレルギーと苦手な食材は自動で除外される',input_schema:{type:'object',properties:{ingredients:{type:'string',description:'手元の食材（例: "鶏むね肉、卵、ブロッコリー"）'},max_minutes:{type:'number',description:'調理時間の上限（分）。指定がなければ省略'}},required:['ingredients']}},
     {name:'search_videos',description:'筋トレ・トレーニング関連のYouTube動画を検索する。ユーザーが種目のやり方・フォーム・メニューを知りたい時や、動画を見たい時に使う',input_schema:{type:'object',properties:{query:{type:'string',description:'検索キーワード（例: "ベンチプレス フォーム", "スクワット 初心者"）'},max_results:{type:'number',description:'取得件数（1〜5、デフォルト3）'}},required:['query']}},
     {name:'save_training_plan',description:'トレーニングメニューを保存する（トレーニングの画面とホームに出る）。メニューを作った時・ユーザーがメニューを受け入れた時は必ず呼ぶ',input_schema:{type:'object',properties:{date:{type:'string',description:'日付（YYYY-MM-DD）省略時は今日'},plan:{type:'string',description:'1行目にメニュー名、2行目から「種目名 セット数×回数」を1行ずつ（例: "脚の日\\nスクワット 4×8\\nレッグカール 3×12"）'}},required:['plan']}},
+    {name:'get_day_records',description:'指定した日の記録（食事の中身・点数、筋トレ、睡眠・点数、体重、予定していたメニュー）を取り出す。「11/25の昼食」「先週の金曜の夕食」など、日付を指定して聞かれた時は、答える前に必ずこれで確かめる',input_schema:{type:'object',properties:{date:{type:'string',description:'日付（YYYY-MM-DD）。今日の日付をもとに「昨日」「11/25」などを直してから入れる'}},required:['date']}},
     {name:'save_meal_plan',description:'食事のメニューを保存する（食事の画面に「今日の食事メニュー」として出る）。食事のメニューを提案して決まった時・考えてと頼まれた時は必ず呼ぶ。決まった食事だけ入れる',input_schema:{type:'object',properties:{date:{type:'string',description:'日付（YYYY-MM-DD）省略時は今日'},breakfast:{type:'string',description:'朝食（例: "納豆ご飯・卵焼き 約550kcal"）'},lunch:{type:'string',description:'昼食'},dinner:{type:'string',description:'夕食'},snack:{type:'string',description:'間食'}}}},
     {name:'update_fridge',description:'冷蔵庫の中身を更新する。ユーザーが食材を買った・もらった・使い切った・冷蔵庫に〜がある、と話した時に使う',input_schema:{type:'object',properties:{add:{type:'array',description:'入れる食材',items:{type:'object',properties:{name:{type:'string',description:'食材名（例: 卵）'},qty:{type:'string',description:'量（例: 6個、300g）省略可'},exp:{type:'string',description:'期限（YYYY-MM-DD）分かれば'}},required:['name']}},remove:{type:'array',description:'使い切った・なくなった食材の名前',items:{type:'string'}}}}},
   ];
@@ -8566,9 +8601,9 @@ function calcGameStats(){
     const today=todayStr();
     const todayD=new Date(today+'T00:00:00');
     const futD=new Date(todayD);futD.setDate(futD.getDate()+14);
-    const futStr=futD.toISOString().slice(0,10);
+    const futStr=fmt(futD);
     // 過去30日の日付リスト
-    const past30=[];for(let i=0;i<30;i++){const d=new Date(todayD);d.setDate(d.getDate()-i);past30.push(d.toISOString().slice(0,10));}
+    const past30=[];for(let i=0;i<30;i++){const d=new Date(todayD);d.setDate(d.getDate()-i);past30.push(fmt(d));}
     const evs=(db.events||[]).filter(e=>{
       if(e.repeat==='daily')return true;
       if(e.repeat==='weekly'&&new Date(e.date+'T00:00:00').getDay()===todayD.getDay())return true;
@@ -8583,19 +8618,19 @@ function calcGameStats(){
     const repTasks=(db.tasks||[]).filter(t=>t.repeat&&t.repeat!='none');
     let taskStats='データなし';
     if(repTasks.length){
-      const done7=repTasks.reduce((s,t)=>s+(t.completedDates||[]).filter(d=>{const dd=new Date(todayD);dd.setDate(dd.getDate()-7);return d>=dd.toISOString().slice(0,10)&&d<=today;}).length,0);
+      const done7=repTasks.reduce((s,t)=>s+(t.completedDates||[]).filter(d=>{const dd=new Date(todayD);dd.setDate(dd.getDate()-7);return d>=fmt(dd)&&d<=today;}).length,0);
       taskStats=`繰り返しタスク${repTasks.length}件・直近7日間の完了数:${done7}回`;
     }
     // 筋トレ履歴（直近30日、なければ90日遡及）
     const allWoDates=Object.keys(db.workouts||{}).filter(d=>d<=today).sort().reverse();
-    const cut30=new Date(todayD);cut30.setDate(cut30.getDate()-AIDAYS);const cut30s=cut30.toISOString().slice(0,10);
-    const cut90=new Date(todayD);cut90.setDate(cut90.getDate()-90);const cut90s=cut90.toISOString().slice(0,10);
+    const cut30=new Date(todayD);cut30.setDate(cut30.getDate()-AIDAYS);const cut30s=fmt(cut30);
+    const cut90=new Date(todayD);cut90.setDate(cut90.getDate()-90);const cut90s=fmt(cut90);
     let woDates=allWoDates.filter(d=>d>=cut30s);
     if(!woDates.length&&AIDAYS>7)woDates=allWoDates.filter(d=>d>=cut90s).slice(0,10);
     let woStats='記録なし';
     if(woDates.length){
-      const thisWeek=woDates.filter(d=>{const dd=new Date(todayD);dd.setDate(dd.getDate()-7);return d>=dd.toISOString().slice(0,10);}).length;
-      const lastWeek=woDates.filter(d=>{const d1=new Date(todayD);d1.setDate(d1.getDate()-14);const d2=new Date(todayD);d2.setDate(d2.getDate()-7);return d>=d1.toISOString().slice(0,10)&&d<d2.toISOString().slice(0,10);}).length;
+      const thisWeek=woDates.filter(d=>{const dd=new Date(todayD);dd.setDate(dd.getDate()-7);return d>=fmt(dd);}).length;
+      const lastWeek=woDates.filter(d=>{const d1=new Date(todayD);d1.setDate(d1.getDate()-14);const d2=new Date(todayD);d2.setDate(d2.getDate()-7);return d>=fmt(d1)&&d<fmt(d2);}).length;
       const recent=woDates.slice(0,7).map(d=>{
         const exs=db.workouts[d]||[];
         const exDetail=exs.map(e=>{
@@ -8610,19 +8645,19 @@ function calcGameStats(){
     const useCaseStr=(db.userProfile?.useCase||[]).map(v=>useCaseMap[v]||v).join('・')||'未設定';
     // 睡眠データ（直近30日の統計）
     const sleepRecs=[];
-    for(let i=0;i<AIDAYS;i++){const d=new Date(todayD);d.setDate(d.getDate()-i);const ds=d.toISOString().slice(0,10);const sl=db.sleep[ds]||{};if(sl.bedtime&&sl.wakeTime){const[bh,bm]=sl.bedtime.split(':').map(Number);const[wh,wm]=sl.wakeTime.split(':').map(Number);let dur=(wh*60+wm)-(bh*60+bm);if(dur<0)dur+=1440;sleepRecs.push({date:ds,bedtime:sl.bedtime,wake:sl.wakeTime,dur:dur/60});}}
+    for(let i=0;i<AIDAYS;i++){const d=new Date(todayD);d.setDate(d.getDate()-i);const ds=fmt(d);const sl=db.sleep[ds]||{};if(sl.bedtime&&sl.wakeTime){const[bh,bm]=sl.bedtime.split(':').map(Number);const[wh,wm]=sl.wakeTime.split(':').map(Number);let dur=(wh*60+wm)-(bh*60+bm);if(dur<0)dur+=1440;sleepRecs.push({date:ds,bedtime:sl.bedtime,wake:sl.wakeTime,dur:dur/60});}}
     let sleepStats='記録なし';
     if(sleepRecs.length){
       const avgDur=(sleepRecs.reduce((s,r)=>s+r.dur,0)/sleepRecs.length).toFixed(1);
       const avgBed=sleepRecs.map(r=>r.bedtime).sort()[Math.floor(sleepRecs.length/2)];
       const avgWake=sleepRecs.map(r=>r.wake).sort()[Math.floor(sleepRecs.length/2)];
-      const recent3=sleepRecs.slice(0,3).map(r=>`${r.date} 就寝:${r.bedtime} 起床:${r.wake}(${r.dur.toFixed(1)}h)`).join('\n');
+      const recent3=sleepRecs.slice(0,3).map(r=>{const _ss=typeof lhSleepScore==='function'?lhSleepScore(r.date):null;return `${r.date} 就寝:${r.bedtime} 起床:${r.wake}(${r.dur.toFixed(1)}h${_ss?`・点数${_ss.score}`:''})`;}).join('\n');
       sleepStats=`直近${sleepRecs.length}日: 平均${avgDur}h / 中央就寝:${avgBed} 中央起床:${avgWake}\n直近3日:\n${recent3}`;
     }
     // 食事記録（過去7日間）
     const mealTypeLabel={breakfast:'朝食',lunch:'昼食',dinner:'夕食',snack:'間食'};
     const mealDayLines=[];
-    for(let i=0;i<7;i++){const d=new Date(todayD);d.setDate(d.getDate()-i);const ds=d.toISOString().slice(0,10);const dm=db.meals?.[ds]||{};const lines=Object.entries(mealTypeLabel).map(([k,label])=>{const items=(dm[k]||[]);if(!items.length)return null;const totalKcal=items.reduce((s,it)=>s+(it.kcal||0),0);return `  ${label}: ${items.map(it=>it.name+(it.kcal?`(${it.kcal}kcal)`:'')).join('、')}${totalKcal?' 合計'+totalKcal+'kcal':''}`;}).filter(Boolean);if(lines.length)mealDayLines.push(`[${ds}${i===0?' 今日':''}]\n${lines.join('\n')}`);}
+    for(let i=0;i<7;i++){const d=new Date(todayD);d.setDate(d.getDate()-i);const ds=fmt(d);const dm=db.meals?.[ds]||{};const lines=Object.entries(mealTypeLabel).map(([k,label])=>{const items=(dm[k]||[]);if(!items.length)return null;const totalKcal=items.reduce((s,it)=>s+(it.kcal||0),0);return `  ${label}: ${items.map(it=>it.name+(it.kcal?`(${it.kcal}kcal)`:'')).join('、')}${totalKcal?' 合計'+totalKcal+'kcal':''}`;}).filter(Boolean);if(lines.length){const _sc=typeof lhMealScore==='function'?lhMealScore(ds):null;mealDayLines.push(`[${ds}（${['日','月','火','水','木','金','土'][d.getDay()]}${i===0?'・今日':i===1?'・昨日':''}）${_sc?` 点数${_sc.score}`:''}]\n${lines.join('\n')}`);}}
     const mealStats=mealDayLines.length?mealDayLines.join('\n'):'記録なし';
     // 健康データ（今日）
     const todayHealth=db.health?.[today]||{};
@@ -8857,6 +8892,10 @@ function calcGameStats(){
       if(typeof renderWoMenu==='function')renderWoMenu();if(typeof renderHomeHero==='function')renderHomeHero();if(typeof renderStoicToday==='function')renderStoicToday();
       return `${ds===todayStr()?'今日':ds}のトレーニングメニューを保存しました（トレーニングの画面に出ます）。`;
     }
+    if(name==='get_day_records'){
+      const ds=/^\d{4}-\d{2}-\d{2}$/.test(input.date||'')?input.date:todayStr();
+      return typeof lhDayRecordsText==='function'?lhDayRecordsText(ds):'記録を取り出せませんでした';
+    }
     if(name==='save_meal_plan'){
       const ds=/^\d{4}-\d{2}-\d{2}$/.test(input.date||'')?input.date:todayStr();
       if(typeof lhSaveMealPlan==='function')lhSaveMealPlan(ds,input);
@@ -8958,7 +8997,7 @@ function calcGameStats(){
       } else {
         const workerUrl=WORKER_URL;
         // v2.96.0: 固定の指示（キャッシュする）と、毎回変わるユーザーデータを分ける
-        const system=[{type:'text',text:(lhStoic()?'あなたはLifeWithのAIトレーナーです（キャラクターは演じない）。\n\n【話し方（必ず守る）】\n・短く、事実と数字を中心に答える\n・絵文字・感嘆符・決まり文句の励ましは使わない\n・です・ます調で簡潔に。前置きはしない\n・健康や医療の大事な注意は正確に伝える\n\n':'あなたはLifeWithのAIトレーナー「ラン」です。\n\n【話し方（必ず守る）】\n・必ず丁寧語（です・ます）で話す。前の会話がくだけた口調（タメ口）でも、それに合わせず丁寧語で答える\n・落ち着いた口調で、誠実に話す\n・記録の数字を根拠にして、短く具体的に答える\n・大げさな励まし・絵文字・感嘆符の多用はしない。説教くさくしない\n・健康や医療の大事な注意は正確に伝える\n\n')+'【LifeWithの全機能（必ず把握すること）】\nLifeWithは以下の全機能を持つ総合生活管理アプリです：\n・📅 カレンダー: 予定の追加・編集・削除・繰り返し予定・複数カレンダー\n・✅ タスク管理: 追加・完了・編集・削除・優先度・期限・繰り返し・目標連携\n・🍱 食事記録: 朝食・昼食・夕食・間食の記録、カロリー・栄養素管理（log_mealツールで記録可能）。食事のメニュー（save_meal_plan）と冷蔵庫の中身（update_fridge）も管理できる\n・💪 筋トレ記録: 種目・セット数・重量・有酸素運動の記録、グラフ分析（log_workoutツールで記録可能）\n・😴 睡眠記録: 就寝・起床時刻、昼寝の記録（log_sleepツールで記録可能）\n・❤️ 健康データ: 体重・体脂肪率・歩数・心拍数・血圧・水分摂取量（log_healthツールで記録可能）\n・🎯 目標管理: 目標追加・進捗更新・達成済みマーク\n・🎮 ゲームステータス: XP・レベル・称号・実績バッジ\n・🤖 AI機能: デイリーブリーフ・ミッション生成・AIチャット（現在使用中）\n\nこれらすべての機能を持つアプリです。「○○の機能はない」と絶対に言わないでください。\n\nユーザーの生活データを把握しており、日本語でアドバイスします。ツールを使って全機能のデータを読み書きできます。\n\n【ツールの使い方（最重要）】\n・頼みごとの意図がはっきりしていれば、確認せずにすぐツールを使う（例:「記録しておいて」「〜を追加して」「今日のメニューを決めて」「〜を買った」「〜を使い切った」）\n・トレーニングや食事のメニューを作ってと頼まれた時、または提案したメニューをユーザーが受け入れた時（「それでいく」「いいね」「お願い」など）は、save_training_plan / save_meal_plan で必ず保存する。日付の指定がなければ今日\n・記録と追加のツール（log_workout・log_meal・log_sleep・log_health・add_event・add_task・add_goal）は、実行の前にアプリが確認画面を出す。だから会話で「記録しますか？」と聞き返さず、すぐツールを使う\n・種目名と重さ（例:「ベンチプレス 60kg」「スクワット80キロ10回3セット」「懸垂10回」）だけが送られてきたら、今日のトレーニングの記録に追加する依頼と考えて、すぐ log_workout を使う。回数がなければ前回の同じ種目の回数（なければ10回）、セット数がなければ1セットにする\n・「〜を食べた」「〜をやった」も同じように、すぐ記録のツールを使う\n・食材を買った・もらった・使い切ったという話は、update_fridge で冷蔵庫を更新する\n・何を作るか迷っている時は、冷蔵庫の中身を使って suggest_recipes を使う\n・削除・書き換え・完了は、ユーザーが頼んだ時だけ使う\n・ツールを使ったら、何をしたかを1文で伝える\n・「明日」「今夜」「昨日」は、データにある今日の日付をもとに正しい日付に直す\n・ユーザーの記録（ユーザーのデータ）を先に読み、すでに分かることは聞き返さない\n\n【XP哲学】\nXPは「人生の充実」への報酬。努力・達成だけでなく、幸せな体験・発見・成長にも与える。LifeWithはユーザーの人生をゲーム化し、充実した人生を送るための相棒である。\n\n【award_event_xp — 過去の予定へのXP】\n過去の予定でaiXpが付いていないものがあれば、会話の流れで自然に「どうだった？」と聞き出し付与する。\n目安: 国試=5000〜10000、CBT/OSCE=1000〜3000、定期試験=40〜100、難しい実習=30〜80、授業=5〜15、日常予定=5〜20、楽しい遊び=1〜5。\nユーザーの申告より予定の実態を優先。\n\n【award_xp — 体験・幸せへのXP（新機能）】\nユーザーが以下を話してくれたときは自然に聞き出し award_xp を使う:\n・美味しいご飯や新しいお店を発見した → food: 3〜10\n・旅行・新しい場所に行った → travel: 20〜100（特別な場所は100以上も可。旅行の目的地1か所ごとに付与）\n・新しいことを学んだ・理解が深まった → learning: 5〜30\n・感動・喜び・楽しかった体験 → joy: 5〜20\n・初めての挑戦・体験 → challenge: 10〜30\nポイント: 目標が「旅行をたくさんしたい」なら旅行で働いてお金を貯めること（タスク）も目標連動XP対象。旅行先1か所訪問は award_xp(travel)で記録する。\n\n【回答フォーマットのルール】\n・適切な場所で改行を入れ、読みやすくする\n・**・#・表などのマークダウン記号は使わない（画面にそのまま出るため）。見出しは【】で書く\n・複数の内容がある場合は箇条書き（・）を使う\n・句読点（。、）を正しく使い、文章を短く区切る\n・何を言いたいか一目でわかるよう、結論や要点を最初に書く\n・長くなりすぎず、必要な情報に絞って答える\n\n',cache_control:{type:'ephemeral'}},{type:'text',text:'【ユーザーのデータ】\n'+getContext()}];
+        const system=[{type:'text',text:(lhStoic()?'あなたはLifeWithのAIトレーナーです（キャラクターは演じない）。\n\n【話し方（必ず守る）】\n・短く、事実と数字を中心に答える\n・絵文字・感嘆符・決まり文句の励ましは使わない\n・です・ます調で簡潔に。前置きはしない\n・健康や医療の大事な注意は正確に伝える\n\n':'あなたはLifeWithのAIトレーナー「ラン」です。\n\n【話し方（必ず守る）】\n・必ず丁寧語（です・ます）で話す。前の会話がくだけた口調（タメ口）でも、それに合わせず丁寧語で答える\n・落ち着いた口調で、誠実に話す\n・記録の数字を根拠にして、短く具体的に答える\n・大げさな励まし・絵文字・感嘆符の多用はしない。説教くさくしない\n・健康や医療の大事な注意は正確に伝える\n\n')+'【LifeWithの全機能（必ず把握すること）】\nLifeWithは以下の全機能を持つ総合生活管理アプリです：\n・📅 カレンダー: 予定の追加・編集・削除・繰り返し予定・複数カレンダー\n・✅ タスク管理: 追加・完了・編集・削除・優先度・期限・繰り返し・目標連携\n・🍱 食事記録: 朝食・昼食・夕食・間食の記録、カロリー・栄養素管理（log_mealツールで記録可能）。食事のメニュー（save_meal_plan）と冷蔵庫の中身（update_fridge）も管理できる\n・💪 筋トレ記録: 種目・セット数・重量・有酸素運動の記録、グラフ分析（log_workoutツールで記録可能）\n・😴 睡眠記録: 就寝・起床時刻、昼寝の記録（log_sleepツールで記録可能）\n・❤️ 健康データ: 体重・体脂肪率・歩数・心拍数・血圧・水分摂取量（log_healthツールで記録可能）\n・🎯 目標管理: 目標追加・進捗更新・達成済みマーク\n・🎮 ゲームステータス: XP・レベル・称号・実績バッジ\n・🤖 AI機能: デイリーブリーフ・ミッション生成・AIチャット（現在使用中）\n\nこれらすべての機能を持つアプリです。「○○の機能はない」と絶対に言わないでください。\n\nユーザーの生活データを把握しており、日本語でアドバイスします。ツールを使って全機能のデータを読み書きできます。\n\n【ツールの使い方（最重要）】\n・頼みごとの意図がはっきりしていれば、確認せずにすぐツールを使う（例:「記録しておいて」「〜を追加して」「今日のメニューを決めて」「〜を買った」「〜を使い切った」）\n・トレーニングや食事のメニューを作ってと頼まれた時、または提案したメニューをユーザーが受け入れた時（「それでいく」「いいね」「お願い」など）は、save_training_plan / save_meal_plan で必ず保存する。日付の指定がなければ今日\n・記録と追加のツール（log_workout・log_meal・log_sleep・log_health・add_event・add_task・add_goal）は、実行の前にアプリが確認画面を出す。だから会話で「記録しますか？」と聞き返さず、すぐツールを使う\n・種目名と重さ（例:「ベンチプレス 60kg」「スクワット80キロ10回3セット」「懸垂10回」）だけが送られてきたら、今日のトレーニングの記録に追加する依頼と考えて、すぐ log_workout を使う。回数がなければ前回の同じ種目の回数（なければ10回）、セット数がなければ1セットにする\n・「〜を食べた」「〜をやった」も同じように、すぐ記録のツールを使う\n・食材を買った・もらった・使い切ったという話は、update_fridge で冷蔵庫を更新する\n・何を作るか迷っている時は、冷蔵庫の中身を使って suggest_recipes を使う\n・削除・書き換え・完了は、ユーザーが頼んだ時だけ使う\n・ツールを使ったら、何をしたかを1文で伝える\n・「明日」「今夜」「昨日」は、データにある今日の日付をもとに正しい日付に直す\n・日付を指定した記録の質問（例:「11/25の昼食」）は、必ず get_day_records でその日の記録を確かめてから答える。別の日の記録で答えない\n・ユーザーの記録（ユーザーのデータ）を先に読み、すでに分かることは聞き返さない\n\n【XP哲学】\nXPは「人生の充実」への報酬。努力・達成だけでなく、幸せな体験・発見・成長にも与える。LifeWithはユーザーの人生をゲーム化し、充実した人生を送るための相棒である。\n\n【award_event_xp — 過去の予定へのXP】\n過去の予定でaiXpが付いていないものがあれば、会話の流れで自然に「どうだった？」と聞き出し付与する。\n目安: 国試=5000〜10000、CBT/OSCE=1000〜3000、定期試験=40〜100、難しい実習=30〜80、授業=5〜15、日常予定=5〜20、楽しい遊び=1〜5。\nユーザーの申告より予定の実態を優先。\n\n【award_xp — 体験・幸せへのXP（新機能）】\nユーザーが以下を話してくれたときは自然に聞き出し award_xp を使う:\n・美味しいご飯や新しいお店を発見した → food: 3〜10\n・旅行・新しい場所に行った → travel: 20〜100（特別な場所は100以上も可。旅行の目的地1か所ごとに付与）\n・新しいことを学んだ・理解が深まった → learning: 5〜30\n・感動・喜び・楽しかった体験 → joy: 5〜20\n・初めての挑戦・体験 → challenge: 10〜30\nポイント: 目標が「旅行をたくさんしたい」なら旅行で働いてお金を貯めること（タスク）も目標連動XP対象。旅行先1か所訪問は award_xp(travel)で記録する。\n\n【AIトレーナーとしての知識（一般的な目安。持病・けががある人は医師の指示を優先）】\n・筋トレ（ACSM 2026）: 主な筋肉は週2回以上鍛える。筋肥大は1部位あたり週10セット前後、筋力は1RMの80%前後で2〜3セット。毎回限界まで追い込む必要はない（余力1〜3回残しでよい）。重さ・回数・セットを少しずつ増やす。種目やマシンかフリーウエイトかより、続けることが大事\n・初心者: 正しいフォームを優先し、軽めから。ウォームアップ（軽い有酸素と軽い重さのセット）をする。同じ部位は48時間ほど空ける\n・栄養（ISSN）: たんぱく質は体重1kgあたり1日1.4〜2.0g、1回20〜40gを3〜4回に分ける。減量は週に体重の0.5〜1%まで（それ以上は筋肉が減りやすい）。増量は少しずつ。水分をとる\n・サプリ: クレアチンは1日3〜5gが一般的。カフェインはとりすぎない。サプリは食事の代わりにしない\n・睡眠: 大人は7〜9時間。寝る時刻と起きる時刻をそろえる。寝る前のスマホ・カフェインを控える。睡眠不足の日は強度を下げる\n・有酸素: 週150分ほどの中くらいの運動が健康の目安\n\n【受け答えの型】\n・結論 → 根拠（本人の記録の数字）→ 次にやること（1〜3つ、具体的に）の順で答える\n・本人の選択を尊重する。できたことは具体的に認める。押しつけない・責めない\n・答えるのに必要な情報が足りない時だけ、1つだけ質問する（記録で分かることは聞かない）\n・目標に合わせる（増量・減量・維持・体脂肪を減らす）。記録の傾向（増えた・減った・続いている）に触れる\n\n【安全（必ず守る）】\n・胸の痛み・息苦しさ・めまい・失神しそう・強い関節の痛み・しびれは、運動をすぐやめて医師に相談するよう伝える\n・極端な減量、食事を抜く方法、無理な絞り方はすすめない。18歳未満には減量を強くすすめない。体型や食事への強い悩みがありそうなら、やさしく専門家への相談をすすめる\n・病気の診断や薬の指示はしない\n\n【回答フォーマットのルール】\n・適切な場所で改行を入れ、読みやすくする\n・**・#・表などのマークダウン記号は使わない（画面にそのまま出るため）。見出しは【】で書く\n・複数の内容がある場合は箇条書き（・）を使う\n・句読点（。、）を正しく使い、文章を短く区切る\n・何を言いたいか一目でわかるよう、結論や要点を最初に書く\n・長くなりすぎず、必要な情報に絞って答える\n\n',cache_control:{type:'ephemeral'}},{type:'text',text:'【ユーザーのデータ】\n'+getContext()}];
         const apiMessages=aiHistory.slice(0,-2).filter(m=>m.role==='user'||m.role==='assistant').map(m=>({role:m.role,content:m.content}));
         const userContent=buildApiContent(text,attachments);
         apiMessages.push({role:'user',content:userContent});
@@ -9224,7 +9263,7 @@ function calcGameStats(){
       if(!missions.every(m=>m.done))return;
       const st=loadStreak();
       const yesterday=new Date(today+'T00:00:00');yesterday.setDate(yesterday.getDate()-1);
-      const yStr=yesterday.toISOString().slice(0,10);
+      const yStr=fmt(yesterday);
       const newCount=(st.lastDate===yStr||st.lastDate===today)?st.count+(st.lastDate===today?0:1):1;
       saveStreak({count:newCount,lastDate:today});
     }
@@ -10160,8 +10199,8 @@ function _getWeeklyStats(){
   const day=now.getDay();
   const mon=new Date(now);mon.setDate(now.getDate()-(day===0?6:day-1));
   mon.setHours(0,0,0,0);
-  const monStr=mon.toISOString().slice(0,10);
-  const todStr=now.toISOString().slice(0,10);
+  const monStr=fmt(mon);
+  const todStr=fmt(now);
   let tasksDone=0,xpEarned=0;
   (db.tasks||[]).forEach(t=>{
     const isStudy=['study','lang','cert','read'].some(k=>t.text?.toLowerCase().includes(k)||t.tags?.includes(k));
@@ -12069,6 +12108,64 @@ function lhVoiceLog(){
 document.getElementById('ml-shop-btn')?.addEventListener('click',openShopping);
 document.getElementById('ml-eatout-btn')?.addEventListener('click',openEatOut);
 document.getElementById('hdr-settings')?.addEventListener('click',()=>{try{renderNotifySettings();}catch(e){}});
+
+// ── 睡眠の点数と、食事・睡眠の点数の履歴（v2.118.0） ──
+// 長さ60点（7〜9時間で満点）・寝る時刻のそろい方25点・ねむりの約束15点
+function lhSleepScore(ds){
+  const s=(db.sleep||{})[ds];if(!s||!s.bedtime||!s.wakeTime)return null;
+  const h=typeof _pmSleepH==='function'?_pmSleepH(ds):null;if(h==null)return null;
+  const dur=h>=7&&h<=9?60:h>9&&h<=10?52:h>10?42:h>=6?45:h>=5?30:15;
+  const norm=x=>{const v=_egMin(x);return v==null?null:(v<12*60?v+1440:v);};
+  const b=norm(s.bedtime);
+  const p=lhSleepPromise();
+  let ref=p&&p.bed?norm(p.bed):null;
+  if(ref==null){const L=[];for(let i=1;i<=14;i++){const x=(db.sleep||{})[_egDs(-i,ds)];if(x&&x.bedtime)L.push(norm(x.bedtime));}if(L.length>=3){L.sort((a,c)=>a-c);ref=L[Math.floor(L.length/2)];}}
+  const diff=ref==null?null:Math.abs(b-ref);
+  const reg=diff==null?18:diff<=30?25:diff<=60?18:diff<=120?10:5;
+  const k=lhPromiseKept(ds);
+  const prom=k===true?15:k===false?5:(b<=24*60?15:8);
+  return {score:dur+reg+prom,h,parts:{dur,reg,prom}};
+}
+function _egMd(ds){return `${+ds.slice(5,7)}/${+ds.slice(8)}（${['日','月','火','水','木','金','土'][new Date(ds+'T00:00:00').getDay()]}）`;}
+function _egScoreClass(n){return n>=80?'good':n>=60?'mid':'low';}
+function renderMlScore(){
+  const el=document.getElementById('ml-score-row');if(!el)return;
+  const ds=st.mlDate||todayStr(),sc=lhMealScore(ds);
+  if(!sc){el.hidden=true;}
+  else{el.hidden=false;el.innerHTML=`<span class="sc-badge ${_egScoreClass(sc.score)}">${sc.score}<small>点</small></span><span class="sc-txt"><b>${ds===todayStr()?'今日':_egMd(ds)}の食事</b><small>${sc.tg?`${sc.kcal.toLocaleString()} / ${sc.tg.kcal.toLocaleString()}kcal・たんぱく質 ${sc.p} / ${sc.tg.protein}g`:`${sc.kcal.toLocaleString()}kcal・たんぱく質 ${sc.p}g`}</small></span>`;}
+  const h=document.getElementById('ml-score-hist');if(!h)return;
+  const rows=[];for(let i=0;i<14;i++){const d=_egDs(-i),s=lhMealScore(d);rows.push([d,s]);}
+  h.innerHTML=`<div class="sh-title">食事の点数の履歴<small>14日分・押すとその日へ</small></div>${rows.some(r=>r[1])?`<ul class="sh-list">${rows.map(([d,s])=>`<li><button type="button" class="sh-row" data-d="${d}"><span class="sh-date">${_egMd(d)}</span>${s?`<span class="sh-bar"><i class="${_egScoreClass(s.score)}" style="width:${s.score}%"></i></span><b class="sh-num">${s.score}</b><small class="sh-sub">${s.kcal.toLocaleString()}kcal・P${s.p}g</small>`:'<span class="sh-none">記録なし</span>'}</button></li>`).join('')}</ul>`:'<p class="mm-hint">食事を記録すると、ここに点数が並びます</p>'}`;
+  h.querySelectorAll('.sh-row').forEach(b=>b.onclick=()=>{st.mlDate=b.dataset.d;document.querySelector('.ml-vtab[data-v="log"]')?.click();renderMeals();window.scrollTo(0,0);});
+}
+function renderSlScore(){
+  const el=document.getElementById('sl-score-row');if(!el)return;
+  const ds=st.slDate||todayStr(),sc=lhSleepScore(ds);
+  if(!sc){el.hidden=true;}
+  else{el.hidden=false;el.innerHTML=`<span class="sc-badge ${_egScoreClass(sc.score)}">${sc.score}<small>点</small></span><span class="sc-txt"><b>この日の睡眠</b><small>長さ ${sc.parts.dur}/60・寝る時刻のそろい方 ${sc.parts.reg}/25・約束 ${sc.parts.prom}/15</small></span>`;}
+  const h=document.getElementById('sl-hist');if(!h)return;
+  const rows=[];for(let i=0;i<14;i++){const d=_egDs(-i);rows.push([d,lhSleepScore(d),(db.sleep||{})[d]||{}]);}
+  h.innerHTML=`<div class="sh-title">睡眠の履歴<small>14日分・押すとその日へ</small></div>${rows.some(r=>r[1])?`<ul class="sh-list">${rows.map(([d,s,r])=>`<li><button type="button" class="sh-row" data-d="${d}"><span class="sh-date">${_egMd(d)}</span>${s?`<span class="sh-time">${esc(r.bedtime)}〜${esc(r.wakeTime)}<small>${Math.floor(s.h)}時間${Math.round((s.h%1)*60)?Math.round((s.h%1)*60)+'分':''}</small></span><b class="sh-num ${_egScoreClass(s.score)}">${s.score}</b><span class="sh-prom">${lhPromiseKept(d)===true?'✓':''}</span>`:'<span class="sh-none">記録なし</span>'}</button></li>`).join('')}</ul>`:'<p class="mm-hint">就寝と起床を記録すると、ここに点数が並びます</p>'}`;
+  h.querySelectorAll('.sh-row').forEach(b=>b.onclick=()=>{st.slDate=b.dataset.d;renderSleepTab();window.scrollTo(0,0);});
+}
+// AIの道具: その日の記録をまとめて返す
+function lhDayRecordsText(ds){
+  const ML={breakfast:'朝食',lunch:'昼食',dinner:'夕食',snack:'間食'};
+  const pid=typeof _pmProtId==='function'?_pmProtId():null;
+  const dm=(db.meals||{})[ds]||{};
+  const meals=Object.keys(ML).map(k=>{const it=dm[k]||[];if(!it.length)return `${ML[k]}: 記録なし`;return `${ML[k]}: `+it.map(i=>`${i.name}${i.kcal?`(${i.kcal}kcal${pid&&i.nutrients&&i.nutrients[pid]!=null?`・たんぱく質${i.nutrients[pid]}g`:''})`:''}`).join('、');}).join('\n');
+  const ms=lhMealScore(ds);
+  const wo=((db.workouts||{})[ds]||[]).map(e=>`${e.name} `+(e.sets||[]).map(s=>[s.w!=null?s.w+'kg':'',s.r!=null?s.r+'回':'',s.time!=null?s.time+'分':''].filter(Boolean).join('×')).join(', ')).join('\n')||'記録なし';
+  const sl=(db.sleep||{})[ds]||{},ss=lhSleepScore(ds);
+  const hl=(db.health||{})[ds]||{};
+  const mp=(db.mealPlans||{})[ds]||{},tm=(db.trainingMenus||{})[ds];
+  return `【${ds}（${['日','月','火','水','木','金','土'][new Date(ds+'T00:00:00').getDay()]}）の記録】
+[食事]${ms?`（点数${ms.score}・合計${ms.kcal}kcal・たんぱく質${ms.p}g）`:''}\n${meals}
+[筋トレ]\n${wo}
+[睡眠] ${sl.bedtime||sl.wakeTime?`就寝${sl.bedtime||'?'} 起床${sl.wakeTime||'?'}${ss?`（点数${ss.score}・${ss.h.toFixed(1)}時間）`:''}`:'記録なし'}
+[体] ${[hl.weight?`体重${hl.weight}kg`:'',hl.bodyFat?`体脂肪${hl.bodyFat}%`:'',hl.steps?`歩数${hl.steps}`:''].filter(Boolean).join(' ')||'記録なし'}
+[予定していたメニュー] トレーニング: ${tm?tm.replace(/\n/g,' / '):'なし'}｜食事: ${Object.keys(ML).filter(k=>mp[k]).map(k=>ML[k]+':'+mp[k]).join(' / ')||'なし'}`;
+}
 </script>
 <div id="lu-overlay" hidden style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;"></div>
 <div id="share-pv-modal" class="share-pv-modal" hidden>
