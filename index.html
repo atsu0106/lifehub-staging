@@ -1441,6 +1441,15 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 .pw-price small{display:block;font-size:10px;color:var(--fg3);}
 .pw-trial{text-align:center;font-weight:700;color:var(--accent);margin:8px 0;font-size:13px;}
 .pw-buy:disabled{opacity:.55;}
+/* v2.120.0: 月額・年額を選ぶ。値段をいちばん大きく、無料期間は小さく（審査ガイドライン 3.1.2） */
+.pw-plans{display:flex;flex-direction:column;gap:8px;margin:10px 0 6px;}
+.pw-plan{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:12px;background:transparent;color:var(--fg);font:inherit;text-align:left;cursor:pointer;}
+.pw-plan span{font-size:12px;color:var(--fg2);}
+.pw-plan b{font-size:20px;}
+.pw-plan small{font-size:11px;color:var(--fg3);}
+.pw-plan.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset;}
+.pw-trial-note{font-size:11px;color:var(--fg2);text-align:center;margin:4px 0 8px;}
+.pw-billed{font-weight:700;color:var(--fg);}
 .pw-legal{font-size:10px;color:var(--fg3);line-height:1.5;margin-top:8px;}
 .pw-tag{font-size:9px;font-weight:800;letter-spacing:.08em;color:#fff;background:#111;padding:2px 5px;border-radius:4px;vertical-align:middle;}
 #st-plan-row[hidden],.pw-tag[hidden]{display:none!important;}
@@ -3452,7 +3461,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='ac7a0bb6c1'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='61da4acfc8'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -6065,7 +6074,9 @@ function lhShowPaywall(opt){
   const name=LH_FEATURE_NAMES[opt.feature]||'';
   const lead=opt.kind==='quota'&&name?`今日の無料の「${name}」（${LH_FREE_LIMITS[opt.feature]||''}回）を使い切りました。明日また使えます。`
     :name&&opt.feature!=='none'?`「${name}」はプレミアムで使えます。`:'AIがあなたの記録をもっと深く読み解きます。';
-  const native=lhCanPurchase();
+  const native=lhCanPurchase(),pro=lhIsPro();
+  // v2.120.0: 値段はストアの表示（Apple が地域・税込みで決めた文字）を優先
+  const prices=(window.LH_NATIVE&&window.LH_NATIVE.prices)||{},pm=prices.month||LH_PRICE.month,py=prices.year||LH_PRICE.year;
   const ov=document.createElement('div');ov.className='aic-ov pw-ov';ov.id='pw-ov';
   ov.innerHTML=`<div class="aic-sheet pw-sheet" role="dialog" aria-modal="true" aria-labelledby="pw-title">
     <div class="pw-badge">PREMIUM</div>
@@ -6088,17 +6099,28 @@ function lhShowPaywall(opt){
       <div class="pw-s-card"><div class="pw-s-h">💪 筋肉のAI判定</div><span><i class="pw-dot" style="background:#4F46E5"></i>胸：回復中（2日前に12セット・睡眠5時間）</span><span><i class="pw-dot" style="background:#F59E0B"></i>背中・もも裏：やりごろ</span></div>
       <div class="pw-s-card"><div class="pw-s-h">📊 週のレポート</div><b>4日トレーニングできた、いい週だ</b><span>体調との関係：前の夜の睡眠が長い日ほど、トレーニング量が多い（強め・16日分）</span><span>来週：睡眠を7時間に・脚の日を1回入れる</span></div>
     </details>
-    <div class="pw-price"><div><b>${LH_PRICE.month}</b> / 月</div><div><b>${LH_PRICE.year}</b> / 年<small>（1か月あたり${LH_PRICE.yearPerMonth}）</small></div></div>
-    <div class="pw-trial">最初の1か月は無料</div>
-    <button class="aic-ok pw-buy" type="button" ${native?'':'disabled'}>${native?'1か月無料で始める':'iPhoneアプリ版で近日開始'}</button>
-    ${native?'<button class="aic-no pw-restore" type="button">購入を復元</button>':''}
+    ${pro&&native?`<div class="pw-trial">プレミアムを利用中です</div>
+    <button class="aic-ok pw-manage" type="button">サブスクリプションを管理</button>`:`<div class="pw-plans" role="radiogroup" aria-label="プランを選ぶ">
+      <button type="button" class="pw-plan on" data-plan="month" role="radio" aria-checked="true"><span>月額プラン（1か月ごとに自動更新）</span><b>${esc(pm)} / 月</b></button>
+      <button type="button" class="pw-plan" data-plan="year" role="radio" aria-checked="false"><span>年額プラン（1年ごとに自動更新）</span><b>${esc(py)} / 年</b>${LH_PRICE.yearPerMonth&&!prices.year?`<small>1か月あたり${LH_PRICE.yearPerMonth}</small>`:''}</button>
+    </div>
+    <div class="pw-trial-note">はじめての方は最初の1か月無料。その後 <span class="pw-billed">${esc(pm)} / 月</span> で自動更新</div>
+    <button class="aic-ok pw-buy" type="button" ${native?'':'disabled'}>${native?'無料で試してから購読する':'iPhoneアプリ版で近日開始'}</button>
+    ${native?'<button class="aic-no pw-restore" type="button">購入を復元</button>':''}`}
     <button class="aic-no pw-close" type="button">閉じる</button>
-    <p class="pw-legal">無料期間が終わると自動で更新され、料金がかかります。無料期間の終わる24時間前までに解約すれば料金はかかりません。確認・解約は iPhone の「設定」→ 自分の名前 →「サブスクリプション」から。記録の機能は無料のまま使えます。<a href="${legalUrl('terms')}" target="_blank" rel="noopener">利用規約</a>・<a href="${legalUrl('tokushoho')}" target="_blank" rel="noopener">特定商取引法に基づく表記</a>・<a href="${legalUrl('privacy')}" target="_blank" rel="noopener">プライバシーポリシー</a></p>
+    <p class="pw-legal">無料期間が終わると自動で更新され、選んだプランの料金がApple IDに請求されます。期間の終わる24時間前までに解約しない限り、同じ料金で自動更新されます。無料期間中に解約すれば料金はかかりません。確認・解約は iPhone の「設定」→ 自分の名前 →「サブスクリプション」から。記録の機能は無料のまま使えます。<a href="${legalUrl('terms')}" target="_blank" rel="noopener">利用規約</a>・<a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener">利用規約（Apple 標準EULA）</a>・<a href="${legalUrl('tokushoho')}" target="_blank" rel="noopener">特定商取引法に基づく表記</a>・<a href="${legalUrl('privacy')}" target="_blank" rel="noopener">プライバシーポリシー</a></p>
   </div>`;
   const close=()=>ov.remove();
   ov.querySelector('.pw-close').onclick=close;
   ov.addEventListener('click',e=>{if(e.target===ov)close();});
-  const buy=ov.querySelector('.pw-buy');if(buy&&native)buy.onclick=async()=>{try{await window.LH_NATIVE.purchase();}catch(e){}if(lhIsPro())close();renderPlanRow();};
+  let plan='month';
+  ov.querySelectorAll('.pw-plan').forEach(b=>b.onclick=()=>{
+    plan=b.dataset.plan;
+    ov.querySelectorAll('.pw-plan').forEach(x=>{const on=x===b;x.classList.toggle('on',on);x.setAttribute('aria-checked',on?'true':'false');});
+    const bl=ov.querySelector('.pw-billed');if(bl)bl.textContent=plan==='year'?py+' / 年':pm+' / 月';
+  });
+  const mg=ov.querySelector('.pw-manage');if(mg)mg.onclick=()=>{try{window.LH_NATIVE.manage();}catch(e){}};
+  const buy=ov.querySelector('.pw-buy');if(buy&&native)buy.onclick=async()=>{buy.disabled=true;try{await window.LH_NATIVE.purchase(plan);}catch(e){}buy.disabled=false;if(lhIsPro())close();renderPlanRow();};
   const rs=ov.querySelector('.pw-restore');if(rs)rs.onclick=async()=>{try{await window.LH_NATIVE.restore();}catch(e){}if(lhIsPro())close();renderPlanRow();};
   document.body.appendChild(ov);
 }
@@ -6147,6 +6169,7 @@ renderAiConsentRow();
 document.getElementById('st-plan-row')?.addEventListener('click',()=>lhShowPaywall({feature:'none'}));
 renderPlanRow();
 const CHANGELOG=[
+  {v:'v2.120.0',d:'iPhoneアプリ版の準備: プレミアムは月額・年額を選べるように（アプリ内の購入・購入の復元・サブスクリプションの管理）。アプリ版は通知・記録したときの振動・記録の控えの自動保存に対応'},
   {v:'v2.119.1',d:'なかよし度: 記録した日 +2・7日続くごとに +10（30日ごとにさらに +30）・体のプロフィール（基礎情報）を入れると +2／項目、更新した日 +2'},
   {v:'v2.119.0',d:'相棒がホームの一番上に（毎朝、睡眠や記録で表情と一言が変わる）。食事・睡眠・体重・トレーニングの記録に相棒が反応。記録で上がる「なかよし度」（今までの記録の分も入る・下がらない）。相棒を押すと、なかよし度とプロフィール'},
   {v:'v2.118.0',d:'AIが日付を1日まちがえる不具合を直した（「11/25の昼食」も正しく）。睡眠にも点数。食事の点数の履歴（グラフの画面）と睡眠の履歴。AIトレーナーに筋トレ・栄養・睡眠の知識と受け答えの型を追加'},
@@ -12536,6 +12559,132 @@ function lhOpenBuddy(){
   mo.querySelector('#bd-change').onclick=()=>{close();document.getElementById('hdr-settings')?.click();setTimeout(()=>document.getElementById('char-grid')?.scrollIntoView({block:'center'}),300);};
 }
 if(typeof renderHomeHero==='function')renderHomeHero();
+// ── iPhoneアプリ版（Capacitor）とつなぐ LH_NATIVE（v2.120.0） ──
+// Web版では何もしない。アプリ版でだけ、課金・通知・触覚・記録の控えを使う
+// 必要なプラグイン: @revenuecat/purchases-capacitor @capacitor/local-notifications @capacitor/haptics @capacitor/filesystem
+// RevenueCat の公開キー（appl_ で始まる。公開してよい種類のキー）。空のあいだは購入ボタンを出さない
+var LH_RC_IOS_KEY='';
+var LH_RC_ENTITLEMENT='premium';
+(function(){
+  const C=window.Capacitor;
+  if(!(C&&typeof C.isNativePlatform==='function'&&C.isNativePlatform()))return;
+  const P=C.Plugins||{};
+  const N=window.LH_NATIVE=window.LH_NATIVE||{};
+  N.pro=false;N.proToken=null;N.prices=null;N.managementURL=null;
+
+  // ── 課金（RevenueCat） ──
+  const RC=P.Purchases;
+  function applyInfo(info){
+    const ci=info&&(info.customerInfo||info);
+    const ent=ci&&ci.entitlements&&ci.entitlements.active&&ci.entitlements.active[LH_RC_ENTITLEMENT];
+    N.pro=!!ent;
+    N.proToken=N.pro?lhDeviceId():null; // Worker は この ID で RevenueCat に問い合わせる
+    N.managementURL=(ci&&ci.managementURL)||null;
+    try{if(typeof renderPlanRow==='function')renderPlanRow();if(typeof renderMeTab==='function')renderMeTab();}catch(e){}
+    try{document.dispatchEvent(new Event('lh-plan-change'));}catch(e){}
+  }
+  async function offering(){
+    const o=await RC.getOfferings();
+    const cur=o&&(o.current||(o.all&&Object.values(o.all)[0]));
+    if(!cur)throw new Error('no_offering');
+    const pk=cur.availablePackages||[];
+    return {month:cur.monthly||pk.find(p=>p.packageType==='MONTHLY'),year:cur.annual||pk.find(p=>p.packageType==='ANNUAL')};
+  }
+  if(RC&&LH_RC_IOS_KEY){
+    (async()=>{
+      try{
+        await RC.configure({apiKey:LH_RC_IOS_KEY,appUserID:lhDeviceId()});
+        applyInfo(await RC.getCustomerInfo());
+        try{RC.addCustomerInfoUpdateListener(applyInfo);}catch(e){}
+        const of=await offering();
+        N.prices={month:of.month&&of.month.product&&of.month.product.priceString,year:of.year&&of.year.product&&of.year.product.priceString};
+      }catch(e){}
+    })();
+    // plan: 'month' | 'year'。キャンセルは失敗として扱わない
+    N.purchase=async function(plan){
+      const of=await offering();
+      const pkg=plan==='year'?of.year:of.month;
+      if(!pkg)throw new Error('no_package');
+      try{applyInfo(await RC.purchasePackage({aPackage:pkg}));}
+      catch(e){if(e&&(e.userCancelled||String(e.code)==='1'))return false;showToast('購入できませんでした。時間をおいてもう一度お試しください');throw e;}
+      if(N.pro)showToast('プレミアムが使えるようになりました');
+      return N.pro;
+    };
+    N.restore=async function(){
+      try{applyInfo(await RC.restorePurchases());}catch(e){showToast('復元できませんでした');return false;}
+      showToast(N.pro?'購入を復元しました':'復元できる購入が見つかりませんでした');
+      return N.pro;
+    };
+    N.manage=function(){const u=N.managementURL||'https://apps.apple.com/account/subscriptions';window.open(u,'_blank');};
+  }
+
+  // ── ローカル通知（寝る前・ジム・食事。毎日決まった時刻） ──
+  const LN=P.LocalNotifications;
+  const NT_IDS={bed:101,gym:102,meal:103};
+  if(LN){
+    N.scheduleNotifications=async function(list){
+      try{
+        const pend=await LN.getPending();
+        const mine=((pend&&pend.notifications)||[]).filter(n=>Object.values(NT_IDS).includes(+n.id));
+        if(mine.length)await LN.cancel({notifications:mine.map(n=>({id:+n.id}))});
+        if(!list||!list.length)return;
+        const perm=await LN.requestPermissions();
+        if(perm&&perm.display&&perm.display!=='granted')return;
+        await LN.schedule({notifications:list.filter(n=>NT_IDS[n.id]&&/^\d{1,2}:\d{2}$/.test(n.time)).map(n=>{const[h,m]=n.time.split(':').map(Number);return{id:NT_IDS[n.id],title:n.title,body:n.body,schedule:{on:{hour:h,minute:m},allowWhileIdle:true}};})});
+      }catch(e){}
+    };
+    try{if(typeof lhApplyNotify==='function')lhApplyNotify();if(typeof renderNotifySettings==='function')renderNotifySettings();}catch(e){}
+  }
+
+  // ── 触覚（記録したときのトーストで軽く振動） ──
+  const HP=P.Haptics;
+  if(HP){
+    N.tap=function(){try{HP.impact({style:'LIGHT'});}catch(e){}};
+    const _toast=showToast;
+    showToast=function(msg){N.tap();return _toast.apply(this,arguments);};
+  }
+
+  // ── 記録の控え（iOS がアプリの中の保存領域を消したときに戻す。写真は含まない） ──
+  const FS=P.Filesystem;
+  if(FS){
+    const FILE={path:'lifewith-backup.json',directory:'LIBRARY',encoding:'utf8'};
+    const MARK='lh_bk';
+    let ready=false,timer=null;
+    const keys=()=>{const a=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&(k.startsWith('lifehub2')||k.startsWith('lh_')))a.push(k);}return a;};
+    async function writeBackup(){
+      try{
+        const id=Date.now().toString(36);
+        localStorage.setItem(MARK,id);
+        const data={};keys().forEach(k=>{data[k]=localStorage.getItem(k);});
+        await FS.writeFile(Object.assign({data:JSON.stringify({v:1,id,at:new Date().toISOString(),data})},FILE));
+      }catch(e){}
+    }
+    N.backupNow=writeBackup;
+    const later=()=>{if(!ready)return;clearTimeout(timer);timer=setTimeout(writeBackup,3000);};
+    const _save=save;
+    save=function(d){const r=_save.apply(this,arguments);later();return r;};
+    document.addEventListener('visibilitychange',()=>{if(document.hidden&&ready){clearTimeout(timer);writeBackup();}});
+    (async()=>{
+      try{
+        // 控えを書いた印が無い＝初めての起動か、保存領域が消えた
+        if(!localStorage.getItem(MARK)&&!sessionStorage.getItem('lh_bk_tried')){
+          sessionStorage.setItem('lh_bk_tried','1');
+          let b=null;try{b=JSON.parse((await FS.readFile(FILE)).data);}catch(e){}
+          if(b&&b.data&&Object.keys(b.data).some(k=>k.startsWith('lifehub2'))){
+            localStorage.clear();
+            Object.entries(b.data).forEach(([k,v])=>{if(typeof v==='string')localStorage.setItem(k,v);});
+            localStorage.setItem(MARK,b.id||'r');
+            localStorage.setItem('lh_bk_restored',b.at||'1');
+            location.reload();
+            return;
+          }
+        }
+        if(localStorage.getItem('lh_bk_restored')){localStorage.removeItem('lh_bk_restored');setTimeout(()=>showToast('記録を控えから戻しました'),800);}
+      }catch(e){}
+      ready=true;writeBackup();
+    })();
+  }
+})();
 </script>
 <div id="lu-overlay" hidden style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;"></div>
 <div id="share-pv-modal" class="share-pv-modal" hidden>
