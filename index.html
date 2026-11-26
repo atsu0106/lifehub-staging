@@ -2856,7 +2856,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         <div class="st-about-note">動画の検索・表示に YouTube API Services を使っています。<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube利用規約</a>・<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Googleプライバシーポリシー</a>が適用されます。AIの答えは医療アドバイスではありません。</div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.119.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.119.1 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -3452,7 +3452,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='2ea7f9634b'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='ac7a0bb6c1'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -5545,9 +5545,11 @@ function openBodyProfile(){
   const gv=document.getElementById('body-gym-val');if(gv&&typeof lhGymLabel==='function')gv.textContent=lhGymLabel();
   renderSuppList();
   document.getElementById('mo-body').hidden=false;
+  try{window._bdProfSnap=typeof _bdProfHash==='function'?{h:_bdProfHash(),p:lhBuddyState().pts}:null;}catch(e){window._bdProfSnap=null;} // v2.119.1 相棒
 }
 function closeBodyProfile(){
   save(db);document.getElementById('mo-body').hidden=true;
+  try{const s=window._bdProfSnap;window._bdProfSnap=null;if(s&&s.h!==_bdProfHash()&&typeof lhBuddyReact==='function'){const p=lhBuddyState().pts;lhBuddyReact('profile',{plus:Math.max(0,p-s.p)});}}catch(e){} // v2.119.1 相棒
   if(typeof renderMeTab==='function')renderMeTab();
   if(typeof renderHomeHero==='function')renderHomeHero();
 }
@@ -6145,6 +6147,7 @@ renderAiConsentRow();
 document.getElementById('st-plan-row')?.addEventListener('click',()=>lhShowPaywall({feature:'none'}));
 renderPlanRow();
 const CHANGELOG=[
+  {v:'v2.119.1',d:'なかよし度: 記録した日 +2・7日続くごとに +10（30日ごとにさらに +30）・体のプロフィール（基礎情報）を入れると +2／項目、更新した日 +2'},
   {v:'v2.119.0',d:'相棒がホームの一番上に（毎朝、睡眠や記録で表情と一言が変わる）。食事・睡眠・体重・トレーニングの記録に相棒が反応。記録で上がる「なかよし度」（今までの記録の分も入る・下がらない）。相棒を押すと、なかよし度とプロフィール'},
   {v:'v2.118.0',d:'AIが日付を1日まちがえる不具合を直した（「11/25の昼食」も正しく）。睡眠にも点数。食事の点数の履歴（グラフの画面）と睡眠の履歴。AIトレーナーに筋トレ・栄養・睡眠の知識と受け答えの型を追加'},
   {v:'v2.117.0',d:'ねむりの約束: 約束の時間を含んで眠れた日、または約束の長さ以上眠れた日は ✓ に（早く寝て遅く起きた日も達成）'},
@@ -12298,6 +12301,7 @@ var BUDDY_LINES={
     bed:['おやすみ〜。ぼくも寝るね','また明日ね。おやすみ！'],
     weight:['記録できたね！えらい！','毎日はかるの、すごいね！'],
     train_end:['いっしょにがんばれた！','ぼく、ずっと応援してたよ！'],
+    profile:['教えてくれてありがと！えへへ','きみのこと、ちょっと詳しくなれた！'],
     levelup:['もっと仲良くなれた！えへへ','うれしい〜！これからもいっしょにいこ！'],
     tap:['えへへ、くすぐったい！','いっしょにいこ！','にんじんスティック、好きなんだ〜','ぼく、ここにいるよ！','今日もいい日になるといいね'],
   },
@@ -12322,6 +12326,7 @@ var BUDDY_LINES={
     bed:['おやすみ。また明日な','よく休め'],
     weight:['記録したな','続けてるのは、すごいことだ'],
     train_end:['いい汗だったな','一緒にやれてよかった'],
+    profile:['教えてくれたな。助かる','少し、わかった気がする'],
     levelup:['……悪くない関係だ','少し、近くなったな'],
     tap:['……なんだ','行くか','俺はここにいる','ブラックコーヒーが好きなんだ','悪くない一日にしよう'],
   },
@@ -12346,6 +12351,7 @@ var BUDDY_LINES={
     bed:['おやすみ〜。また明日ね','ゆっくり休んでね〜'],
     weight:['記録できたねぇ','毎日えらいねぇ'],
     train_end:['いっしょにがんばれたねぇ','ゆっくり休んでね〜'],
+    profile:['教えてくれてありがとねぇ','きみのこと、少しわかったよ〜'],
     levelup:['もっと仲良くなれたねぇ','うれしいなぁ〜'],
     tap:['えへへ〜','ゆっくりでいいよ〜','はちみつ、好きなんだ〜','ぼく、ここにいるよ〜','お昼寝したくなるねぇ'],
   },
@@ -12369,7 +12375,7 @@ function lhBuddyFaceHtml(face,cls,k){
   return `<span class="bd-face bf-${face}${cls?' '+cls:''}"><img src="${lhBuddyImgSrc(face,k)}" alt="${esc(lhBuddyName(k))}" onerror="this.onerror=null;this.src='${esc((CHARS[k]||CHARS.pico).img)}'">${mk}</span>`;
 }
 // ── なかよし度（記録から計算。今までの記録の分も入る。下がらない） ──
-function lhBuddyPtsDay(ds){
+function _bdBase(ds){
   let p=0;
   if(((db.workouts||{})[ds]||[]).length)p+=5;
   const m=(db.meals||{})[ds]||{};p+=['breakfast','lunch','dinner','snack'].filter(k=>(m[k]||[]).length).length;
@@ -12378,13 +12384,41 @@ function lhBuddyPtsDay(ds){
   if(+(((db.health||{})[ds]||{}).weight))p+=1;
   return p;
 }
+// v2.119.1: 記録した日は +2
+function lhBuddyPtsDay(ds){const b=_bdBase(ds);return b?b+2:0;}
+// v2.119.1: 続けたボーナス（記録した日が7日続くごとに +10、30日ごとにさらに +30）
+function _bdStreak(days){
+  let run=0,prev=null,total=0;const by={};
+  days.forEach(d=>{
+    const n=prev?(()=>{const x=new Date(prev+'T00:00:00');x.setDate(x.getDate()+1);return fmt(x);})():null;
+    run=n===d?run+1:1;prev=d;
+    const b=(run%7===0?10:0)+(run%30===0?30:0);if(b){total+=b;by[d]=b;}
+  });
+  return {total,by,run,last:prev};
+}
+// v2.119.1: 基礎情報（体のプロフィール）
+var BUDDY_PROF_KEYS=['height','weight','age','sex','goal','gymFreq','place','exp'];
+function _bdProfItems(){const h=(db.settings&&db.settings.healthProfile)||{};return BUDDY_PROF_KEYS.filter(k=>h[k]!=null&&h[k]!==''&&h[k]!==0).length;}
+function _bdProfHash(){const h=(db.settings&&db.settings.healthProfile)||{};return JSON.stringify(BUDDY_PROF_KEYS.concat(['gym','allergies','dislikes','lifts']).map(k=>h[k]==null?null:h[k]));}
 function lhBuddyLevelOf(pts){let lv=1,acc=0,need=10;while(pts>=acc+need){acc+=need;lv++;need=10*lv;}return {lv,pts,cur:pts-acc,need,stage:lv>=10?3:lv>=5?2:1};}
 function lhBuddyState(){
   const ds=new Set([...Object.keys(db.workouts||{}),...Object.keys(db.meals||{}),...Object.keys(db.sleep||{}),...Object.keys(db.health||{})].filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d)));
-  let pts=0;ds.forEach(d=>{pts+=lhBuddyPtsDay(d);});
-  if(!db.buddy||typeof db.buddy!=='object'){db.buddy={best:pts,seenLv:lhBuddyLevelOf(pts).lv,since:todayStr()};save(db);}
+  const t=todayStr(),days=[...ds].filter(d=>_bdBase(d)>0).sort();
+  let pts=0;days.forEach(d=>{pts+=lhBuddyPtsDay(d);});
+  const sk=_bdStreak(days);pts+=sk.total;
+  const ph=_bdProfHash();
+  let fresh=false;
+  if(!db.buddy||typeof db.buddy!=='object'){db.buddy={best:0,since:t,profHash:ph,profDays:{}};fresh=true;}
+  if(!db.buddy.profDays)db.buddy.profDays={};
+  if(db.buddy.profHash==null)db.buddy.profHash=ph;
+  else if(db.buddy.profHash!==ph){db.buddy.profHash=ph;db.buddy.profDays[t]=1;save(db);} // 更新した日 +2（1日1回）
+  pts+=_bdProfItems()*2+Object.keys(db.buddy.profDays).length*2;
+  if(fresh){db.buddy.best=pts;db.buddy.seenLv=lhBuddyLevelOf(pts).lv;save(db);}
   if(pts>(+db.buddy.best||0)){db.buddy.best=pts;save(db);}
-  const L=lhBuddyLevelOf(Math.max(pts,+db.buddy.best||0));L.today=lhBuddyPtsDay(todayStr());return L;
+  const L=lhBuddyLevelOf(Math.max(pts,+db.buddy.best||0));
+  L.today=lhBuddyPtsDay(t)+(sk.by[t]||0)+(db.buddy.profDays[t]?2:0);
+  L.run=sk.last===t||sk.last===(()=>{const x=new Date(t+'T00:00:00');x.setDate(x.getDate()-1);return fmt(x);})()?sk.run:0;
+  return L;
 }
 // レベルが上がっていたら新しいレベルを返す（1回だけ）
 function lhBuddyLevelUp(){
@@ -12436,6 +12470,7 @@ function lhBuddyReact(kind,opt){
     plus=2+(typeof lhPromiseKept==='function'&&lhPromiseKept(opt.ds)===true?2:0);
   }else if(kind==='bed'){face='sleepy';}
   else if(kind==='weight'){face='shy';plus=1;}
+  else if(kind==='profile'){face='shy';plus=+opt.plus||0;}
   const up=lhBuddyLevelUp();
   lhBuddyPop(face,lhBuddySay(sit),plus,up);
 }
@@ -12479,10 +12514,10 @@ function lhOpenBuddy(){
     <div class="bd-lvbox">
       <div class="bd-lvrow"><span class="bd-stage">${BUDDY_STAGE[L.stage]}</span><b>なかよし Lv.${L.lv}</b><span class="bd-today">今日 +${L.today}</span></div>
       <i class="bd-bar"><i style="width:${Math.round(L.cur/L.need*100)}%"></i></i>
-      <div class="bd-next">次の Lv まで あと ${L.need-L.cur}${L.stage<3?`・Lv.${L.stage===1?5:10} で「${BUDDY_STAGE[L.stage+1]}」に`:''}</div>
+      <div class="bd-next">${L.run>=2?`${L.run}日続いています・`:''}次の Lv まで あと ${L.need-L.cur}${L.stage<3?`・Lv.${L.stage===1?5:10} で「${BUDDY_STAGE[L.stage+1]}」に`:''}</div>
     </div>
     <div class="bd-sec"><div class="bd-h">なかよし度の上がり方</div>
-      <div class="bd-ways"><span>💪 筋トレ <b>+5</b></span><span>🍱 食事 1回 <b>+1</b></span><span>😴 睡眠 <b>+2</b></span><span>🌙 ねむりの約束 <b>+2</b></span><span>⚖️ 体重 <b>+1</b></span></div>
+      <div class="bd-ways"><span>💪 筋トレ <b>+5</b></span><span>🍱 食事 1回 <b>+1</b></span><span>😴 睡眠 <b>+2</b></span><span>🌙 ねむりの約束 <b>+2</b></span><span>⚖️ 体重 <b>+1</b></span><span>📅 記録した日 <b>+2</b></span><span>🔥 7日続くごとに <b>+10</b>（30日ごとにさらに <b>+30</b>）</span><span>📝 基礎情報 1項目 <b>+2</b>・更新した日 <b>+2</b></span></div>
       <div class="bd-note">記録しない日があっても、なかよし度は下がりません</div></div>
     <div class="bd-sec"><div class="bd-h">プロフィール</div>
       <div class="bd-prof"><span>好きなもの</span><b>${esc(P.likes)}</b><span>口ぐせ</span><b>${esc(P.kuse)}</b></div></div>
