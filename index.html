@@ -1866,6 +1866,90 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 .sh-time small{font-size:11px;color:var(--fg3);}
 .sh-prom{width:16px;color:#4338CA;font-weight:800;}
 .sh-none{flex:1;font-size:12px;color:var(--fg3);}
+
+/* ── 相棒（v2.119.0） ── */
+:root{--bd-tint:#FFF6EC;--bd-tint-b:#FBD9B5;}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bd-tint:#2A2233;--bd-tint-b:#4B3B5C;}}
+:root[data-theme="dark"]{--bd-tint:#2A2233;--bd-tint-b:#4B3B5C;}
+:root[data-stoic] #hh-buddy,:root[data-stoic] .lh-bd-pop,:root[data-stoic] .fb-bd,:root[data-stoic] .bd-te,:root[data-stoic] #mo-buddy{display:none!important;}
+.bd-face{position:relative;display:inline-flex;align-items:flex-end;justify-content:center;flex:none;}
+.bd-face img{width:100%;height:100%;object-fit:contain;object-position:bottom;display:block;}
+.bd-mk{position:absolute;top:-2px;right:-4px;font-style:normal;font-size:16px;line-height:1;filter:drop-shadow(0 1px 1px rgba(0,0,0,.15));}
+@media (prefers-reduced-motion:no-preference){
+  .bf-joy img{animation:bdHop 1.6s ease-in-out infinite;transform-origin:50% 100%;}
+  .bf-fire img{animation:bdHop .9s ease-in-out infinite;transform-origin:50% 100%;}
+  .bf-surprise img{animation:bdJolt 1.8s ease-out infinite;transform-origin:50% 100%;}
+  .bf-sleepy img{animation:bdSway 3.2s ease-in-out infinite;transform-origin:50% 100%;}
+  .bf-worry img{animation:bdSway 2.6s ease-in-out infinite;transform-origin:50% 100%;}
+  .bf-shy img{animation:bdWiggle 2.2s ease-in-out infinite;transform-origin:50% 100%;}
+  .bd-mk{animation:bdMk 2s ease-in-out infinite;}
+  .bd-pop img{animation:bdPop .35s ease-out,bdHop 1.6s .35s ease-in-out infinite;}
+}
+@keyframes bdHop{0%,100%{transform:translateY(0) scale(1,1);}45%{transform:translateY(-6%) scale(.98,1.02);}55%{transform:translateY(-6%);}85%{transform:translateY(0) scale(1.03,.97);}}
+@keyframes bdJolt{0%{transform:scale(1);}6%{transform:scale(1.08) translateY(-4%);}14%,100%{transform:scale(1);}}
+@keyframes bdSway{0%,100%{transform:rotate(-3deg);}50%{transform:rotate(3deg) translateY(2%);}}
+@keyframes bdWiggle{0%,100%{transform:rotate(0);}20%{transform:rotate(-4deg);}40%{transform:rotate(4deg);}60%{transform:rotate(0);}}
+@keyframes bdMk{0%,100%{transform:translateY(0);opacity:1;}50%{transform:translateY(-3px);opacity:.75;}}
+@keyframes bdPop{0%{transform:scale(.85);}60%{transform:scale(1.08);}100%{transform:scale(1);}}
+/* ホームの一番上 */
+.hh-buddy{display:flex;align-items:flex-end;gap:10px;width:100%;min-height:76px;padding:8px 14px 10px 8px;border-radius:20px;background:var(--bd-tint);border:1.5px solid var(--bd-tint-b);text-align:left;color:var(--fg);font:inherit;cursor:pointer;position:relative;overflow:hidden;}
+.hh-buddy.bd-st2{border-color:#F9A8D4;box-shadow:inset 0 0 0 2px rgba(249,168,212,.35);}
+.hh-buddy.bd-st3{border-color:#F5C451;box-shadow:inset 0 0 0 2px rgba(245,196,81,.45),0 2px 10px rgba(245,196,81,.25);}
+.hb-face{width:68px;height:82px;margin-bottom:-6px;}
+.hb-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;align-self:center;}
+.hb-say{position:relative;align-self:flex-start;max-width:100%;padding:7px 11px;border-radius:14px 14px 14px 4px;background:var(--surface);border:1px solid var(--border);font-size:13px;font-weight:700;line-height:1.45;color:var(--fg);}
+.hb-meta{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--fg2);}
+.hb-meta b{font-size:12px;color:var(--fg);}
+.hb-lv{font-weight:700;white-space:nowrap;}
+.hb-bar{flex:1;max-width:120px;height:6px;border-radius:99px;background:rgba(127,127,127,.18);overflow:hidden;display:block;}
+.hb-bar>i,.bd-bar>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#FB923C,#F472B6);}
+/* 記録への反応 */
+.lh-bd-pop{position:fixed;left:12px;right:12px;bottom:calc(var(--nav-h,64px) + 20px + env(safe-area-inset-bottom,0px));z-index:9500;display:flex;align-items:flex-end;gap:10px;padding:8px 12px 10px 8px;border-radius:18px;background:var(--surface);color:var(--fg);border:1.5px solid var(--bd-tint-b);box-shadow:0 10px 30px rgba(0,0,0,.18);transition:opacity .3s,transform .3s;max-width:480px;margin:0 auto;cursor:pointer;animation:bdIn .35s ease-out;}
+.lh-bd-pop.up{border-color:#F5C451;}
+.lh-bd-pop.out{opacity:0;transform:translateY(10px);}
+.lh-bd-pop .fb-x{color:var(--fg3);align-self:center;}
+@keyframes bdIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+.bp-face{width:52px;height:60px;margin-bottom:-2px;}
+.bp-body{flex:1;min-width:0;align-self:center;display:flex;flex-direction:column;gap:2px;}
+.bp-name{font-size:12px;font-weight:800;color:var(--fg2);display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.bp-say{font-size:14px;font-weight:700;line-height:1.45;}
+.bp-plus{font-size:11px;font-weight:800;color:#DB2777;background:#FCE7F3;border-radius:99px;padding:1px 8px;}
+.bp-up{font-size:11px;font-weight:800;color:#92400E;background:#FEF3C7;border-radius:99px;padding:1px 8px;white-space:nowrap;}
+.fb-bd{display:flex;align-items:flex-end;gap:6px;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.12);}
+.fb-bd-face{width:30px;height:34px;}
+.fb-bd-face .bd-mk{font-size:11px;}
+.fb-bd-say{font-size:12px;line-height:1.4;color:#FDE7F3;align-self:center;}
+.fb-bd-say b{color:#fff;margin-right:2px;}
+.bd-te{margin:-14px 0 18px;font-size:13px;font-weight:800;color:#DB2777;}
+/* 相棒の画面 */
+.bd-sheet-bg{position:fixed;inset:0;z-index:9200;background:rgba(15,15,30,.45);display:flex;align-items:flex-end;justify-content:center;animation:bdFade .2s ease-out;}
+@keyframes bdFade{from{opacity:0;}to{opacity:1;}}
+.bd-sheet{position:relative;width:100%;max-width:520px;max-height:92vh;overflow-y:auto;background:var(--bg);border-radius:24px 24px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:10px;animation:bdIn .3s ease-out;}
+.bd-close{position:absolute;top:10px;right:12px;width:36px;height:36px;border-radius:50%;border:none;background:var(--surface2);color:var(--fg2);font-size:20px;cursor:pointer;}
+.bd-big{border:none;background:radial-gradient(circle at 50% 70%,var(--bd-tint) 0 60%,transparent 61%);width:200px;height:200px;border-radius:50%;padding:0;cursor:pointer;display:flex;align-items:flex-end;justify-content:center;}
+.bd-st2 .bd-big{box-shadow:0 0 0 4px rgba(249,168,212,.5);}
+.bd-st3 .bd-big{box-shadow:0 0 0 4px rgba(245,196,81,.7),0 0 24px rgba(245,196,81,.35);}
+.bd-big-face{width:150px;height:180px;}
+.bd-big-face .bd-mk{font-size:28px;}
+.bd-bubble{max-width:90%;padding:9px 14px;border-radius:16px;background:var(--surface);border:1px solid var(--border);font-size:14px;font-weight:700;text-align:center;line-height:1.5;}
+.bd-name{font-size:20px;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.bd-name small{font-size:12px;font-weight:600;color:var(--fg2);}
+.bd-lvbox{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;}
+.bd-lvrow{display:flex;align-items:center;gap:8px;font-size:15px;}
+.bd-stage{font-size:11px;font-weight:800;color:#DB2777;background:#FCE7F3;border-radius:99px;padding:2px 9px;}
+.bd-st3 .bd-stage{color:#92400E;background:#FEF3C7;}
+.bd-today{margin-left:auto;font-size:12px;font-weight:700;color:var(--fg2);}
+.bd-bar{display:block;height:10px;border-radius:99px;background:var(--surface2);overflow:hidden;}
+.bd-next{font-size:12px;color:var(--fg2);}
+.bd-sec{width:100%;display:flex;flex-direction:column;gap:6px;}
+.bd-h{font-size:13px;font-weight:800;color:var(--fg2);}
+.bd-ways{display:flex;flex-wrap:wrap;gap:6px;}
+.bd-ways span{font-size:12px;background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:4px 10px;}
+.bd-ways b{color:#DB2777;}
+.bd-note{font-size:11px;color:var(--fg3);}
+.bd-prof{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:10px 14px;font-size:13px;}
+.bd-prof span{color:var(--fg2);font-size:12px;}
+.bd-change{margin-top:4px;min-height:44px;padding:0 20px;border-radius:99px;border:1px solid var(--border);background:var(--surface);color:var(--fg);font:inherit;font-size:14px;font-weight:700;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -2772,7 +2856,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
         <div class="st-about-note">動画の検索・表示に YouTube API Services を使っています。<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube利用規約</a>・<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Googleプライバシーポリシー</a>が適用されます。AIの答えは医療アドバイスではありません。</div>
       </div>
 
-      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.118.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
+      <p style="text-align:center;font-size:11px;color:var(--fg3);margin:16px 0 4px;">LifeWith v2.119.0 <span style="opacity:.6;">build <span id="lh-build"></span></span></p>
       <div style="height:8px;"></div>
     </div><!-- /.settings-body -->
 
@@ -3368,7 +3452,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='52c896a004'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='2ea7f9634b'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -5177,6 +5261,7 @@ async function endTraining(){
     endMsg+=`${pronoun}も一緒に頑張れたね！`;
   }
   if(msgEl)msgEl.textContent=endMsg;
+  document.getElementById('bd-te')?.remove();if(typeof lhBuddyTrainEnd==='function')lhBuddyTrainEnd(); // v2.119.0 相棒
 }
 function closeTrainingEnd(){
   document.getElementById('mo-training-end').hidden=true;
@@ -6060,6 +6145,7 @@ renderAiConsentRow();
 document.getElementById('st-plan-row')?.addEventListener('click',()=>lhShowPaywall({feature:'none'}));
 renderPlanRow();
 const CHANGELOG=[
+  {v:'v2.119.0',d:'相棒がホームの一番上に（毎朝、睡眠や記録で表情と一言が変わる）。食事・睡眠・体重・トレーニングの記録に相棒が反応。記録で上がる「なかよし度」（今までの記録の分も入る・下がらない）。相棒を押すと、なかよし度とプロフィール'},
   {v:'v2.118.0',d:'AIが日付を1日まちがえる不具合を直した（「11/25の昼食」も正しく）。睡眠にも点数。食事の点数の履歴（グラフの画面）と睡眠の履歴。AIトレーナーに筋トレ・栄養・睡眠の知識と受け答えの型を追加'},
   {v:'v2.117.0',d:'ねむりの約束: 約束の時間を含んで眠れた日、または約束の長さ以上眠れた日は ✓ に（早く寝て遅く起きた日も達成）'},
   {v:'v2.116.0',d:'AIとの会話を必ず丁寧語に。「ベンチプレス 60kg」のように種目名と重さを送るだけで、今日の記録に追加（追加の前に確認します）'},
@@ -7754,11 +7840,13 @@ document.getElementById('sl-bedtime').addEventListener('change',()=>{
   if(!db.sleep[st.slDate])db.sleep[st.slDate]={};
   db.sleep[st.slDate].bedtime=document.getElementById('sl-bedtime').value;
   save(db);updateSlDur();
+  if(db.sleep[st.slDate].bedtime&&db.sleep[st.slDate].wakeTime&&typeof lhBuddyReact==='function')lhBuddyReact('sleep',{ds:st.slDate,once:true}); // v2.119.0 相棒
 });
 document.getElementById('sl-waketime').addEventListener('change',()=>{
   if(!db.sleep[st.slDate])db.sleep[st.slDate]={};
   db.sleep[st.slDate].wakeTime=document.getElementById('sl-waketime').value;
   save(db);updateSlDur();
+  if(db.sleep[st.slDate].bedtime&&db.sleep[st.slDate].wakeTime&&typeof lhBuddyReact==='function')lhBuddyReact('sleep',{ds:st.slDate,once:true}); // v2.119.0 相棒
 });
 document.getElementById('sl-bed-now').onclick=()=>{
   const now=new Date();
@@ -7767,6 +7855,7 @@ document.getElementById('sl-bed-now').onclick=()=>{
   if(!db.sleep[today])db.sleep[today]={};
   db.sleep[today].bedtime=t;
   save(db);st.slDate=today;renderSleepTab();
+  if(typeof lhBuddyReact==='function')lhBuddyReact('bed',{once:true}); // v2.119.0 相棒
 };
 document.getElementById('sl-wake-now').onclick=()=>{
   const now=new Date();
@@ -7776,6 +7865,7 @@ document.getElementById('sl-wake-now').onclick=()=>{
   if(!db.sleep[yd])db.sleep[yd]={};
   db.sleep[yd].wakeTime=t;
   save(db);st.slDate=yd;renderSleepTab();
+  if(db.sleep[yd].bedtime&&typeof lhBuddyReact==='function')lhBuddyReact('sleep',{ds:yd,once:true}); // v2.119.0 相棒
 };
 document.getElementById('sl-add-nap').onclick=()=>{
   const ds=st.slDate;
@@ -7945,7 +8035,7 @@ function saveHealth(){
   save(db);
 }
 document.querySelectorAll('.health-in').forEach(el=>{
-  el.addEventListener('change',()=>{saveHealth();if(healthChartOpen)renderHealthCharts();});
+  el.addEventListener('change',()=>{saveHealth();if(healthChartOpen)renderHealthCharts();if(el.id==='hlt-weight'&&+el.value&&typeof lhBuddyReact==='function')lhBuddyReact('weight',{ds:healthDs,once:true});});
 });
 document.getElementById('hlt-chart-toggle').onclick=()=>{healthChartOpen=!healthChartOpen;renderHealth();};
 document.getElementById('hlt-prev').onclick=()=>{
@@ -9174,8 +9264,8 @@ function calcGameStats(){
     function renderCard(text,loading){
       card.hidden=false;
       card.className='ai-brief-card'+(loading?' loading':'');
-      const companion=getCharInfo();
-      const compIcon=`<img src="${companion.img}" alt="${companion.name}" style="width:36px;height:36px;object-fit:contain;flex-shrink:0;" onerror="this.style.display='none'">`;
+      const companion=CHARS.ran; // v2.119.0: AIの言葉はAIトレーナーの顔で（相棒は心・AIは頭脳）
+      const compIcon=`<img src="${companion.img}" alt="AIトレーナー" style="width:36px;height:36px;object-fit:contain;flex-shrink:0;" onerror="this.style.display='none'">`;
       card.innerHTML=`<div class="ai-brief-label">✦ AIからの今日のひとこと</div><div style="display:flex;align-items:flex-start;gap:10px;margin-top:4px;">${compIcon}<div class="ai-brief-text">${safeHtml(text)}</div></div><button class="ai-brief-refresh" title="更新">↺</button>`;
       card.querySelector('.ai-brief-refresh').onclick=()=>generateBrief(true);
     }
@@ -9192,9 +9282,9 @@ function calcGameStats(){
       renderCard('分析中…',true);
       if(window._DEV_MODE){renderCard('[DEVモード] AIブリーフは本番・stagingのみ動作します。');return;}
       if(!aiConsented()){ // v2.97.0: 未同意なら送らず、受け取るボタンを出す
-        const c=getCharInfo();
+        const c=CHARS.ran; // v2.119.0
         card.hidden=false;card.className='ai-brief-card';
-        card.innerHTML=`<div class="ai-brief-label">✦ AIからの今日のひとこと</div><div class="aic-brief"><img src="${c.img}" alt="" onerror="this.style.display='none'"><div><div class="aic-brief-txt">記録に合わせて、${esc(c.name)}が毎日ひとことくれるよ。AIを使うには最初に確認が必要。</div><button class="aic-brief-btn" type="button">${esc(c.name)}のひとことを受け取る</button></div></div>`;
+        card.innerHTML=`<div class="ai-brief-label">✦ AIからの今日のひとこと</div><div class="aic-brief"><img src="${c.img}" alt="" onerror="this.style.display='none'"><div><div class="aic-brief-txt">記録に合わせて、AIトレーナーが毎日ひとことお伝えします。AIを使うには最初に確認が必要です。</div><button class="aic-brief-btn" type="button">ひとことを受け取る</button></div></div>`;
         card.querySelector('.aic-brief-btn').onclick=async()=>{if(await aiRequireConsent())generateBrief(true);};
         return;
       }
@@ -11585,7 +11675,7 @@ function renderHomeHero(){
   pills.push(`<span class="hh-pill hh-fire">🔥 <b>${best}</b>日連続</span>`);
   if(sk.workout&&!sk.workout.unset){const w=sk.workout,pct=Math.min(100,Math.round(w.thisWeek/w.freq*100));pills.push(`<span class="hh-pill hh-week${w.metThis?' done':''}">今週 <b>${w.thisWeek}</b>/${w.freq}回<i style="--p:${pct}%"></i></span>`);}
   if(typeof lhPromiseKept==='function'){const k=lhPromiseKept((()=>{const d=new Date(t+'T00:00:00');d.setDate(d.getDate()-1);return fmt(d);})());if(k===true)pills.push('<span class="hh-pill hh-prom">🌙 約束 ✓</span>');}
-  if(typeof lhUnlocked==='function'&&lhUnlocked('level')&&typeof calcGameStats==='function'){try{const g=calcGameStats();if(g&&g.level)pills.push(`<span class="hh-pill hh-lv">Lv.<b>${g.level}</b></span>`);}catch(e){}}
+  if(!(typeof lhBuddyOn==='function'&&lhBuddyOn())&&typeof lhUnlocked==='function'&&lhUnlocked('level')&&typeof calcGameStats==='function'){try{const g=calcGameStats();if(g&&g.level)pills.push(`<span class="hh-pill hh-lv">Lv.<b>${g.level}</b></span>`);}catch(e){}}
   // トレーニング開始・今日のやりごろ
   const menu=((db.trainingMenus||{})[t]||'').split('\n')[0];
   const done=((db.workouts||{})[t]||[]).length;
@@ -11607,7 +11697,7 @@ function renderHomeHero(){
   if(f.sleep!==false)small.push(['sleep','hh-sleep','睡眠',sh!=null?`<b>${Math.floor(sh)}</b><small>時間${Math.round((sh%1)*60)?Math.round((sh%1)*60)+'分':''}</small>`:'<small>昨夜を記録</small>','😴']);
   small.push(['health','hh-weight','体重',wt?`<b>${wt.w.toFixed(1)}</b><small>kg</small>`:'<small>記録する</small>','⚖️']);
   const sc=[['voice','🎤','話して<br>記録'],['ai','🤖','AIに聞く'],['find','🔍','種目を探す'],['report','📊','週の<br>レポート'],['plan','📅','週間<br>プランナー'],['album','📷','食事の<br>アルバム']];
-  el.innerHTML=`<div class="hh-status">${pills.join('')}</div>
+  el.innerHTML=`${typeof lhBuddyStripHtml==='function'?lhBuddyStripHtml():''}<div class="hh-status">${pills.join('')}</div>
     <div class="hh-grid2">
       <button type="button" class="hh-tile hh-train" id="hh-train"><span class="hh-t-lbl">LET'S GO</span><span class="hh-t-title">トレーニング<br>開始</span><span class="hh-t-sub">${esc(trainSub)}</span><span class="hh-blob"></span><img class="hh-ran" src="${esc(ran.img)}" alt="" onerror="this.style.display='none'"></button>
       <button type="button" class="hh-tile hh-ready" id="hh-ready"><span class="hh-t-lbl">今日のやりごろ</span><span class="hh-t-title">${esc(readyHead)}</span><span class="hh-t-sub">${esc(readySub)}</span><span class="hh-blob"></span><span class="hh-body">${typeof mmSvg==='function'?mmSvg('f',fill,44,92,'筋肉マップ'):''}</span></button>
@@ -11615,6 +11705,7 @@ function renderHomeHero(){
     <div class="hh-grid3">${small.map(([k,c,l,v,ic])=>`<button type="button" class="hh-tile hh-small ${c}" data-go="${k}"><span class="hh-s-lbl">${l}</span><span class="hh-s-val">${v}</span><span class="hh-s-ic" aria-hidden="true">${ic}</span></button>`).join('')}</div>
     <div class="hh-row">${sc.map(([k,ic,l])=>`<button type="button" class="hh-sc" data-sc="${k}"><span class="hh-sc-ic" aria-hidden="true">${ic}</span><span class="hh-sc-l">${l}</span></button>`).join('')}</div>`;
   el.querySelector('#hh-train').onclick=()=>startTraining();
+  el.querySelector('#hh-buddy')?.addEventListener('click',()=>{if(typeof lhOpenBuddy==='function')lhOpenBuddy();});
   el.querySelector('#hh-cond')?.addEventListener('click',()=>{if(typeof openConditionSheet==='function')openConditionSheet();});
   el.querySelector('#hh-ready').onclick=()=>{window._anaView='muscle';switchToTab('ana');};
   el.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>_hhGo(b.dataset.go));
@@ -11820,7 +11911,7 @@ function lhMealFeedback(ds){
   document.getElementById('lh-fb-pop')?.remove();
   const el=document.createElement('div');el.id='lh-fb-pop';el.className='lh-fb-pop';el.setAttribute('role','status');
   const tg=sc.tg;
-  el.innerHTML=`<div class="fb-score"><b>${sc.score}</b><small>点</small></div><div class="fb-body"><div class="fb-nums">${tg?`${sc.kcal.toLocaleString()} / ${tg.kcal.toLocaleString()}kcal・たんぱく質 ${sc.p} / ${tg.protein}g`:`${sc.kcal.toLocaleString()}kcal・たんぱく質 ${sc.p}g`}</div><div class="fb-msg">${esc(lhMealAdvice(ds||todayStr(),sc))}</div></div><button type="button" class="fb-x" aria-label="閉じる">×</button>`;
+  el.innerHTML=`<div class="fb-score"><b>${sc.score}</b><small>点</small></div><div class="fb-body"><div class="fb-nums">${tg?`${sc.kcal.toLocaleString()} / ${tg.kcal.toLocaleString()}kcal・たんぱく質 ${sc.p} / ${tg.protein}g`:`${sc.kcal.toLocaleString()}kcal・たんぱく質 ${sc.p}g`}</div><div class="fb-msg">${esc(lhMealAdvice(ds||todayStr(),sc))}</div>${typeof lhBuddyMealHtml==='function'?lhBuddyMealHtml(sc):''}</div><button type="button" class="fb-x" aria-label="閉じる">×</button>`;
   document.body.appendChild(el);
   const close=()=>el.remove();
   el.querySelector('.fb-x').onclick=close;
@@ -12166,6 +12257,250 @@ function lhDayRecordsText(ds){
 [体] ${[hl.weight?`体重${hl.weight}kg`:'',hl.bodyFat?`体脂肪${hl.bodyFat}%`:'',hl.steps?`歩数${hl.steps}`:''].filter(Boolean).join(' ')||'記録なし'}
 [予定していたメニュー] トレーニング: ${tm?tm.replace(/\n/g,' / '):'なし'}｜食事: ${Object.keys(ML).filter(k=>mp[k]).map(k=>ML[k]+':'+mp[k]).join(' / ')||'なし'}`;
 }
+// ── 相棒（v2.119.0）: 記録への反応・なかよし度・毎朝の様子 ─────────
+// 方針: AIは頭脳、相棒は心。相棒は表情と気持ちだけ（アドバイスはしない）。責めない（なかよし度は下がらない）
+// 性格・口ぐせは projects/lifehub/characters/設定書.md に合わせる。ストイックモードでは出さない
+// ※ビルドで1つのscriptに連結されるため、トップレベルに const/let を置かない（TDZ回避）
+var BUDDY_LIST=['pico','kai','kota'];
+// 表情 → 絵（assets/characters/buddy/<相棒>_<絵>.png）。専用の絵が届いたら、ここをその表情の名前に変える
+var BUDDY_ART={
+  pico:{normal:'joy',joy:'joy',surprise:'joy',worry:'sleepy',sleepy:'sleepy',shy:'joy',fire:'fire'},
+  kai:{normal:'normal',joy:'joy',surprise:'fire',worry:'normal',sleepy:'normal',shy:'normal',fire:'fire'},
+  kota:{normal:'normal',joy:'joy',surprise:'joy',worry:'normal',sleepy:'shy',shy:'shy',fire:'joy'},
+};
+var BUDDY_MARK={joy:'✨',surprise:'❗',worry:'💧',sleepy:'💤',shy:'💗',fire:'🔥'};
+var BUDDY_PROFILE={
+  pico:{role:'元気な相棒',likes:'にんじんスティック・朝の散歩・スクワット',kuse:'「いっしょにいこ！」「えへへ」',main:true},
+  kai:{role:'クールな相棒',likes:'デッドリフト・夜明けの空気・ブラックコーヒー',kuse:'「悪くない」「行くか」'},
+  kota:{role:'おっとりな相棒',likes:'はちみつ・昼寝・ストレッチ',kuse:'「ゆっくりでいいよ〜」「えらいねぇ」'},
+};
+var BUDDY_STAGE=['','はじめまして','なかよし','相棒'];
+// 一言（短く・アドバイスなし・責めない）
+var BUDDY_LINES={
+  pico:{
+    start:['今までの記録で、もうこんなに仲良し！えへへ','ずっと見てたよ。これからもいっしょにいこ！'],
+    first:['はじめまして、ピコだよ！いっしょにいこ！','記録するたびに、ぼくと仲良くなれるよ'],
+    back:['おかえり！待ってたよ〜','また会えてうれしい！えへへ'],
+    m_good:['よく眠れたね！ぼくも元気いっぱい！','おはよう！今日は体が軽い気がする！'],
+    m_ok:['おはよう！今日もいっしょにいこ！','おはよう〜。いい朝だね'],
+    m_short:['ふぁ…ぼくもちょっと眠いや','おはよ…今日はゆっくりいこうね'],
+    m_worry:['昨日は短かったね。だいじょうぶ？','ねむねむ…ぼく、そばにいるよ'],
+    m_none:['おはよう！昨日はよく眠れた？','おはよう！今日もいっしょにいこ！'],
+    day:['今日もいっしょにがんばろ！','ぼく、ここで応援してるね'],
+    day_logged:['記録してくれてうれしい！','いい感じだね、えへへ'],
+    evening:['今日もおつかれさま！','夜ごはん、なに食べるのかな〜'],
+    night:['ふぁ…そろそろ寝る時間かな','今日もいっしょにいてくれてありがと'],
+    trained:['今日はトレーニングした日！かっこいい！','ぼくも筋肉ぴくぴくしてる！'],
+    meal_good:['やったー！ばっちりだね！','おいしそう！ぼくもおなかすいた〜'],
+    meal_ok:['記録できたね！えらい！','もぐもぐ…ぼくも食べたくなっちゃった'],
+    sleep_good:['ぐっすりだったね！やったー！','よく眠れた日は、ぼくもうれしい！'],
+    sleep_short:['ふぁ…短かったね。ぼくも眠い〜','今日は無理しないでいこうね'],
+    bed:['おやすみ〜。ぼくも寝るね','また明日ね。おやすみ！'],
+    weight:['記録できたね！えらい！','毎日はかるの、すごいね！'],
+    train_end:['いっしょにがんばれた！','ぼく、ずっと応援してたよ！'],
+    levelup:['もっと仲良くなれた！えへへ','うれしい〜！これからもいっしょにいこ！'],
+    tap:['えへへ、くすぐったい！','いっしょにいこ！','にんじんスティック、好きなんだ〜','ぼく、ここにいるよ！','今日もいい日になるといいね'],
+  },
+  kai:{
+    start:['今までの記録、ちゃんと見てた','悪くない。ここから一緒に行くか'],
+    first:['カイだ。よろしくな','記録するほど、俺たちは近くなる'],
+    back:['おかえり。待ってたぞ','戻ってきたな。行くか'],
+    m_good:['よく眠れたな。悪くない','いい顔してる。行くか'],
+    m_ok:['おはよう。今日も行くか','朝だ。いい空気だな'],
+    m_short:['短かったな。俺も少し眠い','今日は無理しなくていい'],
+    m_worry:['眠れなかったか。俺はここにいる','今日はゆっくりでいい'],
+    m_none:['おはよう。昨日はどうだった','朝だ。今日も行くか'],
+    day:['今日もやるか','俺は見てるぞ'],
+    day_logged:['記録したな。悪くない','ちゃんと続いてる'],
+    evening:['今日もおつかれ','いい一日だったか'],
+    night:['そろそろ休め。俺もそうする','今日もよくやった'],
+    trained:['今日はやったな。悪くない','いい汗だった'],
+    meal_good:['悪くない食事だ','いいな。俺も腹が減った'],
+    meal_ok:['記録したな。それで十分だ','ちゃんと見てる'],
+    sleep_good:['よく眠れたな','いい眠りだった'],
+    sleep_short:['短かったな。今日はゆっくり行け','俺も少し眠い'],
+    bed:['おやすみ。また明日な','よく休め'],
+    weight:['記録したな','続けてるのは、すごいことだ'],
+    train_end:['いい汗だったな','一緒にやれてよかった'],
+    levelup:['……悪くない関係だ','少し、近くなったな'],
+    tap:['……なんだ','行くか','俺はここにいる','ブラックコーヒーが好きなんだ','悪くない一日にしよう'],
+  },
+  kota:{
+    start:['今までの記録、ずっと見てたよ〜','もうこんなに仲良しだねぇ'],
+    first:['コタだよ〜。ゆっくりいこうね','記録するたびに、仲良くなれるよ〜'],
+    back:['おかえり〜。待ってたよ','また会えてうれしいなぁ'],
+    m_good:['よく眠れたねぇ。えらいねぇ','おはよう〜。いい顔してるね'],
+    m_ok:['おはよう〜。ゆっくりいこうね','いい朝だねぇ'],
+    m_short:['ふぁ〜…ぼくも眠いや','今日はのんびりでいいよ〜'],
+    m_worry:['眠れなかったかな。だいじょうぶ？','ゆっくりでいいよ〜。そばにいるね'],
+    m_none:['おはよう〜。よく眠れた？','おはよう〜。今日もゆっくりいこうね'],
+    day:['今日もマイペースでいこうね','ぼく、ここで見てるよ〜'],
+    day_logged:['記録できたねぇ。えらいねぇ','続けてるの、すごいなぁ'],
+    evening:['今日もおつかれさま〜','ゆっくり休んでね〜'],
+    night:['そろそろおやすみの時間かな〜','今日もえらかったねぇ'],
+    trained:['トレーニングしたんだねぇ。すごいなぁ','いい汗かいたねぇ'],
+    meal_good:['おいしそうだねぇ','いいねぇ。ぼくもはちみつ食べたいな'],
+    meal_ok:['記録できたねぇ。えらいねぇ','ちゃんと続いてるね〜'],
+    sleep_good:['ぐっすりだったねぇ','よく眠れて、えらいねぇ'],
+    sleep_short:['短かったねぇ。今日はのんびりね','ぼくもお昼寝したいな〜'],
+    bed:['おやすみ〜。また明日ね','ゆっくり休んでね〜'],
+    weight:['記録できたねぇ','毎日えらいねぇ'],
+    train_end:['いっしょにがんばれたねぇ','ゆっくり休んでね〜'],
+    levelup:['もっと仲良くなれたねぇ','うれしいなぁ〜'],
+    tap:['えへへ〜','ゆっくりでいいよ〜','はちみつ、好きなんだ〜','ぼく、ここにいるよ〜','お昼寝したくなるねぇ'],
+  },
+};
+function lhBuddyOn(){if(typeof BUDDY_LINES==='undefined'||!BUDDY_LINES)return false; // 読み込み前（ホームが先に描かれる）は出さない
+  return !(typeof lhStoic==='function'&&lhStoic());}
+function lhBuddyKey(){const c=db.settings&&db.settings.aiCharacter;return BUDDY_LIST.includes(c)?c:'pico';}
+function lhBuddyName(k){return (CHARS[k||lhBuddyKey()]||CHARS.pico).name;}
+function lhBuddySay(sit,seed,k){
+  k=k||lhBuddyKey();const L=(BUDDY_LINES[k]||BUDDY_LINES.pico)[sit]||BUDDY_LINES.pico[sit]||[''];
+  if(seed==null)return L[Math.floor(Math.random()*L.length)];
+  let h=0;const s=String(seed)+sit;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;
+  return L[h%L.length];
+}
+function lhBuddyImgSrc(face,k){k=k||lhBuddyKey();const a=(BUDDY_ART[k]||BUDDY_ART.pico)[face]||'normal';return `assets/characters/buddy/${k}_${a}.png`;}
+// 表情の絵（専用の絵がない表情は、動きと小さなマークで出す）
+function lhBuddyFaceHtml(face,cls,k){
+  k=k||lhBuddyKey();face=face||'normal';
+  const exact=(BUDDY_ART[k]||{})[face]===face;
+  const mk=!exact&&BUDDY_MARK[face]?`<i class="bd-mk" aria-hidden="true">${BUDDY_MARK[face]}</i>`:'';
+  return `<span class="bd-face bf-${face}${cls?' '+cls:''}"><img src="${lhBuddyImgSrc(face,k)}" alt="${esc(lhBuddyName(k))}" onerror="this.onerror=null;this.src='${esc((CHARS[k]||CHARS.pico).img)}'">${mk}</span>`;
+}
+// ── なかよし度（記録から計算。今までの記録の分も入る。下がらない） ──
+function lhBuddyPtsDay(ds){
+  let p=0;
+  if(((db.workouts||{})[ds]||[]).length)p+=5;
+  const m=(db.meals||{})[ds]||{};p+=['breakfast','lunch','dinner','snack'].filter(k=>(m[k]||[]).length).length;
+  const s=(db.sleep||{})[ds]||{};if(s.bedtime&&s.wakeTime)p+=2;
+  if(s.bedtime&&typeof lhPromiseKept==='function'){try{if(lhPromiseKept(ds)===true)p+=2;}catch(e){}}
+  if(+(((db.health||{})[ds]||{}).weight))p+=1;
+  return p;
+}
+function lhBuddyLevelOf(pts){let lv=1,acc=0,need=10;while(pts>=acc+need){acc+=need;lv++;need=10*lv;}return {lv,pts,cur:pts-acc,need,stage:lv>=10?3:lv>=5?2:1};}
+function lhBuddyState(){
+  const ds=new Set([...Object.keys(db.workouts||{}),...Object.keys(db.meals||{}),...Object.keys(db.sleep||{}),...Object.keys(db.health||{})].filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d)));
+  let pts=0;ds.forEach(d=>{pts+=lhBuddyPtsDay(d);});
+  if(!db.buddy||typeof db.buddy!=='object'){db.buddy={best:pts,seenLv:lhBuddyLevelOf(pts).lv,since:todayStr()};save(db);}
+  if(pts>(+db.buddy.best||0)){db.buddy.best=pts;save(db);}
+  const L=lhBuddyLevelOf(Math.max(pts,+db.buddy.best||0));L.today=lhBuddyPtsDay(todayStr());return L;
+}
+// レベルが上がっていたら新しいレベルを返す（1回だけ）
+function lhBuddyLevelUp(){
+  const L=lhBuddyState();
+  if(L.lv>(+db.buddy.seenLv||1)){db.buddy.seenLv=L.lv;save(db);return L;}
+  return null;
+}
+// ── 今の様子（毎朝・時間帯・今日の記録で変わる） ──
+function lhBuddyMood(){
+  const t=todayStr(),hr=new Date().getHours(),L=lhBuddyState();
+  const yd=(()=>{const d=new Date(t+'T00:00:00');d.setDate(d.getDate()-1);return fmt(d);})();
+  const has=ds=>lhBuddyPtsDay(ds)>0;
+  if(db.buddy&&db.buddy.since===t&&L.lv>1)return {face:'shy',sit:'start'};
+  if(L.pts===0)return {face:'joy',sit:'first'};
+  if(!has(t)&&!has(yd)){let gap=0;for(let i=2;i<=4;i++){const d=new Date(t+'T00:00:00');d.setDate(d.getDate()-i);if(!has(fmt(d)))gap++;}if(gap>=2)return {face:'joy',sit:'back'};}
+  if(((db.workouts||{})[t]||[]).length)return {face:'fire',sit:'trained'};
+  if(hr>=22||hr<4)return {face:'sleepy',sit:'night'};
+  if(hr<11){
+    const ss=typeof lhSleepScore==='function'?lhSleepScore(yd):null;
+    if(!ss)return {face:'normal',sit:'m_none'};
+    if(ss.h<5)return {face:'worry',sit:'m_worry'};
+    if(ss.h<6.5)return {face:'sleepy',sit:'m_short'};
+    return ss.score>=75?{face:'joy',sit:'m_good'}:{face:'normal',sit:'m_ok'};
+  }
+  if(hr<17)return has(t)?{face:'joy',sit:'day_logged'}:{face:'normal',sit:'day'};
+  return {face:'normal',sit:'evening'};
+}
+// ホームの一番上（home-hero の中）
+function lhBuddyStripHtml(){
+  if(!lhBuddyOn())return '';
+  const k=lhBuddyKey(),L=lhBuddyState(),m=lhBuddyMood();
+  const say=lhBuddySay(m.sit,todayStr()+new Date().getHours());
+  return `<button type="button" class="hh-buddy bd-st${L.stage}" id="hh-buddy" aria-label="${esc(lhBuddyName(k))}の画面を開く">
+    ${lhBuddyFaceHtml(m.face,'hb-face',k)}
+    <span class="hb-txt"><span class="hb-say">${esc(say)}</span>
+    <span class="hb-meta"><b>${esc(lhBuddyName(k))}</b><span class="hb-lv">なかよし Lv.${L.lv}</span><i class="hb-bar"><i style="width:${Math.round(L.cur/L.need*100)}%"></i></i></span></span>
+  </button>`;
+}
+// ── 記録への反応（下からの小さな吹き出し） ──
+var _bdOnce={};
+function lhBuddyReact(kind,opt){
+  if(!lhBuddyOn())return;opt=opt||{};
+  const key=kind+':'+(opt.ds||todayStr());
+  if(opt.once&&_bdOnce[key])return;_bdOnce[key]=1;
+  let face='joy',sit=kind,plus=0;
+  if(kind==='sleep'){
+    const ss=typeof lhSleepScore==='function'?lhSleepScore(opt.ds):null;
+    if(ss&&ss.h<6){face='sleepy';sit='sleep_short';}else{face='joy';sit='sleep_good';}
+    plus=2+(typeof lhPromiseKept==='function'&&lhPromiseKept(opt.ds)===true?2:0);
+  }else if(kind==='bed'){face='sleepy';}
+  else if(kind==='weight'){face='shy';plus=1;}
+  const up=lhBuddyLevelUp();
+  lhBuddyPop(face,lhBuddySay(sit),plus,up);
+}
+function lhBuddyPop(face,say,plus,up){
+  if(!lhBuddyOn())return;
+  if(up){face='shy';say=lhBuddySay('levelup');}
+  document.getElementById('lh-bd-pop')?.remove();
+  const k=lhBuddyKey(),el=document.createElement('div');el.id='lh-bd-pop';el.className='lh-bd-pop'+(up?' up':'');el.setAttribute('role','status');
+  el.innerHTML=`${lhBuddyFaceHtml(face,'bp-face',k)}<div class="bp-body"><div class="bp-name">${esc(lhBuddyName(k))}${up?`<span class="bp-up">🎉 なかよし Lv.${up.lv}</span>`:plus?`<span class="bp-plus">なかよし +${plus}</span>`:''}</div><div class="bp-say">${esc(say)}</div></div><button type="button" class="fb-x" aria-label="閉じる">×</button>`;
+  document.body.appendChild(el);
+  const close=()=>el.remove();
+  el.querySelector('.fb-x').onclick=e=>{e.stopPropagation();close();};
+  el.onclick=()=>{close();lhOpenBuddy();};
+  setTimeout(()=>{if(el.isConnected)el.classList.add('out');setTimeout(close,400);},up?6000:4500);
+}
+// 食事の点数の画面に相棒を足す（engage.js の lhMealFeedback から呼ぶ）
+function lhBuddyMealHtml(sc){
+  if(!lhBuddyOn())return '';
+  const up=lhBuddyLevelUp(),good=sc&&sc.score>=75;
+  const face=up?'shy':good?'joy':'normal';
+  const say=up?lhBuddySay('levelup'):lhBuddySay(good?'meal_good':'meal_ok');
+  return `<div class="fb-bd">${lhBuddyFaceHtml(face,'fb-bd-face')}<span class="fb-bd-say"><b>${esc(lhBuddyName())}</b> ${esc(say)}${up?` <span class="bp-up">🎉 なかよし Lv.${up.lv}</span>`:''}</span></div>`;
+}
+// トレーニング終了の画面
+function lhBuddyTrainEnd(){
+  const el=document.getElementById('training-end-msg');if(!el||!lhBuddyOn())return;
+  const up=lhBuddyLevelUp(),L=lhBuddyState();
+  el.insertAdjacentHTML('afterend',`<div class="bd-te" id="bd-te">${up?`🎉 ${esc(lhBuddyName())}となかよし Lv.${up.lv} に！`:`なかよし Lv.${L.lv}・今日 +${L.today}`}</div>`);
+}
+// ── 相棒の画面 ──
+function lhOpenBuddy(){
+  if(!lhBuddyOn())return;
+  document.getElementById('mo-buddy')?.remove();
+  const k=lhBuddyKey(),L=lhBuddyState(),P=BUDDY_PROFILE[k]||BUDDY_PROFILE.pico,m=lhBuddyMood();
+  const mo=document.createElement('div');mo.id='mo-buddy';mo.className='bd-sheet-bg';
+  mo.innerHTML=`<div class="bd-sheet bd-st${L.stage}" role="dialog" aria-label="${esc(lhBuddyName(k))}">
+    <button type="button" class="bd-close" aria-label="閉じる">×</button>
+    <button type="button" class="bd-big" id="bd-big" aria-label="さわる">${lhBuddyFaceHtml(m.face,'bd-big-face',k)}</button>
+    <div class="bd-bubble" id="bd-bubble">${esc(lhBuddySay(m.sit,todayStr()+new Date().getHours()))}</div>
+    <div class="bd-name">${esc(lhBuddyName(k))}<small>${esc(P.role)}${P.main?'・LifeWith の顔':''}</small></div>
+    <div class="bd-lvbox">
+      <div class="bd-lvrow"><span class="bd-stage">${BUDDY_STAGE[L.stage]}</span><b>なかよし Lv.${L.lv}</b><span class="bd-today">今日 +${L.today}</span></div>
+      <i class="bd-bar"><i style="width:${Math.round(L.cur/L.need*100)}%"></i></i>
+      <div class="bd-next">次の Lv まで あと ${L.need-L.cur}${L.stage<3?`・Lv.${L.stage===1?5:10} で「${BUDDY_STAGE[L.stage+1]}」に`:''}</div>
+    </div>
+    <div class="bd-sec"><div class="bd-h">なかよし度の上がり方</div>
+      <div class="bd-ways"><span>💪 筋トレ <b>+5</b></span><span>🍱 食事 1回 <b>+1</b></span><span>😴 睡眠 <b>+2</b></span><span>🌙 ねむりの約束 <b>+2</b></span><span>⚖️ 体重 <b>+1</b></span></div>
+      <div class="bd-note">記録しない日があっても、なかよし度は下がりません</div></div>
+    <div class="bd-sec"><div class="bd-h">プロフィール</div>
+      <div class="bd-prof"><span>好きなもの</span><b>${esc(P.likes)}</b><span>口ぐせ</span><b>${esc(P.kuse)}</b></div></div>
+    <button type="button" class="bd-change" id="bd-change">相棒を変える</button>
+  </div>`;
+  document.body.appendChild(mo);
+  const close=()=>mo.remove();
+  mo.onclick=e=>{if(e.target===mo)close();};
+  mo.querySelector('.bd-close').onclick=close;
+  const faces=['joy','shy','surprise','fire','sleepy'];let fi=0;
+  mo.querySelector('#bd-big').onclick=()=>{
+    const f=faces[fi++%faces.length];
+    mo.querySelector('#bd-big').innerHTML=lhBuddyFaceHtml(f,'bd-big-face bd-pop',k);
+    mo.querySelector('#bd-bubble').textContent=lhBuddySay('tap');
+  };
+  mo.querySelector('#bd-change').onclick=()=>{close();document.getElementById('hdr-settings')?.click();setTimeout(()=>document.getElementById('char-grid')?.scrollIntoView({block:'center'}),300);};
+}
+if(typeof renderHomeHero==='function')renderHomeHero();
 </script>
 <div id="lu-overlay" hidden style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;"></div>
 <div id="share-pv-modal" class="share-pv-modal" hidden>
