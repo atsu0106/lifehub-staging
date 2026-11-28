@@ -3461,7 +3461,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='61da4acfc8'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='f31d1621d2'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -12026,7 +12026,7 @@ function renderSleepPromise(){
   }
   el.querySelector('#sp-save').onclick=()=>{
     const bed=document.getElementById('sp-bed').value,wake=document.getElementById('sp-wake').value;if(!bed)return;
-    db.settings.sleepPromise={bed,wake};save(db);renderSleepPromise();lhApplyNotify();showToast('約束しました');
+    db.settings.sleepPromise={bed,wake};save(db);renderSleepPromise();lhApplyNotify(true);showToast('約束しました');
   };
 }
 
@@ -12078,15 +12078,15 @@ function lhNotifyList(){
   if(n.meal&&n.mealTime)L.push({id:'meal',time:n.mealTime,title:'食事の記録',body:'今日の食事を記録しておきましょう'});
   return L;
 }
-function lhApplyNotify(){
-  try{if(window.LH_NATIVE&&typeof window.LH_NATIVE.scheduleNotifications==='function')window.LH_NATIVE.scheduleNotifications(lhNotifyList());}catch(e){}
+function lhApplyNotify(ask){
+  try{if(window.LH_NATIVE&&typeof window.LH_NATIVE.scheduleNotifications==='function')window.LH_NATIVE.scheduleNotifications(lhNotifyList(),!!ask);}catch(e){}
 }
 function renderNotifySettings(){
   const el=document.getElementById('st-notify');if(!el)return;
   const n=lhNotifySettings(),p=lhSleepPromise(),native=!!(window.LH_NATIVE&&window.LH_NATIVE.scheduleNotifications);
   const row=(k,ic,lbl,sub,time)=>`<div class="st-row st-row-toggle"><span class="st-ic" style="background:#6366f1;">${ic}</span><div style="flex:1;min-width:0;"><div class="st-label">${lbl}</div><div style="font-size:11px;color:var(--fg3);">${sub}</div></div>${time?`<input type="time" class="nt-time" data-t="${time}" value="${esc(n[time])}">`:''}<label class="toggle"><input type="checkbox" data-nt="${k}" ${n[k]?'checked':''}><span class="toggle-slider"></span></label></div>`;
   el.innerHTML=row('bed','🌙','寝る前',p?`約束（${esc(p.bed)}）の30分前`:'睡眠の画面で「ねむりの約束」を決めると届きます')+row('gym','🏋️','ジムの時間','今日のメニューのお知らせ','gymTime')+row('meal','🍽','食事の記録忘れ','記録がない日の夜に','mealTime')+`<div class="st-about-note">${native?'通知は端末に設定しました。':'通知はiPhoneアプリ版で届きます（Web版では設定だけ保存します）。'}</div>`;
-  const saveN=()=>{const v=lhNotifySettings();el.querySelectorAll('[data-nt]').forEach(c=>{v[c.dataset.nt]=c.checked;});el.querySelectorAll('.nt-time').forEach(i=>{if(i.value)v[i.dataset.t]=i.value;});db.settings.notify=v;save(db);lhApplyNotify();};
+  const saveN=()=>{const v=lhNotifySettings();el.querySelectorAll('[data-nt]').forEach(c=>{v[c.dataset.nt]=c.checked;});el.querySelectorAll('.nt-time').forEach(i=>{if(i.value)v[i.dataset.t]=i.value;});db.settings.notify=v;save(db);lhApplyNotify(true);};
   el.querySelectorAll('[data-nt],.nt-time').forEach(i=>i.onchange=saveN);
 }
 
@@ -12622,13 +12622,14 @@ var LH_RC_ENTITLEMENT='premium';
   const LN=P.LocalNotifications;
   const NT_IDS={bed:101,gym:102,meal:103};
   if(LN){
-    N.scheduleNotifications=async function(list){
+    // ask=true のときだけ許可を聞く（起動時は聞かない。設定を変えた・約束を決めた ときに聞く）
+    N.scheduleNotifications=async function(list,ask){
       try{
         const pend=await LN.getPending();
         const mine=((pend&&pend.notifications)||[]).filter(n=>Object.values(NT_IDS).includes(+n.id));
         if(mine.length)await LN.cancel({notifications:mine.map(n=>({id:+n.id}))});
         if(!list||!list.length)return;
-        const perm=await LN.requestPermissions();
+        const perm=ask?await LN.requestPermissions():await LN.checkPermissions();
         if(perm&&perm.display&&perm.display!=='granted')return;
         await LN.schedule({notifications:list.filter(n=>NT_IDS[n.id]&&/^\d{1,2}:\d{2}$/.test(n.time)).map(n=>{const[h,m]=n.time.split(':').map(Number);return{id:NT_IDS[n.id],title:n.title,body:n.body,schedule:{on:{hour:h,minute:m},allowWhileIdle:true}};})});
       }catch(e){}
