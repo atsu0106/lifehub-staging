@@ -1992,12 +1992,12 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 
 <div id="onboarding" hidden>
   <div class="ob-inner">
-    <div class="ob-logo">🗓</div>
+    <div class="ob-logo"><img src="assets/icon/apple-touch-icon.png" alt="" width="76" height="76" style="display:block;border-radius:18px;box-shadow:0 6px 18px rgba(0,0,0,.18);"></div>
     <h1 class="ob-title">LifeWith</h1>
-    <p class="ob-sub">あなただけの生活管理アプリ</p>
+    <p class="ob-sub">AIトレーナーと続ける筋トレ・食事記録</p>
     <div class="ob-form" id="ob-step1">
       <label class="ob-label">名前を入力してください</label>
-      <input id="ob-name" class="ob-input" type="text" placeholder="例: 渡辺" maxlength="20" autocomplete="off">
+      <input id="ob-name" class="ob-input" type="text" placeholder="例: 渡辺" maxlength="20" autocomplete="off" enterkeyhint="next">
       <button id="ob-next" class="ob-btn">次へ →</button>
     </div>
     <div class="ob-wiz" id="ob-wiz" hidden></div>
@@ -3461,7 +3461,7 @@ body.no-profiles #prof-btn,body.no-profiles #dr-acct,body.no-profiles #st-sec-se
 <script>
 // ── 自動更新: 配信中の最新版とBUILD_IDを比べ、古ければ1回だけ再読み込み ──
 (function(){
-  const BUILD_ID='e401b299b8'; // tools/build.mjs が内容ハッシュに置換する
+  const BUILD_ID='ff37ef1501'; // tools/build.mjs が内容ハッシュに置換する
   window._LH_BUILD=BUILD_ID;
   const el=document.getElementById('lh-build');
   if(el)el.textContent=BUILD_ID.startsWith('__')?'dev':BUILD_ID;
@@ -8324,7 +8324,7 @@ document.getElementById('ml-next').onclick=()=>{const d=new Date(st.mlDate);d.se
       onbStart(finishOnboarding); // v2.106.0: 最初の質問（8画面）
     }
     nextBtn.addEventListener('click',goToStep2);
-    inp.addEventListener('keydown',e=>{if(e.key==='Enter')goToStep2();});
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing&&e.keyCode!==229)goToStep2();}); // v2.120.3: 日本語の変換を確定するEnterでは進まない
     function finishOnboarding(selected){
       selected=selected||[];
       db.settings.highlightTab='wo';
